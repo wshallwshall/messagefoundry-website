@@ -42,6 +42,9 @@ verify against the engine's docs before changing any technical claim.
 
 - **Reword the home "Why switch" h2** ("Off legacy — without the legacy price tag") — make it about
   ditching legacy **prices *and* lock-in**, not just price.
+- **Reword "self-host on your own cloud"** → "fits into your environment" (broader, less prescriptive).
+  Appears on the home CTA and the "Why switch" list (`index.html`); apply the same softening to
+  `product.html`'s "on-premises or in your cloud" / "self-hosted" phrasing when that page lands.
 
 ## Remove the "code-first" framing (site-wide)
 
