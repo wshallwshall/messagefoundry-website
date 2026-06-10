@@ -1,0 +1,250 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Features — MessageFoundry</title>
+  <meta name="description" content="What MessageFoundry does: durable store-as-queue, two-tier HL7 parsing, MLLP and file connections, code-first routing, RBAC and encryption-at-rest, an admin console, and a VS Code extension.">
+  <link rel="canonical" href="https://messagefoundry.org/features.html">
+  <link rel="icon" href="/assets/img/favicon.svg" type="image/svg+xml">
+  <meta name="theme-color" content="#0b1220">
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="MessageFoundry">
+  <meta property="og:title" content="Features — MessageFoundry">
+  <meta property="og:description" content="Durable store-as-queue, two-tier HL7 parsing, code-first routing, RBAC and encryption-at-rest, admin console, and VS Code tooling.">
+  <meta property="og:url" content="https://messagefoundry.org/features.html">
+  <meta property="og:image" content="https://messagefoundry.org/assets/img/og.svg">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:image" content="https://messagefoundry.org/assets/img/og.svg">
+  <link rel="stylesheet" href="/assets/css/styles.css">
+</head>
+<body>
+
+  <header class="site-header">
+    <div class="container header-inner">
+      <a class="brand" href="/" aria-label="MessageFoundry home">
+        <img class="brand-mark" src="/assets/img/logo.svg" alt="" width="28" height="28">
+        <span class="brand-name">Message<span class="brand-accent">Foundry</span></span>
+      </a>
+      <button class="nav-toggle" aria-expanded="false" aria-controls="site-nav" aria-label="Toggle navigation"><span></span><span></span><span></span></button>
+      <nav class="site-nav" id="site-nav">
+        <a href="/features.html" class="active" aria-current="page">Features</a>
+        <a href="/getting-started.html">Get started</a>
+        <a href="/comparison.html">Comparison</a>
+        <a href="/about.html">About</a>
+        <a class="btn btn-ghost" href="https://github.com/wshallwshall/MessageFoundry" target="_blank" rel="noopener">GitHub ↗</a>
+      </nav>
+    </div>
+  </header>
+
+  <!-- page header -->
+  <section class="section section--dark section--tight">
+    <div class="container">
+      <span class="eyebrow">Features</span>
+      <h1 style="max-width:18ch">Everything you need for reliable point-to-point HL7</h1>
+      <p class="lead">A small, sharp feature set focused on doing the common interfaces well — durable delivery, tolerant parsing, code-first routing, and PHI-aware operations. Items marked <span class="badge" style="color:#f6c177;border-color:rgba(245,158,11,.4)">planned</span> are on the roadmap.</p>
+    </div>
+  </section>
+
+  <!-- reliability -->
+  <section class="section">
+    <div class="container grid grid-2" style="align-items:start">
+      <div>
+        <span class="eyebrow">Reliability</span>
+        <h2>Durable by construction</h2>
+        <p class="lead">The message store <em>is</em> the queue. A transactional inbox/outbox on SQLite (WAL) is the reliability backbone — no separate broker to run, patch, or monitor.</p>
+      </div>
+      <ul class="feature-list">
+        <li><b>At-least-once delivery</b> — the inbound is ACKed only after the message and its outbox rows are committed.</li>
+        <li><b>Per-outbound workers</b> — each destination drains independently; one slow or failing peer never blocks the others.</li>
+        <li><b>Retries with backoff</b> and automatic <b>dead-lettering</b> for messages that can't be delivered.</li>
+        <li><b>Replay</b> — re-drive a stored message through delivery from the console or API.</li>
+        <li><b>Asyncio core</b> — one listener per inbound, one worker per outbound, supervised so a crash in one is isolated.</li>
+      </ul>
+    </div>
+  </section>
+
+  <!-- parsing -->
+  <section class="section section--alt">
+    <div class="container grid grid-2" style="align-items:start">
+      <div>
+        <span class="eyebrow">Parsing &amp; validation</span>
+        <h2>Two-tier, by design</h2>
+        <p class="lead">Fast and tolerant on the hot path; strict and version-aware only where you ask for it. Real-world HL7 is frequently non-conformant — the engine is built to expect that.</p>
+      </div>
+      <ul class="feature-list">
+        <li><b>python-hl7</b> for fast field <em>peek</em> during routing and filtering.</li>
+        <li><b>hl7apy</b> for opt-in, version-aware strict validation, per inbound connection — kept off the routing path.</li>
+        <li><b>Encoding from MSH</b> — field, component, repetition, escape, and subcomponent separators are read from the message, never hardcoded.</li>
+        <li><b>Raw message preserved</b> alongside the transformed form, so an operator always sees exactly what arrived.</li>
+        <li><b>Parse failures are routed</b> to the error / dead-letter path and logged as <code>ERROR</code> — a bad message never crashes a connection.</li>
+      </ul>
+    </div>
+  </section>
+
+  <!-- connections -->
+  <section class="section">
+    <div class="container">
+      <div class="center" style="margin-bottom:38px">
+        <span class="eyebrow">Connections</span>
+        <h2>Pluggable transports, resolved through a registry</h2>
+        <p class="lead center">New connection types are registered, not special-cased in the pipeline.</p>
+      </div>
+      <div class="grid grid-3">
+        <div class="card">
+          <h3>MLLP <span class="badge" style="vertical-align:middle">built</span></h3>
+          <p>Correct <code>0x0B … 0x1C 0x0D</code> framing, inbound and outbound. ACK/NAK generation (AA / AE / AR) with the ack mode — original, enhanced, or none — configurable per inbound connection.</p>
+        </div>
+        <div class="card">
+          <h3>File <span class="badge" style="vertical-align:middle">built</span></h3>
+          <p>File source and destination, with templated output names (e.g. <code>{MSH-10}.hl7</code>) drawn from message fields.</p>
+        </div>
+        <div class="card">
+          <h3>TCP · HTTP · DB <span class="badge" style="vertical-align:middle;color:#f6c177;border-color:rgba(245,158,11,.4)">planned</span></h3>
+          <p>Additional transports — plus REST/FHIR destinations and a database poller — are on the roadmap, implemented against the same connector contract.</p>
+        </div>
+      </div>
+      <div class="callout" style="margin-top:26px">
+        <p><strong>Count-and-log invariant.</strong> Every message a connection takes in or puts out is counted and logged — a router or filter decision is a recorded outcome (<code>UNROUTED</code> / <code>FILTERED</code>), never a silent drop.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- routing -->
+  <section class="section section--dark">
+    <div class="container grid grid-2" style="align-items:start">
+      <div>
+        <span class="eyebrow">Routing &amp; handling</span>
+        <h2>Code-first, pure functions</h2>
+        <p class="lead">A Router decides forwarding (and optional filtering); a Handler filters, transforms, then returns <code>Send</code>s. They're pure Python functions, registered by name — no declarative filter/transform DSL to learn.</p>
+      </div>
+      <ul class="feature-list">
+        <li><b>@router</b> returns the handler name(s) a message should go to — or an empty list to leave it unrouted.</li>
+        <li><b>@handler</b> returns <code>None</code> to filter, or one or more <code>Send</code>s addressed to outbound connections.</li>
+        <li><b>Wired by name</b> — inbound names a Router, Routers name Handlers, Handlers send to outbound Connections.</li>
+        <li><b>Shared helpers</b> live in <code>_</code>-prefixed modules the loader skips, so config stays DRY.</li>
+        <li><b>Transforms stay pure</b> where possible — message in, message out; side effects belong in connections.</li>
+      </ul>
+    </div>
+  </section>
+
+  <!-- security -->
+  <section class="section section--alt">
+    <div class="container grid grid-2" style="align-items:start">
+      <div>
+        <span class="eyebrow">Security &amp; PHI</span>
+        <h2>PHI is a first-class concern</h2>
+        <p class="lead">This engine carries PHI, so authentication, authorization, audit, and encryption-at-rest are built in — not bolted on. The API binds <code>127.0.0.1</code> by default and requires authentication.</p>
+      </div>
+      <ul class="feature-list">
+        <li><b>Authentication</b> — local users and Active Directory (LDAP / Kerberos), with opaque sessions.</li>
+        <li><b>RBAC</b> — fixed built-in roles with deny-by-default, per-route permissions, including per-channel scoping.</li>
+        <li><b>Audit log</b> — every PHI access (raw view, summary display, replay) is recorded with the acting user.</li>
+        <li><b>Encryption-at-rest</b> — message bodies are encrypted with AES-256-GCM in the store.</li>
+        <li><b>Roadmap</b> <span class="badge" style="color:#f6c177;border-color:rgba(245,158,11,.4)">planned</span> — log redaction and MLLPS / TLS for remote exposure.</li>
+      </ul>
+    </div>
+  </section>
+
+  <!-- operations + tooling -->
+  <section class="section">
+    <div class="container">
+      <div class="center" style="margin-bottom:38px">
+        <span class="eyebrow">Operate &amp; build</span>
+        <h2>A console and an editor, both talking to one API</h2>
+      </div>
+      <div class="grid grid-3">
+        <div class="card">
+          <span class="ico"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M4 4h16a1 1 0 0 1 1 1v11a1 1 0 0 1-1 1h-7v2h3v2H8v-2h3v-2H4a1 1 0 0 1-1-1V5a1 1 0 0 1 1-1zm1 2v9h14V6H5z"/></svg></span>
+          <h3>PySide6 admin console</h3>
+          <p>Connection dashboard, message browser, an HL7 parse-tree viewer, delivery and audit trail, and one-click replay. A separate process that reaches the engine only over the localhost API.</p>
+        </div>
+        <div class="card">
+          <span class="ico"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M3 5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5zm6.5 3L6 11.5 9.5 15 11 13.5 8.9 11.5 11 9.5 9.5 8zm5 0L13 9.5l2.1 2-2.1 2L14.5 15 18 11.5 14.5 8z"/></svg></span>
+          <h3>VS Code extension</h3>
+          <p>Author and test interfaces in your editor: a New Route Wizard, validate-on-save, a Test Bench that dry-runs <code>.hl7</code> files with before/after diffs, Stage&nbsp;→&nbsp;Promote to a running engine, and an HL7-aware chat participant.</p>
+        </div>
+        <div class="card">
+          <span class="ico"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M8 3v2H5v14h3v2H3V3h5zm8 0h5v18h-5v-2h3V5h-3V3zM7 13.5 9.5 11 7 8.5 8.4 7l4 4-4 4L7 13.5z"/></svg></span>
+          <h3>CLI &amp; localhost API</h3>
+          <p><code>messagefoundry serve</code> runs the engine and exposes connection control, message search/detail, replay, stats, and a live WebSocket feed. <code>check</code> gates commits; <code>generate</code> produces synthetic, PHI-free HL7.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- deployment -->
+  <section class="section section--dark section--tight">
+    <div class="container grid grid-2" style="align-items:center">
+      <div>
+        <span class="eyebrow">Deployment</span>
+        <h2>Runs headless, where your data lives</h2>
+        <p class="lead">On-premises by default — no PHI leaves the local environment without explicit, reviewed configuration.</p>
+      </div>
+      <ul class="feature-list">
+        <li><b>Windows service via NSSM</b> — install/uninstall scripts included.</li>
+        <li><b>Headless engine</b> — no GUI imports; testable and runnable as a service.</li>
+        <li><b>SQLite (WAL) today</b>; additional store backends are in progress <span class="badge" style="color:#f6c177;border-color:rgba(245,158,11,.4)">in&nbsp;progress</span>.</li>
+        <li><b>One config, many environments</b> — DEV/PROD values layer over the same Python modules.</li>
+      </ul>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="container">
+      <div class="cta-band">
+        <h2>See it run in five minutes</h2>
+        <div class="btn-row center">
+          <a class="btn btn-primary" href="/getting-started.html">Get started</a>
+          <a class="btn btn-ghost" href="/comparison.html">Compare with Mirth &amp; Corepoint →</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <footer class="site-footer">
+    <div class="container">
+      <div class="footer-grid">
+        <div class="footer-brand">
+          <a class="brand" href="/" aria-label="MessageFoundry home">
+            <img class="brand-mark" src="/assets/img/logo.svg" alt="" width="28" height="28">
+            <span class="brand-name">Message<span class="brand-accent">Foundry</span></span>
+          </a>
+          <p>Open-source, code-first HL7 v2 integration engine for healthcare IT.</p>
+          <div class="badge-row" style="margin-top:16px">
+            <span class="badge">Python 3.11+</span>
+            <span class="badge">AGPL-3.0</span>
+            <span class="badge">Self-hosted</span>
+          </div>
+        </div>
+        <div class="footer-col">
+          <h4>Product</h4>
+          <a href="/features.html">Features</a>
+          <a href="/comparison.html">Comparison</a>
+          <a href="/getting-started.html">Get started</a>
+        </div>
+        <div class="footer-col">
+          <h4>Docs</h4>
+          <a href="https://github.com/wshallwshall/MessageFoundry/blob/main/docs/ARCHITECTURE.md">Architecture</a>
+          <a href="https://github.com/wshallwshall/MessageFoundry/blob/main/docs/CONNECTIONS.md">Connections</a>
+          <a href="https://github.com/wshallwshall/MessageFoundry/blob/main/docs/SECURITY.md">Security</a>
+          <a href="https://github.com/wshallwshall/MessageFoundry/blob/main/docs/PHI.md">PHI / HIPAA</a>
+        </div>
+        <div class="footer-col">
+          <h4>Project</h4>
+          <a href="https://github.com/wshallwshall/MessageFoundry" target="_blank" rel="noopener">GitHub</a>
+          <a href="https://github.com/wshallwshall/MessageFoundry/issues" target="_blank" rel="noopener">Issues</a>
+          <a href="https://github.com/wshallwshall/MessageFoundry/blob/main/LICENSE">License</a>
+          <a href="/about.html">About</a>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        <span>© 2026 MessageFoundry · Licensed under AGPL-3.0-or-later.</span>
+        <span>Not affiliated with NextGen Healthcare or Lyniate / Rhapsody.</span>
+      </div>
+    </div>
+  </footer>
+
+  <script src="/assets/js/nav.js" defer></script>
+</body>
+</html>

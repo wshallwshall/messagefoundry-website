@@ -1,0 +1,210 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>MessageFoundry vs Mirth Connect vs Corepoint</title>
+  <meta name="description" content="How MessageFoundry compares to Mirth Connect and Corepoint: code-first Python vs channel-based scripting vs low-code GUI. A fair, high-level look at configuration model, licensing, and fit.">
+  <link rel="canonical" href="https://messagefoundry.org/comparison.html">
+  <link rel="icon" href="/assets/img/favicon.svg" type="image/svg+xml">
+  <meta name="theme-color" content="#0b1220">
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="MessageFoundry">
+  <meta property="og:title" content="MessageFoundry vs Mirth Connect vs Corepoint">
+  <meta property="og:description" content="Code-first Python vs channel-based scripting vs low-code GUI — a fair, high-level comparison.">
+  <meta property="og:url" content="https://messagefoundry.org/comparison.html">
+  <meta property="og:image" content="https://messagefoundry.org/assets/img/og.svg">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:image" content="https://messagefoundry.org/assets/img/og.svg">
+  <link rel="stylesheet" href="/assets/css/styles.css">
+</head>
+<body>
+
+  <header class="site-header">
+    <div class="container header-inner">
+      <a class="brand" href="/" aria-label="MessageFoundry home">
+        <img class="brand-mark" src="/assets/img/logo.svg" alt="" width="28" height="28">
+        <span class="brand-name">Message<span class="brand-accent">Foundry</span></span>
+      </a>
+      <button class="nav-toggle" aria-expanded="false" aria-controls="site-nav" aria-label="Toggle navigation"><span></span><span></span><span></span></button>
+      <nav class="site-nav" id="site-nav">
+        <a href="/features.html">Features</a>
+        <a href="/getting-started.html">Get started</a>
+        <a href="/comparison.html" class="active" aria-current="page">Comparison</a>
+        <a href="/about.html">About</a>
+        <a class="btn btn-ghost" href="https://github.com/wshallwshall/MessageFoundry" target="_blank" rel="noopener">GitHub ↗</a>
+      </nav>
+    </div>
+  </header>
+
+  <section class="section section--dark section--tight">
+    <div class="container">
+      <span class="eyebrow">Comparison</span>
+      <h1 style="max-width:22ch">Where MessageFoundry fits</h1>
+      <p class="lead">MessageFoundry isn't trying to replace every enterprise integration suite. It's a focused, code-first option for teams that want their HL7 interfaces to look like the rest of their software — plain Python, in version control, reviewed in pull requests. Here's an honest, high-level look at how it sits next to two well-known engines.</p>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="container">
+      <div class="table-wrap">
+        <table class="cmp">
+          <thead>
+            <tr>
+              <th scope="col">&nbsp;</th>
+              <th scope="col" class="us">MessageFoundry<small>code-first</small></th>
+              <th scope="col">Mirth Connect</th>
+              <th scope="col">Corepoint</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <th scope="row">Configuration model</th>
+              <td class="us">Code-first Python — a graph of named Connections, Routers, and Handlers</td>
+              <td>Channel-based GUI with scripted transformer steps</td>
+              <td>Low-code / no-code visual configuration</td>
+            </tr>
+            <tr>
+              <th scope="row">Scripting language</th>
+              <td class="us">Python 3.11+</td>
+              <td>JavaScript (Rhino)</td>
+              <td>Built-in visual actions (vendor-defined)</td>
+            </tr>
+            <tr>
+              <th scope="row">Config in version control</th>
+              <td class="us">Native — configuration <em>is</em> plain <code>.py</code> modules</td>
+              <td>Via channel export (XML / JSON)</td>
+              <td>Through vendor tooling / export</td>
+            </tr>
+            <tr>
+              <th scope="row">Source &amp; licensing</th>
+              <td class="us">Open source — AGPL-3.0-or-later</td>
+              <td>Open-source core; commercial editions (NextGen Healthcare)</td>
+              <td>Commercial (Lyniate / Rhapsody)</td>
+            </tr>
+            <tr>
+              <th scope="row">Cost to start</th>
+              <td class="us">Free, self-hosted</td>
+              <td>Free community edition; paid support / add-ons</td>
+              <td>Commercial license</td>
+            </tr>
+            <tr>
+              <th scope="row">Reliability / queuing</th>
+              <td class="us">Transactional inbox/outbox on SQLite (WAL) — at-least-once, retries, replay</td>
+              <td>Channel message queues (database-backed)</td>
+              <td>Built-in guaranteed delivery</td>
+            </tr>
+            <tr>
+              <th scope="row">Runtime footprint</th>
+              <td class="us">Lightweight Python service</td>
+              <td>JVM-based server</td>
+              <td>Enterprise server / appliance</td>
+            </tr>
+            <tr>
+              <th scope="row">Best fit</th>
+              <td class="us">Focused point-to-point HL7 v2 interfaces authored and reviewed as code</td>
+              <td>Broad integration needs with a large connector ecosystem</td>
+              <td>Large enterprise / HIE deployments wanting full vendor support</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <p style="color:var(--muted);font-size:.88rem;margin-top:16px;max-width:80ch">This table reflects general, publicly described positioning and is intended as a fair high-level orientation, not a feature-by-feature audit. Capabilities, licensing, and editions change over time and vary by version — verify specifics against each vendor's current documentation.</p>
+    </div>
+  </section>
+
+  <section class="section section--alt">
+    <div class="container">
+      <div class="center" style="margin-bottom:38px">
+        <span class="eyebrow">Honest guidance</span>
+        <h2>Which one should you reach for?</h2>
+      </div>
+      <div class="grid grid-3">
+        <div class="card">
+          <h3>Choose MessageFoundry when…</h3>
+          <ul class="feature-list" style="margin-top:12px">
+            <li>Your team thinks in code and git, not canvases.</li>
+            <li>You want a handful of reliable HL7 interfaces without a heavyweight platform.</li>
+            <li>You need configuration to be diffable and reviewable in PRs.</li>
+            <li>Self-hosting and open source matter to you.</li>
+          </ul>
+        </div>
+        <div class="card">
+          <h3>Consider Mirth Connect when…</h3>
+          <ul class="feature-list" style="margin-top:12px">
+            <li>You want a large library of prebuilt connectors and a mature GUI.</li>
+            <li>Your team is comfortable with channel-based, JavaScript-scripted transforms.</li>
+            <li>You value a long-established open-source community.</li>
+          </ul>
+        </div>
+        <div class="card">
+          <h3>Consider Corepoint when…</h3>
+          <ul class="feature-list" style="margin-top:12px">
+            <li>You need a fully commercial, vendor-supported platform.</li>
+            <li>Non-developers will build and maintain interfaces in a low-code UI.</li>
+            <li>You're running large-scale enterprise or HIE integration.</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="container">
+      <div class="cta-band">
+        <h2>Prefer your interfaces as code?</h2>
+        <p class="lead center" style="color:var(--muted-dk)">That's exactly what MessageFoundry is for.</p>
+        <div class="btn-row center">
+          <a class="btn btn-primary" href="/getting-started.html">Get started</a>
+          <a class="btn btn-ghost" href="/features.html">Browse features →</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <footer class="site-footer">
+    <div class="container">
+      <div class="footer-grid">
+        <div class="footer-brand">
+          <a class="brand" href="/" aria-label="MessageFoundry home">
+            <img class="brand-mark" src="/assets/img/logo.svg" alt="" width="28" height="28">
+            <span class="brand-name">Message<span class="brand-accent">Foundry</span></span>
+          </a>
+          <p>Open-source, code-first HL7 v2 integration engine for healthcare IT.</p>
+          <div class="badge-row" style="margin-top:16px">
+            <span class="badge">Python 3.11+</span>
+            <span class="badge">AGPL-3.0</span>
+            <span class="badge">Self-hosted</span>
+          </div>
+        </div>
+        <div class="footer-col">
+          <h4>Product</h4>
+          <a href="/features.html">Features</a>
+          <a href="/comparison.html">Comparison</a>
+          <a href="/getting-started.html">Get started</a>
+        </div>
+        <div class="footer-col">
+          <h4>Docs</h4>
+          <a href="https://github.com/wshallwshall/MessageFoundry/blob/main/docs/ARCHITECTURE.md">Architecture</a>
+          <a href="https://github.com/wshallwshall/MessageFoundry/blob/main/docs/CONNECTIONS.md">Connections</a>
+          <a href="https://github.com/wshallwshall/MessageFoundry/blob/main/docs/SECURITY.md">Security</a>
+          <a href="https://github.com/wshallwshall/MessageFoundry/blob/main/docs/PHI.md">PHI / HIPAA</a>
+        </div>
+        <div class="footer-col">
+          <h4>Project</h4>
+          <a href="https://github.com/wshallwshall/MessageFoundry" target="_blank" rel="noopener">GitHub</a>
+          <a href="https://github.com/wshallwshall/MessageFoundry/issues" target="_blank" rel="noopener">Issues</a>
+          <a href="https://github.com/wshallwshall/MessageFoundry/blob/main/LICENSE">License</a>
+          <a href="/about.html">About</a>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        <span>© 2026 MessageFoundry · Licensed under AGPL-3.0-or-later.</span>
+        <span>Mirth Connect and Corepoint are trademarks of their respective owners; this site is independent and unaffiliated.</span>
+      </div>
+    </div>
+  </footer>
+
+  <script src="/assets/js/nav.js" defer></script>
+</body>
+</html>

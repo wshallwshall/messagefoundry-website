@@ -1,0 +1,211 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Get started — MessageFoundry</title>
+  <meta name="description" content="Install MessageFoundry from source, run the engine and localhost API, send a test HL7 message over MLLP, open the admin console, and author your first Connection / Router / Handler in Python.">
+  <link rel="canonical" href="https://messagefoundry.org/getting-started.html">
+  <link rel="icon" href="/assets/img/favicon.svg" type="image/svg+xml">
+  <meta name="theme-color" content="#0b1220">
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="MessageFoundry">
+  <meta property="og:title" content="Get started — MessageFoundry">
+  <meta property="og:description" content="Install, run the engine, send a test HL7 message, and author your first route in Python.">
+  <meta property="og:url" content="https://messagefoundry.org/getting-started.html">
+  <meta property="og:image" content="https://messagefoundry.org/assets/img/og.svg">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:image" content="https://messagefoundry.org/assets/img/og.svg">
+  <link rel="stylesheet" href="/assets/css/styles.css">
+</head>
+<body>
+
+  <header class="site-header">
+    <div class="container header-inner">
+      <a class="brand" href="/" aria-label="MessageFoundry home">
+        <img class="brand-mark" src="/assets/img/logo.svg" alt="" width="28" height="28">
+        <span class="brand-name">Message<span class="brand-accent">Foundry</span></span>
+      </a>
+      <button class="nav-toggle" aria-expanded="false" aria-controls="site-nav" aria-label="Toggle navigation"><span></span><span></span><span></span></button>
+      <nav class="site-nav" id="site-nav">
+        <a href="/features.html">Features</a>
+        <a href="/getting-started.html" class="active" aria-current="page">Get started</a>
+        <a href="/comparison.html">Comparison</a>
+        <a href="/about.html">About</a>
+        <a class="btn btn-ghost" href="https://github.com/wshallwshall/MessageFoundry" target="_blank" rel="noopener">GitHub ↗</a>
+      </nav>
+    </div>
+  </header>
+
+  <section class="section section--dark section--tight">
+    <div class="container">
+      <span class="eyebrow">Get started</span>
+      <h1 style="max-width:20ch">From clone to a routed message in five minutes</h1>
+      <p class="lead">MessageFoundry installs from source and runs locally. You'll need <b>Python 3.11+</b> and <b>git</b>. The engine serves a localhost API; the console and editor tooling attach to it.</p>
+      <div class="callout" style="margin-top:22px;background:rgba(245,158,11,.07);border-color:rgba(245,158,11,.28);color:var(--muted-dk)">
+        <p><strong style="color:var(--accent)">Use synthetic data.</strong> The sample generators and dry-run output can contain full message bodies — only ever run them against synthetic, PHI-free HL7.</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="container" style="max-width:860px">
+      <div class="steps">
+
+        <div class="step">
+          <h3>Clone and install</h3>
+          <p>Create a virtual environment and install the package (with the dev extras) in editable mode.</p>
+          <div class="code-card">
+            <div class="code-card__bar"><i></i><i></i><i></i><span class="code-card__name">terminal</span></div>
+<pre class="code"><span class="c"># clone</span>
+git clone https://github.com/wshallwshall/MessageFoundry.git
+<span class="k">cd</span> MessageFoundry
+
+<span class="c"># virtual environment</span>
+python -m venv .venv
+<span class="c"># macOS / Linux:   . .venv/bin/activate</span>
+<span class="c"># Windows (PS):    .venv\Scripts\Activate.ps1</span>
+
+pip install -e <span class="s">".[dev]"</span></pre>
+          </div>
+        </div>
+
+        <div class="step">
+          <h3>Run the engine</h3>
+          <p>Load the sample config, open the store, and serve the localhost API on <code>127.0.0.1:8765</code>.</p>
+          <div class="code-card">
+            <div class="code-card__bar"><i></i><i></i><i></i><span class="code-card__name">terminal</span></div>
+<pre class="code">python -m messagefoundry serve --config samples/config --db messagefoundry.db
+
+<span class="c"># API on http://127.0.0.1:8765</span>
+<span class="c">#   GET /connections   GET /messages   GET /stats   WS /ws/stats</span></pre>
+          </div>
+        </div>
+
+        <div class="step">
+          <h3>Send a test message</h3>
+          <p>The sample config's <code>IB_Test_ADT</code> listens for MLLP on port <code>2575</code>. Send it an ADT and watch it route.</p>
+          <div class="code-card">
+            <div class="code-card__bar"><i></i><i></i><i></i><span class="code-card__name">terminal</span></div>
+<pre class="code">python samples/send_mllp.py samples/messages/adt_a01.hl7
+
+<span class="c"># A01/A04/A08 → archived to ./out/adt/&lt;MSH-10&gt;.hl7</span>
+<span class="c"># other events → logged FILTERED; non-ADT → logged UNROUTED</span></pre>
+          </div>
+        </div>
+
+        <div class="step">
+          <h3>Open the admin console</h3>
+          <p>A separate PySide6 process that attaches to the API — dashboard, message browser, parse-tree viewer, and replay.</p>
+          <div class="code-card">
+            <div class="code-card__bar"><i></i><i></i><i></i><span class="code-card__name">terminal</span></div>
+<pre class="code">pip install -e <span class="s">".[console]"</span>
+python -m messagefoundry.console --url http://127.0.0.1:8765</pre>
+          </div>
+        </div>
+
+        <div class="step">
+          <h3>Author your own route</h3>
+          <p>Drop a Python module into your config directory. Name an inbound and outbound Connection, then wire a Router and Handler by name.</p>
+          <div class="code-card">
+            <div class="code-card__bar"><i></i><i></i><i></i><span class="code-card__name">config/IB_Lab_ORU.py</span></div>
+<pre class="code"><span class="k">from</span> messagefoundry <span class="k">import</span> MLLP, Send, inbound, outbound, router, handler
+
+<span class="f">inbound</span>(<span class="s">"IB_Lab_ORU"</span>, <span class="f">MLLP</span>(port=<span class="n">2580</span>), router=<span class="s">"oru_router"</span>)
+<span class="f">outbound</span>(<span class="s">"OB_EHR_ORU"</span>, <span class="f">MLLP</span>(host=<span class="s">"10.0.0.21"</span>, port=<span class="n">6661</span>))
+
+<span class="d">@router</span>(<span class="s">"oru_router"</span>)
+<span class="k">def</span> <span class="f">route</span>(msg):
+    <span class="k">if</span> msg[<span class="s">"MSH-9.1"</span>] != <span class="s">"ORU"</span>:
+        <span class="k">return</span> []                    <span class="c"># UNROUTED</span>
+    <span class="k">return</span> [<span class="s">"to_ehr"</span>]
+
+<span class="d">@handler</span>(<span class="s">"to_ehr"</span>)
+<span class="k">def</span> <span class="f">to_ehr</span>(msg):
+    <span class="k">if</span> msg[<span class="s">"OBR-25"</span>] == <span class="s">"X"</span>:       <span class="c"># drop corrected-in-error</span>
+        <span class="k">return</span> <span class="n">None</span>                  <span class="c"># FILTERED</span>
+    <span class="k">return</span> <span class="f">Send</span>(<span class="s">"OB_EHR_ORU"</span>, msg)</pre>
+          </div>
+          <p style="margin-top:14px">Validate it before it ships with the commit gate:</p>
+          <div class="code-card">
+            <div class="code-card__bar"><i></i><i></i><i></i><span class="code-card__name">terminal</span></div>
+<pre class="code">python -m messagefoundry check --config samples/config</pre>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- docs -->
+      <div style="margin-top:56px">
+        <h2>Go deeper</h2>
+        <p class="lead" style="margin-bottom:22px">The full documentation lives in the repository.</p>
+        <div class="grid grid-3">
+          <a class="card" href="https://github.com/wshallwshall/MessageFoundry/blob/main/docs/ARCHITECTURE.md" style="color:inherit">
+            <h3>Architecture →</h3><p>The engine/console split, the store-as-queue invariant, and the modularity standard.</p>
+          </a>
+          <a class="card" href="https://github.com/wshallwshall/MessageFoundry/blob/main/docs/CONNECTIONS.md" style="color:inherit">
+            <h3>Connections →</h3><p>Naming conventions and per-connector settings for MLLP and file endpoints.</p>
+          </a>
+          <a class="card" href="https://github.com/wshallwshall/MessageFoundry/blob/main/docs/CONFIGURATION.md" style="color:inherit">
+            <h3>Configuration →</h3><p>Service settings, environments, and how DEV/PROD values layer over your modules.</p>
+          </a>
+          <a class="card" href="https://github.com/wshallwshall/MessageFoundry/blob/main/docs/SECURITY.md" style="color:inherit">
+            <h3>Security →</h3><p>Authentication, RBAC, sessions, and the audit log.</p>
+          </a>
+          <a class="card" href="https://github.com/wshallwshall/MessageFoundry/blob/main/docs/PHI.md" style="color:inherit">
+            <h3>PHI / HIPAA →</h3><p>The data-protection map: what's built vs planned for handling PHI.</p>
+          </a>
+          <a class="card" href="https://github.com/wshallwshall/MessageFoundry/blob/main/docs/SERVICE.md" style="color:inherit">
+            <h3>Service →</h3><p>Running the engine as a Windows service via NSSM.</p>
+          </a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <footer class="site-footer">
+    <div class="container">
+      <div class="footer-grid">
+        <div class="footer-brand">
+          <a class="brand" href="/" aria-label="MessageFoundry home">
+            <img class="brand-mark" src="/assets/img/logo.svg" alt="" width="28" height="28">
+            <span class="brand-name">Message<span class="brand-accent">Foundry</span></span>
+          </a>
+          <p>Open-source, code-first HL7 v2 integration engine for healthcare IT.</p>
+          <div class="badge-row" style="margin-top:16px">
+            <span class="badge">Python 3.11+</span>
+            <span class="badge">AGPL-3.0</span>
+            <span class="badge">Self-hosted</span>
+          </div>
+        </div>
+        <div class="footer-col">
+          <h4>Product</h4>
+          <a href="/features.html">Features</a>
+          <a href="/comparison.html">Comparison</a>
+          <a href="/getting-started.html">Get started</a>
+        </div>
+        <div class="footer-col">
+          <h4>Docs</h4>
+          <a href="https://github.com/wshallwshall/MessageFoundry/blob/main/docs/ARCHITECTURE.md">Architecture</a>
+          <a href="https://github.com/wshallwshall/MessageFoundry/blob/main/docs/CONNECTIONS.md">Connections</a>
+          <a href="https://github.com/wshallwshall/MessageFoundry/blob/main/docs/SECURITY.md">Security</a>
+          <a href="https://github.com/wshallwshall/MessageFoundry/blob/main/docs/PHI.md">PHI / HIPAA</a>
+        </div>
+        <div class="footer-col">
+          <h4>Project</h4>
+          <a href="https://github.com/wshallwshall/MessageFoundry" target="_blank" rel="noopener">GitHub</a>
+          <a href="https://github.com/wshallwshall/MessageFoundry/issues" target="_blank" rel="noopener">Issues</a>
+          <a href="https://github.com/wshallwshall/MessageFoundry/blob/main/LICENSE">License</a>
+          <a href="/about.html">About</a>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        <span>© 2026 MessageFoundry · Licensed under AGPL-3.0-or-later.</span>
+        <span>Not affiliated with NextGen Healthcare or Lyniate / Rhapsody.</span>
+      </div>
+    </div>
+  </footer>
+
+  <script src="/assets/js/nav.js" defer></script>
+</body>
+</html>

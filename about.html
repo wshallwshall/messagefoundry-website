@@ -1,0 +1,116 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>About — MessageFoundry</title>
+  <meta name="description" content="What MessageFoundry is, why it exists, its current status, license (AGPL-3.0-or-later), and how to contribute.">
+  <link rel="canonical" href="https://messagefoundry.org/about.html">
+  <link rel="icon" href="/assets/img/favicon.svg" type="image/svg+xml">
+  <meta name="theme-color" content="#0b1220">
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="MessageFoundry">
+  <meta property="og:title" content="About — MessageFoundry">
+  <meta property="og:description" content="What MessageFoundry is, why it exists, its status, license, and how to contribute.">
+  <meta property="og:url" content="https://messagefoundry.org/about.html">
+  <meta property="og:image" content="https://messagefoundry.org/assets/img/og.svg">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:image" content="https://messagefoundry.org/assets/img/og.svg">
+  <link rel="stylesheet" href="/assets/css/styles.css">
+</head>
+<body>
+
+  <header class="site-header">
+    <div class="container header-inner">
+      <a class="brand" href="/" aria-label="MessageFoundry home">
+        <img class="brand-mark" src="/assets/img/logo.svg" alt="" width="28" height="28">
+        <span class="brand-name">Message<span class="brand-accent">Foundry</span></span>
+      </a>
+      <button class="nav-toggle" aria-expanded="false" aria-controls="site-nav" aria-label="Toggle navigation"><span></span><span></span><span></span></button>
+      <nav class="site-nav" id="site-nav">
+        <a href="/features.html">Features</a>
+        <a href="/getting-started.html">Get started</a>
+        <a href="/comparison.html">Comparison</a>
+        <a href="/about.html" class="active" aria-current="page">About</a>
+        <a class="btn btn-ghost" href="https://github.com/wshallwshall/MessageFoundry" target="_blank" rel="noopener">GitHub ↗</a>
+      </nav>
+    </div>
+  </header>
+
+  <section class="section section--dark section--tight">
+    <div class="container">
+      <span class="eyebrow">About</span>
+      <h1 style="max-width:20ch">Healthcare interfaces, built like software</h1>
+      <p class="lead">MessageFoundry exists for a specific gap: standing up a few reliable HL7 v2 interfaces shouldn't require a heavyweight platform or a proprietary low-code canvas. If you can write Python, you can route, filter, and transform clinical messages — and keep that logic in version control alongside the rest of your code.</p>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="container prose">
+      <h2>Why it exists</h2>
+      <p>Most HL7 integration engines optimize for breadth — huge connector libraries, visual designers, enterprise footprints. That's the right tool for a large hospital integration team. But a great many real-world needs are small and specific: take ADT from system A, filter and reshape it, deliver it to system B, reliably, with an audit trail. For that, a GUI-driven platform is often more weight than the job requires.</p>
+      <p>MessageFoundry takes the opposite starting point. Configuration <em>is</em> code — named Connections wired together by Router and Handler functions, authored in plain Python and committed to git. There's no monolithic "channel" object hiding the wiring; the graph you write is the system that runs. Reliability comes from a transactional inbox/outbox on SQLite, so at-least-once delivery, retries, and replay are built in without a separate broker.</p>
+
+      <h2>Status</h2>
+      <p>Phase 1 — the minimum reliable engine — is in place: the code-first Connection / Router / Handler model and config loader, a durable SQLite-WAL message store and queue, tolerant peek plus opt-in strict validation, MLLP and file connections with correct framing and ACK/NAK, the retry / dead-letter / replay pipeline, the localhost API, and a PySide6 admin console. Authentication, RBAC, a user-attributed audit log, and AES-256-GCM encryption-at-rest are built.</p>
+      <p>On the roadmap: a plugin layer, additional store backends, REST / FHIR destinations, a database poller, sandboxed transformer steps, enrichment / lookup tables, alerting, log redaction, and MLLPS / TLS. See the repository's roadmap for the current state.</p>
+
+      <h2>License</h2>
+      <p>MessageFoundry is licensed under the <b>GNU Affero General Public License v3.0 or later</b> (<code>AGPL-3.0-or-later</code>). Running a modified version as a network service triggers the AGPL's §13 obligation to offer source to your users. A separately-licensed commercial edition may be available from the maintainer.</p>
+
+      <h2>Contributing</h2>
+      <p>Contributions are welcome. A signed Contributor License Agreement is required before a pull request can be merged. The best place to start is a GitHub issue describing what you'd like to change.</p>
+
+      <div class="btn-row">
+        <a class="btn btn-primary" href="https://github.com/wshallwshall/MessageFoundry" target="_blank" rel="noopener">View the repository</a>
+        <a class="btn btn-secondary" href="https://github.com/wshallwshall/MessageFoundry/issues" target="_blank" rel="noopener">Open an issue</a>
+      </div>
+    </div>
+  </section>
+
+  <footer class="site-footer">
+    <div class="container">
+      <div class="footer-grid">
+        <div class="footer-brand">
+          <a class="brand" href="/" aria-label="MessageFoundry home">
+            <img class="brand-mark" src="/assets/img/logo.svg" alt="" width="28" height="28">
+            <span class="brand-name">Message<span class="brand-accent">Foundry</span></span>
+          </a>
+          <p>Open-source, code-first HL7 v2 integration engine for healthcare IT.</p>
+          <div class="badge-row" style="margin-top:16px">
+            <span class="badge">Python 3.11+</span>
+            <span class="badge">AGPL-3.0</span>
+            <span class="badge">Self-hosted</span>
+          </div>
+        </div>
+        <div class="footer-col">
+          <h4>Product</h4>
+          <a href="/features.html">Features</a>
+          <a href="/comparison.html">Comparison</a>
+          <a href="/getting-started.html">Get started</a>
+        </div>
+        <div class="footer-col">
+          <h4>Docs</h4>
+          <a href="https://github.com/wshallwshall/MessageFoundry/blob/main/docs/ARCHITECTURE.md">Architecture</a>
+          <a href="https://github.com/wshallwshall/MessageFoundry/blob/main/docs/CONNECTIONS.md">Connections</a>
+          <a href="https://github.com/wshallwshall/MessageFoundry/blob/main/docs/SECURITY.md">Security</a>
+          <a href="https://github.com/wshallwshall/MessageFoundry/blob/main/docs/PHI.md">PHI / HIPAA</a>
+        </div>
+        <div class="footer-col">
+          <h4>Project</h4>
+          <a href="https://github.com/wshallwshall/MessageFoundry" target="_blank" rel="noopener">GitHub</a>
+          <a href="https://github.com/wshallwshall/MessageFoundry/issues" target="_blank" rel="noopener">Issues</a>
+          <a href="https://github.com/wshallwshall/MessageFoundry/blob/main/LICENSE">License</a>
+          <a href="/about.html">About</a>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        <span>© 2026 MessageFoundry · Licensed under AGPL-3.0-or-later.</span>
+        <span>Not affiliated with NextGen Healthcare or Lyniate / Rhapsody.</span>
+      </div>
+    </div>
+  </footer>
+
+  <script src="/assets/js/nav.js" defer></script>
+</body>
+</html>
