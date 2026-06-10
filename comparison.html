@@ -3,15 +3,15 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>MessageFoundry vs Mirth Connect vs Corepoint</title>
-  <meta name="description" content="How MessageFoundry compares to Mirth Connect and Corepoint: code-first Python vs channel-based scripting vs low-code GUI. A fair, high-level look at configuration model, licensing, and fit.">
+  <title>MessageFoundry vs Mirth, Cloverleaf, Rhapsody, Corepoint &amp; Ensemble</title>
+  <meta name="description" content="A fair, sourced comparison of MessageFoundry against the leading HL7 integration engines — Mirth Connect (NextGen), Infor Cloverleaf, Rhapsody, Corepoint, and InterSystems Ensemble / HealthShare Health Connect. Pick a competitor and see the head-to-head.">
   <link rel="canonical" href="https://messagefoundry.org/comparison.html">
   <link rel="icon" href="/assets/img/favicon.svg" type="image/svg+xml">
   <meta name="theme-color" content="#0b1220">
   <meta property="og:type" content="website">
   <meta property="og:site_name" content="MessageFoundry">
-  <meta property="og:title" content="MessageFoundry vs Mirth Connect vs Corepoint">
-  <meta property="og:description" content="Code-first Python vs channel-based scripting vs low-code GUI — a fair, high-level comparison.">
+  <meta property="og:title" content="MessageFoundry vs the leading HL7 integration engines">
+  <meta property="og:description" content="A fair, sourced comparison against Mirth Connect, Cloverleaf, Rhapsody, Corepoint, and Ensemble / HealthShare Health Connect. Choose a competitor for the head-to-head.">
   <meta property="og:url" content="https://messagefoundry.org/comparison.html">
   <meta property="og:image" content="https://messagefoundry.org/assets/img/og.svg">
   <meta name="twitter:card" content="summary_large_image">
@@ -37,82 +37,278 @@
     </div>
   </header>
 
+  <!-- intro / the wedge -->
   <section class="section section--dark section--tight">
     <div class="container">
       <span class="eyebrow">Comparison</span>
-      <h1 style="max-width:22ch">Where MessageFoundry fits</h1>
-      <p class="lead">MessageFoundry isn't trying to replace every enterprise integration suite. It's a focused, code-first option for teams that want their HL7 interfaces to look like the rest of their software — plain Python, in version control, reviewed in pull requests. Here's an honest, high-level look at how it sits next to two well-known engines.</p>
+      <h1 style="max-width:24ch">The open, code-first option — exactly as the incumbents close up</h1>
+      <p class="lead">MessageFoundry is the open-source, code-first, <b>Python</b> HL7 integration engine — built for teams that want control, modern tooling, and no vendor lock-in. The commercial engines are consolidating under private equity, closing their source, and steering buyers toward subscription contracts. This is a deliberately fair look at where MessageFoundry sits next to five established products — and where each is genuinely stronger than we are today.</p>
+      <div class="callout" style="margin-top:22px;background:rgba(245,158,11,.07);border-color:rgba(245,158,11,.28);color:var(--muted-dk)">
+        <p><strong style="color:var(--accent)">How to read this.</strong> Every competitor here is a capable, established product. Competitor facts are <a href="#sources" style="color:var(--accent)">sourced</a>; pricing is described as the vendors disclose it (most don't publish prices). Our own capabilities are split into <b>Available now</b> and <b>planned</b> — we don't market roadmap as shipped. Current as of June 2026; verify specifics before a purchase decision.</p>
+      </div>
     </div>
   </section>
 
+  <!-- why now -->
   <section class="section">
     <div class="container">
+      <div class="center" style="margin-bottom:40px">
+        <span class="eyebrow">Why now</span>
+        <h2>The market shifted — and the buying calculus with it</h2>
+      </div>
+      <div class="grid grid-3">
+        <div class="card">
+          <h3>Mirth left open source</h3>
+          <p>For 15+ years Mirth Connect was the free, open-source default. <b>v4.5.2 (Sept 2024) was the last open-source (MPL&nbsp;2.0) release; v4.6 (March 2025) moved to a closed-source, paid model</b> — with no further security patches to the open line. The community answered with two forks, the Open Integration Engine and BridgeLink.</p>
+        </div>
+        <div class="card">
+          <h3>Premium engines consolidated</h3>
+          <p>Rhapsody and Corepoint are now one company. Hg Capital acquired Rhapsody (2018), then absorbed Corepoint, NextGate, and CareCom, rebranding to <b>Rhapsody Health Solutions</b> in 2023. Genuinely Best-in-KLAS — but sold through custom, undisclosed enterprise pricing and multi-year contracts, with no free tier.</p>
+        </div>
+        <div class="card">
+          <h3>The rest carry heavy lock-in</h3>
+          <p>Cloverleaf (Infor / Koch) is scripted in <b>Tcl</b> — a small, costly talent pool. InterSystems <b>Ensemble is legacy</b>; its engine role is now HealthShare Health Connect inside IRIS for Health, and Ensemble maintenance ends around <b>Q1 2027</b> — tying you to a proprietary language <em>and</em> database.</p>
+        </div>
+      </div>
+      <div class="callout" style="margin-top:26px">
+        <p><strong>A balanced read.</strong> Consolidation and the Mirth relicensing have reduced the open, low-cost options — but the market isn't closed. The Mirth forks are active and several engines still compete. Our argument isn't "the incumbents are bad"; it's that <b>a modern, open, Python alternative is what the moment calls for</b>, and most buyers no longer have one.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- matrix -->
+  <section class="section section--alt">
+    <div class="container">
+      <div class="center" style="margin-bottom:34px">
+        <span class="eyebrow">At a glance</span>
+        <h2>Differentiator matrix</h2>
+      </div>
       <div class="table-wrap">
-        <table class="cmp">
+        <table class="cmp cmp-wide">
           <thead>
             <tr>
               <th scope="col">&nbsp;</th>
               <th scope="col" class="us">MessageFoundry<small>code-first</small></th>
-              <th scope="col">Mirth Connect</th>
-              <th scope="col">Corepoint</th>
+              <th scope="col">Mirth <small style="display:block;font-weight:600;color:#aab6c8">NextGen</small></th>
+              <th scope="col">Cloverleaf <small style="display:block;font-weight:600;color:#aab6c8">Infor</small></th>
+              <th scope="col">Rhapsody <small style="display:block;font-weight:600;color:#aab6c8">Hg</small></th>
+              <th scope="col">Corepoint <small style="display:block;font-weight:600;color:#aab6c8">Rhapsody</small></th>
+              <th scope="col">Ensemble<small style="display:block;font-weight:600;color:#aab6c8">InterSystems *</small></th>
             </tr>
           </thead>
           <tbody>
             <tr>
-              <th scope="row">Configuration model</th>
-              <td class="us">Code-first Python — a graph of named Connections, Routers, and Handlers</td>
-              <td>Channel-based GUI with scripted transformer steps</td>
-              <td>Low-code / no-code visual configuration</td>
+              <th scope="row">License</th>
+              <td class="us">AGPL — open source</td>
+              <td>Commercial since v4.6 (was MPL ≤4.5.2)</td>
+              <td>Proprietary</td><td>Proprietary</td><td>Proprietary</td><td>Proprietary</td>
             </tr>
             <tr>
-              <th scope="row">Scripting language</th>
-              <td class="us">Python 3.11+</td>
-              <td>JavaScript (Rhino)</td>
-              <td>Built-in visual actions (vendor-defined)</td>
+              <th scope="row">Cost posture</th>
+              <td class="us">Free core + optional services</td>
+              <td>Paid tiers (undisclosed)</td>
+              <td>Enterprise / custom, high TCO</td>
+              <td>Premium / custom, multi-yr</td>
+              <td>Premium / custom</td>
+              <td>Core-based, expensive</td>
             </tr>
             <tr>
-              <th scope="row">Config in version control</th>
-              <td class="us">Native — configuration <em>is</em> plain <code>.py</code> modules</td>
-              <td>Via channel export (XML / JSON)</td>
-              <td>Through vendor tooling / export</td>
+              <th scope="row">Source available</th>
+              <td class="us">Yes — fork it</td>
+              <td>Closed since 4.6</td>
+              <td>No</td><td>No</td><td>No</td><td>No</td>
             </tr>
             <tr>
-              <th scope="row">Source &amp; licensing</th>
-              <td class="us">Open source — AGPL-3.0-or-later</td>
-              <td>Open-source core; commercial editions (NextGen Healthcare)</td>
-              <td>Commercial (Rhapsody)</td>
+              <th scope="row">Language / model</th>
+              <td class="us">Python, code-first</td>
+              <td>Rhino JS / Groovy</td>
+              <td>Tcl</td>
+              <td>JS + visual</td>
+              <td>No-code / low-code</td>
+              <td>ObjectScript</td>
             </tr>
             <tr>
-              <th scope="row">Cost to start</th>
-              <td class="us">Free, self-hosted</td>
-              <td>Free community edition; paid support / add-ons</td>
-              <td>Commercial license</td>
+              <th scope="row">Talent pool</th>
+              <td class="us">Python (vast)</td>
+              <td>JS (large)</td>
+              <td>Tcl (scarce)</td>
+              <td>JS + product-specific</td>
+              <td>Product-specific</td>
+              <td>ObjectScript (scarce)</td>
             </tr>
             <tr>
-              <th scope="row">Reliability / queuing</th>
-              <td class="us">Transactional inbox/outbox on SQLite (WAL) — at-least-once, retries, replay</td>
-              <td>Channel message queues (database-backed)</td>
-              <td>Built-in guaranteed delivery</td>
+              <th scope="row">Config as code / git</th>
+              <td class="us">Plain Python in your repo</td>
+              <td>XML-in-DB (exportable)</td>
+              <td>Proprietary</td>
+              <td>Proprietary</td>
+              <td>Proprietary GUI</td>
+              <td>Classes in IRIS</td>
             </tr>
             <tr>
-              <th scope="row">Runtime footprint</th>
-              <td class="us">Lightweight Python service</td>
-              <td>JVM-based server</td>
-              <td>Enterprise server / appliance</td>
+              <th scope="row">Lock-in</th>
+              <td class="us">None (open, standard DBs)</td>
+              <td>Moderate</td>
+              <td>Moderate–high</td>
+              <td>Moderate–high (contract)</td>
+              <td>Moderate–high</td>
+              <td>High (language + Caché)</td>
             </tr>
             <tr>
-              <th scope="row">Best fit</th>
-              <td class="us">Focused point-to-point HL7 v2 interfaces authored and reviewed as code</td>
-              <td>Broad integration needs with a large connector ecosystem</td>
-              <td>Large enterprise / HIE deployments wanting full vendor support</td>
+              <th scope="row">Modern tooling</th>
+              <td class="us">VS Code, git, CI gate</td>
+              <td>Proprietary console</td>
+              <td>Proprietary IDE</td>
+              <td>Proprietary</td>
+              <td>Proprietary GUI</td>
+              <td>Studio / VS Code ext</td>
+            </tr>
+            <tr>
+              <th scope="row">Native AI assist</th>
+              <td class="us">Yes (PHI-safe, governed)</td>
+              <td>No</td><td>No</td><td>No</td>
+              <td>“Axon” (new)</td>
+              <td>No</td>
+            </tr>
+            <tr>
+              <th scope="row">Reliability</th>
+              <td class="us">Inbox/outbox WAL, no broker</td>
+              <td>Mature (proven scale)</td>
+              <td>Mature (proven scale)</td>
+              <td>Mature (KLAS-top)</td>
+              <td>Mature (KLAS-top)</td>
+              <td>Mature (high perf)</td>
+            </tr>
+            <tr>
+              <th scope="row">Test tooling</th>
+              <td class="us">Full harness included</td>
+              <td>Separate</td><td>Separate</td><td>Separate</td><td>Separate</td><td>Separate</td>
+            </tr>
+            <tr>
+              <th scope="row">Connectors <small style="color:var(--muted);font-weight:600">our gap</small></th>
+              <td class="us">MLLP + File (more planned)</td>
+              <td>800+</td>
+              <td>Decades of adapters</td>
+              <td>Broad</td><td>Broad</td><td>Broad</td>
+            </tr>
+            <tr>
+              <th scope="row">Maturity <small style="color:var(--muted);font-weight:600">our gap</small></th>
+              <td class="us">New</td>
+              <td>15+ yrs</td>
+              <td>30+ yrs</td>
+              <td>Mature</td><td>Mature</td><td>30+ yrs</td>
+            </tr>
+            <tr>
+              <th scope="row">Support &amp; consulting</th>
+              <td class="us">24×7 support + consulting</td>
+              <td>Large community</td>
+              <td>Enterprise</td>
+              <td>KLAS-leading</td>
+              <td>KLAS-leading</td>
+              <td>Enterprise</td>
             </tr>
           </tbody>
         </table>
       </div>
-      <p style="color:var(--muted);font-size:.88rem;margin-top:16px;max-width:80ch">This table reflects general, publicly described positioning and is intended as a fair high-level orientation, not a feature-by-feature audit. Capabilities, licensing, and editions change over time and vary by version — verify specifics against each vendor's current documentation.</p>
+      <p style="color:var(--muted);font-size:.86rem;margin-top:16px;max-width:90ch">* <b>Ensemble column = InterSystems' integration engine</b>: Ensemble (legacy, maintenance ending ~Q1 2027) → HealthShare Health Connect (current). It rates the engine slice, <b>not</b> the full IRIS for Health platform. “Native AI assist” means AI help <em>authoring/porting integration code</em> (Corepoint's Axon, MessageFoundry's assistant) — not IRIS's in-database ML, a separate platform capability. This is a fair high-level orientation, not a feature-by-feature audit; capabilities, licensing, and editions change — verify against each vendor's current documentation.</p>
     </div>
   </section>
 
+  <!-- head-to-head selector -->
+  <section class="section">
+    <div class="container">
+      <div class="center" style="margin-bottom:34px">
+        <span class="eyebrow">Head-to-head</span>
+        <h2>Compare MessageFoundry against…</h2>
+        <p class="lead center">Pick an engine. Each comparison follows the same honest shape: their genuine strength, the shift, your advantage, and where they still win today.</p>
+      </div>
+
+      <div class="vs">
+        <input type="radio" name="vs" id="r-mirth" checked>
+        <input type="radio" name="vs" id="r-clover">
+        <input type="radio" name="vs" id="r-rhap">
+        <input type="radio" name="vs" id="r-core">
+        <input type="radio" name="vs" id="r-ens">
+
+        <div class="vs-tabs" role="tablist" aria-label="Choose a competitor to compare against MessageFoundry">
+          <label class="vs-tab" for="r-mirth">Mirth Connect <small>NextGen</small></label>
+          <label class="vs-tab" for="r-clover">Cloverleaf <small>Infor</small></label>
+          <label class="vs-tab" for="r-rhap">Rhapsody <small>Hg Capital</small></label>
+          <label class="vs-tab" for="r-core">Corepoint <small>Rhapsody</small></label>
+          <label class="vs-tab" for="r-ens">Ensemble / Health&nbsp;Connect <small>InterSystems</small></label>
+        </div>
+
+        <div class="vs-panels">
+          <article class="vs-panel" id="panel-mirth" aria-label="MessageFoundry versus Mirth Connect">
+            <h3>MessageFoundry <b>vs</b> Mirth Connect (NextGen)</h3>
+            <div class="vs-row"><span class="vs-lbl vs-lbl--str">Their strength</span><p>The most widely adopted engine of the last decade — 800+ connectors, a huge community, deep documentation, and a battle-tested channel architecture on a cross-platform JVM.</p></div>
+            <div class="vs-row"><span class="vs-lbl vs-lbl--shift">The shift</span><p>Open source ended at v4.5.2; v4.6+ is closed and paid, with no security patches to the free line.</p></div>
+            <div class="vs-row vs-row--wedge"><span class="vs-lbl vs-lbl--wedge">Your advantage</span><p>Open source <em>by license</em> (AGPL) — the property Mirth users came for — on a modern foundation: <b>Python</b> instead of aging Rhino JavaScript, integration logic as plain code in your git repo instead of XML in a database, and a real VS Code experience. Because migration is AI-assisted, porting your channels to Python is typically far less work than re-platforming onto another engine.</p></div>
+            <div class="vs-row vs-row--win"><span class="vs-lbl vs-lbl--win">Where Mirth still wins today</span><p>Breadth of pre-built connectors, community size, and years of production hardening. MessageFoundry is newer and ships fewer transports today.</p></div>
+          </article>
+
+          <article class="vs-panel" id="panel-clover" aria-label="MessageFoundry versus Infor Cloverleaf">
+            <h3>MessageFoundry <b>vs</b> Infor Cloverleaf</h3>
+            <div class="vs-row"><span class="vs-lbl vs-lbl--str">Their strength</span><p>30+ years of enterprise maturity, an extensive library of healthcare adapters, and a reputation for reliability at scale in large integrated delivery networks.</p></div>
+            <div class="vs-row"><span class="vs-lbl vs-lbl--shift">The shift</span><p>Owned by Infor / Koch Industries; scripted in <b>Tcl</b>, where hiring is hard and consultants are expensive; enterprise-grade total cost of ownership.</p></div>
+            <div class="vs-row vs-row--wedge"><span class="vs-lbl vs-lbl--wedge">Your advantage</span><p><b>Python instead of Tcl</b> — you can staff a Python team almost anywhere — open source instead of enterprise licensing, modern DevOps tooling instead of a dated console, and no lock-in.</p></div>
+            <div class="vs-row vs-row--win"><span class="vs-lbl vs-lbl--win">Where Cloverleaf still wins today</span><p>Very large, legacy-heavy IDNs that need its proven adapters and decades of operational track record right now.</p></div>
+          </article>
+
+          <article class="vs-panel" id="panel-rhap" aria-label="MessageFoundry versus Rhapsody">
+            <h3>MessageFoundry <b>vs</b> Rhapsody</h3>
+            <div class="vs-row"><span class="vs-lbl vs-lbl--str">Their strength</span><p>Genuinely <b>Best-in-KLAS</b> for integration engines over many years — top-rated support and reliability, strong governance, broad standards coverage (HL7, FHIR, X12, and more), and a mature cloud offering.</p></div>
+            <div class="vs-row"><span class="vs-lbl vs-lbl--shift">The shift</span><p>A private-equity-owned (Hg Capital) suite built through consolidation, sold via custom, undisclosed pricing and multi-year contracts, with no open-source or free tier.</p></div>
+            <div class="vs-row vs-row--wedge"><span class="vs-lbl vs-lbl--wedge">Your advantage</span><p><b>Open source, no contract lock-in, and Python code-first</b> against a premium proprietary platform — your integration logic lives in your repository, not inside a vendor's runtime or commercial agreement.</p></div>
+            <div class="vs-row vs-row--win"><span class="vs-lbl vs-lbl--win">Where Rhapsody still wins today</span><p>Support quality, enterprise governance, FHIR/EMPI breadth, and proven scale. For a large health system that wants a vendor-managed, top-rated platform, Rhapsody is a strong choice.</p></div>
+          </article>
+
+          <article class="vs-panel" id="panel-core" aria-label="MessageFoundry versus Corepoint">
+            <h3>MessageFoundry <b>vs</b> Corepoint</h3>
+            <div class="vs-row"><span class="vs-lbl vs-lbl--str">Their strength</span><p>Consistently top-rated in KLAS for <b>ease of use and support</b> — a guided, no-code/low-code experience that lets non-programmer integration teams stand up interfaces quickly.</p></div>
+            <div class="vs-row"><span class="vs-lbl vs-lbl--shift">The shift</span><p>Now part of the Rhapsody/Hg portfolio; proprietary and Windows-based on-premises; premium pricing; a new AI assistant (“Axon”) whose track record is still early.</p></div>
+            <div class="vs-row vs-row--wedge"><span class="vs-lbl vs-lbl--wedge">Your advantage</span><p><b>Code-first power with no no-code ceiling</b>, made approachable by setup wizards and a PHI-safe AI assistant — so you get Corepoint-style guided authoring <em>and</em> the ability to express arbitrarily complex logic, on an open platform, with no lock-in.</p></div>
+            <div class="vs-row vs-row--win"><span class="vs-lbl vs-lbl--win">Where Corepoint still wins today</span><p>For a team that wants <em>pure</em> no-code and has no developers, Corepoint is easier out of the box. MessageFoundry is code-first; wizards and AI lower the barrier, but it is still code.</p></div>
+          </article>
+
+          <article class="vs-panel" id="panel-ens" aria-label="MessageFoundry versus InterSystems Ensemble and HealthShare Health Connect">
+            <h3>MessageFoundry <b>vs</b> InterSystems Ensemble / HealthShare Health Connect</h3>
+            <div class="vs-row"><span class="vs-lbl vs-lbl--str">Their strength</span><p>Very high performance and scale, and — at the platform level (IRIS for Health) — a unified stack combining a database, interoperability, analytics, in-database ML, and HealthShare's HIE/EMPI capabilities.</p></div>
+            <div class="vs-row"><span class="vs-lbl vs-lbl--shift">The shift</span><p>Ensemble is <b>legacy</b> (maintenance ending ~Q1 2027); its successor as an engine is HealthShare Health Connect, the integration slice of the IRIS for Health platform. The stack ties you to <b>ObjectScript</b> <em>and</em> a proprietary Caché/IRIS database.</p></div>
+            <div class="vs-row vs-row--wedge"><span class="vs-lbl vs-lbl--wedge">Your advantage</span><p>If you are an Ensemble customer, you face a migration regardless — so migrate the <em>integration function</em> to an open, Python, no-lock-in engine on standard databases, rather than deeper into a proprietary platform. <b>You shouldn't have to adopt a proprietary data platform and a niche language just to move HL7 messages.</b></p></div>
+            <div class="vs-row vs-row--win"><span class="vs-lbl vs-lbl--win">Where InterSystems still wins today</span><p>If a buyer genuinely wants one unified platform — DBMS + analytics + in-database ML + HIE/EMPI at massive scale — IRIS for Health delivers that. We are a focused integration engine and do <b>not</b> claim to replace its database, analytics, or HIE products.</p></div>
+          </article>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- honest gaps -->
+  <section class="section section--dark">
+    <div class="container">
+      <div class="center" style="margin-bottom:34px">
+        <span class="eyebrow">Honest about the gaps</span>
+        <h2>Where the incumbents are genuinely stronger</h2>
+        <p class="lead center">A fair review names them.</p>
+      </div>
+      <div class="grid grid-2" style="align-items:start">
+        <ul class="feature-list">
+          <li><b>Connector / adapter breadth</b> — Mirth's 800+ connectors and the others' decades of healthcare adapters far exceed our current MLLP + File transports.</li>
+          <li><b>Proven scale and maturity</b> — the incumbents have 15–30 years and thousands of production sites. MessageFoundry is new.</li>
+          <li><b>Third-party ecosystem &amp; certifications</b> — Rhapsody and Corepoint are KLAS-leading on support; large independent consulting ecosystems and formal certifications exist for all five.</li>
+        </ul>
+        <ul class="feature-list">
+          <li><b>No-code for non-developers</b> — Corepoint's no-code experience is genuinely easier for teams without programmers.</li>
+          <li><b>Platform breadth</b> — IRIS for Health's full data platform (DBMS + analytics + in-database ML + FHIR repository) and HealthShare's HIE/EMPI, plus Rhapsody's EMPI/semantic capabilities, go well beyond what an interface engine does. We don't try to replace them.</li>
+        </ul>
+      </div>
+      <div class="callout" style="margin-top:28px;background:rgba(245,158,11,.07);border-color:rgba(245,158,11,.28);color:var(--muted-dk)">
+        <p><strong style="color:var(--accent)">The AGPL nuance, stated plainly.</strong> AGPL-3.0 is a strong copyleft license — it guarantees the freedom and no-lock-in we lead with, but some enterprises maintain AGPL review policies. For organizations that need different terms, a commercial / dual license is available. We'd rather you know that up front than discover it in procurement.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- which to choose -->
   <section class="section section--alt">
     <div class="container">
       <div class="center" style="margin-bottom:38px">
@@ -125,35 +321,62 @@
           <ul class="feature-list" style="margin-top:12px">
             <li>Your team thinks in code and git, not canvases.</li>
             <li>You want a handful of reliable HL7 interfaces without a heavyweight platform.</li>
-            <li>You need configuration to be diffable and reviewable in PRs.</li>
-            <li>Self-hosting and open source matter to you.</li>
+            <li>You need configuration diffable and reviewable in PRs — and no vendor lock-in.</li>
+            <li>You're facing a Mirth or Ensemble migration and want an open, modern target.</li>
           </ul>
         </div>
         <div class="card">
-          <h3>Consider Mirth Connect when…</h3>
+          <h3>Consider the premium suites when…</h3>
           <ul class="feature-list" style="margin-top:12px">
-            <li>You want a large library of prebuilt connectors and a mature GUI.</li>
-            <li>Your team is comfortable with channel-based, JavaScript-scripted transforms.</li>
-            <li>You value a long-established open-source community.</li>
+            <li>You need a large library of prebuilt connectors today (Mirth, Cloverleaf).</li>
+            <li>You want a vendor-managed, KLAS-leading platform with deep governance (Rhapsody).</li>
+            <li>Non-developers will build interfaces in a no-code UI (Corepoint).</li>
           </ul>
         </div>
         <div class="card">
-          <h3>Consider Corepoint when…</h3>
+          <h3>Consider a unified platform when…</h3>
           <ul class="feature-list" style="margin-top:12px">
-            <li>You need a fully commercial, vendor-supported platform.</li>
-            <li>Non-developers will build and maintain interfaces in a low-code UI.</li>
-            <li>You're running large-scale enterprise or HIE integration.</li>
+            <li>You want DBMS + analytics + in-database ML + HIE/EMPI in one stack (IRIS for Health).</li>
+            <li>You're standardizing a whole health system on a single vendor's data platform.</li>
+            <li>Massive-scale, mission-critical throughput is the primary requirement.</li>
           </ul>
         </div>
       </div>
     </div>
   </section>
 
-  <section class="section">
+  <!-- sources -->
+  <section class="section section--tight">
+    <div class="container" id="sources" style="max-width:920px">
+      <h2 style="font-size:1.4rem">Sources &amp; notes</h2>
+      <details class="sources">
+        <summary>Show sources (14)</summary>
+        <ol>
+          <li>NextGen Healthcare — <em>A new era for Mirth Connect by NextGen Healthcare</em> — <a href="https://www.nextgen.com/blog/industry-news/a-new-era-for-mirth-connect-by-nextgen-healthcare" target="_blank" rel="noopener">nextgen.com</a></li>
+          <li>Meditecs — <em>Mirth Connect license change</em> — <a href="https://www.meditecs.com/kb/mirth-connect-license-change/" target="_blank" rel="noopener">meditecs.com</a></li>
+          <li>Saga IT — <em>Mirth Connect alternatives (2026): OIE, BridgeLink &amp; more</em> — <a href="https://saga-it.com/blog/mirth-connect-alternatives" target="_blank" rel="noopener">saga-it.com</a>; Nirmitee — <em>Mirth Connect alternatives 2026 after the licensing change</em> — <a href="https://nirmitee.io/blog/mirth-connect-alternatives-2026-after-licensing-change/" target="_blank" rel="noopener">nirmitee.io</a></li>
+          <li>PRNewswire — <em>Rhapsody Named Top Integration Engine in 2025 Best in KLAS Report</em> — <a href="https://www.prnewswire.com/news-releases/rhapsody-named-top-integration-engine-in-2025-best-in-klas-report-302368313.html" target="_blank" rel="noopener">prnewswire.com</a></li>
+          <li>KLAS Research — Rhapsody / Corepoint listing — <a href="https://klasresearch.com/review/rhapsody-corepoint/1296" target="_blank" rel="noopener">klasresearch.com</a></li>
+          <li>Bio-IT World — <em>Global interoperability leader Lyniate rebrands as Rhapsody</em> (2023) — <a href="https://www.bio-itworld.com/pressreleases/2023/04/04/global-interoperability-leader-lyniate-rebrands-as-rhapsody" target="_blank" rel="noopener">bio-itworld.com</a></li>
+          <li>PRNewswire — <em>Orion Health finalizes investment deal with Hg</em> (2018) — <a href="https://www.prnewswire.com/news-releases/orion-health-finalizes-investment-deal-with-hg-300740993.html" target="_blank" rel="noopener">prnewswire.com</a></li>
+          <li>BusinessWire — <em>Lyniate and NextGate announce merger</em> (2022) — <a href="https://www.businesswire.com/news/home/20220315005333/en/Lyniate-and-NextGate-Announce-Merger-Agreement-Advancing-Healthcare-Interoperability-Leadership" target="_blank" rel="noopener">businesswire.com</a></li>
+          <li>Rhapsody — <em>Rhapsody and Corepoint merge to advance interoperability in healthcare</em> — <a href="https://rhapsody.health/blog/rhapsody-and-corepoint-merge-to-advance-interoperability-in-healthcare/" target="_blank" rel="noopener">rhapsody.health</a></li>
+          <li>Rhapsody — Corepoint Integration Engine — <a href="https://rhapsody.health/solutions/corepoint/" target="_blank" rel="noopener">rhapsody.health</a></li>
+          <li>Infor — <em>Koch Industries completes Infor acquisition</em> (2020) — <a href="https://www.infor.com/news/koch-industries-completes-infor-acquisition" target="_blank" rel="noopener">infor.com</a></li>
+          <li>Infor — Cloverleaf product page — <a href="https://www.infor.com/products/cloverleaf" target="_blank" rel="noopener">infor.com</a></li>
+          <li>InterSystems — IRIS for Health product page — <a href="https://www.intersystems.com/products/intersystems-iris-for-health/" target="_blank" rel="noopener">intersystems.com</a></li>
+          <li>InterSystems — minimum supported version / maintenance policy — <a href="https://www.intersystems.com/support/minimum-supported-version/" target="_blank" rel="noopener">intersystems.com</a></li>
+        </ol>
+      </details>
+      <p style="color:var(--muted);font-size:.84rem;margin-top:16px">Competitor pricing is described as publicly disclosed by each vendor; most do not publish prices, and third-party figures are estimates. Verify current terms directly with vendors. Trademarks belong to their respective owners. This is MessageFoundry's positioning, prepared in good faith from the sources above.</p>
+    </div>
+  </section>
+
+  <section class="section section--tight">
     <div class="container">
       <div class="cta-band">
         <h2>Prefer your interfaces as code?</h2>
-        <p class="lead center" style="color:var(--muted-dk)">That's exactly what MessageFoundry is for.</p>
+        <p class="lead center" style="color:var(--muted-dk)">That's exactly what MessageFoundry is for — open, Python, no lock-in.</p>
         <div class="btn-row center">
           <a class="btn btn-primary" href="/getting-started.html">Get started</a>
           <a class="btn btn-ghost" href="/features.html">Browse features →</a>
@@ -200,7 +423,7 @@
       </div>
       <div class="footer-bottom">
         <span>© 2026 MessageFoundry · Licensed under AGPL-3.0-or-later.</span>
-        <span>Mirth Connect and Corepoint are trademarks of their respective owners; this site is independent and unaffiliated.</span>
+        <span>Mirth Connect, Cloverleaf, Rhapsody, Corepoint, and Ensemble are trademarks of their respective owners; MessageFoundry is independent and unaffiliated.</span>
       </div>
     </div>
   </footer>

@@ -4,14 +4,14 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Features — MessageFoundry</title>
-  <meta name="description" content="What MessageFoundry does: durable store-as-queue, two-tier HL7 parsing, MLLP and file connections, code-first routing, RBAC and encryption-at-rest, an admin console, and a VS Code extension.">
+  <meta name="description" content="What MessageFoundry ships today: open-source and code-first in Python, durable store-as-queue, two-tier HL7 parsing, RBAC and AES-256-GCM encryption-at-rest, a hash-chained audit log, a VS Code extension with setup wizards and a PHI-safe AI assistant, AI-assisted migration, a full test harness, and a pluggable store across SQLite, SQL Server, PostgreSQL, MySQL, and Oracle.">
   <link rel="canonical" href="https://messagefoundry.org/features.html">
   <link rel="icon" href="/assets/img/favicon.svg" type="image/svg+xml">
   <meta name="theme-color" content="#0b1220">
   <meta property="og:type" content="website">
   <meta property="og:site_name" content="MessageFoundry">
   <meta property="og:title" content="Features — MessageFoundry">
-  <meta property="og:description" content="Durable store-as-queue, two-tier HL7 parsing, code-first routing, RBAC and encryption-at-rest, admin console, and VS Code tooling.">
+  <meta property="og:description" content="Open-source, code-first HL7 in Python: durable store-as-queue, two-tier parsing, RBAC + encryption-at-rest, a hash-chained audit log, VS Code tooling with a PHI-safe AI assistant, AI-assisted migration, and a pluggable store across five databases.">
   <meta property="og:url" content="https://messagefoundry.org/features.html">
   <meta property="og:image" content="https://messagefoundry.org/assets/img/og.svg">
   <meta name="twitter:card" content="summary_large_image">
@@ -41,31 +41,48 @@
   <section class="section section--dark section--tight">
     <div class="container">
       <span class="eyebrow">Features</span>
-      <h1 style="max-width:18ch">Everything you need for reliable point-to-point HL7</h1>
-      <p class="lead">A small, sharp feature set focused on doing the common interfaces well — durable delivery, tolerant parsing, code-first routing, and PHI-aware operations. Items marked <span class="badge" style="color:#f6c177;border-color:rgba(245,158,11,.4)">planned</span> are on the roadmap.</p>
+      <h1 style="max-width:20ch">Open, code-first HL7 — with the tooling to match</h1>
+      <p class="lead">A small, sharp engine focused on doing the common interfaces well — durable delivery, tolerant parsing, code-first routing, and PHI-aware operations — now with VS Code authoring, a PHI-safe AI assistant, AI-assisted migration, and a store that runs on the database you already have. Everything below is <b>Available now</b> unless marked <span class="badge" style="color:#f6c177;border-color:rgba(245,158,11,.4)">planned</span>.</p>
+    </div>
+  </section>
+
+  <!-- open source / no lock-in -->
+  <section class="section">
+    <div class="container grid grid-2" style="align-items:start">
+      <div>
+        <span class="eyebrow">Open source, no lock-in</span>
+        <h2>Your integration logic is yours</h2>
+        <p class="lead">AGPL-licensed and code-first: the routing graph is plain Python in <em>your</em> git repository, running on <em>standard</em> databases — nothing locked inside a vendor's runtime, language, or contract.</p>
+      </div>
+      <ul class="feature-list">
+        <li><b>AGPL-3.0-or-later</b> — read it, run it, fork it. A contributor agreement also enables a commercial / dual license.</li>
+        <li><b>Configuration <em>is</em> code</b> — Connections, Routers, and Handlers are diffable, reviewable Python modules; the database holds runtime state and messages only, never configuration.</li>
+        <li><b>Standard databases</b> — no proprietary data platform required, and no proprietary scripting language to staff for.</li>
+        <li><b>No runtime or contract lock-in</b> — self-hosted, on your infrastructure, on your terms.</li>
+      </ul>
     </div>
   </section>
 
   <!-- reliability -->
-  <section class="section">
+  <section class="section section--alt">
     <div class="container grid grid-2" style="align-items:start">
       <div>
         <span class="eyebrow">Reliability</span>
         <h2>Durable by construction</h2>
-        <p class="lead">The message store <em>is</em> the queue. A transactional inbox/outbox on SQLite (WAL) is the reliability backbone — no separate broker to run, patch, or monitor.</p>
+        <p class="lead">The message store <em>is</em> the queue. A transactional inbox/outbox is the reliability backbone — no separate broker to run, patch, or monitor.</p>
       </div>
       <ul class="feature-list">
         <li><b>At-least-once delivery</b> — the inbound is ACKed only after the message and its outbox rows are committed.</li>
         <li><b>Per-outbound workers</b> — each destination drains independently; one slow or failing peer never blocks the others.</li>
-        <li><b>Retries with backoff</b> and automatic <b>dead-lettering</b> for messages that can't be delivered.</li>
+        <li><b>Retries with backoff</b> and automatic <b>dead-lettering</b>, plus a dead-letter <b>bulk-replay</b> view for recovery.</li>
         <li><b>Replay</b> — re-drive a stored message through delivery from the console or API.</li>
-        <li><b>Asyncio core</b> — one listener per inbound, one worker per outbound, supervised so a crash in one is isolated.</li>
+        <li><b>Nothing silently dropped</b> — every received message is persisted with a disposition <em>before</em> it is acknowledged.</li>
       </ul>
     </div>
   </section>
 
   <!-- parsing -->
-  <section class="section section--alt">
+  <section class="section">
     <div class="container grid grid-2" style="align-items:start">
       <div>
         <span class="eyebrow">Parsing &amp; validation</span>
@@ -83,7 +100,7 @@
   </section>
 
   <!-- connections -->
-  <section class="section">
+  <section class="section section--alt">
     <div class="container">
       <div class="center" style="margin-bottom:38px">
         <span class="eyebrow">Connections</span>
@@ -137,20 +154,20 @@
         <p class="lead">This engine carries PHI, so authentication, authorization, audit, and encryption-at-rest are built in — not bolted on. The API binds <code>127.0.0.1</code> by default and requires authentication.</p>
       </div>
       <ul class="feature-list">
-        <li><b>Authentication</b> — local users and Active Directory (LDAP / Kerberos), with opaque sessions.</li>
-        <li><b>RBAC</b> — fixed built-in roles with deny-by-default, per-route permissions, including per-channel scoping.</li>
-        <li><b>Audit log</b> — every PHI access (raw view, summary display, replay) is recorded with the acting user.</li>
+        <li><b>Authentication</b> — local users, Active Directory (LDAP), and Kerberos / Windows SSO, with opaque sessions.</li>
+        <li><b>RBAC</b> — fixed built-in roles, deny-by-default, per-route and per-channel scoping.</li>
+        <li><b>Tamper-evident audit log</b> — a hash-chained, user-attributed record of every PHI access (raw view, summary, replay), with a verification command.</li>
         <li><b>Encryption-at-rest</b> — message bodies are encrypted with AES-256-GCM in the store.</li>
-        <li><b>Roadmap</b> <span class="badge" style="color:#f6c177;border-color:rgba(245,158,11,.4)">planned</span> — log redaction and MLLPS / TLS for remote exposure.</li>
+        <li><b>Roadmap</b> <span class="badge" style="color:#f6c177;border-color:rgba(245,158,11,.4)">planned</span> — a de-identification framework, centralized log redaction, retention/purge enforcement, and MLLP-over-TLS with outbound allow-listing.</li>
       </ul>
     </div>
   </section>
 
-  <!-- operations + tooling -->
+  <!-- operate -->
   <section class="section">
     <div class="container">
       <div class="center" style="margin-bottom:38px">
-        <span class="eyebrow">Operate &amp; build</span>
+        <span class="eyebrow">Operate</span>
         <h2>A console and an editor, both talking to one API</h2>
       </div>
       <div class="grid grid-3">
@@ -162,7 +179,7 @@
         <div class="card">
           <span class="ico"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M3 5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5zm6.5 3L6 11.5 9.5 15 11 13.5 8.9 11.5 11 9.5 9.5 8zm5 0L13 9.5l2.1 2-2.1 2L14.5 15 18 11.5 14.5 8z"/></svg></span>
           <h3>VS Code extension</h3>
-          <p>Author and test interfaces in your editor: a New Route Wizard, validate-on-save, a Test Bench that dry-runs <code>.hl7</code> files with before/after diffs, Stage&nbsp;→&nbsp;Promote to a running engine, and an HL7-aware chat participant.</p>
+          <p>Author and operate interfaces in your editor: completion, live HL7-aware validate-on-save, a graph view of your integration, source-control integration, and Stage&nbsp;→&nbsp;Promote to a running engine.</p>
         </div>
         <div class="card">
           <span class="ico"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M8 3v2H5v14h3v2H3V3h5zm8 0h5v18h-5v-2h3V5h-3V3zM7 13.5 9.5 11 7 8.5 8.4 7l4 4-4 4L7 13.5z"/></svg></span>
@@ -170,23 +187,111 @@
           <p><code>messagefoundry serve</code> runs the engine and exposes connection control, message search/detail, replay, stats, and a live WebSocket feed. <code>check</code> gates commits; <code>generate</code> produces synthetic, PHI-free HL7.</p>
         </div>
       </div>
+      <div class="callout" style="margin-top:26px">
+        <p><strong>Operational niceties.</strong> Configuration hot-reload and environment promotion (DEV/PROD values layer over the same modules), configurable ACK modes, message-size and segment guards, and a synthetic HL7 generator for testing — all included.</p>
+      </div>
     </div>
   </section>
 
-  <!-- deployment -->
-  <section class="section section--dark section--tight">
-    <div class="container grid grid-2" style="align-items:center">
+  <!-- author faster -->
+  <section class="section section--dark">
+    <div class="container">
+      <div class="center" style="margin-bottom:38px">
+        <span class="eyebrow">Author faster</span>
+        <h2>Wizards and a PHI-safe AI assistant lower the barrier</h2>
+        <p class="lead center">Code-first power without the blank-page tax — guided generation and AI help that never sees a message body.</p>
+      </div>
+      <div class="grid grid-3">
+        <div class="card">
+          <h3>Setup wizards</h3>
+          <p>Guided <b>New Connection</b> and <b>New Route</b> flows that generate the Python for you — Corepoint-style guided authoring, but the output is plain code you own and review.</p>
+        </div>
+        <div class="card">
+          <h3>PHI-safe AI assistance</h3>
+          <p>An in-editor assistant governed by a central, environment-aware policy that sends <b>only code, never message bodies</b>, gated by role-based access control.</p>
+        </div>
+        <div class="card">
+          <h3>AI-assisted migration</h3>
+          <p>Moving from another engine is AI-assisted by design: paste your existing Mirth / Cloverleaf / Rhapsody logic and the assistant helps you express it as Python — typically far less effort than re-platforming. Code-only and governed.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- test -->
+  <section class="section">
+    <div class="container grid grid-2" style="align-items:start">
       <div>
-        <span class="eyebrow">Deployment</span>
+        <span class="eyebrow">Test &amp; verify</span>
+        <h2>A full test harness, included</h2>
+        <p class="lead">Exercise interfaces with synthetic, PHI-free traffic before anything touches production — interactively or in CI.</p>
+      </div>
+      <ul class="feature-list">
+        <li><b>Send / receive / file / compose / monitor</b> test bench for driving MLLP and file endpoints by hand.</li>
+        <li><b>Headless scenario runner</b> for CI — assert routing and transform behavior on every commit.</li>
+        <li><b>Test Bench dry-runs</b> in VS Code — run <code>.hl7</code> files through a route with before/after diffs.</li>
+        <li><b>Synthetic HL7 generator</b> — realistic, PHI-free messages for load and edge-case testing.</li>
+        <li><b><code>check</code> commit gate</b> — validate configuration before it ships.</li>
+      </ul>
+    </div>
+  </section>
+
+  <!-- database flexibility -->
+  <section class="section section--alt">
+    <div class="container grid grid-2" style="align-items:start">
+      <div>
+        <span class="eyebrow">Database flexibility</span>
+        <h2>Runs on the database you already have</h2>
+        <p class="lead">A pluggable message store on standard databases — zero-config to start, enterprise RDBMS when you need it. No proprietary data platform required.</p>
+      </div>
+      <ul class="feature-list">
+        <li><b>SQLite (WAL) by default</b> — embedded and zero-config; the reliability backbone for the inbox/outbox queue.</li>
+        <li><b>SQL Server, PostgreSQL, MySQL, and Oracle</b> — point the store at your existing RDBMS.</li>
+        <li><b>One store contract</b> — the same dispositions, retries, replay, and audit semantics across backends.</li>
+        <li><b>No data-platform lock-in</b> — your messages live in a database you control.</li>
+      </ul>
+    </div>
+  </section>
+
+  <!-- deployment + support -->
+  <section class="section">
+    <div class="container grid grid-2" style="align-items:start">
+      <div>
+        <span class="eyebrow">Deploy &amp; support</span>
         <h2>Runs headless, where your data lives</h2>
-        <p class="lead">On-premises by default — no PHI leaves the local environment without explicit, reviewed configuration.</p>
+        <p class="lead">On-premises by default — no PHI leaves the local environment without explicit, reviewed configuration — backed by commercial support when you need it.</p>
       </div>
       <ul class="feature-list">
         <li><b>Windows service via NSSM</b> — install/uninstall scripts included.</li>
         <li><b>Headless engine</b> — no GUI imports; testable and runnable as a service.</li>
-        <li><b>SQLite (WAL) today</b>; additional store backends are in progress <span class="badge" style="color:#f6c177;border-color:rgba(245,158,11,.4)">in&nbsp;progress</span>.</li>
         <li><b>One config, many environments</b> — DEV/PROD values layer over the same Python modules.</li>
+        <li><b>24×7 support &amp; consulting</b> — commercial support and expert HL7 + Python consulting: migration assistance, custom connectors, and on-call operations.</li>
       </ul>
+    </div>
+  </section>
+
+  <!-- roadmap -->
+  <section class="section section--dark section--tight">
+    <div class="container">
+      <div class="center" style="margin-bottom:30px">
+        <span class="eyebrow">Planned</span>
+        <h2>On the roadmap — not yet shipped</h2>
+        <p class="lead center">We don't market roadmap as available. These are planned as of June 2026.</p>
+      </div>
+      <div class="grid grid-3">
+        <div class="card">
+          <h3>More transports <span class="badge" style="vertical-align:middle;color:#f6c177;border-color:rgba(245,158,11,.4)">planned</span></h3>
+          <p>TCP, HTTP, and database connections, plus REST/FHIR destinations and a database poller — today the shipped transports are MLLP and File.</p>
+        </div>
+        <div class="card">
+          <h3>PHI hardening <span class="badge" style="vertical-align:middle;color:#f6c177;border-color:rgba(245,158,11,.4)">planned</span></h3>
+          <p>A de-identification framework, MLLP-over-TLS with outbound destination allow-listing, centralized log redaction, and retention/purge enforcement.</p>
+        </div>
+        <div class="card">
+          <h3>Managed, BAA-backed AI <span class="badge" style="vertical-align:middle;color:#f6c177;border-color:rgba(245,158,11,.4)">planned</span></h3>
+          <p>An engine-brokered managed provider under a BAA for PHI-scoped assistance — today the assistant is strictly code-only.</p>
+        </div>
+      </div>
     </div>
   </section>
 
@@ -196,7 +301,7 @@
         <h2>See it run in five minutes</h2>
         <div class="btn-row center">
           <a class="btn btn-primary" href="/getting-started.html">Get started</a>
-          <a class="btn btn-ghost" href="/comparison.html">Compare with Mirth &amp; Corepoint →</a>
+          <a class="btn btn-ghost" href="/comparison.html">See how it compares →</a>
         </div>
       </div>
     </div>
@@ -240,7 +345,7 @@
       </div>
       <div class="footer-bottom">
         <span>© 2026 MessageFoundry · Licensed under AGPL-3.0-or-later.</span>
-        <span>Not affiliated with NextGen Healthcare or Rhapsody.</span>
+        <span>Mirth Connect, Cloverleaf, Rhapsody, Corepoint, and Ensemble are trademarks of their respective owners; MessageFoundry is independent and unaffiliated.</span>
       </div>
     </div>
   </footer>

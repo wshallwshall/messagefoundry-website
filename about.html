@@ -52,8 +52,9 @@
       <p>MessageFoundry takes the opposite starting point. Configuration <em>is</em> code — named Connections wired together by Router and Handler functions, authored in plain Python and committed to git. There's no monolithic "channel" object hiding the wiring; the graph you write is the system that runs. Reliability comes from a transactional inbox/outbox on SQLite, so at-least-once delivery, retries, and replay are built in without a separate broker.</p>
 
       <h2>Status</h2>
-      <p>Phase 1 — the minimum reliable engine — is in place: the code-first Connection / Router / Handler model and config loader, a durable SQLite-WAL message store and queue, tolerant peek plus opt-in strict validation, MLLP and file connections with correct framing and ACK/NAK, the retry / dead-letter / replay pipeline, the localhost API, and a PySide6 admin console. Authentication, RBAC, a user-attributed audit log, and AES-256-GCM encryption-at-rest are built.</p>
-      <p>On the roadmap: a plugin layer, additional store backends, REST / FHIR destinations, a database poller, sandboxed transformer steps, enrichment / lookup tables, alerting, log redaction, and MLLPS / TLS. See the repository's roadmap for the current state.</p>
+      <p>The minimum reliable engine is in place: the code-first Connection / Router / Handler model and config loader, a durable store-as-queue with the retry / dead-letter / replay pipeline, tolerant peek plus opt-in strict validation, MLLP and file connections with correct framing and ACK/NAK, and the localhost API. Authentication, RBAC, a tamper-evident hash-chained audit log, and AES-256-GCM encryption-at-rest are built. The message store is pluggable across <b>SQLite (default), SQL Server, PostgreSQL, MySQL, and Oracle</b>.</p>
+      <p>The tooling ships too: a PySide6 admin console, a VS Code extension with setup wizards, validate-on-save, a graph view, and a PHI-safe (code-only) AI assistant, AI-assisted migration from other engines, and a full test harness. Commercial 24×7 support and consulting are available.</p>
+      <p>On the roadmap: additional transports (TCP, HTTP, database) and REST / FHIR destinations, a database poller, a plugin layer, sandboxed transformer steps, enrichment / lookup tables, alerting, a de-identification framework, centralized log redaction, retention/purge enforcement, MLLP-over-TLS with outbound allow-listing, and managed BAA-backed AI for PHI-scoped assistance. See the repository's roadmap for the current state.</p>
 
       <h2>License</h2>
       <p>MessageFoundry is licensed under the <b>GNU Affero General Public License v3.0 or later</b> (<code>AGPL-3.0-or-later</code>). Running a modified version as a network service triggers the AGPL's §13 obligation to offer source to your users. A separately-licensed commercial edition may be available from the maintainer.</p>
@@ -106,7 +107,7 @@
       </div>
       <div class="footer-bottom">
         <span>© 2026 MessageFoundry · Licensed under AGPL-3.0-or-later.</span>
-        <span>Not affiliated with NextGen Healthcare or Rhapsody.</span>
+        <span>Mirth Connect, Cloverleaf, Rhapsody, Corepoint, and Ensemble are trademarks of their respective owners; MessageFoundry is independent and unaffiliated.</span>
       </div>
     </div>
   </footer>

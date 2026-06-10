@@ -256,6 +256,79 @@ table.cmp tr:last-child th, table.cmp tr:last-child td { border-bottom: 0; }
 .kicker .n { font-size: 1.9rem; font-weight: 800; background: var(--grad); -webkit-background-clip: text; background-clip: text; color: transparent; }
 .kicker .l { color: var(--muted-dk); font-size: .9rem; }
 
+/* ------------------------------------------------------------------ competitor selector (CSS-only) */
+.vs { position: relative; }
+.vs > input { position: absolute; width: 1px; height: 1px; opacity: 0; margin: 0; pointer-events: none; }
+.vs-tabs { display: flex; flex-wrap: wrap; gap: 10px; margin-bottom: 26px; }
+.vs-tab {
+  cursor: pointer; user-select: none; display: inline-flex; flex-direction: column;
+  padding: 10px 16px; border-radius: 12px; border: 1px solid var(--border);
+  background: #fff; color: var(--text); font-weight: 700; font-size: .98rem; line-height: 1.2;
+  transition: border-color .2s ease, background .2s ease, color .2s ease, box-shadow .2s ease;
+}
+.vs-tab small { font-weight: 600; font-size: .72rem; color: var(--muted); margin-top: 3px; }
+.vs-tab:hover { border-color: #c8d2e0; }
+/* active tab — one selector branch per radio */
+#r-mirth:checked  ~ .vs-tabs label[for="r-mirth"],
+#r-clover:checked ~ .vs-tabs label[for="r-clover"],
+#r-rhap:checked   ~ .vs-tabs label[for="r-rhap"],
+#r-core:checked   ~ .vs-tabs label[for="r-core"],
+#r-ens:checked    ~ .vs-tabs label[for="r-ens"] {
+  background: var(--ink); border-color: var(--ink); color: #fff; box-shadow: var(--shadow);
+}
+#r-mirth:checked  ~ .vs-tabs label[for="r-mirth"] small,
+#r-clover:checked ~ .vs-tabs label[for="r-clover"] small,
+#r-rhap:checked   ~ .vs-tabs label[for="r-rhap"] small,
+#r-core:checked   ~ .vs-tabs label[for="r-core"] small,
+#r-ens:checked    ~ .vs-tabs label[for="r-ens"] small { color: var(--accent); }
+/* visible keyboard focus on the active control */
+#r-mirth:focus-visible  ~ .vs-tabs label[for="r-mirth"],
+#r-clover:focus-visible ~ .vs-tabs label[for="r-clover"],
+#r-rhap:focus-visible   ~ .vs-tabs label[for="r-rhap"],
+#r-core:focus-visible   ~ .vs-tabs label[for="r-core"],
+#r-ens:focus-visible    ~ .vs-tabs label[for="r-ens"] {
+  outline: 3px solid var(--accent); outline-offset: 2px;
+}
+/* panels */
+.vs-panel {
+  display: none; border: 1px solid var(--border); border-radius: var(--radius);
+  background: #fff; box-shadow: var(--shadow); overflow: hidden;
+}
+#r-mirth:checked  ~ .vs-panels #panel-mirth,
+#r-clover:checked ~ .vs-panels #panel-clover,
+#r-rhap:checked   ~ .vs-panels #panel-rhap,
+#r-core:checked   ~ .vs-panels #panel-core,
+#r-ens:checked    ~ .vs-panels #panel-ens { display: block; }
+.vs-panel > h3 {
+  margin: 0; padding: 20px 24px; background: var(--surface-2);
+  border-bottom: 1px solid var(--border); font-size: 1.18rem;
+}
+.vs-panel > h3 b { color: var(--accent-ink); }
+.vs-row { padding: 17px 24px; border-bottom: 1px solid var(--border); }
+.vs-row:last-child { border-bottom: 0; }
+.vs-row p { margin: 0; color: var(--muted); }
+.vs-lbl {
+  display: inline-block; font-size: .72rem; font-weight: 800; letter-spacing: .12em;
+  text-transform: uppercase; margin-bottom: 6px;
+}
+.vs-lbl--str   { color: var(--muted); }
+.vs-lbl--shift { color: var(--accent-ink); }
+.vs-lbl--wedge { color: var(--accent-2); }
+.vs-lbl--win   { color: #2f6f4f; }
+.vs-row--wedge { border-left: 3px solid var(--accent); background: #fffaf1; }
+.vs-row--win   { background: #f6f8fb; }
+
+/* ------------------------------------------------------------------ sources / disclosure */
+.sources { margin-top: 18px; border: 1px solid var(--border); border-radius: var(--radius-sm); background: #fff; }
+.sources > summary { cursor: pointer; padding: 14px 18px; font-weight: 700; color: var(--text); list-style-position: inside; }
+.sources > summary:hover { color: var(--accent-ink); }
+.sources[open] > summary { border-bottom: 1px solid var(--border); }
+.sources ol { margin: 0; padding: 16px 18px 16px 38px; color: var(--muted); font-size: .9rem; }
+.sources li { margin-bottom: 9px; }
+.sources li:last-child { margin-bottom: 0; }
+.sources a { word-break: break-word; }
+.cmp-wide { min-width: 1040px !important; }
+
 /* ------------------------------------------------------------------ responsive */
 @media (max-width: 920px) {
   .hero-inner { grid-template-columns: 1fr; gap: 36px; padding: 60px 0 64px; }
