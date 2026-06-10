@@ -1,0 +1,223 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>AI assistance &amp; legacy migration — MessageFoundry</title>
+  <meta name="description" content="MessageFoundry's AI coding assistant turns a legacy-engine migration into a code review: it drafts Connections, Routers, and Handlers in Python from your existing channel logic — governed by a central, environment-aware policy that sends only code, never message bodies.">
+  <link rel="canonical" href="https://messagefoundry.org/ai.html">
+  <link rel="icon" href="/assets/img/favicon.svg" type="image/svg+xml">
+  <meta name="theme-color" content="#0b1220">
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="MessageFoundry">
+  <meta property="og:title" content="AI assistance &amp; legacy migration — MessageFoundry">
+  <meta property="og:description" content="Move off a legacy engine at the speed of code. The AI assistant drafts Python from your existing channel logic — governed, RBAC-gated, and code-only by construction.">
+  <meta property="og:url" content="https://messagefoundry.org/ai.html">
+  <meta property="og:image" content="https://messagefoundry.org/assets/img/og.svg">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:image" content="https://messagefoundry.org/assets/img/og.svg">
+  <link rel="stylesheet" href="/assets/css/styles.css">
+</head>
+<body>
+
+  <header class="site-header">
+    <div class="container header-inner">
+      <a class="brand" href="/" aria-label="MessageFoundry home">
+        <img class="brand-mark" src="/assets/img/logo.svg" alt="" width="28" height="28">
+        <span class="brand-name">Message<span class="brand-accent">Foundry</span></span>
+      </a>
+      <button class="nav-toggle" aria-expanded="false" aria-controls="site-nav" aria-label="Toggle navigation"><span></span><span></span><span></span></button>
+      <nav class="site-nav" id="site-nav">
+        <a href="/features.html">Features</a>
+        <a href="/ai.html" class="active" aria-current="page">AI assist</a>
+        <a href="/getting-started.html">Get started</a>
+        <a href="/comparison.html">Comparison</a>
+        <a href="/about.html">About</a>
+        <a class="btn btn-ghost" href="https://github.com/wshallwshall/MessageFoundry" target="_blank" rel="noopener">GitHub ↗</a>
+      </nav>
+    </div>
+  </header>
+
+  <!-- hero -->
+  <section class="section section--dark section--tight">
+    <div class="container">
+      <span class="eyebrow">AI assistance</span>
+      <h1 style="max-width:22ch">Move off a legacy engine at the speed of code</h1>
+      <p class="lead">Migrating interfaces between engines is usually a re-platforming project measured in months. MessageFoundry treats it as a code review instead: an AI coding assistant in your editor reads your existing channel logic and drafts the equivalent <b>Connections, Routers, and Handlers</b> in Python — which you review, test, and promote like any other change. It's <b>code-only by construction</b> and governed by a central policy, so nothing leaves your control.</p>
+      <div class="btn-row">
+        <a class="btn btn-primary" href="/getting-started.html">Get started</a>
+        <a class="btn btn-secondary" href="/comparison.html">See what you're migrating from →</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- why fast -->
+  <section class="section">
+    <div class="container grid grid-2" style="align-items:start">
+      <div>
+        <span class="eyebrow">Why it's fast</span>
+        <h2>Your logic becomes plain, reviewable Python</h2>
+        <p class="lead">Legacy engines lock integration logic inside proprietary scripts and GUIs — JavaScript channels, Tcl, ObjectScript, XML buried in a database. Porting it by hand means relearning each system and rebuilding interface by interface.</p>
+        <p>MessageFoundry's configuration <em>is</em> code, so the assistant can do the mechanical translation for you: paste a legacy channel or open its export, and it drafts the matching <code>inbound</code> / <code>outbound</code> Connections, a <code>@router</code>, and the <code>@handler</code> transforms in Python. You stay in control — every line lands as a diff you read, adjust, and approve.</p>
+      </div>
+      <div class="card">
+        <h3 style="margin-bottom:.6em">What it drafts for you</h3>
+        <ul class="feature-list">
+          <li><b>Connections</b> — MLLP and file endpoints mapped from your existing source/destination config.</li>
+          <li><b>Routing</b> — a <code>@router</code> that mirrors your channel's filter and routing rules.</li>
+          <li><b>Transforms</b> — <code>@handler</code> functions that reproduce field mappings and reshaping as pure Python.</li>
+          <li><b>Tests</b> — starting points for harness scenarios so you can prove parity before cutover.</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <!-- legacy vs modern -->
+  <section class="section section--alt">
+    <div class="container">
+      <div class="center" style="margin-bottom:36px">
+        <span class="eyebrow">Legacy → modern</span>
+        <h2>The same interface, two eras of tooling</h2>
+      </div>
+      <div class="grid grid-2">
+        <div class="card">
+          <h3>The legacy way</h3>
+          <ul class="feature-list" style="margin-top:12px">
+            <li>Logic locked in a proprietary language (JavaScript, Tcl, ObjectScript) and a vendor GUI.</li>
+            <li>Configuration exported as XML or held in a database — hard to diff or review.</li>
+            <li>Migration is manual re-platforming, channel by channel, by scarce specialists.</li>
+            <li>Testing and promotion live in separate, proprietary tooling.</li>
+          </ul>
+        </div>
+        <div class="card">
+          <h3>The MessageFoundry way</h3>
+          <ul class="feature-list" style="margin-top:12px">
+            <li>Logic is plain Python in <em>your</em> git repository — read it, diff it, own it.</li>
+            <li>The AI assistant drafts that Python <em>from</em> your legacy logic, in your editor.</li>
+            <li>Review as a pull request; dry-run in the included test harness on synthetic data.</li>
+            <li>Stage&nbsp;→&nbsp;Promote to a running engine — no separate platform to learn.</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- workflow -->
+  <section class="section">
+    <div class="container" style="max-width:860px">
+      <div class="center" style="margin-bottom:34px">
+        <span class="eyebrow">The migration loop</span>
+        <h2>From legacy channel to running route</h2>
+      </div>
+      <div class="steps">
+        <div class="step">
+          <h3>Point the assistant at your legacy logic</h3>
+          <p>Open or paste an existing channel — a Mirth transformer, a Cloverleaf Tcl proc, a Rhapsody filter. That's source code, so it stays within the assistant's code-only scope.</p>
+        </div>
+        <div class="step">
+          <h3>It drafts the MessageFoundry equivalent</h3>
+          <p>You get Python Connections, a Router, and Handlers that mirror the original's routing, filtering, and field mapping — wired by name, ready to read.</p>
+        </div>
+        <div class="step">
+          <h3>Review it like any code change</h3>
+          <p>The draft lands as a diff in your editor and your pull request. Adjust, comment, and approve — the migration is now a normal review, not a black box.</p>
+        </div>
+        <div class="step">
+          <h3>Prove parity in the test harness</h3>
+          <p>Dry-run synthetic, PHI-free messages through the new route and compare before/after. The headless scenario runner keeps the check green in CI.</p>
+        </div>
+        <div class="step">
+          <h3>Stage → Promote, then repeat in parallel</h3>
+          <p>Promote the verified route to a running engine. Because each interface is independent code, a team can migrate many channels at once instead of serially.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- governance -->
+  <section class="section section--dark">
+    <div class="container grid grid-2" style="align-items:start">
+      <div>
+        <span class="eyebrow">Governed &amp; PHI-safe</span>
+        <h2>Code only — never message bodies</h2>
+        <p class="lead">The assistant carries PHI implications, so it's controlled centrally, not per developer. Whoever operates the install sets a single policy — from fully off to PHI-safe — and every workstation honors it.</p>
+      </div>
+      <ul class="feature-list">
+        <li><b>Bring-your-own provider</b> — the IDE assistant uses your configured model; the engine never sees the traffic. <span class="badge">built</span></li>
+        <li><b>Code-only by construction</b> — today the assistant only ever sends graph names and the code in your editor — never a message body. <span class="badge">built</span></li>
+        <li><b>RBAC-gated</b> — a dedicated permission controls who may use it, deny-by-default like the rest of the engine. <span class="badge">built</span></li>
+        <li><b>Environment ceilings</b> — a central, environment-aware policy clamps what data the assistant may ever be given; an un-tuned install resolves to the tightest setting. <span class="badge">built</span></li>
+        <li><b>PHI-safe mode (optional)</b> — a managed provider under a BAA is the only path to PHI-scoped assistance, and it requires an enterprise agreement with an AI vendor; the default stays code-only. <span class="badge" style="color:#f6c177;border-color:rgba(245,158,11,.4)">optional</span></li>
+      </ul>
+    </div>
+  </section>
+
+  <section class="section section--tight">
+    <div class="container">
+      <div class="callout">
+        <p><strong>Migrating doesn't expose patients.</strong> Channel logic is code, and code is all the assistant sends. Your historical messages and live PHI never go to a model during a migration — the work happens entirely on the integration logic.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- cta -->
+  <section class="section">
+    <div class="container">
+      <div class="cta-band">
+        <h2>Bring your interfaces into the modern era</h2>
+        <p class="lead center" style="color:var(--muted-dk)">Open, Python, and AI-assisted — migrate off a legacy engine without a re-platforming project.</p>
+        <div class="btn-row center">
+          <a class="btn btn-primary" href="/getting-started.html">Get started</a>
+          <a class="btn btn-ghost" href="/comparison.html">Compare the engines →</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <footer class="site-footer">
+    <div class="container">
+      <div class="footer-grid">
+        <div class="footer-brand">
+          <a class="brand" href="/" aria-label="MessageFoundry home">
+            <img class="brand-mark" src="/assets/img/logo.svg" alt="" width="28" height="28">
+            <span class="brand-name">Message<span class="brand-accent">Foundry</span></span>
+          </a>
+          <p>Open-source, code-first HL7 v2 integration engine for healthcare IT.</p>
+          <div class="badge-row" style="margin-top:16px">
+            <span class="badge">Python 3.11+</span>
+            <span class="badge">AGPL-3.0</span>
+            <span class="badge">Self-hosted</span>
+          </div>
+        </div>
+        <div class="footer-col">
+          <h4>Product</h4>
+          <a href="/features.html">Features</a>
+          <a href="/ai.html">AI assist</a>
+          <a href="/comparison.html">Comparison</a>
+          <a href="/getting-started.html">Get started</a>
+        </div>
+        <div class="footer-col">
+          <h4>Docs</h4>
+          <a href="https://github.com/wshallwshall/MessageFoundry/blob/main/docs/ARCHITECTURE.md">Architecture</a>
+          <a href="https://github.com/wshallwshall/MessageFoundry/blob/main/docs/CONNECTIONS.md">Connections</a>
+          <a href="https://github.com/wshallwshall/MessageFoundry/blob/main/docs/SECURITY.md">Security</a>
+          <a href="https://github.com/wshallwshall/MessageFoundry/blob/main/docs/PHI.md">PHI / HIPAA</a>
+        </div>
+        <div class="footer-col">
+          <h4>Project</h4>
+          <a href="https://github.com/wshallwshall/MessageFoundry" target="_blank" rel="noopener">GitHub</a>
+          <a href="https://github.com/wshallwshall/MessageFoundry/issues" target="_blank" rel="noopener">Issues</a>
+          <a href="https://github.com/wshallwshall/MessageFoundry/blob/main/LICENSE">License</a>
+          <a href="/about.html">About</a>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        <span>© 2026 MessageFoundry · Licensed under AGPL-3.0-or-later.</span>
+        <span>Mirth Connect, Cloverleaf, Rhapsody, Corepoint, and Ensemble are trademarks of their respective owners; MessageFoundry is independent and unaffiliated.</span>
+      </div>
+    </div>
+  </footer>
+
+  <script src="/assets/js/nav.js" defer></script>
+</body>
+</html>
