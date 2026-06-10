@@ -40,6 +40,9 @@ verify against the engine's docs before changing any technical claim.
   and the Mirth relicensing reduced the open / low-cost options, but the market isn't closed, and the
   takeaway is that a modern, open alternative fits the moment.
 
+- **Reword the home "Why switch" h2** ("Off legacy — without the legacy price tag") — make it about
+  ditching legacy **prices *and* lock-in**, not just price.
+
 ## Remove the "code-first" framing (site-wide)
 
 "Code-first" is internal language that scares non-developers. Re-evaluate the whole site and replace
