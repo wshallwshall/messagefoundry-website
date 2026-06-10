@@ -43,7 +43,7 @@
     <div class="container">
       <span class="eyebrow">Comparison</span>
       <h1 style="max-width:24ch">A modern, open alternative to the legacy HL7 engines</h1>
-      <p class="lead">MessageFoundry is the open-source, code-first, <b>Python</b> HL7 integration engine — built for teams that want control, modern tooling, and no vendor lock-in. The commercial engines are consolidating under private equity, closing their source, and steering buyers toward subscription contracts. This is a deliberately fair look at where MessageFoundry — a modern engine — sits next to five established but legacy products, and where each is genuinely stronger than we are today.</p>
+      <p class="lead">MessageFoundry is the open-source <b>Python</b> HL7 integration engine — built for teams that want control, modern tooling, and no vendor lock-in. The commercial engines are consolidating under private equity, closing their source, and steering buyers toward subscription contracts. This is a deliberately fair look at where MessageFoundry — a modern engine — sits next to five established but legacy products, and where each is genuinely stronger than we are today.</p>
       <div class="callout" style="margin-top:22px;background:rgba(245,158,11,.07);border-color:rgba(245,158,11,.28);color:var(--muted-dk)">
         <p><strong style="color:var(--accent)">How to read this.</strong> Every competitor here is a capable, established product. Competitor facts are <a href="#sources" style="color:var(--accent)">sourced</a>; pricing is described as the vendors disclose it (most don't publish prices). Our own capabilities are split into <b>Available now</b> and <b>planned</b> — we don't market roadmap as shipped. Current as of June 2026; verify specifics before a purchase decision.</p>
       </div>
@@ -72,7 +72,7 @@
         </div>
       </div>
       <div class="callout" style="margin-top:26px">
-        <p><strong>A balanced read.</strong> Consolidation and the Mirth relicensing have reduced the open, low-cost options — but the market isn't closed. The Mirth forks are active and several engines still compete. Our argument isn't "the incumbents are bad"; it's that <b>a modern, open, Python alternative is what the moment calls for</b>, and most buyers no longer have one.</p>
+        <p><strong>A balanced read.</strong> Consolidation and Mirth's relicensing have thinned the open, low-cost options — but the market is still competitive. Our point isn't that the incumbents are bad; it's that <b>a modern, open alternative fits this moment</b>, and most buyers no longer have one.</p>
       </div>
     </div>
   </section>
@@ -89,7 +89,7 @@
           <thead>
             <tr>
               <th scope="col">&nbsp;</th>
-              <th scope="col" class="us">MessageFoundry<small>code-first</small></th>
+              <th scope="col" class="us">MessageFoundry<small>open source</small></th>
               <th scope="col">Mirth <small style="display:block;font-weight:600;color:#aab6c8">NextGen</small></th>
               <th scope="col">Cloverleaf <small style="display:block;font-weight:600;color:#aab6c8">Infor</small></th>
               <th scope="col">Rhapsody <small style="display:block;font-weight:600;color:#aab6c8">Hg</small></th>
@@ -121,7 +121,7 @@
             </tr>
             <tr>
               <th scope="row">Language / model</th>
-              <td class="us">Python, code-first</td>
+              <td class="us">Python, no DSL</td>
               <td>Rhino JS / Groovy</td>
               <td>Tcl</td>
               <td>JS + visual</td>
@@ -163,6 +163,15 @@
               <td>Proprietary</td>
               <td>Proprietary GUI</td>
               <td>Studio / VS Code ext</td>
+            </tr>
+            <tr>
+              <th scope="row">CI/CD</th>
+              <td class="us">Native — git PRs, pipeline gate, headless tests</td>
+              <td>Export-based, limited</td>
+              <td>Vendor / GUI-driven</td>
+              <td>Vendor / GUI-driven</td>
+              <td>No-code GUI</td>
+              <td>Studio / source hooks</td>
             </tr>
             <tr>
               <th scope="row">Native AI assist</th>
@@ -260,7 +269,7 @@
             <h3>MessageFoundry <b>vs</b> Rhapsody</h3>
             <div class="vs-row"><span class="vs-lbl vs-lbl--str">Their strength</span><p>A mature, top-rated platform — strong support and reliability, robust governance, broad standards coverage (HL7, FHIR, X12, and more), and a mature cloud offering. Its engine placed <b>second</b> among integration engines in the 2025 Best in KLAS report — highly rated, though never #1.</p></div>
             <div class="vs-row"><span class="vs-lbl vs-lbl--shift">The shift</span><p>A private-equity-owned (Hg Capital) suite built through consolidation, sold via custom, undisclosed pricing and multi-year contracts, with no open-source or free tier.</p></div>
-            <div class="vs-row vs-row--wedge"><span class="vs-lbl vs-lbl--wedge">MessageFoundry advantage</span><p><b>Open source, no contract lock-in, and Python code-first</b> against a premium proprietary platform — your integration logic lives in your repository, not inside a vendor's runtime or commercial agreement.</p></div>
+            <div class="vs-row vs-row--wedge"><span class="vs-lbl vs-lbl--wedge">MessageFoundry advantage</span><p><b>Open source, no contract lock-in, and plain Python</b> against a premium proprietary platform — your integration logic lives in your repository, not inside a vendor's runtime or commercial agreement.</p></div>
             <div class="vs-row vs-row--win"><span class="vs-lbl vs-lbl--win">Where Rhapsody still wins today</span><p>Support quality, enterprise governance, FHIR/EMPI breadth, and proven scale. For a large health system that wants a vendor-managed, top-rated platform, Rhapsody is a strong choice.</p></div>
           </article>
 
@@ -269,7 +278,7 @@
             <div class="vs-row"><span class="vs-lbl vs-lbl--str">Their strength</span><p>The <b>Best in KLAS</b> integration engine — ranked #1 for 16 consecutive years (95.2 in 2025) — a guided, no-code/low-code experience renowned for ease of use and support that lets non-programmer teams stand up interfaces quickly.</p></div>
             <div class="vs-row"><span class="vs-lbl vs-lbl--shift">The shift</span><p>Now part of the Rhapsody/Hg portfolio; proprietary and Windows-based on-premises; premium pricing; a new AI assistant (“Axon”) whose track record is still early.</p></div>
             <div class="vs-row vs-row--wedge"><span class="vs-lbl vs-lbl--wedge">MessageFoundry advantage</span><p><b>Code-first power with no no-code ceiling</b>, made approachable by setup wizards and a PHI-safe AI assistant — so you get Corepoint-style guided authoring <em>and</em> the ability to express arbitrarily complex logic, on an open platform, with no lock-in.</p></div>
-            <div class="vs-row vs-row--win"><span class="vs-lbl vs-lbl--win">Where Corepoint still wins today</span><p>For a team that wants <em>pure</em> no-code and has no developers, Corepoint is easier out of the box. MessageFoundry is code-first; wizards and AI lower the barrier, but it is still code.</p></div>
+            <div class="vs-row vs-row--win"><span class="vs-lbl vs-lbl--win">Where Corepoint still wins today</span><p>For a team that wants <em>pure</em> no-code and has no developers, Corepoint is easier out of the box. MessageFoundry is code-based; wizards and AI lower the barrier, but it is still code.</p></div>
           </article>
 
           <article class="vs-panel" id="panel-ens" aria-label="MessageFoundry versus InterSystems Ensemble and HealthShare Health Connect">
@@ -394,7 +403,7 @@
             <img class="brand-mark" src="/assets/img/logo.svg" alt="" width="28" height="28">
             <span class="brand-name">Message<span class="brand-accent">Foundry</span></span>
           </a>
-          <p>Open-source, code-first HL7 v2 integration engine for healthcare IT.</p>
+          <p>Open-source HL7 v2 integration engine for healthcare IT.</p>
           <div class="badge-row" style="margin-top:16px">
             <span class="badge">Open source</span>
             <span class="badge">No lock-in</span>

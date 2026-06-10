@@ -50,10 +50,10 @@
     <div class="container prose">
       <h2>Why it exists</h2>
       <p>Most HL7 integration engines optimize for breadth — huge connector libraries, visual designers, enterprise footprints. That's the right tool for a large hospital integration team. But a great many real-world needs are small and specific: take ADT from system A, filter and reshape it, deliver it to system B, reliably, with an audit trail. For that, a GUI-driven platform is often more weight than the job requires.</p>
-      <p>MessageFoundry takes the opposite starting point. Configuration <em>is</em> code — named Connections wired together by Router and Handler functions, authored in plain Python and committed to git. There's no monolithic "channel" object hiding the wiring; the graph you write is the system that runs. Reliability comes from a transactional inbox/outbox on SQLite, so at-least-once delivery, retries, and replay are built in without a separate broker.</p>
+      <p>MessageFoundry takes the opposite starting point. Configuration <em>is</em> code — named Connections wired together by Router and Handler functions, authored in plain Python and committed to git. There's no monolithic "channel" object hiding the wiring; the graph you write is the system that runs. Reliability comes from a transactional inbox/outbox on SQLite, so reliable delivery, retries, and replay are built in without a separate broker.</p>
 
       <h2>Status</h2>
-      <p>The minimum reliable engine is in place: the code-first Connection / Router / Handler model and config loader, a durable store-as-queue with the retry / dead-letter / replay pipeline, tolerant peek plus opt-in strict validation, MLLP and file connections with correct framing and ACK/NAK, and the localhost API. Authentication, RBAC, a tamper-evident hash-chained audit log, and AES-256-GCM encryption-at-rest are built. The message store is pluggable across <b>SQLite (default), SQL Server, PostgreSQL, MySQL, and Oracle</b>.</p>
+      <p>The minimum reliable engine is in place: the Connection / Router / Handler model and config loader, a durable store-as-queue with the retry / dead-letter / replay pipeline, tolerant peek plus opt-in strict validation, MLLP and file connections with correct framing and ACK/NAK, and the localhost API. Authentication, RBAC, a tamper-evident hash-chained audit log, and AES-256-GCM encryption-at-rest are built. The message store is pluggable across <b>SQLite (default), SQL Server, PostgreSQL, MySQL, and Oracle</b>.</p>
       <p>The tooling ships too: a PySide6 admin console, a VS Code extension with setup wizards, validate-on-save, a graph view, and a PHI-safe (code-only) AI assistant, AI-assisted migration from other engines, and a full test harness. Commercial 24×7 support and consulting are available.</p>
       <p>On the roadmap: additional transports (TCP, HTTP, database) and REST / FHIR destinations, a database poller, a plugin layer, sandboxed transformer steps, enrichment / lookup tables, alerting, a de-identification framework, centralized log redaction, retention/purge enforcement, MLLP-over-TLS with outbound allow-listing, and managed BAA-backed AI for PHI-scoped assistance. See the repository's roadmap for the current state.</p>
 
@@ -78,7 +78,7 @@
             <img class="brand-mark" src="/assets/img/logo.svg" alt="" width="28" height="28">
             <span class="brand-name">Message<span class="brand-accent">Foundry</span></span>
           </a>
-          <p>Open-source, code-first HL7 v2 integration engine for healthcare IT.</p>
+          <p>Open-source HL7 v2 integration engine for healthcare IT.</p>
           <div class="badge-row" style="margin-top:16px">
             <span class="badge">Open source</span>
             <span class="badge">No lock-in</span>

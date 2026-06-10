@@ -16,76 +16,19 @@ Living list of follow-ups for the marketing site. Keep it short; delete items wh
   lock-in / Self-hosted). If a quick spec (Python version, exact license) is wanted somewhere,
   the footer-bottom line already states the AGPL license.
 
-## Copy accuracy review (requested Jun 2026)
+## Open question — delivery semantics (product decision, not copy)
 
-Owner flagged copy that may overclaim or read wrong for healthcare buyers. Review and reword —
-verify against the engine's docs before changing any technical claim.
+Owner wants the copy to say interfaces deliver **once, in order**. The engine's *documented* guarantee
+is **at-least-once** — an outbound whose ACK is lost is retried, so a receiver may see a duplicate and
+receivers must be idempotent (`docs/CONNECTIONS.md`), and there is **no documented in-order guarantee**.
+The site copy was therefore reworded to lead with **reliable, nothing-lost** delivery rather than
+claiming exactly-once / in-order. **Decision needed:** keep the reliable / no-loss framing (current),
+or treat exactly-once + ordering as an engine capability to build and document first, then update copy.
 
-- **"At-least-once delivery" framing.** Appears on home, features, comparison, ai, and product
-  ("messages are delivered at least once" / "at-least-once delivery"). For healthcare this reads
-  wrong — interfaces should deliver **once, in order, no duplicates**. Caveat: at-least-once is the
-  engine's *actual* documented outbox guarantee, so reconcile carefully — reword to stress reliable,
-  ordered, no-message-lost delivery without overclaiming exactly-once if the engine doesn't guarantee
-  it. Check `docs/ARCHITECTURE.md` (store-as-queue) and any de-dup/ordering behavior first.
-- **"Setup wizards write the Python for you."** On the home "Why MessageFoundry" lead, and the
-  similar "wizards generate the config for you" on features, ai, and product. Owner flags this as
-  overstated — verify what the New Connection / New Route wizards actually produce (a scaffold vs
-  complete working code) against the engine's `ide/` docs, and soften the copy to match.
-- **Awkward heading wrap.** The home "Why MessageFoundry" h2 ("Approachable for your whole team,
-  powerful when you need it") orphans "it" onto its own line. Apply `text-wrap: balance` to the
-  section h2 (already on `.hero h1`) or shorten the heading.
+## CI/CD — optional remainder
 
-- **Redo the "A balanced read" callout** on `comparison.html` (the market-shift / "Why now"
-  section) — owner finds it clunky. Tighten the wording while keeping the fair point: consolidation
-  and the Mirth relicensing reduced the open / low-cost options, but the market isn't closed, and the
-  takeaway is that a modern, open alternative fits the moment.
-
-- **Reword the home "Why switch" h2** ("Off legacy — without the legacy price tag") — make it about
-  ditching legacy **prices *and* lock-in**, not just price.
-- **Reword "self-host on your own cloud"** → "fits into your environment" (broader, less prescriptive).
-  Appears on the home CTA and the "Why switch" list (`index.html`); apply the same softening to
-  `product.html`'s "on-premises or in your cloud" / "self-hosted" phrasing when that page lands.
-
-## Remove the "code-first" framing (site-wide)
-
-"Code-first" is internal language that scares non-developers. Re-evaluate the whole site and replace
-it with framing that appeals to **both analysts and programmers** — easy to use day to day, with the
-depth and power of real code there when a case needs it. Keep the underlying truth (it *is* Python you
-can read and version-control), but lead with the benefit, not the word "code".
-
-- **Do NOT use** the phrasing "easy when you want it, but powerful when you need it" — it reads as
-  innuendo. Also revisit the home "Why MessageFoundry" h2 ("Approachable for your whole team, powerful
-  when you need it"), which echoes that construction.
-- Reword **features.html h1** specifically: "Open, code-first HL7 — with the tooling to match".
-- "code-first" / "code-first Python" / "code-first routing" currently appears in:
-  - The **footer brand blurb on every page** — "Open-source, code-first HL7 v2 integration engine for
-    healthcare IT." (index, features, comparison, ai, getting-started, about, product).
-  - **features.html** — h1, hero lead, the "open source, no lock-in" section lead, and the meta + OG
-    `description` tags.
-  - **comparison.html** — the intro paragraph, the matrix "MessageFoundry / code-first" column label
-    and the "Language / model" row, the Rhapsody and Corepoint head-to-head "MessageFoundry advantage"
-    text, and the footer.
-  - **index.html** — the meta `description`, OG, and Twitter descriptions, plus the footer.
-  - **about.html** — the Status paragraph and the footer.
-
-## Add CI/CD content to the site
-
-The positioning doc now covers modern CI/CD (a matrix row + a "Native CI/CD" *Available now* bullet in
-`docs/COMPETITIVE-POSITIONING.md`). Surface it on the live pages:
-
-- **comparison.html** — add the **CI/CD row** to the differentiator matrix (MessageFoundry: *native —
-  git PRs, pipeline gate, headless tests*; competitors: export-based / GUI / vendor-driven), and add a
-  CI/CD point to the Mirth head-to-head "MessageFoundry advantage".
-- **features.html** — add a **CI/CD section**: interfaces as code in git (PR review), the
-  `messagefoundry check` commit/CI gate (validate + dry-run, non-zero exit on a bad route), the
-  headless scenario runner (`python -m harness --scenario …`, exit 0/1) for CI, and Stage → Promote
-  between environments.
-- Consider a one-line benefit on the **home** and **product** pages (e.g. "ships through your own
-  CI/CD pipeline").
-- **Benefit framing** (all grounded in built features): a bad route **fails the build, not a live
-  patient feed**; auditable, reviewed change control (the compliance story); no config drift; uses the
-  CI/CD pipelines you already run. Credibility: the engine itself ships via GitHub Actions running
-  `messagefoundry check`.
+The comparison matrix CI/CD row and a features CI/CD section are live. Optional follow-up: a one-line
+CI/CD benefit on the **home** and **product** pages.
 
 ## Reference docs
 
@@ -100,7 +43,7 @@ each does *for the user*, not how it's built. Cover the four components:
 
 - **Monitoring console** — watch message flow live, search and inspect messages, and replay with
   a click; know your interfaces are healthy at a glance.
-- **Configuration in VS Code** — a custom extension with **setup wizards** that write the config
+- **Configuration in VS Code** — a custom extension with **setup wizards** that generate the wiring
   for you, plus full Python power when you need it; author, validate, and promote interfaces
   without leaving your editor.
 - **A fast engine that runs as a service** — reliable and headless, runs as a background service
@@ -109,6 +52,8 @@ each does *for the user*, not how it's built. Cover the four components:
   both interactively and in CI.
 
 Keep it benefit-first; the accurate technical specifics already live on the features page.
+**Status:** built as `product.html` (uncommitted/un-wired) — awaiting a nav-label decision
+(Product / Overview / Tour / footer-only) before wiring it into nav, footer, and sitemap.
 
 ## New page — security & PHI review (summary + PDF)
 
@@ -158,3 +103,12 @@ be developed).
 - Reframed the home page around customer benefits: dropped the at-least-once callout and the
   architecture/"graph" section (replaced with a "Why switch" cost-and-migration section),
   rewrote the "Why MessageFoundry" card bodies, and updated the closing CTA.
+- Copy pass: reworded "at-least-once" → reliable / nothing-lost (see Open question), softened the
+  "wizards write the Python" claim, fixed the orphaned heading wrap (`text-wrap: balance`), tightened
+  the "A balanced read" callout, reworded the "Why switch" h2 (prices + lock-in), and changed
+  "self-host on your own cloud" → "in your own environment".
+- Removed the "code-first" framing site-wide (footers, features h1/leads/meta, comparison
+  intro/matrix/wedges, index meta/OG/Twitter, about status) — reframed around "analysts and
+  developers alike".
+- Added modern CI/CD to the positioning **and** the site (comparison matrix row + a features CI/CD
+  section).

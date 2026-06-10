@@ -4,14 +4,14 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Features — MessageFoundry</title>
-  <meta name="description" content="What MessageFoundry ships today: open-source and code-first in Python, durable store-as-queue, two-tier HL7 parsing, RBAC and AES-256-GCM encryption-at-rest, a hash-chained audit log, a VS Code extension with setup wizards and a PHI-safe AI assistant, AI-assisted migration, a full test harness, and a pluggable store across SQLite, SQL Server, PostgreSQL, MySQL, and Oracle.">
+  <meta name="description" content="What MessageFoundry ships today: open-source HL7 in Python, durable store-as-queue, two-tier HL7 parsing, RBAC and AES-256-GCM encryption-at-rest, a hash-chained audit log, a VS Code extension with setup wizards and a PHI-safe AI assistant, AI-assisted migration, a full test harness, and a pluggable store across SQLite, SQL Server, PostgreSQL, MySQL, and Oracle.">
   <link rel="canonical" href="https://messagefoundry.org/features.html">
   <link rel="icon" href="/assets/img/favicon.svg" type="image/svg+xml">
   <meta name="theme-color" content="#0b1220">
   <meta property="og:type" content="website">
   <meta property="og:site_name" content="MessageFoundry">
   <meta property="og:title" content="Features — MessageFoundry">
-  <meta property="og:description" content="Open-source, code-first HL7 in Python: durable store-as-queue, two-tier parsing, RBAC + encryption-at-rest, a hash-chained audit log, VS Code tooling with a PHI-safe AI assistant, AI-assisted migration, and a pluggable store across five databases.">
+  <meta property="og:description" content="Open-source HL7 in Python: durable store-as-queue, two-tier parsing, RBAC + encryption-at-rest, a hash-chained audit log, VS Code tooling with a PHI-safe AI assistant, AI-assisted migration, and a pluggable store across five databases.">
   <meta property="og:url" content="https://messagefoundry.org/features.html">
   <meta property="og:image" content="https://messagefoundry.org/assets/img/og.png">
   <meta name="twitter:card" content="summary_large_image">
@@ -42,8 +42,8 @@
   <section class="section section--dark section--tight">
     <div class="container">
       <span class="eyebrow">Features</span>
-      <h1 style="max-width:20ch">Open, code-first HL7 — with the tooling to match</h1>
-      <p class="lead">A small, sharp engine focused on doing the common interfaces well — durable delivery, tolerant parsing, code-first routing, and PHI-aware operations — now with VS Code authoring, a PHI-safe AI assistant, AI-assisted migration, and a store that runs on the database you already have. Everything below is <b>Available now</b> unless marked <span class="badge" style="color:#f6c177;border-color:rgba(245,158,11,.4)">planned</span>.</p>
+      <h1 style="max-width:20ch">Open-source HL7 — with the tooling to match</h1>
+      <p class="lead">A small, sharp engine focused on doing the common interfaces well — durable delivery, tolerant parsing, clear routing, and PHI-aware operations — now with VS Code authoring, a PHI-safe AI assistant, AI-assisted migration, and a store that runs on the database you already have. Everything below is <b>Available now</b> unless marked <span class="badge" style="color:#f6c177;border-color:rgba(245,158,11,.4)">planned</span>.</p>
     </div>
   </section>
 
@@ -53,7 +53,7 @@
       <div>
         <span class="eyebrow">Open source, no lock-in</span>
         <h2>Your integration logic is yours</h2>
-        <p class="lead">AGPL-licensed and code-first: the routing graph is plain Python in <em>your</em> git repository, running on <em>standard</em> databases — nothing locked inside a vendor's runtime, language, or contract.</p>
+        <p class="lead">AGPL-licensed and open: your routing is plain Python in <em>your</em> git repository, running on <em>standard</em> databases — nothing locked inside a vendor's runtime, language, or contract.</p>
       </div>
       <ul class="feature-list">
         <li><b>AGPL-3.0-or-later</b> — read it, run it, fork it. A contributor agreement also enables a commercial / dual license.</li>
@@ -73,7 +73,7 @@
         <p class="lead">The message store <em>is</em> the queue. A transactional inbox/outbox is the reliability backbone — no separate broker to run, patch, or monitor.</p>
       </div>
       <ul class="feature-list">
-        <li><b>At-least-once delivery</b> — the inbound is ACKed only after the message and its outbox rows are committed.</li>
+        <li><b>No accepted message is ever lost</b> — the inbound is ACKed only after the message and its outbox rows are durably committed.</li>
         <li><b>Per-outbound workers</b> — each destination drains independently; one slow or failing peer never blocks the others.</li>
         <li><b>Retries with backoff</b> and automatic <b>dead-lettering</b>, plus a dead-letter <b>bulk-replay</b> view for recovery.</li>
         <li><b>Replay</b> — re-drive a stored message through delivery from the console or API.</li>
@@ -237,6 +237,24 @@
     </div>
   </section>
 
+  <!-- ci/cd -->
+  <section class="section section--dark">
+    <div class="container grid grid-2" style="align-items:start">
+      <div>
+        <span class="eyebrow">CI/CD</span>
+        <h2>Ships through the pipeline you already run</h2>
+        <p class="lead">Because interfaces are plain Python in your git repository, they move through the same delivery pipeline as the rest of your software — no vendor deployment tool to learn.</p>
+      </div>
+      <ul class="feature-list">
+        <li><b>Pull-request review</b> — every interface change is a readable diff your team approves, with full history and instant rollback.</li>
+        <li><b>A build gate</b> — <code>messagefoundry check</code> validates config and dry-runs messages, failing the build on a broken route before it merges.</li>
+        <li><b>Automated tests in CI</b> — a headless scenario runner asserts the engine's outcome on synthetic data, pass/fail, in GitHub Actions, GitLab CI, Jenkins, or Azure DevOps.</li>
+        <li><b>Reproducible promotion</b> — only a reviewed, green change is promoted to each environment, so production matches git — no config drift.</li>
+        <li><b>Auditable by default</b> — reviewed, tested, timestamped change control, the way compliance already expects it.</li>
+      </ul>
+    </div>
+  </section>
+
   <!-- database flexibility -->
   <section class="section section--alt">
     <div class="container grid grid-2" style="align-items:start">
@@ -316,7 +334,7 @@
             <img class="brand-mark" src="/assets/img/logo.svg" alt="" width="28" height="28">
             <span class="brand-name">Message<span class="brand-accent">Foundry</span></span>
           </a>
-          <p>Open-source, code-first HL7 v2 integration engine for healthcare IT.</p>
+          <p>Open-source HL7 v2 integration engine for healthcare IT.</p>
           <div class="badge-row" style="margin-top:16px">
             <span class="badge">Open source</span>
             <span class="badge">No lock-in</span>
