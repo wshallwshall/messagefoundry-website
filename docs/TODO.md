@@ -58,6 +58,23 @@ each does *for the user*, not how it's built. Cover the four components:
 
 Keep it benefit-first; the accurate technical specifics already live on the features page.
 
+## New page — security & PHI review (summary + PDF)
+
+Add a security review page positioned as a **trust** page: a concise summary of why
+MessageFoundry is a strong, secure choice for **PHI**, with a link to a **full PDF** (still to
+be developed).
+
+- **Page = summary.** Lead with the security/PHI story at a benefit level: encryption at rest
+  (AES-256-GCM), authentication (local / Active Directory / Kerberos), deny-by-default RBAC with
+  per-channel scoping, a tamper-evident hash-chained audit log, a localhost-bound API by default,
+  PHI-safe (code-only) AI assistance, and nothing-silently-dropped delivery. Note the
+  open-source / source-available transparency angle too.
+- **PDF = details.** Link to a downloadable full security review PDF (to come). The PDF is to be
+  produced from the engine's **CISO / security markdown doc** (engine repo `docs/security/`).
+  The page can ship first with a placeholder link until the PDF exists.
+- Wire the new page into the header nav, footer, and sitemap when built. Keep every claim aligned
+  with the engine's actual `docs/SECURITY.md` / `docs/PHI.md` (built vs planned).
+
 ## Generated assets — how to regenerate
 
 - **`assets/img/og.png`** is the social-share card, **rasterized from `assets/img/og.svg`**
