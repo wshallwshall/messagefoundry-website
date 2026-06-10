@@ -23,8 +23,8 @@ moving the other way.**
 The commercial engines are consolidating under private equity, closing their source, and steering
 buyers toward subscription contracts. MessageFoundry is deliberately the opposite: an AGPL-licensed
 engine whose integration logic is plain Python in *your* git repository, authored and operated in
-*your* VS Code, running on *standard* databases — with nothing locked inside a vendor's runtime,
-language, or contract.
+*your* VS Code, shipped through *your* CI/CD pipeline, running on *standard* databases — with nothing
+locked inside a vendor's runtime, language, or contract.
 
 ---
 
@@ -74,6 +74,7 @@ Python alternative is exactly what the moment calls for**, and most buyers no lo
 | Config as code / git | **Plain Python in your repo** | XML-in-DB (exportable) | Proprietary | Proprietary | Proprietary GUI | Classes in IRIS |
 | Lock-in | **None (open, standard DBs)** | Moderate | Moderate–high | Moderate–high (contract) | Moderate–high | **High (language + Caché)** |
 | Modern tooling | **VS Code, git, CI gate** | Proprietary console | Proprietary IDE | Proprietary | Proprietary GUI | Studio / VS Code ext |
+| CI/CD | **Native — git PRs, pipeline gate, headless tests** | Export-based, limited | Vendor / GUI-driven | Vendor / GUI-driven | No-code GUI | Studio / source hooks |
 | Native AI assist | **Yes — governed, code-only by default (PHI-safe mode optional, requires an enterprise agreement with an AI vendor)** | No | No | No | "Axon" (new) | No |
 | Reliability | Inbox/outbox WAL, no broker | Mature (proven scale) | Mature (proven scale) | Mature (proven scale) | Mature (KLAS-top) | Mature (high perf) |
 | Test tooling | **Full harness included** | Separate | Separate | Separate | Separate | Separate |
@@ -177,6 +178,17 @@ June 2026.
   a disposition before it is acknowledged** — nothing is silently dropped.
 - **Python, code-first** — routing and handling are plain Python (`@router` / `@handler`), wiring
   named Connections; no proprietary DSL, no XML-in-a-database.
+- **Native CI/CD** — because interfaces are plain Python in *your* git repository, they ride the same
+  delivery pipeline as the rest of your software, with no vendor deployment tool to learn. Open a pull
+  request and reviewers read a real diff; on every commit, your pipeline (GitHub Actions, GitLab CI,
+  Jenkins, Azure DevOps) runs `messagefoundry check` — a config-validate + dry-run gate that exits
+  non-zero on a broken route — and the **headless scenario runner** (`python -m harness --scenario …`),
+  which sends synthetic traffic and asserts the engine's resulting disposition, pass/fail. Only a
+  reviewed, test-passing change is promoted to each environment, so what runs in production is exactly
+  what's in git. The payoff: **a bad route fails the build, not a live patient feed**; every change is
+  reviewed, tested, and reproducible — the auditable change-control story compliance already expects —
+  with no GUI clicking and no config drift between DEV and PROD. (The engine itself is built exactly
+  this way.)
 - **Real VS Code extension** — completion, live HL7-aware validation, a graph view of your
   integration, source-control integration, and config promotion.
 - **Setup wizards** — guided "New Connection" and "New Route" flows that generate the Python for you.

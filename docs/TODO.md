@@ -62,6 +62,25 @@ can read and version-control), but lead with the benefit, not the word "code".
   - **index.html** — the meta `description`, OG, and Twitter descriptions, plus the footer.
   - **about.html** — the Status paragraph and the footer.
 
+## Add CI/CD content to the site
+
+The positioning doc now covers modern CI/CD (a matrix row + a "Native CI/CD" *Available now* bullet in
+`docs/COMPETITIVE-POSITIONING.md`). Surface it on the live pages:
+
+- **comparison.html** — add the **CI/CD row** to the differentiator matrix (MessageFoundry: *native —
+  git PRs, pipeline gate, headless tests*; competitors: export-based / GUI / vendor-driven), and add a
+  CI/CD point to the Mirth head-to-head "MessageFoundry advantage".
+- **features.html** — add a **CI/CD section**: interfaces as code in git (PR review), the
+  `messagefoundry check` commit/CI gate (validate + dry-run, non-zero exit on a bad route), the
+  headless scenario runner (`python -m harness --scenario …`, exit 0/1) for CI, and Stage → Promote
+  between environments.
+- Consider a one-line benefit on the **home** and **product** pages (e.g. "ships through your own
+  CI/CD pipeline").
+- **Benefit framing** (all grounded in built features): a bad route **fails the build, not a live
+  patient feed**; auditable, reviewed change control (the compliance story); no config drift; uses the
+  CI/CD pipelines you already run. Credibility: the engine itself ships via GitHub Actions running
+  `messagefoundry check`.
+
 ## Reference docs
 
 - **`docs/COMPETITIVE-POSITIONING.md`** — the canonical positioning doc the comparison page is built
