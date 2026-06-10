@@ -21,7 +21,7 @@
   </g>
   <text x="240" y="205" font-family="Segoe UI, Helvetica, Arial, sans-serif" font-size="58" font-weight="800" fill="#ffffff">Message<tspan fill="#f59e0b">Foundry</tspan></text>
   <text x="240" y="252" font-family="SFMono-Regular, Consolas, monospace" font-size="24" fill="#93a1b8">messagefoundry.org</text>
-  <text x="96" y="380" font-family="Segoe UI, Helvetica, Arial, sans-serif" font-size="62" font-weight="800" fill="#ffffff">Healthcare integration,</text>
-  <text x="96" y="452" font-family="Segoe UI, Helvetica, Arial, sans-serif" font-size="62" font-weight="800" fill="#ffffff">written in <tspan fill="#f59e0b">Python</tspan>.</text>
-  <text x="96" y="528" font-family="Segoe UI, Helvetica, Arial, sans-serif" font-size="30" fill="#93a1b8">Open-source, code-first HL7 v2 engine — an alternative to Mirth and Corepoint.</text>
+  <text x="96" y="380" font-family="Segoe UI, Helvetica, Arial, sans-serif" font-size="62" font-weight="800" fill="#ffffff">Open-source HL7 integration,</text>
+  <text x="96" y="452" font-family="Segoe UI, Helvetica, Arial, sans-serif" font-size="62" font-weight="800" fill="#ffffff">a fast path off <tspan fill="#f59e0b">legacy</tspan>.</text>
+  <text x="96" y="528" font-family="Segoe UI, Helvetica, Arial, sans-serif" font-size="30" fill="#93a1b8">Free, open-source HL7 v2 engine — a modern alternative to legacy engines.</text>
 </svg>

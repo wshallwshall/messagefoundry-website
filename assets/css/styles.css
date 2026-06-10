@@ -252,9 +252,6 @@ table.cmp tr:last-child th, table.cmp tr:last-child td { border-bottom: 0; }
 .prose h2 { margin-top: 1.6em; }
 .prose ul { padding-left: 1.2em; color: var(--muted); }
 .prose li { margin-bottom: .5em; }
-.kicker-grid { display:grid; grid-template-columns: repeat(4,1fr); gap: 18px; text-align:center; }
-.kicker .n { font-size: 1.9rem; font-weight: 800; background: var(--grad); -webkit-background-clip: text; background-clip: text; color: transparent; }
-.kicker .l { color: var(--muted-dk); font-size: .9rem; }
 
 /* ------------------------------------------------------------------ competitor selector (CSS-only) */
 .vs { position: relative; }
@@ -334,7 +331,6 @@ table.cmp tr:last-child th, table.cmp tr:last-child td { border-bottom: 0; }
   .hero-inner { grid-template-columns: 1fr; gap: 36px; padding: 60px 0 64px; }
   .grid-3 { grid-template-columns: repeat(2, 1fr); }
   .footer-grid { grid-template-columns: 1fr 1fr; }
-  .kicker-grid { grid-template-columns: repeat(2,1fr); }
 }
 @media (max-width: 760px) {
   body { font-size: 16px; }
