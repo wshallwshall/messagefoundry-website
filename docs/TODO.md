@@ -16,6 +16,53 @@ Living list of follow-ups for the marketing site. Keep it short; delete items wh
   lock-in / Self-hosted). If a quick spec (Python version, exact license) is wanted somewhere,
   the footer-bottom line already states the AGPL license.
 
+## Copy accuracy review (requested Jun 2026)
+
+Owner flagged copy that may overclaim or read wrong for healthcare buyers. Review and reword —
+verify against the engine's docs before changing any technical claim.
+
+- **"At-least-once delivery" framing.** Appears on home, features, comparison, ai, and product
+  ("messages are delivered at least once" / "at-least-once delivery"). For healthcare this reads
+  wrong — interfaces should deliver **once, in order, no duplicates**. Caveat: at-least-once is the
+  engine's *actual* documented outbox guarantee, so reconcile carefully — reword to stress reliable,
+  ordered, no-message-lost delivery without overclaiming exactly-once if the engine doesn't guarantee
+  it. Check `docs/ARCHITECTURE.md` (store-as-queue) and any de-dup/ordering behavior first.
+- **"Setup wizards write the Python for you."** On the home "Why MessageFoundry" lead, and the
+  similar "wizards generate the config for you" on features, ai, and product. Owner flags this as
+  overstated — verify what the New Connection / New Route wizards actually produce (a scaffold vs
+  complete working code) against the engine's `ide/` docs, and soften the copy to match.
+- **Awkward heading wrap.** The home "Why MessageFoundry" h2 ("Approachable for your whole team,
+  powerful when you need it") orphans "it" onto its own line. Apply `text-wrap: balance` to the
+  section h2 (already on `.hero h1`) or shorten the heading.
+
+## Remove the "code-first" framing (site-wide)
+
+"Code-first" is internal language that scares non-developers. Re-evaluate the whole site and replace
+it with framing that appeals to **both analysts and programmers** — easy to use day to day, with the
+depth and power of real code there when a case needs it. Keep the underlying truth (it *is* Python you
+can read and version-control), but lead with the benefit, not the word "code".
+
+- **Do NOT use** the phrasing "easy when you want it, but powerful when you need it" — it reads as
+  innuendo. Also revisit the home "Why MessageFoundry" h2 ("Approachable for your whole team, powerful
+  when you need it"), which echoes that construction.
+- Reword **features.html h1** specifically: "Open, code-first HL7 — with the tooling to match".
+- "code-first" / "code-first Python" / "code-first routing" currently appears in:
+  - The **footer brand blurb on every page** — "Open-source, code-first HL7 v2 integration engine for
+    healthcare IT." (index, features, comparison, ai, getting-started, about, product).
+  - **features.html** — h1, hero lead, the "open source, no lock-in" section lead, and the meta + OG
+    `description` tags.
+  - **comparison.html** — the intro paragraph, the matrix "MessageFoundry / code-first" column label
+    and the "Language / model" row, the Rhapsody and Corepoint head-to-head "MessageFoundry advantage"
+    text, and the footer.
+  - **index.html** — the meta `description`, OG, and Twitter descriptions, plus the footer.
+  - **about.html** — the Status paragraph and the footer.
+
+## Reference docs
+
+- **`docs/COMPETITIVE-POSITIONING.md`** — the canonical positioning doc the comparison page is built
+  from (sourced KLAS / ownership / licensing facts, built-vs-planned split). Keep `comparison.html`
+  aligned with it; it mirrors the engine repo's `docs/marketing/COMPETITIVE-POSITIONING.md`.
+
 ## New page — the product, shown by component (user-benefit view)
 
 Create a page that introduces MessageFoundry's pieces from a **customer-benefit** angle — what
