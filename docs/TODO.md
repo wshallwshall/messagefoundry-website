@@ -16,31 +16,6 @@ Living list of follow-ups for the marketing site. Keep it short; delete items wh
   lock-in / Self-hosted). If a quick spec (Python version, exact license) is wanted somewhere,
   the footer-bottom line already states the AGPL license.
 
-## Home page — reframe technical content as customer benefits
-
-Review pass (requested Jun 2026): the landing page leans too technical / internal in places.
-Rework these around the **MEFOR benefits list** — free & open source, fast to deploy, fast
-legacy migration, no vendor lock-in, reliable delivery — sourced from the engine's
-`docs/marketing/COMPETITIVE-POSITIONING.md` "Available now" section and the comparison page's
-"MessageFoundry advantage" points.
-
-- **Remove the "At-least-once by construction" callout** (the amber callout in the model
-  section) — too technical for the landing page.
-- **Rework the "The model — Your configuration *is* the graph" section.** The
-  graph / Connection / Router / Handler framing confuses a visitor ("what graph?"). Rebuild it
-  around customer benefits instead of the architecture diagram — base it on the MEFOR benefits
-  list rather than internal terminology.
-- **Redo the "Why MessageFoundry" card bodies as benefits, not technical detail.** The titles
-  were softened, but the bodies still read as engineering spec (SQLite-WAL inbox/outbox;
-  python-hl7 / hl7apy *peek*; `PROCESSED` / `UNROUTED` / `FILTERED` / `ERROR` dispositions;
-  PySide6 / parse-tree). State the customer benefit first; push the internals to the features
-  page or drop them. (Applies to the "store is the queue", "tolerant-first parsing", "nothing
-  is silently dropped", and "console & editor tooling" cards.)
-- **Update the closing CTA band ("Code-first. Self-hosted. Open-source.").**
-  (1) Make clear customers can **self-host on their own cloud**, not just on-prem.
-  (2) Drop **"code-first"** as the lead — it's an internal idea, not a customer want. Stress
-  **easy to configure with setup wizards, with full Python power when you need it.**
-
 ## New page — the product, shown by component (user-benefit view)
 
 Create a page that introduces MessageFoundry's pieces from a **customer-benefit** angle — what
@@ -101,3 +76,8 @@ be developed).
 - Reframed home + features around benefits (free/open-source, fast deploy, legacy migration).
 - Fixed the 404 page's missing mobile-nav toggle; removed unused `.kicker` CSS.
 - Switched the OG image from SVG to a rasterized PNG and refreshed its copy.
+- Retargeted the home hero at interface managers escaping costly legacy engines; fixed the
+  mobile headline wrap.
+- Reframed the home page around customer benefits: dropped the at-least-once callout and the
+  architecture/"graph" section (replaced with a "Why switch" cost-and-migration section),
+  rewrote the "Why MessageFoundry" card bodies, and updated the closing CTA.
