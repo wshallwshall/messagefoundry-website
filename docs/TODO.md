@@ -35,6 +35,11 @@ verify against the engine's docs before changing any technical claim.
   powerful when you need it") orphans "it" onto its own line. Apply `text-wrap: balance` to the
   section h2 (already on `.hero h1`) or shorten the heading.
 
+- **Redo the "A balanced read" callout** on `comparison.html` (the market-shift / "Why now"
+  section) — owner finds it clunky. Tighten the wording while keeping the fair point: consolidation
+  and the Mirth relicensing reduced the open / low-cost options, but the market isn't closed, and the
+  takeaway is that a modern, open alternative fits the moment.
+
 ## Remove the "code-first" framing (site-wide)
 
 "Code-first" is internal language that scares non-developers. Re-evaluate the whole site and replace
