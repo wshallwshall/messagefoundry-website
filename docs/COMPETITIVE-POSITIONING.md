@@ -80,7 +80,7 @@ Python alternative is exactly what the moment calls for**, and most buyers no lo
 | Test tooling | **Full harness included** | Separate | Separate | Separate | Separate | Separate |
 | Connectors *(our gap)* | MLLP + File (more planned) | **800+** | Decades of adapters | Broad | Broad | Broad |
 | Maturity *(our gap)* | New | 15+ yrs | 30+ yrs | Mature | Mature | 30+ yrs |
-| Support & consulting | **24×7 support + consulting** | Large community | Enterprise | **KLAS-leading** | **KLAS-leading** | Enterprise |
+| Support & consulting | **Support + consulting** | Large community | Enterprise | **KLAS-leading** | **KLAS-leading** | Enterprise |
 
 > \***Ensemble column = InterSystems' *integration engine***: Ensemble (legacy, maintenance ending
 > ~Q1 2027) → HealthShare Health Connect (current). It rates the engine slice, **not** the full
@@ -212,7 +212,7 @@ June 2026.
 - **Database flexibility** — a pluggable message store on standard databases: SQLite by default
   (zero-config, embedded), with SQL Server, PostgreSQL, MySQL, and Oracle — no proprietary data
   platform required.
-- **24×7 support & consulting** — commercial support and expert HL7 + Python consulting for
+- **Support & consulting** — commercial support and expert HL7 + Python consulting for
   production deployments: migration assistance, custom connectors, and on-call operations.
 
 ### Planned (roadmap — not yet available)
@@ -234,7 +234,7 @@ A fair review names the gaps:
   MessageFoundry is new.
 - **Third-party ecosystem & certifications** — Rhapsody and Corepoint are KLAS-leading on support, and
   large independent consulting ecosystems and formal certifications exist for all five, built over
-  decades. (MessageFoundry offers 24×7 support and consulting directly; the independent ecosystem is
+  decades. (MessageFoundry offers commercial support and consulting directly; the independent ecosystem is
   still growing.)
 - **No-code for non-developers** — Corepoint's no-code experience is genuinely easier for teams
   without programmers.
