@@ -99,7 +99,7 @@
         <li><b>hl7apy</b> for opt-in, version-aware strict validation, per inbound connection — kept off the routing path.</li>
         <li><b>Encoding from MSH</b> — field, component, repetition, escape, and subcomponent separators are read from the message, never hardcoded.</li>
         <li><b>Raw message preserved</b> alongside the transformed form, so an operator always sees exactly what arrived.</li>
-        <li><b>Parse failures are routed</b> to the error / dead-letter path and logged as <code>ERROR</code> — a bad message never crashes a connection.</li>
+        <li><b>Parse failures are routed</b> to the error / dead-letter path and logged as <code>ERROR</code> — a bad message is isolated to the error path, not the connection.</li>
       </ul>
     </div>
   </section>
