@@ -77,7 +77,7 @@
         <p class="lead">The message store <em>is</em> the queue. A transactional inbox/outbox is the reliability backbone — no separate broker to run, patch, or monitor.</p>
       </div>
       <ul class="feature-list">
-        <li><b>No accepted message is ever lost</b> — the inbound is ACKed only after the message and its outbox rows are durably committed.</li>
+        <li><b>Durable before it's acknowledged</b> — the inbound is ACKed only after the message and its outbox rows are committed to the store, so an accepted message survives a crash.</li>
         <li><b>Per-outbound workers</b> — each destination drains independently; one slow or failing peer never blocks the others.</li>
         <li><b>Retries with backoff</b> and automatic <b>dead-lettering</b>, plus a dead-letter <b>bulk-replay</b> view for recovery.</li>
         <li><b>Replay</b> — re-drive a stored message through delivery from the console or API.</li>
