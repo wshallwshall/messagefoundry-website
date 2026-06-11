@@ -32,20 +32,18 @@ edits:
 
 Open: decide whether to promote the security page from the footer into the top nav.
 
-## ⚠ Engine repo is private — public GitHub links + open-source positioning
+## Engine repo is private (temporary) — `source.html` placeholder
 
-`gh` confirms `wshallwshall/MessageFoundry` is **PRIVATE**, so for site visitors:
+The engine repo (`wshallwshall/MessageFoundry`) is intentionally **private for now**. Every GitHub
+link across the site now redirects to **`/source.html`** ("Open source, opening soon"); the `noindex`
+placeholder explains the temporary state and points to Overview / Comparison / Security. Remaining:
 
-- **Every GitHub link 404s** — the nav "GitHub ↗" button and the footer Project column (every page),
-  the footer Docs column (Architecture / Connections / Security / PHI), the getting-started
-  `git clone` command, and the "View on GitHub" / "Star it on GitHub" CTAs.
-- **The core "open source — read the code, fork it, AGPL" positioning isn't currently deliverable**
-  (you can't read or fork a private repo), and the whole site leads with it.
-
-**Decision (owner):** make the repo **public** (fixes every link and makes the positioning true), or
-keep it private — in which case the GitHub links need fixing and the open-source / "fork it" / "read
-the source" copy needs reconciling (e.g. "source available on request"). Until resolved, the AGPL /
-"audit the code, fork it" claims are aspirational.
+- The getting-started **`git clone` command + install flow** still reference the private repo — they
+  won't work for a visitor until the repo is public. Decide whether to gate / annotate that page.
+- **When the repo goes public:** point the links back at GitHub (revert the `/source.html` redirect)
+  and remove `source.html`.
+- The "open source / fork it / read the source" copy is currently bridged by the placeholder; revisit
+  if the repo stays private long-term.
 
 ## Generated assets — how to regenerate
 
@@ -102,6 +100,9 @@ the source" copy needs reconciling (e.g. "source available on request"). Until r
   page, replacing the now-404 private-repo "full review" links. Deliberately held back the full CISO
   review — it names live exploit paths and the repo is private, so publishing it verbatim would be a
   public attack map.
+- Engine repo is private → added a `source.html` "open source, opening soon" placeholder and
+  redirected every GitHub link site-wide to it; softened action labels (Star it / Open an issue /
+  Ask a question). Dropped "in Python" from the index `<title>` / OG / Twitter titles.
 - Reliability/delivery copy pass: reworded the absolute "never lost" claims to the durability
   mechanism ("durable before ACK" / "durable by design"), and scoped the "Never lose a message" card
   to tracking. **Decision (owner): keep the honest "reliable / durable-by-design" framing** — do not
