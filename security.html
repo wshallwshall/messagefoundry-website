@@ -1,0 +1,226 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Security &amp; PHI — MessageFoundry</title>
+  <meta name="description" content="How MessageFoundry protects PHI: a genuinely-built identity, access-control, and audit core — argon2id + Active Directory auth, deny-by-default RBAC with per-channel scoping, a tamper-evident hash-chained audit log, and AES-256-GCM encryption at rest — deployed in a controlled, fail-closed posture, with an open security review you can read in full.">
+  <link rel="canonical" href="https://messagefoundry.org/security.html">
+  <link rel="icon" href="/assets/img/favicon.svg" type="image/svg+xml">
+  <meta name="theme-color" content="#0b1220">
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="MessageFoundry">
+  <meta property="og:title" content="Security &amp; PHI — MessageFoundry">
+  <meta property="og:description" content="A built-and-enforced identity, access-control, and audit core for PHI — with an unusually open security posture you can verify in the code and a full CISO review.">
+  <meta property="og:url" content="https://messagefoundry.org/security.html">
+  <meta property="og:image" content="https://messagefoundry.org/assets/img/og.png">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:image" content="https://messagefoundry.org/assets/img/og.png">
+  <link rel="stylesheet" href="/assets/css/styles.css">
+</head>
+<body>
+
+  <header class="site-header">
+    <div class="container header-inner">
+      <a class="brand" href="/" aria-label="MessageFoundry home">
+        <img class="brand-mark" src="/assets/img/logo.svg" alt="" width="28" height="28">
+        <span class="brand-name">Message<span class="brand-accent">Foundry</span></span>
+      </a>
+      <button class="nav-toggle" aria-expanded="false" aria-controls="site-nav" aria-label="Toggle navigation"><span></span><span></span><span></span></button>
+      <nav class="site-nav" id="site-nav">
+        <a href="/overview.html">Overview</a>
+        <a href="/features.html">Features</a>
+        <a href="/ai.html">AI assist</a>
+        <a href="/getting-started.html">Get started</a>
+        <a href="/comparison.html">Comparison</a>
+        <a href="/about.html">About</a>
+        <a class="btn btn-ghost" href="https://github.com/wshallwshall/MessageFoundry" target="_blank" rel="noopener">GitHub ↗</a>
+      </nav>
+    </div>
+  </header>
+
+  <!-- hero -->
+  <section class="section section--dark section--tight">
+    <div class="container">
+      <span class="eyebrow">Security &amp; PHI</span>
+      <h1 style="max-width:22ch">Built to carry PHI — and open about exactly how</h1>
+      <p class="lead">MessageFoundry ships a genuinely-built identity, access-control, and audit core — enforced in code, not just documented — and runs in a controlled, fail-closed posture. Just as important for a healthcare buyer: the security story is <b>open</b>. You can read the source, and you can read a full security review written for a CISO that rates every control by what's <em>actually enforced</em>.</p>
+      <div class="btn-row">
+        <a class="btn btn-primary" href="https://github.com/wshallwshall/MessageFoundry/blob/main/docs/SECURITY.md" target="_blank" rel="noopener">Read the security docs ↗</a>
+        <a class="btn btn-secondary" href="#review">See the full review →</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- built today -->
+  <section class="section">
+    <div class="container">
+      <div class="center" style="margin-bottom:42px">
+        <span class="eyebrow">Built &amp; enforced today</span>
+        <h2>A real access-control and audit core</h2>
+        <p class="lead center">These controls are implemented and enforced in the running engine — among the stronger access-control stories in this product category for a pre-1.0 product.</p>
+      </div>
+      <div class="grid grid-3">
+        <div class="card">
+          <span class="ico"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 1 3 5v6c0 5.25 3.6 9.74 9 11 5.4-1.26 9-5.75 9-11V5l-9-4zm0 10.99h7c-.53 4.12-3.28 7.79-7 8.94V12H5V6.3l7-3.11v8.8z"/></svg></span>
+          <h3>Authentication, fail-closed</h3>
+          <p>Local accounts with argon2id password hashing and account lockout, plus Active Directory over <b>LDAPS</b>. The engine refuses to serve unauthenticated requests off loopback, and denies access when no auth is configured. (Kerberos / Windows SSO is experimental; MFA is on the roadmap.)</p>
+        </div>
+        <div class="card">
+          <span class="ico"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 1 3 5v6c0 5.25 3.6 9.74 9 11 5.4-1.26 9-5.75 9-11V5l-9-4zm-1.06 14.54L7.4 12l1.41-1.41 2.12 2.12 4.24-4.24 1.42 1.41-5.65 5.65z"/></svg></span>
+          <h3>Deny-by-default RBAC</h3>
+          <p>Role-based access control with fixed built-in roles, enforced on every engine and admin route, denying anything not explicitly granted — including <b>per-channel data-scope confinement</b>, so a user only ever sees the interfaces they're entitled to.</p>
+        </div>
+        <div class="card">
+          <span class="ico"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M18 8h-1V6A5 5 0 0 0 7 6v2H6a2 2 0 0 0-2 2v10a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V10a2 2 0 0 0-2-2zM9 6a3 3 0 0 1 6 0v2H9V6zm3 11a2 2 0 1 1 0-4 2 2 0 0 1 0 4z"/></svg></span>
+          <h3>Sessions you can revoke</h3>
+          <p>Opaque, server-side session tokens with idle and absolute timeouts and <b>immediate revocation</b> — no long-lived bearer secrets floating around.</p>
+        </div>
+        <div class="card">
+          <span class="ico"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M3 5h18v2H3V5zm0 6h18v2H3v-2zm0 6h12v2H3v-2zm14.5.5 1.5 1.5 3.5-3.5L21 14l-2.5 2.5z"/></svg></span>
+          <h3>Tamper-evident audit log</h3>
+          <p>A user-attributed, <b>hash-chained</b> audit log records who viewed, replayed, or acted on PHI — with a verification command that detects out-of-band edits. (Tamper-<em>evidence</em>, not prevention; integrity still rests on host/file access controls.)</p>
+        </div>
+        <div class="card">
+          <span class="ico"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2 4 5v6c0 5 3.4 9.4 8 11 4.6-1.6 8-6 8-11V5l-8-3zm-1 5h2v4h3l-4 5-4-5h3V7z"/></svg></span>
+          <h3>Encryption at rest</h3>
+          <p>Message bodies are encrypted with <b>AES-256-GCM</b> when a store-encryption key is set. We recommend pairing it with full-disk/volume encryption (BitLocker, LUKS) so everything at rest is covered.</p>
+        </div>
+        <div class="card">
+          <span class="ico"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M3 13h2l2 5 4-12 2 7h2l1.5-3H21v-2h-4.7L15 13l-2-7L9 18l-2-5H3z"/></svg></span>
+          <h3>Nothing silently dropped</h3>
+          <p>Every received message is persisted with a recorded disposition <em>before</em> it's acknowledged — so your message counts always reflect the truth, and there's no quiet data loss to discover later.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- deployment posture -->
+  <section class="section section--alt">
+    <div class="container grid grid-2" style="align-items:start">
+      <div>
+        <span class="eyebrow">Deployment posture</span>
+        <h2>Designed for a controlled, fail-closed deployment</h2>
+        <p class="lead">Today's supported posture is a single, controlled host: the API binds to <code>127.0.0.1</code> and requires authentication, and the trust boundary is that localhost API and the host itself.</p>
+      </div>
+      <ul class="feature-list">
+        <li><b>Loopback by default</b> — the API isn't exposed to the network; the admin console attaches over localhost.</li>
+        <li><b>Some protections are operator preconditions</b> — set the at-rest encryption key, enable full-disk encryption, lock down config and spill directories, and treat backups as PHI. We document exactly which.</li>
+        <li><b>Least-privilege service</b> — runs headless as a service account; config authors run trusted in-process code (the documented extension model).</li>
+        <li><b>No surprises</b> — the engine fails closed rather than falling open when something isn't configured.</li>
+      </ul>
+    </div>
+  </section>
+
+  <!-- roadmap before network exposure -->
+  <section class="section">
+    <div class="container">
+      <div class="center" style="margin-bottom:36px">
+        <span class="eyebrow">Before network exposure</span>
+        <h2>What's on the roadmap — disclosed, not hidden</h2>
+        <p class="lead center">A few things you'd need before exposing PHI over a network are not built yet. We disclose them plainly; until they land, keep the engine on localhost or behind your own TLS proxy.</p>
+      </div>
+      <div class="grid grid-3">
+        <div class="card">
+          <h3>TLS everywhere <span class="badge" style="vertical-align:middle;color:#f6c177;border-color:rgba(245,158,11,.4)">planned</span></h3>
+          <p>The API and MLLP are plaintext today (loopback posture). MLLP-over-TLS and API TLS are required before any off-host exposure. AD (LDAPS) and the SQL Server backend already use TLS.</p>
+        </div>
+        <div class="card">
+          <h3>MFA &amp; allow-listing <span class="badge" style="vertical-align:middle;color:#f6c177;border-color:rgba(245,158,11,.4)">planned</span></h3>
+          <p>Multi-factor authentication and an outbound destination allow-list — so a message can only ever be sent to a pre-approved endpoint.</p>
+        </div>
+        <div class="card">
+          <h3>Data lifecycle <span class="badge" style="vertical-align:middle;color:#f6c177;border-color:rgba(245,158,11,.4)">planned</span></h3>
+          <p>Retention / purge enforcement, centralized log redaction, and a de-identification framework — so PHI doesn't accumulate indefinitely and never leaks into logs.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- transparency / review -->
+  <section class="section section--dark" id="review">
+    <div class="container grid grid-2" style="align-items:center">
+      <div>
+        <span class="eyebrow">Verify, don't trust</span>
+        <h2>An open security posture you can check yourself</h2>
+        <p class="lead">The strongest thing we can offer a CISO isn't a claim — it's the ability to verify it. MessageFoundry is open source under AGPL, so you can read every line. And we publish a full security review, written for a healthcare CISO, that rates each control by what's <b>enforced in code, not what's documented</b> — gaps included.</p>
+        <div class="btn-row">
+          <a class="btn btn-primary" href="https://github.com/wshallwshall/MessageFoundry/tree/main/docs/security" target="_blank" rel="noopener">Read the full review ↗</a>
+          <a class="btn btn-ghost" href="https://github.com/wshallwshall/MessageFoundry/blob/main/docs/PHI.md" target="_blank" rel="noopener">PHI handling guide ↗</a>
+        </div>
+        <p style="color:var(--muted-dk);font-size:.86rem;margin-top:16px">A formatted, downloadable PDF of the security review is in progress.</p>
+      </div>
+      <div>
+        <ul class="feature-list">
+          <li><b>Source-available</b> — AGPL-licensed; audit the code, fork it, run it on your own terms.</li>
+          <li><b>Code-grounded review</b> — every control rated by what's enforced, with the gaps named.</li>
+          <li><b>PHI-safe AI</b> — the in-editor assistant sends only code, never message bodies, under a central policy.</li>
+          <li><b>Honest by default</b> — the project's own docs disclose what isn't built; we'd rather you find out here than in procurement.</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <!-- cta -->
+  <section class="section section--tight">
+    <div class="container">
+      <div class="cta-band">
+        <h2>Evaluating MessageFoundry for PHI?</h2>
+        <p class="lead center" style="color:var(--muted-dk)">Start with the code and the security review — then bring us your questions.</p>
+        <div class="btn-row center">
+          <a class="btn btn-primary" href="/getting-started.html">Get started</a>
+          <a class="btn btn-ghost" href="https://github.com/wshallwshall/MessageFoundry/issues" target="_blank" rel="noopener">Ask a question ↗</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <footer class="site-footer">
+    <div class="container">
+      <div class="footer-grid">
+        <div class="footer-brand">
+          <a class="brand" href="/" aria-label="MessageFoundry home">
+            <img class="brand-mark" src="/assets/img/logo.svg" alt="" width="28" height="28">
+            <span class="brand-name">Message<span class="brand-accent">Foundry</span></span>
+          </a>
+          <p>Open-source HL7 v2 integration engine for healthcare IT.</p>
+          <div class="badge-row" style="margin-top:16px">
+            <span class="badge">Open source</span>
+            <span class="badge">No lock-in</span>
+            <span class="badge">Self-hosted</span>
+          </div>
+        </div>
+        <div class="footer-col">
+          <h4>Product</h4>
+          <a href="/overview.html">Overview</a>
+          <a href="/features.html">Features</a>
+          <a href="/ai.html">AI assist</a>
+          <a href="/security.html">Security &amp; PHI</a>
+          <a href="/comparison.html">Comparison</a>
+          <a href="/getting-started.html">Get started</a>
+        </div>
+        <div class="footer-col">
+          <h4>Docs</h4>
+          <a href="https://github.com/wshallwshall/MessageFoundry/blob/main/docs/ARCHITECTURE.md">Architecture</a>
+          <a href="https://github.com/wshallwshall/MessageFoundry/blob/main/docs/CONNECTIONS.md">Connections</a>
+          <a href="https://github.com/wshallwshall/MessageFoundry/blob/main/docs/SECURITY.md">Security</a>
+          <a href="https://github.com/wshallwshall/MessageFoundry/blob/main/docs/PHI.md">PHI / HIPAA</a>
+        </div>
+        <div class="footer-col">
+          <h4>Project</h4>
+          <a href="https://github.com/wshallwshall/MessageFoundry" target="_blank" rel="noopener">GitHub</a>
+          <a href="https://github.com/wshallwshall/MessageFoundry/issues" target="_blank" rel="noopener">Issues</a>
+          <a href="https://github.com/wshallwshall/MessageFoundry/blob/main/LICENSE">License</a>
+          <a href="/about.html">About</a>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        <span>© 2026 MessageFoundry · Licensed under AGPL-3.0-or-later.</span>
+        <span>Mirth Connect, Cloverleaf, Rhapsody, Corepoint, and Ensemble are trademarks of their respective owners; MessageFoundry is independent and unaffiliated.</span>
+      </div>
+    </div>
+  </footer>
+
+  <script src="/assets/js/nav.js" defer></script>
+</body>
+</html>

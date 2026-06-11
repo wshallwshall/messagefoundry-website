@@ -36,22 +36,12 @@ CI/CD benefit on the **home** and **overview** pages.
   from (sourced KLAS / ownership / licensing facts, built-vs-planned split). Keep `comparison.html`
   aligned with it; it mirrors the engine repo's `docs/marketing/COMPETITIVE-POSITIONING.md`.
 
-## New page — security & PHI review (summary + PDF)
+## Security review — PDF follow-up
 
-Add a security review page positioned as a **trust** page: a concise summary of why
-MessageFoundry is a strong, secure choice for **PHI**, with a link to a **full PDF** (still to
-be developed).
-
-- **Page = summary.** Lead with the security/PHI story at a benefit level: encryption at rest
-  (AES-256-GCM), authentication (local / Active Directory / Kerberos), deny-by-default RBAC with
-  per-channel scoping, a tamper-evident hash-chained audit log, a localhost-bound API by default,
-  PHI-safe (code-only) AI assistance, and nothing-silently-dropped delivery. Note the
-  open-source / source-available transparency angle too.
-- **PDF = details.** Link to a downloadable full security review PDF (to come). The PDF is to be
-  produced from the engine's **CISO / security markdown doc** (engine repo `docs/security/`).
-  The page can ship first with a placeholder link until the PDF exists.
-- Wire the new page into the header nav, footer, and sitemap when built. Keep every claim aligned
-  with the engine's actual `docs/SECURITY.md` / `docs/PHI.md` (built vs planned).
+`security.html` is live, with the "full review" links pointing at the engine repo's `docs/security/`
+folder for now. Follow-up: produce a formatted, downloadable **PDF** from the engine's
+`CISO-REVIEW.md` and swap those links to it. Also decide whether to promote the page from the footer
+into the top nav (kept footer-only to avoid a 7th crowded nav item).
 
 ## Generated assets — how to regenerate
 
@@ -97,3 +87,8 @@ be developed).
   nav, footer, and sitemap on every page, with the copy fixes (wizard claim, at-least-once,
   environment wording) applied. Raised the mobile-nav breakpoint to 980px so a 6th nav item doesn't
   crowd the header.
+- Shipped the **Security & PHI** page (`security.html`) — built-and-enforced controls (auth, RBAC,
+  revocable sessions, hash-chained audit, at-rest encryption, nothing-dropped), an honest Phase-1
+  posture + roadmap (no-TLS-yet; MFA / retention / redaction / de-id planned), and a transparency /
+  "read the review" section. Aligned to the engine's **CISO review**, not the simplified marketing
+  positioning. Wired into the footer + sitemap + a home contextual link (footer-only, not top nav).
