@@ -4,10 +4,6 @@ Living list of follow-ups for the marketing site. Keep it short; delete items wh
 
 ## Open
 
-- **Optional: Open Graph image dimensions.** For slightly faster/cleaner social previews,
-  add `og:image:width` (1200), `og:image:height` (630), and `og:image:type` (`image/png`)
-  meta tags alongside the existing `og:image` on each page. Not required — the PNG renders
-  fine without them.
 - **Content freshness — competitor facts.** The comparison page cites KLAS rankings, ownership,
   and licensing that change over time (e.g. KLAS is published yearly). Revisit annually and
   re-verify against the sources listed on `comparison.html`. Source of truth for our own
@@ -24,11 +20,6 @@ receivers must be idempotent (`docs/CONNECTIONS.md`), and there is **no document
 The site copy was therefore reworded to lead with **reliable, nothing-lost** delivery rather than
 claiming exactly-once / in-order. **Decision needed:** keep the reliable / no-loss framing (current),
 or treat exactly-once + ordering as an engine capability to build and document first, then update copy.
-
-## CI/CD — optional remainder
-
-The comparison matrix CI/CD row and a features CI/CD section are live. Optional follow-up: a one-line
-CI/CD benefit on the **home** and **overview** pages.
 
 ## Reference docs
 
@@ -92,3 +83,7 @@ into the top nav (kept footer-only to avoid a 7th crowded nav item).
   posture + roadmap (no-TLS-yet; MFA / retention / redaction / de-id planned), and a transparency /
   "read the review" section. Aligned to the engine's **CISO review**, not the simplified marketing
   positioning. Wired into the footer + sitemap + a home contextual link (footer-only, not top nav).
+- Aligned the AD/Kerberos auth wording for accuracy (LDAPS; Kerberos experimental).
+- Added a one-line CI/CD benefit to the home ("Ships through your own CI/CD") and overview
+  ("Pipeline-ready") pages, and Open Graph image dimension/type meta tags (1200×630, PNG) to every
+  page.
