@@ -28,32 +28,13 @@ or treat exactly-once + ordering as an engine capability to build and document f
 ## CI/CD — optional remainder
 
 The comparison matrix CI/CD row and a features CI/CD section are live. Optional follow-up: a one-line
-CI/CD benefit on the **home** and **product** pages.
+CI/CD benefit on the **home** and **overview** pages.
 
 ## Reference docs
 
 - **`docs/COMPETITIVE-POSITIONING.md`** — the canonical positioning doc the comparison page is built
   from (sourced KLAS / ownership / licensing facts, built-vs-planned split). Keep `comparison.html`
   aligned with it; it mirrors the engine repo's `docs/marketing/COMPETITIVE-POSITIONING.md`.
-
-## New page — the product, shown by component (user-benefit view)
-
-Create a page that introduces MessageFoundry's pieces from a **customer-benefit** angle — what
-each does *for the user*, not how it's built. Cover the four components:
-
-- **Monitoring console** — watch message flow live, search and inspect messages, and replay with
-  a click; know your interfaces are healthy at a glance.
-- **Configuration in VS Code** — a custom extension with **setup wizards** that generate the wiring
-  for you, plus full Python power when you need it; author, validate, and promote interfaces
-  without leaving your editor.
-- **A fast engine that runs as a service** — reliable and headless, runs as a background service
-  where your data lives.
-- **A complete testing harness** — prove interfaces work against synthetic data before go-live,
-  both interactively and in CI.
-
-Keep it benefit-first; the accurate technical specifics already live on the features page.
-**Status:** built as `product.html` (uncommitted/un-wired) — awaiting a nav-label decision
-(Product / Overview / Tour / footer-only) before wiring it into nav, footer, and sitemap.
 
 ## New page — security & PHI review (summary + PDF)
 
@@ -112,3 +93,7 @@ be developed).
   developers alike".
 - Added modern CI/CD to the positioning **and** the site (comparison matrix row + a features CI/CD
   section).
+- Shipped the **Overview** page (`overview.html`) — the four-component product tour — wired into the
+  nav, footer, and sitemap on every page, with the copy fixes (wizard claim, at-least-once,
+  environment wording) applied. Raised the mobile-nav breakpoint to 980px so a 6th nav item doesn't
+  crowd the header.
