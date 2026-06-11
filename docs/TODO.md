@@ -12,15 +12,6 @@ Living list of follow-ups for the marketing site. Keep it short; delete items wh
   lock-in / Self-hosted). If a quick spec (Python version, exact license) is wanted somewhere,
   the footer-bottom line already states the AGPL license.
 
-## Open question — delivery semantics (product decision, not copy)
-
-Owner wants the copy to say interfaces deliver **once, in order**. The engine's *documented* guarantee
-is **at-least-once** — an outbound whose ACK is lost is retried, so a receiver may see a duplicate and
-receivers must be idempotent (`docs/CONNECTIONS.md`), and there is **no documented in-order guarantee**.
-The site copy was therefore reworded to lead with **reliable, nothing-lost** delivery rather than
-claiming exactly-once / in-order. **Decision needed:** keep the reliable / no-loss framing (current),
-or treat exactly-once + ordering as an engine capability to build and document first, then update copy.
-
 ## Reference docs
 
 - **`docs/COMPETITIVE-POSITIONING.md`** — the canonical positioning doc the comparison page is built
@@ -84,6 +75,10 @@ into the top nav (kept footer-only to avoid a 7th crowded nav item).
   "read the review" section. Aligned to the engine's **CISO review**, not the simplified marketing
   positioning. Wired into the footer + sitemap + a home contextual link (footer-only, not top nav).
 - Aligned the AD/Kerberos auth wording for accuracy (LDAPS; Kerberos experimental).
+- Reliability/delivery copy pass: reworded the absolute "never lost" claims to the durability
+  mechanism ("durable before ACK" / "durable by design"), and scoped the "Never lose a message" card
+  to tracking. **Decision (owner): keep the honest "reliable / durable-by-design" framing** — do not
+  claim exactly-once or in-order (the engine's guarantee is at-least-once).
 - Added a one-line CI/CD benefit to the home ("Ships through your own CI/CD") and overview
   ("Pipeline-ready") pages, and Open Graph image dimension/type meta tags (1200×630, PNG) to every
   page.
