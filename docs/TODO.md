@@ -18,12 +18,34 @@ Living list of follow-ups for the marketing site. Keep it short; delete items wh
   from (sourced KLAS / ownership / licensing facts, built-vs-planned split). Keep `comparison.html`
   aligned with it; it mirrors the engine repo's `docs/marketing/COMPETITIVE-POSITIONING.md`.
 
-## Security review — PDF follow-up
+## Security posture summary PDF — regeneration
 
-`security.html` is live, with the "full review" links pointing at the engine repo's `docs/security/`
-folder for now. Follow-up: produce a formatted, downloadable **PDF** from the engine's
-`CISO-REVIEW.md` and swap those links to it. Also decide whether to promote the page from the footer
-into the top nav (kept footer-only to avoid a 7th crowded nav item).
+`security.html` links a **sanitized** posture-summary PDF (`assets/MessageFoundry-Security-Posture-
+Summary.pdf`) — built/partial/roadmap, capabilities table, compliance alignment, deployment
+requirements — deliberately **without** the engine CISO review's specific exploit paths / residual-risk
+register (that full review stays internal; offered "on request"). Regenerate from the source after
+edits:
+
+    chrome --headless=new --disable-gpu --no-pdf-header-footer \
+      --print-to-pdf="assets/MessageFoundry-Security-Posture-Summary.pdf" \
+      "file:///ABSOLUTE/PATH/docs/security-posture-summary.html"
+
+Open: decide whether to promote the security page from the footer into the top nav.
+
+## ⚠ Engine repo is private — public GitHub links + open-source positioning
+
+`gh` confirms `wshallwshall/MessageFoundry` is **PRIVATE**, so for site visitors:
+
+- **Every GitHub link 404s** — the nav "GitHub ↗" button and the footer Project column (every page),
+  the footer Docs column (Architecture / Connections / Security / PHI), the getting-started
+  `git clone` command, and the "View on GitHub" / "Star it on GitHub" CTAs.
+- **The core "open source — read the code, fork it, AGPL" positioning isn't currently deliverable**
+  (you can't read or fork a private repo), and the whole site leads with it.
+
+**Decision (owner):** make the repo **public** (fixes every link and makes the positioning true), or
+keep it private — in which case the GitHub links need fixing and the open-source / "fork it" / "read
+the source" copy needs reconciling (e.g. "source available on request"). Until resolved, the AGPL /
+"audit the code, fork it" claims are aspirational.
 
 ## Generated assets — how to regenerate
 
@@ -75,6 +97,11 @@ into the top nav (kept footer-only to avoid a 7th crowded nav item).
   "read the review" section. Aligned to the engine's **CISO review**, not the simplified marketing
   positioning. Wired into the footer + sitemap + a home contextual link (footer-only, not top nav).
 - Aligned the AD/Kerberos auth wording for accuracy (LDAPS; Kerberos experimental).
+- Shipped a **sanitized security posture-summary PDF** (`assets/MessageFoundry-Security-Posture-
+  Summary.pdf`, generated from `docs/security-posture-summary.html`) and linked it from the security
+  page, replacing the now-404 private-repo "full review" links. Deliberately held back the full CISO
+  review — it names live exploit paths and the repo is private, so publishing it verbatim would be a
+  public attack map.
 - Reliability/delivery copy pass: reworded the absolute "never lost" claims to the durability
   mechanism ("durable before ACK" / "durable by design"), and scoped the "Never lose a message" card
   to tracking. **Decision (owner): keep the honest "reliable / durable-by-design" framing** — do not
