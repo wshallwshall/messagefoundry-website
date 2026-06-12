@@ -36,6 +36,15 @@ repo). It is **not** the engine. Served at https://messagefoundry.org via GitHub
     **flag the gap** so the owner can reconcile the engine repo's docs, and (c) note that the
     owner is the accountable source for the claim. The default remains repo-stated built-vs-
     planned; the override is per-claim and must be explicit, not assumed.
+  - **Protocol & message-type breadth (standing owner decision — do not re-litigate).** The site
+    positions MessageFoundry as a broad *healthcare integration engine* that connects "a wide range
+    of protocols and message types." This is forward-looking positioning the owner has already
+    approved. Treat general breadth-of-connectivity language (protocols, transports, message types,
+    "all message types") as **pre-approved aspirational framing**: write it confidently and do **not**
+    re-flag built-vs-planned for it. The discipline still applies to *specific, concrete* capability
+    claims (e.g. "an X connector is available today") and to the Features page's "Available now /
+    planned" split — keep those accurate. Broad positioning = fine; specific "available now" claims =
+    still grounded. (HL7 v2 over MLLP and file are the shipping core; other protocols are intended.)
 - **Do not delete `CNAME`** — it binds the custom domain on every Pages deploy.
 
 ## Preview & deploy
