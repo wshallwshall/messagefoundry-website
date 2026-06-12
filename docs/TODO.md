@@ -4,9 +4,6 @@ Living list of follow-ups for the marketing site. Keep it short; delete items wh
 
 ## Open
 
-- **Revise the About page (`about.html`).** Flagged for a content/copy pass — review and rework
-  the messaging (Why it exists / Status / License / Contributing / Get in touch). Keep it aligned
-  with the engine repo's built-vs-planned state and the current site positioning.
 - **Content freshness — competitor facts.** The comparison page cites KLAS rankings, ownership,
   and licensing that change over time (e.g. KLAS is published yearly). Revisit annually and
   re-verify against the sources listed on `comparison.html`. Source of truth for our own
@@ -135,3 +132,10 @@ Open: decide whether to promote the security page from the footer into the top n
   reliability card, per the Standards document.
 - Light security-as-differentiator touches on the home: a "Built to recognized standards" hero-meta
   item and a standards mention in the "Patient data protected by default" card.
+- Added the **contact form** (`contact.html` + `thanks.html`, Web3Forms → questions@messagefoundry.org,
+  no-JS, honeypot, "no PHI" notice), wired the security page's "Ask a question" button to it, added a
+  footer **Contact** link site-wide and a **Get in touch** CTA on the About page.
+- Rewrote the **About page** as an origin/mission manifesto — why MessageFoundry exists (an
+  open-source answer to interface-engine price hikes and vendor lock-in), pointed but hedged on the
+  incumbents with no vendor-specific accusations, Status/License/Contributing compressed to an
+  essentials block.
