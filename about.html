@@ -4,14 +4,14 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>About — MessageFoundry</title>
-  <meta name="description" content="What MessageFoundry is, why it exists, its current status, license (AGPL-3.0-or-later), and how to contribute.">
+  <meta name="description" content="Why we built MessageFoundry — an open-source HL7 v2 interface engine created as an alternative to rising prices and vendor lock-in, so healthcare organizations can save money, stay flexible, and migrate off legacy engines.">
   <link rel="canonical" href="https://messagefoundry.org/about.html">
   <link rel="icon" href="/assets/img/favicon.svg" type="image/svg+xml">
   <meta name="theme-color" content="#0b1220">
   <meta property="og:type" content="website">
   <meta property="og:site_name" content="MessageFoundry">
   <meta property="og:title" content="About — MessageFoundry">
-  <meta property="og:description" content="What MessageFoundry is, why it exists, its status, license, and how to contribute.">
+  <meta property="og:description" content="Why we built MessageFoundry: an open-source HL7 v2 interface engine — our answer to rising prices and vendor lock-in in healthcare integration.">
   <meta property="og:url" content="https://messagefoundry.org/about.html">
   <meta property="og:image" content="https://messagefoundry.org/assets/img/og.png">
   <meta property="og:image:width" content="1200">
@@ -45,39 +45,85 @@
 
   <section class="section section--dark section--tight">
     <div class="container">
-      <span class="eyebrow">About</span>
-      <h1 style="max-width:20ch">Healthcare interfaces, built like software</h1>
-      <p class="lead">MessageFoundry exists for a specific gap: standing up a few reliable HL7 v2 interfaces shouldn't require a heavyweight platform or a proprietary low-code canvas. If you can write Python, you can route, filter, and transform clinical messages — and keep that logic in version control alongside the rest of your code.</p>
+      <span class="eyebrow">Our story</span>
+      <h1 style="max-width:24ch">We built the interface engine we wished we had</h1>
+      <p class="lead">MessageFoundry started as a reaction — to interface-engine price hikes, to contracts that are easier to sign than to leave, and to a market where the tools hospitals depend on keep getting more expensive just as budgets get tighter. We thought healthcare deserved an open, modern alternative. So we built one — and made it free.</p>
     </div>
   </section>
 
   <section class="section">
     <div class="container prose">
-      <h2>Why it exists</h2>
-      <p>Most HL7 integration engines optimize for breadth — huge connector libraries, visual designers, enterprise footprints. That's the right tool for a large hospital integration team. But a great many real-world needs are small and specific: take ADT from system A, filter and reshape it, deliver it to system B, reliably, with an audit trail. For that, a GUI-driven platform is often more weight than the job requires.</p>
-      <p>MessageFoundry takes the opposite starting point. Configuration <em>is</em> code — named Connections wired together by Router and Handler functions, authored in plain Python and committed to git. There's no monolithic "channel" object hiding the wiring; the graph you write is the system that runs. Reliability comes from a transactional inbox/outbox on SQLite, so reliable delivery, retries, and replay are built in without a separate broker.</p>
+      <span class="eyebrow">Why we built it</span>
+      <h2>The engines hospitals rely on keep getting pricier — and harder to leave</h2>
+      <p>Over the past decade, the leading HL7 interface engines have been consolidated under private-equity firms and large, privately held conglomerates. That isn't a conspiracy; it's just how the market has moved. But it has consequences for the organizations that depend on them.</p>
+      <p>Healthcare organizations are absorbing reimbursement cuts and tightening budgets. Over the same stretch, many have watched their integration costs climb — through higher list prices, per-interface and per-connection fees, and renewals that only ever seem to move in one direction.</p>
+      <p>And leaving is rarely easy. Interface logic is often locked inside a proprietary, GUI-bound format that doesn't port cleanly, and multi-year agreements raise the cost of walking away. Intentional or not, the result is leverage — and it sits with the vendor, not the health system.</p>
+      <p>We kept running into the same wall. Eventually, being annoyed about it stopped being enough.</p>
+    </div>
+  </section>
 
-      <h2>Status</h2>
-      <p>The minimum reliable engine is in place: the Connection / Router / Handler model and config loader, a durable store-as-queue with the retry / dead-letter / replay pipeline, tolerant peek plus opt-in strict validation, MLLP and file connections with correct framing and ACK/NAK, and the localhost API. Authentication, RBAC, a tamper-evident hash-chained audit log, and AES-256-GCM encryption-at-rest are built. The message store is pluggable across <b>SQLite (default), SQL Server, PostgreSQL, MySQL, and Oracle</b>.</p>
-      <p>The tooling ships too: a PySide6 admin console, a VS Code extension with setup wizards, validate-on-save, a graph view, and a PHI-safe (code-only) AI assistant, AI-assisted migration from other engines, and a full test harness. Commercial support and consulting are available.</p>
-      <p>On the roadmap: additional transports (TCP, HTTP, database) and REST / FHIR destinations, a database poller, a plugin layer, sandboxed transformer steps, enrichment / lookup tables, alerting, a de-identification framework, centralized log redaction, retention/purge enforcement, MLLP-over-TLS with outbound allow-listing, and managed BAA-backed AI for PHI-scoped assistance. See the repository's roadmap for the current state.</p>
-
-      <h2>License</h2>
-      <p>MessageFoundry is licensed under the <b>GNU Affero General Public License v3.0 or later</b> (<code>AGPL-3.0-or-later</code>). Running a modified version as a network service triggers the AGPL's §13 obligation to offer source to your users. A separately-licensed commercial edition may be available from the maintainer.</p>
-
-      <h2>Contributing</h2>
-      <p>Contributions are welcome. A signed Contributor License Agreement is required before a pull request can be merged. The best place to start is a GitHub issue describing what you'd like to change.</p>
-
-      <div class="btn-row">
-        <a class="btn btn-primary" href="https://github.com/messagefoundry/messagefoundry" target="_blank" rel="noopener">View the repository</a>
-        <a class="btn btn-secondary" href="https://github.com/messagefoundry/messagefoundry/issues" target="_blank" rel="noopener">Open an issue</a>
+  <section class="section section--alt">
+    <div class="container grid grid-2" style="align-items:start">
+      <div>
+        <span class="eyebrow">What healthcare needs</span>
+        <h2>Affordable, flexible, and yours to leave</h2>
+        <p class="lead">The fix isn't a cheaper version of the same trap. It's a different kind of tool — one built so you stay in control of your costs, your data, and your way out.</p>
       </div>
+      <ul class="feature-list">
+        <li><b>Open source and self-hosted</b> — no per-interface licensing, so your costs don't climb every time you add a feed, and nothing is locked inside a vendor's runtime.</li>
+        <li><b>Easy to move off legacy</b> — AI-assisted migration drafts MessageFoundry equivalents of your existing channels, so switching is measured in weeks, not multi-year projects.</li>
+        <li><b>A language people actually know</b> — interfaces are plain Python, one of the world's most widely used languages, so it's easier to hire analysts and developers, and easier for the team you already have.</li>
+        <li><b>AI assistance on your terms</b> — use modern AI coding help if you want it, skip it if you don't; either way it's code-only and PHI-safe by default.</li>
+      </ul>
+    </div>
+  </section>
 
-      <h2>Get in touch</h2>
-      <p>Have a question that isn't a code change — about deployment, security and PHI, migrating off a legacy engine, or licensing? <a href="/contact.html">Contact us</a> and we'll get back to you by email.</p>
+  <section class="section section--dark">
+    <div class="container">
+      <div class="center" style="max-width:760px">
+        <span class="eyebrow">Why we made it open</span>
+        <h2>We gave it away to make healthcare a little better</h2>
+        <p class="lead center">We could have built another proprietary engine. We chose open source instead — AGPL-licensed, source available, free to run in your own environment.</p>
+        <p class="lead center">The reasoning is simple, and human. Every dollar a health system doesn't hand to an integration vendor is a dollar it can spend where it counts. Money saved in IT means fewer layoffs on the teams that keep care running — and, further down the line, more of the budget pointed where it belongs: at the bedside.</p>
+        <p class="lead center">One tool won't fix a health system's budget, and we won't pretend otherwise. But the direction is right — so we're pushing it the right way.</p>
+      </div>
+    </div>
+  </section>
 
-      <div class="btn-row">
-        <a class="btn btn-primary" href="/contact.html">Contact us</a>
+  <section class="section">
+    <div class="container">
+      <div class="center" style="margin-bottom:38px">
+        <span class="eyebrow">The essentials</span>
+        <h2>The practical bits</h2>
+      </div>
+      <div class="grid grid-3">
+        <div class="card">
+          <h3>Where it stands</h3>
+          <p>The core engine is in place and running — durable delivery, tolerant HL7 parsing, MLLP and file connections, authentication, RBAC, a tamper-evident audit log, and encryption at rest. More transports and FHIR / REST destinations are on the roadmap.</p>
+          <p style="margin:10px 0 0"><a href="/features.html">See built vs planned →</a></p>
+        </div>
+        <div class="card">
+          <h3>License</h3>
+          <p>Released under the <b>GNU AGPL-3.0-or-later</b>, with the source available. Running a modified version as a network service triggers the AGPL's §13 source-offer obligation. A separately-licensed commercial edition is available from the maintainer.</p>
+        </div>
+        <div class="card">
+          <h3>Contributing</h3>
+          <p>Contributions are welcome. A signed Contributor License Agreement is required before a pull request can be merged — the best place to start is a GitHub issue describing what you'd like to change.</p>
+          <p style="margin:10px 0 0"><a href="https://github.com/messagefoundry/messagefoundry/issues" target="_blank" rel="noopener">Open an issue ↗</a></p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="container">
+      <div class="cta-band">
+        <h2>Take a look — or just ask</h2>
+        <p class="lead center" style="color:var(--muted-dk)">See how it works, or send us a question about deployment, security, migration, or licensing — we'll get back to you by email.</p>
+        <div class="btn-row center">
+          <a class="btn btn-primary" href="/getting-started.html">Get started</a>
+          <a class="btn btn-ghost" href="/contact.html">Contact us</a>
+        </div>
       </div>
     </div>
   </section>
