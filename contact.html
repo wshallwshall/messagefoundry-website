@@ -3,16 +3,16 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>About — MessageFoundry</title>
-  <meta name="description" content="What MessageFoundry is, why it exists, its current status, license (AGPL-3.0-or-later), and how to contribute.">
-  <link rel="canonical" href="https://messagefoundry.org/about.html">
+  <title>Ask a question — MessageFoundry</title>
+  <meta name="description" content="Questions about MessageFoundry — deployment, security and PHI, migrating off a legacy engine, or licensing? Send us a note and we'll get back to you.">
+  <link rel="canonical" href="https://messagefoundry.org/contact.html">
   <link rel="icon" href="/assets/img/favicon.svg" type="image/svg+xml">
   <meta name="theme-color" content="#0b1220">
   <meta property="og:type" content="website">
   <meta property="og:site_name" content="MessageFoundry">
-  <meta property="og:title" content="About — MessageFoundry">
-  <meta property="og:description" content="What MessageFoundry is, why it exists, its status, license, and how to contribute.">
-  <meta property="og:url" content="https://messagefoundry.org/about.html">
+  <meta property="og:title" content="Ask a question — MessageFoundry">
+  <meta property="og:description" content="Questions about deployment, security, migration, or licensing? Send us a note.">
+  <meta property="og:url" content="https://messagefoundry.org/contact.html">
   <meta property="og:image" content="https://messagefoundry.org/assets/img/og.png">
   <meta property="og:image:width" content="1200">
   <meta property="og:image:height" content="630">
@@ -37,41 +37,56 @@
         <a href="/ai.html">AI assist</a>
         <a href="/getting-started.html">Get started</a>
         <a href="/comparison.html">Comparison</a>
-        <a href="/about.html" class="active" aria-current="page">About</a>
+        <a href="/about.html">About</a>
         <a class="btn btn-ghost" href="https://github.com/messagefoundry/messagefoundry" target="_blank" rel="noopener">GitHub ↗</a>
       </nav>
     </div>
   </header>
 
   <section class="section section--dark section--tight">
-    <div class="container">
-      <span class="eyebrow">About</span>
-      <h1 style="max-width:20ch">Healthcare interfaces, built like software</h1>
-      <p class="lead">MessageFoundry exists for a specific gap: standing up a few reliable HL7 v2 interfaces shouldn't require a heavyweight platform or a proprietary low-code canvas. If you can write Python, you can route, filter, and transform clinical messages — and keep that logic in version control alongside the rest of your code.</p>
+    <div class="container center">
+      <span class="eyebrow">Contact</span>
+      <h1 style="max-width:20ch">Ask us a question</h1>
+      <p class="lead center">Evaluating MessageFoundry for your interfaces? Ask about deployment, security and PHI, migrating off a legacy engine, or licensing — we'll get back to you by email.</p>
     </div>
   </section>
 
   <section class="section">
-    <div class="container prose">
-      <h2>Why it exists</h2>
-      <p>Most HL7 integration engines optimize for breadth — huge connector libraries, visual designers, enterprise footprints. That's the right tool for a large hospital integration team. But a great many real-world needs are small and specific: take ADT from system A, filter and reshape it, deliver it to system B, reliably, with an audit trail. For that, a GUI-driven platform is often more weight than the job requires.</p>
-      <p>MessageFoundry takes the opposite starting point. Configuration <em>is</em> code — named Connections wired together by Router and Handler functions, authored in plain Python and committed to git. There's no monolithic "channel" object hiding the wiring; the graph you write is the system that runs. Reliability comes from a transactional inbox/outbox on SQLite, so reliable delivery, retries, and replay are built in without a separate broker.</p>
+    <div class="container">
+      <!-- Web3Forms: submissions POST to api.web3forms.com and are emailed to questions@messagefoundry.org.
+           The destination address is NOT in this page — it's bound to the access_key below.
+           Get the key by entering questions@messagefoundry.org at https://web3forms.com and paste it in. -->
+      <form class="form" action="https://api.web3forms.com/submit" method="POST">
+        <input type="hidden" name="access_key" value="REPLACE_WITH_WEB3FORMS_ACCESS_KEY">
+        <input type="hidden" name="subject" value="New question from messagefoundry.org">
+        <input type="hidden" name="from_name" value="MessageFoundry website">
+        <input type="hidden" name="redirect" value="https://messagefoundry.org/thanks.html">
+        <!-- honeypot: bots check this; humans never see it -->
+        <input type="checkbox" name="botcheck" class="hp" tabindex="-1" autocomplete="off" aria-hidden="true">
 
-      <h2>Status</h2>
-      <p>The minimum reliable engine is in place: the Connection / Router / Handler model and config loader, a durable store-as-queue with the retry / dead-letter / replay pipeline, tolerant peek plus opt-in strict validation, MLLP and file connections with correct framing and ACK/NAK, and the localhost API. Authentication, RBAC, a tamper-evident hash-chained audit log, and AES-256-GCM encryption-at-rest are built. The message store is pluggable across <b>SQLite (default), SQL Server, PostgreSQL, MySQL, and Oracle</b>.</p>
-      <p>The tooling ships too: a PySide6 admin console, a VS Code extension with setup wizards, validate-on-save, a graph view, and a PHI-safe (code-only) AI assistant, AI-assisted migration from other engines, and a full test harness. Commercial support and consulting are available.</p>
-      <p>On the roadmap: additional transports (TCP, HTTP, database) and REST / FHIR destinations, a database poller, a plugin layer, sandboxed transformer steps, enrichment / lookup tables, alerting, a de-identification framework, centralized log redaction, retention/purge enforcement, MLLP-over-TLS with outbound allow-listing, and managed BAA-backed AI for PHI-scoped assistance. See the repository's roadmap for the current state.</p>
+        <div class="field">
+          <label for="name">Name <span class="req" aria-hidden="true">*</span></label>
+          <input id="name" type="text" name="name" required autocomplete="name">
+        </div>
+        <div class="field">
+          <label for="email">Email <span class="req" aria-hidden="true">*</span></label>
+          <input id="email" type="email" name="email" required autocomplete="email" placeholder="you@hospital.org">
+        </div>
+        <div class="field">
+          <label for="organization">Organization</label>
+          <input id="organization" type="text" name="organization" autocomplete="organization">
+        </div>
+        <div class="field">
+          <label for="message">Your question <span class="req" aria-hidden="true">*</span></label>
+          <textarea id="message" name="message" required placeholder="Ask about deployment, security &amp; PHI, migration off a legacy engine, licensing…"></textarea>
+        </div>
 
-      <h2>License</h2>
-      <p>MessageFoundry is licensed under the <b>GNU Affero General Public License v3.0 or later</b> (<code>AGPL-3.0-or-later</code>). Running a modified version as a network service triggers the AGPL's §13 obligation to offer source to your users. A separately-licensed commercial edition may be available from the maintainer.</p>
+        <button type="submit" class="btn btn-primary">Send your question</button>
 
-      <h2>Contributing</h2>
-      <p>Contributions are welcome. A signed Contributor License Agreement is required before a pull request can be merged. The best place to start is a GitHub issue describing what you'd like to change.</p>
-
-      <div class="btn-row">
-        <a class="btn btn-primary" href="https://github.com/messagefoundry/messagefoundry" target="_blank" rel="noopener">View the repository</a>
-        <a class="btn btn-secondary" href="https://github.com/messagefoundry/messagefoundry/issues" target="_blank" rel="noopener">Open an issue</a>
-      </div>
+        <div class="callout" style="margin-top:22px">
+          <p style="margin:0"><strong>Please don't include PHI or real patient data.</strong> This form is routed through a third-party form service and email — keep it to general questions. For anything sensitive, ask here and we'll arrange a secure channel.</p>
+        </div>
+      </form>
     </div>
   </section>
 
