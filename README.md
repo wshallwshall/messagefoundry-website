@@ -1,6 +1,6 @@
 # messagefoundry-website
 
-Marketing site for **[MessageFoundry](https://github.com/wshallwshall/MessageFoundry)**,
+Marketing site for **[MessageFoundry](https://github.com/messagefoundry/messagefoundry)**,
 served at **https://messagefoundry.org** via GitHub Pages.
 
 Plain static HTML + CSS — **no build step, no framework, no dependencies.** Edit a file,
@@ -57,5 +57,5 @@ GitHub side. Full setup steps live in [`docs/DEPLOYMENT.md`](docs/DEPLOYMENT.md)
 ## Content accuracy
 
 Copy is kept aligned with the engine's own docs — features are described as **built vs
-planned** exactly as the [MessageFoundry README](https://github.com/wshallwshall/MessageFoundry)
+planned** exactly as the [MessageFoundry README](https://github.com/messagefoundry/messagefoundry)
 and `docs/` state them. Don't add capability claims the engine doesn't back.

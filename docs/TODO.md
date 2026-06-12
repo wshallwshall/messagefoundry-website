@@ -32,18 +32,14 @@ edits:
 
 Open: decide whether to promote the security page from the footer into the top nav.
 
-## Engine repo is private (temporary) — `source.html` placeholder
+## Open — website repo org move (optional)
 
-The engine repo (`wshallwshall/MessageFoundry`) is intentionally **private for now**. Every GitHub
-link across the site now redirects to **`/source.html`** ("Open source, opening soon"); the `noindex`
-placeholder explains the temporary state and points to Overview / Comparison / Security. Remaining:
-
-- The getting-started **`git clone` command + install flow** still reference the private repo — they
-  won't work for a visitor until the repo is public. Decide whether to gate / annotate that page.
-- **When the repo goes public:** point the links back at GitHub (revert the `/source.html` redirect)
-  and remove `source.html`.
-- The "open source / fork it / read the source" copy is currently bridged by the placeholder; revisit
-  if the repo stays private long-term.
+The **engine** repo is now public at `github.com/messagefoundry/messagefoundry` and all site links
+point at it. The **website** repo still lives under `wshallwshall/messagefoundry-website` (Pages
+`www` CNAME → `wshallwshall.github.io`). If you also want to move the website into the `messagefoundry`
+org, that's a separate Pages + DNS re-setup: re-bind the custom domain on the new repo, update the
+`www` CNAME target to `messagefoundry.github.io`, and update the `wshallwshall.github.io` references in
+`README.md` / `docs/DEPLOYMENT.md`.
 
 ## Generated assets — how to regenerate
 
@@ -103,6 +99,10 @@ placeholder explains the temporary state and points to Overview / Comparison / S
 - Engine repo is private → added a `source.html` "open source, opening soon" placeholder and
   redirected every GitHub link site-wide to it; softened action labels (Star it / Open an issue /
   Ask a question). Dropped "in Python" from the index `<title>` / OG / Twitter titles.
+- Engine repo went **public** under the new `messagefoundry` org → reverted every GitHub link from the
+  `/source.html` placeholder to `github.com/messagefoundry/messagefoundry` (nav, footer, CTAs,
+  getting-started clone + "Go deeper" doc cards), restored the original action labels, removed
+  `source.html`, and updated `README.md`. (Website repo unchanged.)
 - Reliability/delivery copy pass: reworded the absolute "never lost" claims to the durability
   mechanism ("durable before ACK" / "durable by design"), and scoped the "Never lose a message" card
   to tracking. **Decision (owner): keep the honest "reliable / durable-by-design" framing** — do not
