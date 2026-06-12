@@ -28,6 +28,14 @@ repo). It is **not** the engine. Served at https://messagefoundry.org via GitHub
   as the engine repo's `README.md` / `docs/` state it. Never invent features, metrics, or
   claims. Competitor mentions (Mirth, Corepoint) stay factual, fair, and hedged, with the
   trademark disclaimer in the footer.
+  - **Owner override.** The repo owner may direct the site to state a claim from an
+    authoritative source they provide (e.g. the Secure Development Standards) even when the
+    engine repo's `docs/` haven't caught up yet — by explicitly telling you to *assume it is
+    true and in place*. When that happens: write the claim, but (a) still keep the wording
+    honest and unembellished (no "certified"/"guaranteed" unless the source says so), (b)
+    **flag the gap** so the owner can reconcile the engine repo's docs, and (c) note that the
+    owner is the accountable source for the claim. The default remains repo-stated built-vs-
+    planned; the override is per-claim and must be explicit, not assumed.
 - **Do not delete `CNAME`** — it binds the custom domain on every Pages deploy.
 
 ## Preview & deploy
