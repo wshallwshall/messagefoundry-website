@@ -335,7 +335,7 @@ table.cmp tr:last-child th, table.cmp tr:last-child td { border-bottom: 0; }
   .grid-3 { grid-template-columns: repeat(2, 1fr); }
   .footer-grid { grid-template-columns: 1fr 1fr; }
 }
-@media (max-width: 980px) {
+@media (max-width: 1040px) {
   .nav-toggle { display: block; }
   .site-nav {
     position: absolute; top: 64px; left: 0; right: 0; flex-direction: column; align-items: stretch;
