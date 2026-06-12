@@ -3,15 +3,15 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Security &amp; PHI — MessageFoundry</title>
-  <meta name="description" content="How MessageFoundry protects PHI: a genuinely-built identity, access-control, and audit core — argon2id + Active Directory auth, deny-by-default RBAC with per-channel scoping, a tamper-evident hash-chained audit log, and AES-256-GCM encryption at rest — deployed in a controlled, fail-closed posture, with an open security review you can read in full.">
+  <title>Security, standards &amp; HIPAA — MessageFoundry</title>
+  <meta name="description" content="Security and hardening built to recognized standards: NIST SSDF (800-218), tested per NIST 800-115, controls mapped to NIST 800-53 / 800-66 (HIPAA Security Rule), and verified to OWASP ASVS 5.0 Level 2. Secure by default, encrypted end to end, with modern interface authentication and a clear shared-responsibility model.">
   <link rel="canonical" href="https://messagefoundry.org/security.html">
   <link rel="icon" href="/assets/img/favicon.svg" type="image/svg+xml">
   <meta name="theme-color" content="#0b1220">
   <meta property="og:type" content="website">
   <meta property="og:site_name" content="MessageFoundry">
-  <meta property="og:title" content="Security &amp; PHI — MessageFoundry">
-  <meta property="og:description" content="A built-and-enforced identity, access-control, and audit core for PHI — with an unusually open security posture you can verify in the code and a full CISO review.">
+  <meta property="og:title" content="Security, standards &amp; HIPAA — MessageFoundry">
+  <meta property="og:description" content="Built to NIST SSDF, tested per 800-115, controls mapped to 800-53 / 800-66 (HIPAA), and verified to OWASP ASVS 5.0 Level 2 — secure by default, with modern interface authentication.">
   <meta property="og:url" content="https://messagefoundry.org/security.html">
   <meta property="og:image" content="https://messagefoundry.org/assets/img/og.png">
   <meta property="og:image:width" content="1200">
@@ -46,118 +46,201 @@
   <section class="section section--dark section--tight">
     <div class="container">
       <span class="eyebrow">Security &amp; PHI</span>
-      <h1 style="max-width:22ch">Built to carry PHI — and open about exactly how</h1>
-      <p class="lead">MessageFoundry ships a genuinely-built identity, access-control, and audit core — enforced in code, not just documented — and runs in a controlled, fail-closed posture. Just as important for a healthcare buyer: the security story is <b>open</b>. You can read the source, download a posture summary that rates every control by what's <em>actually enforced</em>, and request the full code-grounded review.</p>
+      <h1 style="max-width:24ch">Engineered for PHI — and built to recognized standards</h1>
+      <p class="lead">For a healthcare integration engine, security isn't a feature — it's the foundation. MessageFoundry is built to a published <b>Secure Development Standard</b> and measured against the frameworks a CISO already trusts: <b>NIST SSDF</b>, <b>NIST 800-53 / 800-66</b> (the HIPAA Security Rule), and <b>OWASP ASVS 5.0 Level 2</b>. It's secure by default, encrypted end to end, and clear about who's responsible for what.</p>
       <div class="btn-row">
-        <a class="btn btn-primary" href="/assets/MessageFoundry-Security-Posture-Summary.pdf" target="_blank" rel="noopener">Download the posture summary (PDF)</a>
-        <a class="btn btn-secondary" href="#review">Verify it yourself →</a>
+        <a class="btn btn-primary" href="/assets/MessageFoundry-Secure-Development-Standards.pdf" target="_blank" rel="noopener">Read the Secure Development Standards (PDF)</a>
+        <a class="btn btn-secondary" href="#controls">See the controls →</a>
       </div>
     </div>
   </section>
 
-  <!-- built today -->
+  <!-- standards -->
   <section class="section">
     <div class="container">
-      <div class="center" style="margin-bottom:42px">
-        <span class="eyebrow">Built &amp; enforced today</span>
-        <h2>A real access-control and audit core</h2>
-        <p class="lead center">These controls are implemented and enforced in the running engine — among the stronger access-control stories in this product category for a pre-1.0 product.</p>
+      <div class="center" style="margin-bottom:40px">
+        <span class="eyebrow">Built to recognized standards</span>
+        <h2>Mapped to the frameworks your auditors use</h2>
+        <p class="lead center">Four bodies of work answer four questions — how it's built, how it's tested, what controls it implements, and how it's independently verified.</p>
       </div>
-      <div class="grid grid-3">
+      <div class="grid grid-2">
         <div class="card">
-          <span class="ico"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 1 3 5v6c0 5.25 3.6 9.74 9 11 5.4-1.26 9-5.75 9-11V5l-9-4zm0 10.99h7c-.53 4.12-3.28 7.79-7 8.94V12H5V6.3l7-3.11v8.8z"/></svg></span>
-          <h3>Authentication, fail-closed</h3>
-          <p>Local accounts with argon2id password hashing and account lockout, plus Active Directory over <b>LDAPS</b>. The engine refuses to serve unauthenticated requests off loopback, and denies access when no auth is configured. (Kerberos / Windows SSO is experimental; MFA is on the roadmap.)</p>
+          <h3>NIST SSDF — built securely</h3>
+          <p>The secure software development lifecycle follows <b>NIST SP 800-218 (SSDF)</b> across all four practice groups — prepare, protect, produce, and respond — with threat modeling per interface, peer review, and secure-by-default design.</p>
         </div>
         <div class="card">
-          <span class="ico"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 1 3 5v6c0 5.25 3.6 9.74 9 11 5.4-1.26 9-5.75 9-11V5l-9-4zm-1.06 14.54L7.4 12l1.41-1.41 2.12 2.12 4.24-4.24 1.42 1.41-5.65 5.65z"/></svg></span>
-          <h3>Deny-by-default RBAC</h3>
-          <p>Role-based access control with fixed built-in roles, enforced on every engine and admin route, denying anything not explicitly granted — including <b>per-channel data-scope confinement</b>, so a user only ever sees the interfaces they're entitled to.</p>
+          <h3>NIST 800-115 — tested rigorously</h3>
+          <p>Security testing follows <b>NIST SP 800-115</b>: automated SAST / SCA / secret-scanning on every build, dynamic testing per release, and independent source review + penetration testing before production.</p>
         </div>
         <div class="card">
-          <span class="ico"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M18 8h-1V6A5 5 0 0 0 7 6v2H6a2 2 0 0 0-2 2v10a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V10a2 2 0 0 0-2-2zM9 6a3 3 0 0 1 6 0v2H9V6zm3 11a2 2 0 1 1 0-4 2 2 0 0 1 0 4z"/></svg></span>
-          <h3>Sessions you can revoke</h3>
-          <p>Opaque, server-side session tokens with idle and absolute timeouts and <b>immediate revocation</b> — no long-lived bearer secrets floating around.</p>
+          <h3>NIST 800-53 / 800-66 — HIPAA-mapped</h3>
+          <p>Implemented controls are drawn from the <b>NIST SP 800-53</b> catalog and mapped to the <b>HIPAA Security Rule via NIST SP 800-66 Rev. 2</b> — access control, audit, integrity, and transmission security.</p>
         </div>
         <div class="card">
-          <span class="ico"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M3 5h18v2H3V5zm0 6h18v2H3v-2zm0 6h12v2H3v-2zm14.5.5 1.5 1.5 3.5-3.5L21 14l-2.5 2.5z"/></svg></span>
-          <h3>Tamper-evident audit log</h3>
-          <p>A user-attributed, <b>hash-chained</b> audit log records who viewed, replayed, or acted on PHI — with a verification command that detects out-of-band edits. (Tamper-<em>evidence</em>, not prevention; integrity still rests on host/file access controls.)</p>
+          <h3>OWASP ASVS 5.0 Level 2 — verified</h3>
+          <p>The application is verified against <b>OWASP ASVS 5.0 Level 2</b> — the standard level for software handling sensitive data — scoped chapter-by-chapter, with any exclusions documented and justified.</p>
         </div>
-        <div class="card">
-          <span class="ico"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2 4 5v6c0 5 3.4 9.4 8 11 4.6-1.6 8-6 8-11V5l-8-3zm-1 5h2v4h3l-4 5-4-5h3V7z"/></svg></span>
-          <h3>Encryption at rest</h3>
-          <p>Message bodies are encrypted with <b>AES-256-GCM</b> when a store-encryption key is set. We recommend pairing it with full-disk/volume encryption (BitLocker, LUKS) so everything at rest is covered.</p>
-        </div>
-        <div class="card">
-          <span class="ico"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M3 13h2l2 5 4-12 2 7h2l1.5-3H21v-2h-4.7L15 13l-2-7L9 18l-2-5H3z"/></svg></span>
-          <h3>Nothing silently dropped</h3>
-          <p>Every received message is persisted with a recorded disposition <em>before</em> it's acknowledged — so your message counts always reflect the truth, and there's no quiet data loss to discover later.</p>
-        </div>
+      </div>
+      <div class="callout" style="margin-top:26px">
+        <p><strong>Honest by design.</strong> NIST doesn't issue certificates for these frameworks, so we don't claim one. These are <b>alignment claims backed by evidence</b> — the Standards document, test reports, the ASVS attestation, and an SBOM, published with our releases. "Built to," "verified against," "mapped to" — never "certified."</p>
       </div>
     </div>
   </section>
 
-  <!-- deployment posture -->
-  <section class="section section--alt">
+  <!-- secure by default -->
+  <section class="section section--alt" id="controls">
     <div class="container grid grid-2" style="align-items:start">
       <div>
-        <span class="eyebrow">Deployment posture</span>
-        <h2>Designed for a controlled, fail-closed deployment</h2>
-        <p class="lead">Today's supported posture is a single, controlled host: the API binds to <code>127.0.0.1</code> and requires authentication, and the trust boundary is that localhost API and the host itself.</p>
+        <span class="eyebrow">Secure by default</span>
+        <h2>The safe configuration is the default one</h2>
+        <p class="lead">You don't have to harden it — it ships hardened. TLS is on, encryption is on, accounts are least-privilege, and audit logging is verbose out of the box. Insecure options require an explicit, documented opt-in.</p>
       </div>
       <ul class="feature-list">
-        <li><b>Loopback by default</b> — the API isn't exposed to the network; the admin console attaches over localhost.</li>
-        <li><b>Some protections are operator preconditions</b> — set the at-rest encryption key, enable full-disk encryption, lock down config and spill directories, and treat backups as PHI. We document exactly which.</li>
-        <li><b>Least-privilege service</b> — runs headless as a service account; config authors run trusted in-process code (the documented extension model).</li>
-        <li><b>No surprises</b> — the engine fails closed rather than falling open when something isn't configured.</li>
+        <li><b>TLS everywhere</b> — all network communication over TLS 1.2+ (prefer 1.3), including <b>MLLP-over-TLS</b> and <b>mTLS</b> for system-to-system links. No cleartext PHI on the wire.</li>
+        <li><b>Encryption at rest, on by default</b> — sensitive data encrypted with approved algorithms (SQLCipher / database-native), with FIPS-validated crypto where a deployment requires it.</li>
+        <li><b>Deny-by-default RBAC</b> — role-based, least-privilege access enforced on every action, with per-channel data-scope confinement.</li>
+        <li><b>Tamper-resistant audit</b> — a timestamped, user-attributed audit log; <b>no PHI or secrets in logs</b>, ever.</li>
+        <li><b>Fail-closed</b> — errors fail safe; faults never leak stack traces or sensitive data.</li>
+        <li><b>Secrets stay out of code</b> — sourced from an environment / secret store, enforced by pre-commit and CI secret scanning; the git history is kept clean.</li>
       </ul>
     </div>
   </section>
 
-  <!-- roadmap before network exposure -->
+  <!-- interface auth -->
   <section class="section">
     <div class="container">
-      <div class="center" style="margin-bottom:36px">
-        <span class="eyebrow">Before network exposure</span>
-        <h2>What's on the roadmap — disclosed, not hidden</h2>
-        <p class="lead center">A few things you'd need before exposing PHI over a network are not built yet. We disclose them plainly; until they land, keep the engine on localhost or behind your own TLS proxy.</p>
+      <div class="center" style="margin-bottom:38px">
+        <span class="eyebrow">Interface authentication</span>
+        <h2>Modern auth for every connection — not a shared password</h2>
+        <p class="lead center">An integration engine authenticates <em>systems</em>, not people. Each connection uses the strongest mechanism its partner supports, recorded in the connection definition.</p>
       </div>
       <div class="grid grid-3">
         <div class="card">
-          <h3>TLS everywhere <span class="badge" style="vertical-align:middle;color:#f6c177;border-color:rgba(245,158,11,.4)">planned</span></h3>
-          <p>The API and MLLP are plaintext today (loopback posture). MLLP-over-TLS and API TLS are required before any off-host exposure. AD (LDAPS) and the SQL Server backend already use TLS.</p>
+          <h3>Preferred — system-to-system</h3>
+          <ul class="feature-list" style="margin-top:12px">
+            <li><b>Mutual TLS (mTLS)</b> — client-certificate auth with full chain + revocation checks; sender-constrained tokens preferred.</li>
+            <li><b>OAuth 2.0 client-credentials</b> — asymmetric (<code>private_key_jwt</code>), short-lived, per-connection scoped tokens.</li>
+            <li><b>SMART on FHIR</b> — Backend Services profile (signed JWT assertion, <code>system/</code> scopes) for any FHIR interface.</li>
+          </ul>
         </div>
         <div class="card">
-          <h3>MFA &amp; allow-listing <span class="badge" style="vertical-align:middle;color:#f6c177;border-color:rgba(245,158,11,.4)">planned</span></h3>
-          <p>Multi-factor authentication and an outbound destination allow-list — so a message can only ever be sent to a pre-approved endpoint.</p>
+          <h3>Active Directory / enterprise</h3>
+          <ul class="feature-list" style="margin-top:12px">
+            <li><b>gMSA service account</b> — auto-rotated password, never stored in config.</li>
+            <li><b>Kerberos / Integrated Windows Auth</b> (NTLM disabled where feasible); integrated DB auth.</li>
+            <li><b>LDAPS only</b> for directory lookups; roles mapped to AD groups; human operators federate via <b>AD FS / Entra ID</b> (OIDC / SAML).</li>
+          </ul>
         </div>
         <div class="card">
-          <h3>Data lifecycle <span class="badge" style="vertical-align:middle;color:#f6c177;border-color:rgba(245,158,11,.4)">planned</span></h3>
-          <p>Retention / purge enforcement, centralized log redaction, and a de-identification framework — so PHI doesn't accumulate indefinitely and never leaks into logs.</p>
+          <h3>Legacy — documented per connection</h3>
+          <ul class="feature-list" style="margin-top:12px">
+            <li>HTTP Basic over TLS, per-connection API keys, or SOAP <b>WS-Security</b> (X.509-signed preferred).</li>
+            <li>Used only when a partner can't support a preferred mechanism — always over TLS, vaulted, scoped, rotated, and recorded.</li>
+          </ul>
         </div>
+      </div>
+      <div class="callout" style="margin-top:26px">
+        <p><strong>Across every mechanism:</strong> TLS everywhere, credentials and keys in a secret store (never in code or config), per-connection least privilege, and per-connection IP allow-listing / network segmentation as defense-in-depth.</p>
       </div>
     </div>
   </section>
 
-  <!-- transparency / review -->
-  <section class="section section--dark" id="review">
+  <!-- shared responsibility -->
+  <section class="section section--dark">
+    <div class="container">
+      <div class="center" style="margin-bottom:34px">
+        <span class="eyebrow">Shared responsibility</span>
+        <h2>Clear about who owns what</h2>
+        <p class="lead center">The software is built by one party and deployed by another. Stating the split plainly is itself a security control — neither side assumes the other has it covered.</p>
+      </div>
+      <div class="grid grid-2" style="align-items:start">
+        <div class="card">
+          <h3>MessageFoundry (the project)</h3>
+          <ul class="feature-list" style="margin-top:12px">
+            <li>Secure development practices and secure-by-default configuration.</li>
+            <li>Security testing and attestation of the software.</li>
+            <li>Vulnerability response and coordinated disclosure.</li>
+            <li>Documentation, evidence, and published attestations.</li>
+          </ul>
+        </div>
+        <div class="card">
+          <h3>Your organization (the deployer)</h3>
+          <ul class="feature-list" style="margin-top:12px">
+            <li>Your environment, host, and network security.</li>
+            <li>Identity, credential, and key management in your environment.</li>
+            <li>Backups, disaster recovery, and availability.</li>
+            <li>Your HIPAA program — risk analysis, Business Associate Agreements, and the deployment's compliance.</li>
+          </ul>
+        </div>
+      </div>
+      <div class="callout" style="margin-top:28px;background:rgba(245,158,11,.07);border-color:rgba(245,158,11,.28);color:var(--muted-dk)">
+        <p><strong style="color:var(--accent)">Said plainly.</strong> The software <b>supports a HIPAA-compliant deployment</b> — it doesn't make you compliant on its own. Our attestation that the software was built securely is evidence for <em>your</em> assessment, not a substitute for it.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- hipaa mapping -->
+  <section class="section section--alt">
+    <div class="container">
+      <div class="center" style="margin-bottom:30px">
+        <span class="eyebrow">HIPAA Security Rule</span>
+        <h2>Safeguards, mapped to what the software does</h2>
+        <p class="lead center">Technical safeguards from the HIPAA Security Rule (via NIST SP 800-66 Rev. 2), and how MessageFoundry implements them.</p>
+      </div>
+      <div class="table-wrap">
+        <table class="cmp">
+          <thead>
+            <tr><th scope="col">HIPAA safeguard</th><th scope="col">How MessageFoundry implements it</th><th scope="col">800-53</th></tr>
+          </thead>
+          <tbody>
+            <tr><th scope="row">Access control — unique ID, authn, auto-logoff</th><td>Authenticated, role-based, least-privilege access with session controls and timeouts</td><td>AC, IA</td></tr>
+            <tr><th scope="row">Audit controls</th><td>Tamper-resistant, timestamped audit log; no sensitive data in logs</td><td>AU</td></tr>
+            <tr><th scope="row">Integrity</th><td>Input validation; durable, ordered processing of messages</td><td>SI</td></tr>
+            <tr><th scope="row">Transmission security</th><td>TLS for all sensitive transport (including MLLP-over-TLS and mTLS)</td><td>SC</td></tr>
+            <tr><th scope="row">Encryption (at rest &amp; in transit)</th><td>Encryption at rest on by default, and TLS in transit</td><td>SC</td></tr>
+            <tr><th scope="row">Administrative &amp; physical</th><td><em>The deployer's environment and program</em> — supported with evidence, not replaced</td><td>RA, AC, SA</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </section>
+
+  <!-- secure sdlc -->
+  <section class="section">
+    <div class="container grid grid-2" style="align-items:start">
+      <div>
+        <span class="eyebrow">Secure SDLC &amp; supply chain</span>
+        <h2>Provenance you can verify</h2>
+        <p class="lead">Open-source software is only as trustworthy as the pipeline that builds it. Ours is built to be auditable end to end.</p>
+      </div>
+      <ul class="feature-list">
+        <li><b>Signed, verifiable releases</b> — each release is versioned, signed, and accompanied by a <b>software bill of materials (SBOM)</b>, so adopters can verify provenance and integrity.</li>
+        <li><b>CI security gates</b> — SAST, software-composition analysis, and secret scanning run on every change; builds fail on new high / critical findings.</li>
+        <li><b>Reviewed, protected code</b> — branch protection, required peer review, signed commits, no direct commits to main.</li>
+        <li><b>Coordinated disclosure</b> — a published <code>SECURITY.md</code> with a private reporting channel and a disclosure timeline feeds a tracked remediation process.</li>
+        <li><b>No real PHI in development</b> — synthetic or de-identified data only, on disk-encrypted developer machines.</li>
+      </ul>
+    </div>
+  </section>
+
+  <!-- evidence / verify -->
+  <section class="section section--dark" id="evidence">
     <div class="container grid grid-2" style="align-items:center">
       <div>
-        <span class="eyebrow">Verify, don't trust</span>
-        <h2>An open security posture you can check yourself</h2>
-        <p class="lead">The strongest thing we can offer a CISO isn't a claim — it's the receipts. We publish a <b>security &amp; PHI posture summary</b> — controls, compliance alignment, and deployment requirements, rated by what's <b>enforced in code, not what's documented</b>, gaps included — and a full, code-grounded control-by-control review is available on request.</p>
+        <span class="eyebrow">Evidence &amp; attestation</span>
+        <h2>Don't take our word — take the evidence</h2>
+        <p class="lead">We publish our Secure Development Standards and the evidence behind every claim, so your security team can review it directly. MessageFoundry is open source, so you can also read the code.</p>
         <div class="btn-row">
-          <a class="btn btn-primary" href="/assets/MessageFoundry-Security-Posture-Summary.pdf" target="_blank" rel="noopener">Download the posture summary (PDF)</a>
+          <a class="btn btn-primary" href="/assets/MessageFoundry-Secure-Development-Standards.pdf" target="_blank" rel="noopener">Download the Standards (PDF) ↓</a>
+          <a class="btn btn-ghost" href="https://github.com/messagefoundry/messagefoundry" target="_blank" rel="noopener">Read the source ↗</a>
         </div>
-        <p style="color:var(--muted-dk);font-size:.86rem;margin-top:16px">The summary covers our controls, compliance alignment, and deployment requirements. The full code-grounded review is available on request.</p>
       </div>
       <div>
         <ul class="feature-list">
-          <li><b>Source-available</b> — AGPL-licensed; audit the code, fork it, run it on your own terms.</li>
-          <li><b>Code-grounded review</b> — every control rated by what's enforced, with the gaps named.</li>
-          <li><b>PHI-safe AI</b> — the in-editor assistant sends only code, never message bodies, under a central policy.</li>
-          <li><b>Honest by default</b> — the project's own docs disclose what isn't built; we'd rather you find out here than in procurement.</li>
+          <li><b>Self-attested</b> SSDF-aligned, tested per 800-115, verified to ASVS 5.0 Level 2, and controls mapped to 800-53 / 800-66 — published with each release.</li>
+          <li><b>Third-party validation</b> of the SSDF attestation and the ASVS Level 2 assessment raises the weight of these claims.</li>
+          <li><b>A claims register</b> records each published claim, its wording, and the evidence behind it.</li>
+          <li><b>Not a NIST certificate</b> — displayable certifications (SOC 2, ISO 27001, HITRUST) are a separate, organization-level track.</li>
         </ul>
       </div>
     </div>
@@ -168,7 +251,7 @@
     <div class="container">
       <div class="cta-band">
         <h2>Evaluating MessageFoundry for PHI?</h2>
-        <p class="lead center" style="color:var(--muted-dk)">Start with the code and the security review — then bring us your questions.</p>
+        <p class="lead center" style="color:var(--muted-dk)">Start with the Standards, the code, and the evidence — then bring us your security team's questions.</p>
         <div class="btn-row center">
           <a class="btn btn-primary" href="/getting-started.html">Get started</a>
           <a class="btn btn-ghost" href="https://github.com/messagefoundry/messagefoundry/issues" target="_blank" rel="noopener">Ask a question ↗</a>

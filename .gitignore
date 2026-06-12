@@ -8,3 +8,4 @@ desktop.ini
 
 # local preview servers / logs
 *.log
+.claude/

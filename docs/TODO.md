@@ -11,6 +11,15 @@ Living list of follow-ups for the marketing site. Keep it short; delete items wh
 - **Footer "spec" detail.** The footer badge row now reads as benefits (Open source / No
   lock-in / Self-hosted). If a quick spec (Python version, exact license) is wanted somewhere,
   the footer-bottom line already states the AGPL license.
+- **⚠ Reconcile the engine repo's public docs with the new security posture.** `security.html` now
+  makes strong, standards-led claims (NIST SSDF / 800-115 / 800-53 / 800-66, OWASP ASVS 5.0 L2,
+  secure-by-default with TLS + at-rest encryption on, modern interface auth, in-order delivery). The
+  page invites a reader to **"read the source."** The engine repo's `docs/SECURITY.md`, `docs/PHI.md`,
+  and any CISO-review / architecture docs still describe the **older, gap-laden** posture (e.g. no TLS
+  yet, MFA/retention/redaction planned) and the at-least-once delivery semantics — a CISO who follows
+  the invitation will find claims that **contradict** the site. Before this batch is pushed, the engine
+  repo's docs must be brought in line with the Standards document (or the specific gaps re-disclosed),
+  and any live exploit-path detail scrubbed from the now-public repo. **This is the gating concern.**
 
 ## Reference docs
 
@@ -18,17 +27,24 @@ Living list of follow-ups for the marketing site. Keep it short; delete items wh
   from (sourced KLAS / ownership / licensing facts, built-vs-planned split). Keep `comparison.html`
   aligned with it; it mirrors the engine repo's `docs/marketing/COMPETITIVE-POSITIONING.md`.
 
-## Security posture summary PDF — regeneration
+## Secure Development Standards PDF — regeneration
 
-`security.html` links a **sanitized** posture-summary PDF (`assets/MessageFoundry-Security-Posture-
-Summary.pdf`) — built/partial/roadmap, capabilities table, compliance alignment, deployment
-requirements — deliberately **without** the engine CISO review's specific exploit paths / residual-risk
-register (that full review stays internal; offered "on request"). Regenerate from the source after
-edits:
+`security.html` links the **Secure Development Standards** PDF
+(`assets/MessageFoundry-Secure-Development-Standards.pdf`). Source of truth is the markdown at
+`docs/secure-development-standards.md` (mirrored from the engine owner's
+`Secure_Development_Standards.md`; the website copy has the status set to **Released**, not "Draft for
+review"). Regenerate after edits — render the markdown to a branded HTML page, then print it to PDF:
 
-    chrome --headless=new --disable-gpu --no-pdf-header-footer \
-      --print-to-pdf="assets/MessageFoundry-Security-Posture-Summary.pdf" \
-      "file:///ABSOLUTE/PATH/docs/security-posture-summary.html"
+1. `python` + `markdown` (extensions: `tables`, `fenced_code`, `sane_lists`) wrapped in the branded
+   print-CSS template → a temp `docs/_standards-src.html`.
+2. Print that to PDF, then delete the temp HTML:
+
+       chrome --headless=new --disable-gpu --no-pdf-header-footer \
+         --print-to-pdf="assets/MessageFoundry-Secure-Development-Standards.pdf" \
+         "file:///ABSOLUTE/PATH/docs/_standards-src.html"
+
+(The earlier sanitized **posture-summary** PDF and its `docs/security-posture-summary.html` source were
+retired when the standards-led page shipped.)
 
 Open: decide whether to promote the security page from the footer into the top nav.
 
@@ -101,3 +117,18 @@ Open: decide whether to promote the security page from the footer into the top n
 - Added a one-line CI/CD benefit to the home ("Ships through your own CI/CD") and overview
   ("Pipeline-ready") pages, and Open Graph image dimension/type meta tags (1200×630, PNG) to every
   page.
+- **Rebuilt `security.html` as a standards-led differentiator page** — built-to-recognized-standards
+  (NIST SSDF / 800-115 / 800-53 / 800-66, OWASP ASVS 5.0 L2, with honest "aligned/tested/mapped/
+  verified, not certified" wording), secure-by-default controls, modern interface authentication
+  (mTLS / OAuth2 client-credentials / SMART-on-FHIR Backend Services / AD gMSA-Kerberos-LDAPS-
+  federation), a shared-responsibility split, a HIPAA Security Rule mapping table, secure SDLC /
+  supply-chain, and an evidence/attestation section. "Supports a HIPAA-compliant deployment," never
+  "HIPAA compliant"/"NIST certified."
+- Published the **Secure Development Standards PDF** (`assets/MessageFoundry-Secure-Development-
+  Standards.pdf`, from `docs/secure-development-standards.md`, status set to Released) and linked it
+  from the security page; **retired** the old sanitized posture-summary PDF + its
+  `docs/security-posture-summary.html` source.
+- Claimed **in-order delivery** (FIFO per connection/destination) on `features.html` and the home
+  reliability card, per the Standards document.
+- Light security-as-differentiator touches on the home: a "Built to recognized standards" hero-meta
+  item and a standards mention in the "Patient data protected by default" card.

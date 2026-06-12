@@ -78,6 +78,7 @@
       </div>
       <ul class="feature-list">
         <li><b>Durable before it's acknowledged</b> — the inbound is ACKed only after the message and its outbox rows are committed to the store, so an accepted message survives a crash.</li>
+        <li><b>In-order delivery</b> — messages to a given destination are delivered first-in, first-out, preserving per-connection sequence.</li>
         <li><b>Per-outbound workers</b> — each destination drains independently; one slow or failing peer never blocks the others.</li>
         <li><b>Retries with backoff</b> and automatic <b>dead-lettering</b>, plus a dead-letter <b>bulk-replay</b> view for recovery.</li>
         <li><b>Replay</b> — re-drive a stored message through delivery from the console or API.</li>
