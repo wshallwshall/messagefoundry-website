@@ -32,15 +32,6 @@ edits:
 
 Open: decide whether to promote the security page from the footer into the top nav.
 
-## Open — website repo org move (optional)
-
-The **engine** repo is now public at `github.com/messagefoundry/messagefoundry` and all site links
-point at it. The **website** repo still lives under `wshallwshall/messagefoundry-website` (Pages
-`www` CNAME → `wshallwshall.github.io`). If you also want to move the website into the `messagefoundry`
-org, that's a separate Pages + DNS re-setup: re-bind the custom domain on the new repo, update the
-`www` CNAME target to `messagefoundry.github.io`, and update the `wshallwshall.github.io` references in
-`README.md` / `docs/DEPLOYMENT.md`.
-
 ## Generated assets — how to regenerate
 
 - **`assets/img/og.png`** is the social-share card, **rasterized from `assets/img/og.svg`**
