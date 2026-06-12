@@ -4,6 +4,9 @@ Living list of follow-ups for the marketing site. Keep it short; delete items wh
 
 ## Open
 
+- **Revise the About page (`about.html`).** Flagged for a content/copy pass — review and rework
+  the messaging (Why it exists / Status / License / Contributing / Get in touch). Keep it aligned
+  with the engine repo's built-vs-planned state and the current site positioning.
 - **Content freshness — competitor facts.** The comparison page cites KLAS rankings, ownership,
   and licensing that change over time (e.g. KLAS is published yearly). Revisit annually and
   re-verify against the sources listed on `comparison.html`. Source of truth for our own
