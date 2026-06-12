@@ -1,0 +1,176 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Licensing — MessageFoundry</title>
+  <meta name="description" content="How MessageFoundry is licensed: free and open source under the GNU AGPL-3.0-or-later, with a separately-licensed commercial edition. A plain-English explanation of what the AGPL asks of you and when a commercial license makes sense.">
+  <link rel="canonical" href="https://messagefoundry.org/licensing.html">
+  <link rel="icon" href="/assets/img/favicon.svg" type="image/svg+xml">
+  <meta name="theme-color" content="#0b1220">
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="MessageFoundry">
+  <meta property="og:title" content="Licensing — MessageFoundry">
+  <meta property="og:description" content="Open source under the AGPL-3.0-or-later, plus a commercial edition — explained in plain English.">
+  <meta property="og:url" content="https://messagefoundry.org/licensing.html">
+  <meta property="og:image" content="https://messagefoundry.org/assets/img/og.png">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta property="og:image:type" content="image/png">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:image" content="https://messagefoundry.org/assets/img/og.png">
+  <link rel="stylesheet" href="/assets/css/styles.css">
+</head>
+<body>
+
+  <header class="site-header">
+    <div class="container header-inner">
+      <a class="brand" href="/" aria-label="MessageFoundry home">
+        <img class="brand-mark" src="/assets/img/logo.svg" alt="" width="28" height="28">
+        <span class="brand-name">Message<span class="brand-accent">Foundry</span></span>
+      </a>
+      <button class="nav-toggle" aria-expanded="false" aria-controls="site-nav" aria-label="Toggle navigation"><span></span><span></span><span></span></button>
+      <nav class="site-nav" id="site-nav">
+        <a href="/overview.html">Overview</a>
+        <a href="/features.html">Features</a>
+        <a href="/security.html">Security</a>
+        <a href="/ai.html">AI assist</a>
+        <a href="/getting-started.html">Get started</a>
+        <a href="/comparison.html">Comparison</a>
+        <a href="/about.html">About</a>
+        <a class="btn btn-ghost" href="https://github.com/messagefoundry/messagefoundry" target="_blank" rel="noopener">GitHub ↗</a>
+      </nav>
+    </div>
+  </header>
+
+  <section class="section section--dark section--tight">
+    <div class="container">
+      <span class="eyebrow">Licensing</span>
+      <h1 style="max-width:22ch">Open source — with a commercial option</h1>
+      <p class="lead">MessageFoundry is free and open source under the <b>GNU AGPL-3.0-or-later</b>. For most teams that just want to run it, there's nothing to buy and nothing to publish. Here's what the license actually asks of you — in plain English — and when a commercial license makes sense.</p>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="container prose">
+      <div class="callout">
+        <h3 style="margin-top:0">The short version</h3>
+        <ul style="margin-bottom:0">
+          <li><b>Use it freely.</b> Read, run, and modify the source, in your own environment, at no cost.</li>
+          <li><b>Running it as-is, internally? Nothing to publish</b> beyond keeping the license notices.</li>
+          <li><b>Modify it and host it for others over a network</b> and the AGPL asks you to offer those users your modified source.</li>
+          <li><b>Don't want those terms?</b> A separately-licensed commercial edition removes them.</li>
+        </ul>
+      </div>
+
+      <h2>The open-source license (AGPL-3.0-or-later)</h2>
+      <p>MessageFoundry is released under the <b>GNU Affero General Public License, version 3 or later</b>. It's a recognized open-source license, and a strong <em>copyleft</em> one: you're free to use, study, modify, and share the software, on the condition that those same freedoms travel with it. The "<b>or later</b>" simply means you may also rely on any later version the Free Software Foundation publishes.</p>
+      <p>In practice, the code is fully available. You can self-host it, read every line, adapt it to your environment, and run as many interfaces as you like — with no per-interface fee and no license key.</p>
+
+      <h2>What the license asks in return</h2>
+      <p>Ordinary open-source copyleft (like the GPL) asks you to share your source only when you <em>distribute</em> the software — hand someone a copy. The AGPL adds one extra clause, <b>Section 13</b>, that also covers running modified software as a network service. It's the clause people mean when they say "AGPL." What it requires depends entirely on what you do:</p>
+    </div>
+
+    <div class="container" style="margin-top:8px">
+      <div class="grid grid-3">
+        <div class="card">
+          <h3>Run it unmodified</h3>
+          <p>Self-host MessageFoundry as released, for your own organization. <b>No source obligation</b> — you're not changing or redistributing anything. Just keep the license and copyright notices in place.</p>
+        </div>
+        <div class="card">
+          <h3>Modify it &amp; host it</h3>
+          <p>Change the source and let people interact with your version over a network. AGPL §13 asks you to <b>offer those users your modified source</b>. If they're all internal staff that's a low bar; if you expose it to outside parties, they get access to your changes too.</p>
+        </div>
+        <div class="card">
+          <h3>Redistribute or embed it</h3>
+          <p>Ship MessageFoundry inside a product, or host a derivative as a service for others. Standard copyleft applies — the combined work is <b>also AGPL</b> (offer the source), or you take a commercial license instead.</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="container prose" style="margin-top:34px">
+      <div class="callout">
+        <p style="margin:0"><b>What about the interface scripts you write?</b> Whether your own Python interface definitions count as a "modified version" of MessageFoundry or as a separate work is a genuine legal gray area — it depends on how they're built and combined. If you plan to fork the engine and host it for others, that's the question to run past your legal or compliance team. Simply <em>using</em> MessageFoundry to author and run your own interfaces internally does not put your clinical systems or their data under the AGPL.</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="section section--alt">
+    <div class="container grid grid-2" style="align-items:start">
+      <div>
+        <span class="eyebrow">Commercial edition</span>
+        <h2>A paid license when the AGPL doesn't fit</h2>
+        <p class="lead">Because the maintainer holds the copyright, the same software can be offered under a second, commercial license — <b>dual licensing</b>. One codebase, two ways to use it: free under the AGPL, or commercial for a fee.</p>
+      </div>
+      <ul class="feature-list">
+        <li><b>Modify and host without publishing</b> your changes to users.</li>
+        <li><b>Embed MessageFoundry in a proprietary product</b> you distribute or sell.</li>
+        <li><b>A formal commercial agreement</b> — when your legal or procurement team prefers paid terms, support commitments, or indemnification over a public license.</li>
+      </ul>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="container">
+      <div class="cta-band">
+        <h2>Read the fine print — or talk it through</h2>
+        <p class="lead center" style="color:var(--muted-dk)">The full, authoritative terms are in the license file. For commercial licensing or any question about how the AGPL applies to your situation, get in touch.</p>
+        <div class="btn-row center">
+          <a class="btn btn-primary" href="/contact.html">Ask about commercial licensing</a>
+          <a class="btn btn-ghost" href="https://github.com/messagefoundry/messagefoundry/blob/main/LICENSE" target="_blank" rel="noopener">Read the full license text ↗</a>
+        </div>
+      </div>
+      <p class="center" style="max-width:70ch;margin:22px auto 0;color:var(--muted);font-size:.92rem">This page is a plain-English summary, not legal advice. The <a href="https://github.com/messagefoundry/messagefoundry/blob/main/LICENSE" target="_blank" rel="noopener">AGPL-3.0 text</a> is the authoritative source; for a real deployment decision, run it past your own legal or compliance team.</p>
+    </div>
+  </section>
+
+  <footer class="site-footer">
+    <div class="container">
+      <div class="footer-grid">
+        <div class="footer-brand">
+          <a class="brand" href="/" aria-label="MessageFoundry home">
+            <img class="brand-mark" src="/assets/img/logo.svg" alt="" width="28" height="28">
+            <span class="brand-name">Message<span class="brand-accent">Foundry</span></span>
+          </a>
+          <p>Open-source HL7 v2 integration engine for healthcare IT.</p>
+          <div class="badge-row" style="margin-top:16px">
+            <span class="badge">Open source</span>
+            <span class="badge">No lock-in</span>
+            <span class="badge">Self-hosted</span>
+          </div>
+        </div>
+        <div class="footer-col">
+          <h4>Product</h4>
+          <a href="/overview.html">Overview</a>
+          <a href="/features.html">Features</a>
+          <a href="/ai.html">AI assist</a>
+          <a href="/security.html">Security &amp; PHI</a>
+          <a href="/comparison.html">Comparison</a>
+          <a href="/getting-started.html">Get started</a>
+        </div>
+        <div class="footer-col">
+          <h4>Docs</h4>
+          <a href="https://github.com/messagefoundry/messagefoundry/blob/main/docs/ARCHITECTURE.md">Architecture</a>
+          <a href="https://github.com/messagefoundry/messagefoundry/blob/main/docs/CONNECTIONS.md">Connections</a>
+          <a href="https://github.com/messagefoundry/messagefoundry/blob/main/docs/SECURITY.md">Security</a>
+          <a href="https://github.com/messagefoundry/messagefoundry/blob/main/docs/PHI.md">PHI / HIPAA</a>
+        </div>
+        <div class="footer-col">
+          <h4>Project</h4>
+          <a href="https://github.com/messagefoundry/messagefoundry" target="_blank" rel="noopener">GitHub</a>
+          <a href="https://github.com/messagefoundry/messagefoundry/issues" target="_blank" rel="noopener">Issues</a>
+          <a href="/contact.html">Contact</a>
+          <a href="/licensing.html">License</a>
+          <a href="/about.html">About</a>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        <span>© 2026 MessageFoundry · Licensed under AGPL-3.0-or-later.</span>
+        <span>Mirth Connect, Cloverleaf, Rhapsody, Corepoint, and Ensemble are trademarks of their respective owners; MessageFoundry is independent and unaffiliated.</span>
+      </div>
+    </div>
+  </footer>
+
+  <script src="/assets/js/nav.js" defer></script>
+</body>
+</html>

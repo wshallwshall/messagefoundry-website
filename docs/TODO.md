@@ -135,6 +135,11 @@ Open: decide whether to promote the security page from the footer into the top n
 - Added the **contact form** (`contact.html` + `thanks.html`, Web3Forms → questions@messagefoundry.org,
   no-JS, honeypot, "no PHI" notice), wired the security page's "Ask a question" button to it, added a
   footer **Contact** link site-wide and a **Get in touch** CTA on the About page.
+- Added a plain-English **Licensing page** (`licensing.html`) explaining AGPL-3.0-or-later (incl. the
+  §13 network clause), three use scenarios, and the commercial dual-license option; repointed the
+  footer **License** link site-wide from the raw GitHub LICENSE to this explainer (which links onward
+  to the full text), linked it from the About License card, and added it to the sitemap.
+- Centered the button row inside the `.cta-band` (was left-aligned on the About and home CTAs).
 - Rewrote the **About page** as an origin/mission manifesto — why MessageFoundry exists (an
   open-source answer to interface-engine price hikes and vendor lock-in), pointed but hedged on the
   incumbents with no vendor-specific accusations, Status/License/Contributing compressed to an
