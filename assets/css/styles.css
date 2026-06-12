@@ -236,6 +236,7 @@ table.cmp tr:last-child th, table.cmp tr:last-child td { border-bottom: 0; }
 .cta-band::before { content: ""; position: absolute; inset: 0; background: radial-gradient(70% 120% at 50% 0%, rgba(249,115,22,.2), transparent 60%); }
 .cta-band > * { position: relative; }
 .cta-band h2 { color: #fff; }
+.cta-band .btn-row { justify-content: center; }
 
 /* ------------------------------------------------------------------ footer */
 .site-footer { background: #070d18; color: var(--muted-dk); padding: 54px 0 30px; border-top: 1px solid var(--border-dk); }
