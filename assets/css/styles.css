@@ -6,7 +6,8 @@
   --ink:        #0b1220;   /* deep slate — dark sections          */
   --ink-2:      #111c2e;   /* slightly lifted dark surface         */
   --surface:    #ffffff;   /* light content background             */
-  --surface-2:  #f6f8fb;   /* subtle light panel                   */
+  --surface-2:  #f6f8fb;   /* subtle light panel (chips, table heads)*/
+  --surface-alt:#eef2f7;   /* alternating section band — a touch deeper than surface-2 so the stripe reads */
   --border:     #e3e8ef;   /* hairline borders on light            */
   --border-dk:  #243349;   /* hairline borders on dark             */
 
@@ -61,11 +62,11 @@ code, pre, kbd { font-family: var(--mono); }
 
 /* ------------------------------------------------------------------ layout */
 .container { width: 100%; max-width: var(--maxw); margin-inline: auto; padding-inline: 22px; }
-.section { padding: 76px 0; }
-.section--tight { padding: 52px 0; }
+.section { padding: 56px 0; }
+.section--tight { padding: 44px 0; }
 .section--dark { background: var(--ink); color: var(--text-dk); }
 .section--dark h1, .section--dark h2, .section--dark h3 { color: #fff; }
-.section--alt { background: var(--surface-2); }
+.section--alt { background: var(--surface-alt); }
 .eyebrow {
   display: inline-block; font-size: .8rem; font-weight: 700; letter-spacing: .14em;
   text-transform: uppercase; color: var(--accent-ink);
