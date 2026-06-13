@@ -68,6 +68,11 @@ Open: decide whether to promote the security page from the footer into the top n
 
 ## Recently done (Jun 2026)
 
+- Public engine repo went live as a mirror at **`github.com/MEFORORG/MessageFoundry`** → repointed
+  every GitHub link site-wide (nav, footers, CTAs, getting-started clone + `cd MessageFoundry`, the
+  "Go deeper" doc cards, About/Licensing links, README) from the earlier `messagefoundry/messagefoundry`
+  path. (The Python package import stays lowercase `messagefoundry`.) No "coming soon" copy remained on
+  any page to remove.
 - Added the AI-assistance / legacy-migration page (`ai.html`).
 - Rebuilt the comparison page: 6-engine matrix + interactive competitor selector; corrected
   KLAS attribution (Corepoint #1; Rhapsody #2).
