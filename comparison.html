@@ -298,8 +298,72 @@
     </div>
   </section>
 
+  <!-- why teams leave -->
+  <section class="section section--alt" id="why-leave">
+    <div class="container">
+      <div class="center" style="margin-bottom:34px">
+        <span class="eyebrow">Why teams leave</span>
+        <h2>The complaints we hear most about legacy engines</h2>
+        <p class="lead center">Across KLAS Research, G2, and community forums, the same frustrations with legacy interface engines come up again and again. They're real and recurring — and they're what MessageFoundry was designed to answer. Quotes below are representative and anonymized; where we're not there yet, we say so.</p>
+      </div>
+
+      <div class="grid grid-3" style="margin-bottom:14px">
+        <div class="card">
+          <p style="font-size:1.06rem;font-style:italic;color:var(--text)">&ldquo;I wouldn't buy it again — it's cost prohibitive. We pay for every little thing.&rdquo;</p>
+          <p style="color:var(--muted);font-size:.84rem;margin:0">— KLAS Research reviewer</p>
+        </div>
+        <div class="card">
+          <p style="font-size:1.06rem;font-style:italic;color:var(--text)">&ldquo;Channels stop silently without crashing the engine. We don't know until clinicians escalate.&rdquo;</p>
+          <p style="color:var(--muted);font-size:.84rem;margin:0">— Community forum</p>
+        </div>
+        <div class="card">
+          <p style="font-size:1.06rem;font-style:italic;color:var(--text)">&ldquo;We're so entrenched now that a shift to another solution would be an enormous undertaking.&rdquo;</p>
+          <p style="color:var(--muted);font-size:.84rem;margin:0">— KLAS Research reviewer</p>
+        </div>
+      </div>
+      <p class="center" style="color:var(--muted);font-size:.84rem;max-width:80ch;margin:0 auto 34px">Representative of public feedback across KLAS Research, G2, and community forums — anonymized, with competitor names removed. See <a href="#sources">sources &amp; notes</a>.</p>
+
+      <div class="grid grid-3">
+        <div class="card">
+          <h3>Priced to punish growth</h3>
+          <p>Per-connection fees, per-transaction charges, and a separate bill for web services, FHIR, and alerting. As your interface count climbs, the license grows with it — automatically.</p>
+          <p style="margin-top:12px;padding-top:12px;border-top:1px solid var(--border)"><b style="color:var(--accent-ink)">MessageFoundry —</b> Open source under the AGPL: no per-interface, per-connection, or per-transaction fees, and nothing held back as a paid add-on. FHIR/REST destinations are on the roadmap and will ship as part of the open engine, never a separate license.</p>
+        </div>
+        <div class="card">
+          <h3>Tools — and talent — from a different era</h3>
+          <p>Obsolete scripting languages you can't hire for, version-locked desktop clients, and certifications that run $1,500&ndash;$3,500 a head before anyone is productive.</p>
+          <p style="margin-top:12px;padding-top:12px;border-top:1px solid var(--border)"><b style="color:var(--accent-ink)">MessageFoundry —</b> Plain Python &mdash; one of the most widely known languages, no proprietary DSL to staff for &mdash; authored in VS&nbsp;Code with setup wizards and a PHI-safe AI assistant. No costly certification, and because config is code, changing an interface doesn't require a special client at all.</p>
+        </div>
+        <div class="card">
+          <h3>Version control as an afterthought</h3>
+          <p>No native Git, configuration locked inside the engine's internal database, and manual, error-prone promotion between environments with no automated testing.</p>
+          <p style="margin-top:12px;padding-top:12px;border-top:1px solid var(--border)"><b style="color:var(--accent-ink)">MessageFoundry —</b> Your integration is plain Python in your own Git repo &mdash; every change a reviewable pull request. A <code>check</code> build-gate dry-runs messages and fails CI on a broken route, and reviewed, tested changes promote DEV&nbsp;&rarr;&nbsp;PROD with no config drift.</p>
+        </div>
+        <div class="card">
+          <h3>You find out when a clinician calls</h3>
+          <p>Rudimentary monitoring and channels that stop silently &mdash; with recovery that can mean hours of failover while the engine re-verifies every stored message.</p>
+          <p style="margin-top:12px;padding-top:12px;border-top:1px solid var(--border)"><b style="color:var(--accent-ink)">MessageFoundry —</b> A live console &mdash; connection dashboard, message search, delivery and audit trail, one-click replay &mdash; plus a count-and-log invariant: every message is a recorded outcome, so a stalled channel surfaces instead of vanishing. Recovery is replay from the durable store, not a multi-hour integrity scan.</p>
+        </div>
+        <div class="card">
+          <h3>Critical CVEs, slow patches</h3>
+          <p>Exploited, unauthenticated RCE vulnerabilities, multi-step patch paths, and updates that have silently deleted security configuration on install.</p>
+          <p style="margin-top:12px;padding-top:12px;border-top:1px solid var(--border)"><b style="color:var(--accent-ink)">MessageFoundry —</b> Open source you can audit line by line and patch on your own schedule. Built through a secure development lifecycle (NIST&nbsp;SSDF) with SAST, dependency, and secret scanning on every build, and secure by default &mdash; RBAC, a hash-chained audit trail, and AES-256-GCM encryption at rest. Config lives in Git, so an update can't silently erase it.</p>
+        </div>
+        <div class="card">
+          <h3>Yours to leave &mdash; no vendor roulette</h3>
+          <p>Proprietary languages and internal config databases make migration prohibitively expensive &mdash; while the engine itself gets passed between owners and rebrands, with support drifting after each deal.</p>
+          <p style="margin-top:12px;padding-top:12px;border-top:1px solid var(--border)"><b style="color:var(--accent-ink)">MessageFoundry —</b> Your logic is Python in your repo and your messages live in standard databases &mdash; no proprietary language or config database to escape. And as an open-source, non-profit project, it can't be acquired, relicensed, or deprioritized out from under you; worst case, you still have the code.</p>
+        </div>
+      </div>
+
+      <div class="callout" style="margin-top:28px">
+        <p><strong>Where we're not there yet, we say so.</strong> The incumbents still lead on connector breadth and proven scale, and FHIR/REST connectivity is on our roadmap, not shipping today &mdash; see the gaps we own <a href="#honest-gaps">below</a> and the Available-now / planned split on the <a href="/features.html">features page</a>.</p>
+      </div>
+    </div>
+  </section>
+
   <!-- honest gaps -->
-  <section class="section section--dark">
+  <section class="section section--dark" id="honest-gaps">
     <div class="container">
       <div class="center" style="margin-bottom:34px">
         <span class="eyebrow">Honest about the gaps</span>
