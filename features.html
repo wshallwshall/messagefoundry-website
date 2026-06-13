@@ -78,12 +78,12 @@
         <p class="lead">The message store <em>is</em> the queue. A transactional inbox/outbox is the reliability backbone — no separate broker to run, patch, or monitor.</p>
       </div>
       <ul class="feature-list">
-        <li><b>Durable before it's acknowledged</b> — the inbound is ACKed only after the message and its outbox rows are committed to the store, so an accepted message survives a crash.</li>
+        <li><b>Durable before it's acknowledged</b> — the inbound is ACKed only after the received message is committed to the store on ingest, so an accepted message survives a crash before any processing begins.</li>
         <li><b>In-order delivery</b> — messages to a given destination are delivered first-in, first-out, preserving per-connection sequence.</li>
         <li><b>Per-outbound workers</b> — each destination drains independently; one slow or failing peer never blocks the others.</li>
         <li><b>Retries with backoff</b> and automatic <b>dead-lettering</b>, plus a dead-letter <b>bulk-replay</b> view for recovery.</li>
         <li><b>Replay</b> — re-drive a stored message through delivery from the console or API.</li>
-        <li><b>Nothing silently dropped</b> — every received message is persisted with a disposition <em>before</em> it is acknowledged.</li>
+        <li><b>Nothing silently dropped</b> — every message is persisted on ingest, then processed in order to a recorded disposition (routed, filtered, or unrouted), so nothing is ever quietly discarded.</li>
       </ul>
     </div>
   </section>
