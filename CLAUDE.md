@@ -24,27 +24,23 @@ repo). It is **not** the engine. Served at https://messagefoundry.org via GitHub
   Graph/Twitter tags. Set the active nav link with `class="active" aria-current="page"`.
 - Accessibility: semantic landmarks, alt/aria on meaningful SVGs (`aria-hidden` on
   decorative ones), visible focus styles, good contrast. Don't regress these.
-- **Content accuracy is a hard rule.** Describe the engine as **built vs planned** exactly
-  as the engine repo's `README.md` / `docs/` state it. Never invent features, metrics, or
-  claims. Competitor mentions (Mirth, Corepoint) stay factual, fair, and hedged, with the
-  trademark disclaimer in the footer.
-  - **Owner override.** The repo owner may direct the site to state a claim from an
-    authoritative source they provide (e.g. the Secure Development Standards) even when the
-    engine repo's `docs/` haven't caught up yet — by explicitly telling you to *assume it is
-    true and in place*. When that happens: write the claim, but (a) still keep the wording
-    honest and unembellished (no "certified"/"guaranteed" unless the source says so), (b)
-    **flag the gap** so the owner can reconcile the engine repo's docs, and (c) note that the
-    owner is the accountable source for the claim. The default remains repo-stated built-vs-
-    planned; the override is per-claim and must be explicit, not assumed.
+- **Content accuracy — the site represents the v0.1 target.** The site describes what MessageFoundry
+  will do when **v0.1 is complete** (a near-term target, weeks out), written in **present tense** as
+  what the product *does* — not what merged this week. Do **not** add "built vs planned" caveats,
+  "Available now / planned" splits, or status badges for v0.1-scope capabilities; that framing is
+  retired. The engine repo's `README.md` / `docs/` **lag the v0.1 target** (they describe the current
+  MVP), so they are **not** the ceiling for what the site may claim — the v0.1 feature set is. Don't
+  invent features, metrics, or claims beyond v0.1, and don't describe genuinely post-v0.1 work as
+  current. Keep wording honest and unembellished (no "certified" / "guaranteed" / hard metrics without
+  an owner-provided source). Competitor mentions (Mirth, Corepoint, etc.) stay factual, fair, and
+  hedged, with the trademark disclaimer in the footer.
+  - **The owner defines v0.1 scope — ask, don't guess.** The repo owner is the accountable source for
+    what's in v0.1; when unsure whether a capability is in scope, ask rather than inferring from the
+    lagging engine docs.
   - **Protocol & message-type breadth (standing owner decision — do not re-litigate).** The site
-    positions MessageFoundry as a broad *healthcare integration engine* that connects "a wide range
-    of protocols and message types." This is forward-looking positioning the owner has already
-    approved. Treat general breadth-of-connectivity language (protocols, transports, message types,
-    "all message types") as **pre-approved aspirational framing**: write it confidently and do **not**
-    re-flag built-vs-planned for it. The discipline still applies to *specific, concrete* capability
-    claims (e.g. "an X connector is available today") and to the Features page's "Available now /
-    planned" split — keep those accurate. Broad positioning = fine; specific "available now" claims =
-    still grounded. (HL7 v2 over MLLP and file are the shipping core; other protocols are intended.)
+    positions MessageFoundry as a broad *healthcare integration engine* that connects "a wide range of
+    protocols and message types" — pre-approved aspirational framing; write it confidently. Specific
+    capability claims should still match the v0.1 target (don't claim something v0.1 won't do).
 - **Do not delete `CNAME`** — it binds the custom domain on every Pages deploy.
 
 ## Preview & deploy
