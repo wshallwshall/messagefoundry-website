@@ -4,14 +4,14 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Features — MessageFoundry</title>
-  <meta name="description" content="What MessageFoundry ships today: an open-source healthcare integration engine in Python, durable store-as-queue, two-tier HL7 parsing, RBAC and AES-256-GCM encryption-at-rest, a hash-chained audit log, a VS Code extension with setup wizards and a PHI-safe AI assistant, AI-assisted migration, a full test harness, and a pluggable store across SQLite, SQL Server, PostgreSQL, MySQL, and Oracle.">
+  <meta name="description" content="What MessageFoundry ships today: an open-source healthcare integration engine in Python, durable store-as-queue, two-tier HL7 parsing, RBAC and AES-256-GCM encryption-at-rest, a hash-chained audit log, a VS Code extension with setup wizards and a PHI-safe AI assistant, AI-assisted migration, a full test harness, and a pluggable store — PostgreSQL by default, plus SQL Server.">
   <link rel="canonical" href="https://messagefoundry.org/features.html">
   <link rel="icon" href="/assets/img/favicon.svg" type="image/svg+xml">
   <meta name="theme-color" content="#0b1220">
   <meta property="og:type" content="website">
   <meta property="og:site_name" content="MessageFoundry">
   <meta property="og:title" content="Features — MessageFoundry">
-  <meta property="og:description" content="Open-source healthcare integration in Python: durable store-as-queue, two-tier parsing, RBAC + encryption-at-rest, a hash-chained audit log, VS Code tooling with a PHI-safe AI assistant, AI-assisted migration, and a pluggable store across five databases.">
+  <meta property="og:description" content="Open-source healthcare integration in Python: durable store-as-queue, two-tier parsing, RBAC + encryption-at-rest, a hash-chained audit log, VS Code tooling with a PHI-safe AI assistant, AI-assisted migration, and a pluggable store on PostgreSQL (default) or SQL Server.">
   <meta property="og:url" content="https://messagefoundry.org/features.html">
   <meta property="og:image" content="https://messagefoundry.org/assets/img/og.png">
   <meta property="og:image:width" content="1200">
@@ -267,11 +267,11 @@
       <div>
         <span class="eyebrow">Database flexibility</span>
         <h2>Runs on the database you already have</h2>
-        <p class="lead">A pluggable message store on standard databases — zero-config to start, enterprise RDBMS when you need it. No proprietary data platform required.</p>
+        <p class="lead">A pluggable message store on the standard databases you already run — PostgreSQL by default, with no proprietary data platform required.</p>
       </div>
       <ul class="feature-list">
-        <li><b>SQLite (WAL) by default</b> — embedded and zero-config; the reliability backbone for the inbox/outbox queue.</li>
-        <li><b>SQL Server, PostgreSQL, MySQL, and Oracle</b> — point the store at your existing RDBMS.</li>
+        <li><b>PostgreSQL by default</b> — a transactional RDBMS as the reliability backbone for the inbox/outbox queue.</li>
+        <li><b>SQL Server</b> — point the store at an existing SQL Server instance instead.</li>
         <li><b>One store contract</b> — the same dispositions, retries, replay, and audit semantics across backends.</li>
         <li><b>No data-platform lock-in</b> — your messages live in a database you control.</li>
       </ul>
