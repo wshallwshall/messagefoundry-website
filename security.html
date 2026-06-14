@@ -4,14 +4,14 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Security, standards &amp; HIPAA — MessageFoundry</title>
-  <meta name="description" content="Security and hardening built to recognized standards: NIST SSDF (800-218), tested per NIST 800-115, controls mapped to NIST 800-53 / 800-66 (HIPAA Security Rule), and verified to OWASP ASVS 5.0 Level 2. Secure by default, encrypted end to end, with modern interface authentication and a clear shared-responsibility model.">
+  <meta name="description" content="Security and hardening built to recognized standards: NIST SSDF (800-218), security testing per NIST 800-115, controls mapped to NIST 800-53 / 800-66 (HIPAA Security Rule), and built to OWASP ASVS 5.0 Level 2. Secure by default, encrypted end to end, with a clear shared-responsibility model. v0.1 Early Access; an independent external code review and penetration test are planned.">
   <link rel="canonical" href="https://messagefoundry.org/security.html">
   <link rel="icon" href="/assets/img/favicon.svg" type="image/svg+xml">
   <meta name="theme-color" content="#0b1220">
   <meta property="og:type" content="website">
   <meta property="og:site_name" content="MessageFoundry">
   <meta property="og:title" content="Security, standards &amp; HIPAA — MessageFoundry">
-  <meta property="og:description" content="Built to NIST SSDF, tested per 800-115, controls mapped to 800-53 / 800-66 (HIPAA), and verified to OWASP ASVS 5.0 Level 2 — secure by default, with modern interface authentication.">
+  <meta property="og:description" content="Built to NIST SSDF, security testing per 800-115, controls mapped to 800-53 / 800-66 (HIPAA), and built to OWASP ASVS 5.0 Level 2 — secure by default. v0.1 Early Access; external audit planned.">
   <meta property="og:url" content="https://messagefoundry.org/security.html">
   <meta property="og:image" content="https://messagefoundry.org/assets/img/og.png">
   <meta property="og:image:width" content="1200">
@@ -48,7 +48,7 @@
     <div class="container">
       <span class="eyebrow">Security &amp; PHI</span>
       <h1 style="max-width:24ch">Engineered for PHI — and built to recognized standards</h1>
-      <p class="lead">For a healthcare integration engine, security isn't a feature — it's the foundation. MessageFoundry is built to a published <b>Secure Development Standard</b> and measured against the frameworks a CISO already trusts: <b>NIST SSDF</b>, <b>NIST 800-53 / 800-66</b> (the HIPAA Security Rule), and <b>OWASP ASVS 5.0 Level 2</b>. It's secure by default, encrypted end to end, and clear about who's responsible for what.</p>
+      <p class="lead">For a healthcare integration engine, security isn't a feature — it's the foundation. MessageFoundry is built to a published <b>Secure Development Standard</b> and aligned with the frameworks a CISO already trusts: <b>NIST SSDF</b>, <b>NIST 800-53 / 800-66</b> (the HIPAA Security Rule), and <b>OWASP ASVS 5.0 Level 2</b>. It's secure by default, encrypted end to end, and clear about who's responsible for what.</p>
       <div class="btn-row">
         <a class="btn btn-primary" href="/assets/MessageFoundry-Secure-Development-Standards.pdf" target="_blank" rel="noopener">Read the Secure Development Standards (PDF)</a>
         <a class="btn btn-secondary" href="#controls">See the controls →</a>
@@ -62,7 +62,7 @@
       <div class="center" style="margin-bottom:40px">
         <span class="eyebrow">Built to recognized standards</span>
         <h2>Mapped to the frameworks your auditors use</h2>
-        <p class="lead center">Four bodies of work answer four questions — how it's built, how it's tested, what controls it implements, and how it's independently verified.</p>
+        <p class="lead center">Four bodies of work answer four questions — how it's built, how it's tested, what controls it implements, and the application-security bar it's built to.</p>
       </div>
       <div class="grid grid-2">
         <div class="card">
@@ -70,20 +70,20 @@
           <p>The secure software development lifecycle follows <b>NIST SP 800-218 (SSDF)</b> across all four practice groups — prepare, protect, produce, and respond — with threat modeling per interface, peer review, and secure-by-default design.</p>
         </div>
         <div class="card">
-          <h3>NIST 800-115 — tested rigorously</h3>
-          <p>Security testing follows <b>NIST SP 800-115</b>: automated SAST / SCA / secret-scanning on every build, dynamic testing per release, and independent source review + penetration testing before production.</p>
+          <h3>NIST 800-115 — tested in CI</h3>
+          <p>Security testing follows <b>NIST SP 800-115</b>: automated SAST, software-composition analysis, and secret-scanning on every build, with dynamic testing per release. An independent external review and penetration test are planned after Early Access.</p>
         </div>
         <div class="card">
           <h3>NIST 800-53 / 800-66 — HIPAA-mapped</h3>
           <p>Implemented controls are drawn from the <b>NIST SP 800-53</b> catalog and mapped to the <b>HIPAA Security Rule via NIST SP 800-66 Rev. 2</b> — access control, audit, integrity, and transmission security.</p>
         </div>
         <div class="card">
-          <h3>OWASP ASVS 5.0 Level 2 — verified</h3>
-          <p>The application is verified against <b>OWASP ASVS 5.0 Level 2</b> — the standard level for software handling sensitive data — scoped chapter-by-chapter, with any exclusions documented and justified.</p>
+          <h3>OWASP ASVS 5.0 Level 2 — built to</h3>
+          <p>The application is developed to <b>OWASP ASVS 5.0 Level 2</b> — the standard level for software handling sensitive data — scoped chapter-by-chapter, with any exclusions documented and justified.</p>
         </div>
       </div>
       <div class="callout" style="margin-top:26px">
-        <p><strong>Honest by design.</strong> NIST doesn't issue certificates for these frameworks, so we don't claim one. These are <b>alignment claims backed by evidence</b> — the Standards document, test reports, the ASVS attestation, and an SBOM, published with our releases. "Built to," "verified against," "mapped to" — never "certified."</p>
+        <p><strong>Honest by design.</strong> NIST doesn't issue certificates for these frameworks, so we don't claim one — and in Early Access the software hasn't yet had an external audit. These are <b>alignment claims backed by evidence</b> — the Standards document, CI test reports, and an SBOM, published with our releases. "Built to," "mapped to" — never "certified."</p>
       </div>
     </div>
   </section>
@@ -97,8 +97,8 @@
         <p class="lead">You don't have to harden it — it ships hardened. TLS is on, encryption is on, accounts are least-privilege, and audit logging is verbose out of the box. Insecure options require an explicit, documented opt-in.</p>
       </div>
       <ul class="feature-list">
-        <li><b>TLS everywhere</b> — all network communication over TLS 1.2+ (prefer 1.3), including <b>MLLP-over-TLS</b> and <b>mTLS</b> for system-to-system links. No cleartext PHI on the wire.</li>
-        <li><b>Encryption at rest, on by default</b> — sensitive data encrypted with approved algorithms (SQLCipher / database-native), with FIPS-validated crypto where a deployment requires it.</li>
+        <li><b>TLS everywhere</b> — all network communication over TLS 1.2+ (prefer 1.3), including <b>MLLP-over-TLS</b>. No cleartext PHI on the wire.</li>
+        <li><b>Encryption at rest, on by default</b> — message bodies encrypted with <b>AES-256-GCM</b> in the store (SQLCipher / database-native).</li>
         <li><b>Deny-by-default RBAC</b> — role-based, least-privilege access enforced on every action, with per-channel data-scope confinement.</li>
         <li><b>Tamper-resistant audit</b> — a timestamped, user-attributed audit log; <b>no PHI or secrets in logs</b>, ever.</li>
         <li><b>Fail-closed</b> — errors fail safe; faults never leak stack traces or sensitive data.</li>
@@ -111,32 +111,32 @@
   <section class="section">
     <div class="container">
       <div class="center" style="margin-bottom:38px">
-        <span class="eyebrow">Interface authentication</span>
-        <h2>Modern auth for every connection — not a shared password</h2>
-        <p class="lead center">An integration engine authenticates <em>systems</em>, not people. Each connection uses the strongest mechanism its partner supports, recorded in the connection definition.</p>
+        <span class="eyebrow">Authentication</span>
+        <h2>Real auth for operators and connections — not a shared password</h2>
+        <p class="lead center">People sign in to the console and API; system connections carry their own credentials. Each uses the strongest mechanism available, recorded in the connection definition.</p>
       </div>
       <div class="grid grid-3">
         <div class="card">
-          <h3>Preferred — system-to-system</h3>
+          <h3>Operators (people)</h3>
           <ul class="feature-list" style="margin-top:12px">
-            <li><b>Mutual TLS (mTLS)</b> — client-certificate auth with full chain + revocation checks; sender-constrained tokens preferred.</li>
-            <li><b>OAuth 2.0 client-credentials</b> — asymmetric (<code>private_key_jwt</code>), short-lived, per-connection scoped tokens.</li>
-            <li><b>SMART on FHIR</b> — Backend Services profile (signed JWT assertion, <code>system/</code> scopes) for any FHIR interface.</li>
+            <li><b>Local accounts</b> or <b>Active Directory</b> sign-in (LDAP / Kerberos / Integrated Windows Auth), with opaque, revocable sessions and timeouts.</li>
+            <li><b>gMSA service accounts</b> — auto-rotated passwords, never stored in config; integrated DB auth.</li>
+            <li>Roles mapped to AD groups; deny-by-default, least-privilege RBAC on every action.</li>
           </ul>
         </div>
         <div class="card">
-          <h3>Active Directory / enterprise</h3>
+          <h3>Connections (systems)</h3>
           <ul class="feature-list" style="margin-top:12px">
-            <li><b>gMSA service account</b> — auto-rotated password, never stored in config.</li>
-            <li><b>Kerberos / Integrated Windows Auth</b> (NTLM disabled where feasible); integrated DB auth.</li>
-            <li><b>LDAPS only</b> for directory lookups; roles mapped to AD groups; human operators federate via <b>AD FS / Entra ID</b> (OIDC / SAML).</li>
+            <li>Per-connection credentials — HTTP Basic over TLS or per-connection API keys — vaulted, scoped, rotated, and recorded.</li>
+            <li><b>TLS everywhere</b>, including MLLP-over-TLS; no cleartext PHI on the wire.</li>
+            <li>Per-connection IP allow-listing and network segmentation as defense-in-depth.</li>
           </ul>
         </div>
         <div class="card">
-          <h3>Legacy — documented per connection</h3>
+          <h3>On the roadmap (0.2+)</h3>
           <ul class="feature-list" style="margin-top:12px">
-            <li>HTTP Basic over TLS, per-connection API keys, or SOAP <b>WS-Security</b> (X.509-signed preferred).</li>
-            <li>Used only when a partner can't support a preferred mechanism — always over TLS, vaulted, scoped, rotated, and recorded.</li>
+            <li>Mutual TLS (mTLS) client-certificate auth; OAuth&nbsp;2.0 client-credentials; SMART on FHIR (Backend Services).</li>
+            <li>SSO federation via AD&nbsp;FS / Entra&nbsp;ID (OIDC / SAML); multi-factor authentication.</li>
           </ul>
         </div>
       </div>
@@ -197,7 +197,7 @@
             <tr><th scope="row">Access control — unique ID, authn, auto-logoff</th><td>Authenticated, role-based, least-privilege access with session controls and timeouts</td><td>AC, IA</td></tr>
             <tr><th scope="row">Audit controls</th><td>Tamper-resistant, timestamped audit log; no sensitive data in logs</td><td>AU</td></tr>
             <tr><th scope="row">Integrity</th><td>Input validation; durable, ordered processing of messages</td><td>SI</td></tr>
-            <tr><th scope="row">Transmission security</th><td>TLS for all sensitive transport (including MLLP-over-TLS and mTLS)</td><td>SC</td></tr>
+            <tr><th scope="row">Transmission security</th><td>TLS for all sensitive transport (including MLLP-over-TLS)</td><td>SC</td></tr>
             <tr><th scope="row">Encryption (at rest &amp; in transit)</th><td>Encryption at rest on by default, and TLS in transit</td><td>SC</td></tr>
             <tr><th scope="row">Administrative &amp; physical</th><td><em>The deployer's environment and program</em> — supported with evidence, not replaced</td><td>RA, AC, SA</td></tr>
           </tbody>
@@ -238,8 +238,8 @@
       </div>
       <div>
         <ul class="feature-list">
-          <li><b>Self-attested</b> SSDF-aligned, tested per 800-115, verified to ASVS 5.0 Level 2, and controls mapped to 800-53 / 800-66 — published with each release.</li>
-          <li><b>Third-party validation</b> of the SSDF attestation and the ASVS Level 2 assessment raises the weight of these claims.</li>
+          <li><b>Self-attested</b> SSDF-aligned, security-tested per 800-115, built to ASVS 5.0 Level 2, and controls mapped to 800-53 / 800-66 — published with each release.</li>
+          <li><b>Independent external code review and penetration test</b> — planned after Early Access; Early Access has not yet been externally audited.</li>
           <li><b>A claims register</b> records each published claim, its wording, and the evidence behind it.</li>
           <li><b>Not a NIST certificate</b> — displayable certifications (SOC 2, ISO 27001, HITRUST) are a separate, organization-level track.</li>
         </ul>
