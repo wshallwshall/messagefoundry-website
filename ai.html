@@ -48,7 +48,7 @@
     <div class="container">
       <span class="eyebrow">AI assistance</span>
       <h1 style="max-width:22ch">Move off a legacy engine at the speed of code</h1>
-      <p class="lead">Migrating interfaces between engines is usually a re-platforming project measured in months. MessageFoundry treats it as a code review instead: an AI coding assistant in your editor reads your existing channel logic and drafts the equivalent <b>Connections, Routers, and Handlers</b> in Python — which you review, test, and promote like any other change. It's <b>code-only by construction</b> and governed by a central policy, so nothing leaves your control.</p>
+      <p class="lead">Migrating interfaces between engines is usually a re-platforming project measured in months. MessageFoundry treats it as a code review instead: an AI assistant in your editor reads your existing channel logic and drafts the equivalent <b>Connections, Routers, and Handlers</b> in Python — which you review, test, and promote like any other change. It's <b>code-only by construction</b> and governed by a central policy, so nothing leaves your control. Prefer not to write code? Guided wizards handle routine setup, with the assistant for the rest.</p>
       <div class="btn-row">
         <a class="btn btn-primary" href="/getting-started.html">Get started</a>
         <a class="btn btn-secondary" href="/comparison.html">See what you're migrating from →</a>
@@ -68,7 +68,7 @@
       <div class="card">
         <h3 style="margin-bottom:.6em">What it drafts for you</h3>
         <ul class="feature-list">
-          <li><b>Connections</b> — MLLP and file endpoints mapped from your existing source/destination config.</li>
+          <li><b>Connections</b> — MLLP, TCP, HTTP/REST, SOAP, database, and file endpoints (local and SFTP/FTP/FTPS) mapped from your existing source/destination config.</li>
           <li><b>Routing</b> — a <code>@router</code> that mirrors your channel's filter and routing rules.</li>
           <li><b>Transforms</b> — <code>@handler</code> functions that reproduce field mappings and reshaping as pure Python.</li>
           <li><b>Tests</b> — starting points for harness scenarios so you can prove parity before cutover.</li>
@@ -148,11 +148,11 @@
         <p class="lead">The assistant carries PHI implications, so it's controlled centrally, not per developer. Whoever operates the install sets a single policy — from fully off to PHI-safe — and every workstation honors it.</p>
       </div>
       <ul class="feature-list">
-        <li><b>Bring-your-own provider</b> — the IDE assistant uses your configured model; the engine never sees the traffic. <span class="badge">built</span></li>
-        <li><b>Code-only by construction</b> — today the assistant only ever sends graph names and the code in your editor — never a message body. <span class="badge">built</span></li>
-        <li><b>RBAC-gated</b> — a dedicated permission controls who may use it, deny-by-default like the rest of the engine. <span class="badge">built</span></li>
-        <li><b>Environment ceilings</b> — a central, environment-aware policy clamps what data the assistant may ever be given; an un-tuned install resolves to the tightest setting. <span class="badge">built</span></li>
-        <li><b>PHI-safe mode (optional)</b> — a managed provider under a BAA is the only path to PHI-scoped assistance, and it requires an enterprise agreement with an AI vendor; the default stays code-only. <span class="badge" style="color:#f6c177;border-color:rgba(245,158,11,.4)">optional</span></li>
+        <li><b>Bring-your-own provider</b> — the IDE assistant uses your configured model; the engine never sees the traffic.</li>
+        <li><b>Code-only by construction</b> — the assistant only ever sends graph names and the code in your editor — never a message body.</li>
+        <li><b>RBAC-gated</b> — a dedicated permission controls who may use it, deny-by-default like the rest of the engine.</li>
+        <li><b>Environment ceilings</b> — a central, environment-aware policy clamps what data the assistant may ever be given; an un-tuned install resolves to the tightest setting.</li>
+        <li><b>PHI-safe mode (on the roadmap)</b> — a managed provider under a BAA will be the path to PHI-scoped assistance; today the assistant stays strictly code-only.</li>
       </ul>
     </div>
   </section>

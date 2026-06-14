@@ -48,9 +48,9 @@
     <div class="container">
       <span class="eyebrow">Comparison</span>
       <h1 style="max-width:24ch">A modern, open alternative to the legacy integration engines</h1>
-      <p class="lead">MessageFoundry is the open-source, <b>Python</b> healthcare integration engine — built for teams that want control, modern tooling, and no vendor lock-in. The commercial engines are consolidating under private equity, closing their source, and steering buyers toward subscription contracts. This is a deliberately fair look at where MessageFoundry — a modern engine — sits next to five established but legacy products, and where each is genuinely stronger than we are today.</p>
+      <p class="lead">MessageFoundry is the open-source healthcare integration engine — built for teams that want control, modern tooling, and no vendor lock-in. Set up interfaces with guided wizards, or extend them in Python; either way nothing is locked inside a vendor's runtime or contract. The commercial engines are consolidating under private equity, closing their source, and steering buyers toward subscription contracts. This is a deliberately fair look at where MessageFoundry sits next to five established but legacy products, and where each is genuinely stronger than we are today.</p>
       <div class="callout" style="margin-top:22px;background:rgba(245,158,11,.07);border-color:rgba(245,158,11,.28);color:var(--muted-dk)">
-        <p><strong style="color:var(--accent)">How to read this.</strong> Every competitor here is a capable, established product. Competitor facts are <a href="#sources" style="color:var(--accent)">sourced</a>; pricing is described as the vendors disclose it (most don't publish prices). Our own capabilities are split into <b>Available now</b> and <b>planned</b> — we don't market roadmap as shipped. Current as of June 2026; verify specifics before a purchase decision.</p>
+        <p><strong style="color:var(--accent)">How to read this.</strong> Every competitor here is a capable, established product. Competitor facts are <a href="#sources" style="color:var(--accent)">sourced</a>; pricing is described as the vendors disclose it (most don't publish prices). MessageFoundry is described at its <b>v0.1 Early Access</b> feature set; where it's still behind, we say so. Current as of June 2026; verify specifics before a purchase decision.</p>
       </div>
     </div>
   </section>
@@ -187,7 +187,7 @@
             </tr>
             <tr>
               <th scope="row">Reliability</th>
-              <td class="us">Inbox/outbox WAL, no broker</td>
+              <td class="us">Durable, at-least-once; active-passive HA</td>
               <td>Mature (proven scale)</td>
               <td>Mature (proven scale)</td>
               <td>Mature (KLAS #2, '25)</td>
@@ -201,14 +201,14 @@
             </tr>
             <tr>
               <th scope="row">Connectors <small style="color:var(--muted);font-weight:600">our gap</small></th>
-              <td class="us">MLLP + File (more planned)</td>
+              <td class="us">MLLP, TCP, HTTP/REST, SOAP, DB, files (local + SFTP/FTP/FTPS)</td>
               <td>800+</td>
               <td>Decades of adapters</td>
               <td>Broad</td><td>Broad</td><td>Broad</td>
             </tr>
             <tr>
               <th scope="row">Maturity <small style="color:var(--muted);font-weight:600">our gap</small></th>
-              <td class="us">New</td>
+              <td class="us">New (v0.1 EA)</td>
               <td>15+ yrs</td>
               <td>30+ yrs</td>
               <td>Mature</td><td>Mature</td><td>30+ yrs</td>
@@ -282,8 +282,8 @@
             <h3>MessageFoundry <b>vs</b> Corepoint</h3>
             <div class="vs-row"><span class="vs-lbl vs-lbl--str">Their strength</span><p>The <b>Best in KLAS</b> integration engine — ranked #1 for 16 consecutive years (95.2 in 2025) — a guided, no-code/low-code experience renowned for ease of use and support that lets non-programmer teams stand up interfaces quickly.</p></div>
             <div class="vs-row"><span class="vs-lbl vs-lbl--shift">The shift</span><p>Now part of the Rhapsody/Hg portfolio; proprietary and Windows-based on-premises; premium pricing; a new AI assistant (“Axon”) whose track record is still early.</p></div>
-            <div class="vs-row vs-row--wedge"><span class="vs-lbl vs-lbl--wedge">MessageFoundry advantage</span><p><b>Code-first power with no no-code ceiling</b>, made approachable by setup wizards and a PHI-safe AI assistant — so you get Corepoint-style guided authoring <em>and</em> the ability to express arbitrarily complex logic, on an open platform, with no lock-in.</p></div>
-            <div class="vs-row vs-row--win"><span class="vs-lbl vs-lbl--win">Where Corepoint still wins today</span><p>For a team that wants <em>pure</em> no-code and has no developers, Corepoint is easier out of the box. MessageFoundry is code-based; wizards and AI lower the barrier, but it is still code.</p></div>
+            <div class="vs-row vs-row--wedge"><span class="vs-lbl vs-lbl--wedge">MessageFoundry advantage</span><p><b>Full control with no no-code ceiling</b>, made approachable by setup wizards and a PHI-safe AI assistant — so you get Corepoint-style guided authoring <em>and</em> the ability to express arbitrarily complex logic, on an open platform, with no lock-in.</p></div>
+            <div class="vs-row vs-row--win"><span class="vs-lbl vs-lbl--win">Where Corepoint still wins today</span><p>For a team that wants <em>pure</em> no-code with no developers at all, Corepoint is easier out of the box. MessageFoundry's wizards and AI make setup approachable, and what they generate is readable, reviewable configuration you can grow into.</p></div>
           </article>
 
           <article class="vs-panel" id="panel-ens" aria-label="MessageFoundry versus InterSystems Ensemble and HealthShare Health Connect">
@@ -327,12 +327,12 @@
         <div class="card">
           <h3>Priced to punish growth</h3>
           <p>Per-connection fees, per-transaction charges, and a separate bill for web services, FHIR, and alerting. As your interface count climbs, the license grows with it — automatically.</p>
-          <p style="margin-top:12px;padding-top:12px;border-top:1px solid var(--border)"><b style="color:var(--accent-ink)">MessageFoundry —</b> Open source under the AGPL: no per-interface, per-connection, or per-transaction fees, and nothing held back as a paid add-on. FHIR/REST destinations are on the roadmap and will ship as part of the open engine, never a separate license.</p>
+          <p style="margin-top:12px;padding-top:12px;border-top:1px solid var(--border)"><b style="color:var(--accent-ink)">MessageFoundry —</b> Open source under the AGPL: no per-interface, per-connection, or per-transaction fees, and nothing held back as a paid add-on. Web services, REST, and alerting are part of the open engine; FHIR is on the roadmap, never a separate license.</p>
         </div>
         <div class="card">
           <h3>Tools — and talent — from a different era</h3>
           <p>Obsolete scripting languages you can't hire for, version-locked desktop clients, and certifications that run $1,500&ndash;$3,500 a head before anyone is productive.</p>
-          <p style="margin-top:12px;padding-top:12px;border-top:1px solid var(--border)"><b style="color:var(--accent-ink)">MessageFoundry —</b> Plain Python &mdash; one of the most widely known languages, no proprietary DSL to staff for &mdash; authored in VS&nbsp;Code with setup wizards and a PHI-safe AI assistant. No costly certification, and because config is code, changing an interface doesn't require a special client at all.</p>
+          <p style="margin-top:12px;padding-top:12px;border-top:1px solid var(--border)"><b style="color:var(--accent-ink)">MessageFoundry —</b> Set up interfaces with guided wizards, or use plain Python &mdash; one of the most widely known languages, no proprietary DSL to staff for &mdash; in VS&nbsp;Code with a PHI-safe AI assistant. No costly certification, and no version-locked desktop client to install.</p>
         </div>
         <div class="card">
           <h3>Version control as an afterthought</h3>
@@ -352,12 +352,12 @@
         <div class="card">
           <h3>Locked in while the vendor changes hands</h3>
           <p>Proprietary languages and internal config databases make migration prohibitively expensive &mdash; while the engine itself gets passed between owners and rebrands, with support drifting after each deal.</p>
-          <p style="margin-top:12px;padding-top:12px;border-top:1px solid var(--border)"><b style="color:var(--accent-ink)">MessageFoundry —</b> Your logic is Python in your repo and your messages live in standard databases &mdash; no proprietary language or config database to escape. And as an open-source, non-profit project, it can't be acquired, relicensed, or deprioritized out from under you; worst case, you still have the code.</p>
+          <p style="margin-top:12px;padding-top:12px;border-top:1px solid var(--border)"><b style="color:var(--accent-ink)">MessageFoundry —</b> Your configuration is yours &mdash; generated by wizards or written in Python, versioned in your own repo &mdash; and your messages live in standard databases; no proprietary language or config database to escape. And as an open-source, non-profit project, it can't be acquired, relicensed, or deprioritized out from under you; worst case, you still have the code.</p>
         </div>
       </div>
 
       <div class="callout" style="margin-top:28px">
-        <p><strong>Where we're not there yet, we say so.</strong> The incumbents still lead on connector breadth and proven scale, and FHIR/REST connectivity is on our roadmap, not shipping today &mdash; see the gaps we own <a href="#honest-gaps">below</a> and the Available-now / planned split on the <a href="/features.html">features page</a>.</p>
+        <p><strong>Where we're not there yet, we say so.</strong> The incumbents still lead on connector breadth and proven scale, and a few capabilities &mdash; inbound REST/SOAP listeners, FHIR, and active-active clustering &mdash; are on our roadmap, not in v0.1 Early Access. See the gaps we own <a href="#honest-gaps">below</a> and the roadmap on the <a href="/features.html">features page</a>.</p>
       </div>
     </div>
   </section>
@@ -372,12 +372,12 @@
       </div>
       <div class="grid grid-2" style="align-items:start">
         <ul class="feature-list">
-          <li><b>Connector / adapter breadth</b> — Mirth's 800+ connectors and the others' decades of healthcare adapters far exceed our current MLLP + File transports.</li>
+          <li><b>Connector / adapter breadth</b> — Mirth's 800+ connectors and the others' decades of healthcare adapters far exceed our v0.1 connection set (MLLP, TCP, HTTP/REST, SOAP, database, and local/remote files).</li>
           <li><b>Proven scale and maturity</b> — the incumbents have 15–30 years and thousands of production sites. MessageFoundry is new.</li>
           <li><b>Third-party ecosystem &amp; certifications</b> — Corepoint is the Best in KLAS integration engine (16 straight years) and Rhapsody rates highly too; large independent consulting ecosystems and formal certifications exist for all five.</li>
         </ul>
         <ul class="feature-list">
-          <li><b>No-code for non-developers</b> — Corepoint's no-code experience is genuinely easier for teams without programmers.</li>
+          <li><b>Pure no-code for non-developers</b> — Corepoint's no-code UI is genuinely easier for a team with no developers at all; our guided wizards lower the barrier, but full power is in code.</li>
           <li><b>Platform breadth</b> — IRIS for Health's full data platform (DBMS + analytics + in-database ML + FHIR repository) and HealthShare's HIE/EMPI, plus Rhapsody's EMPI/semantic capabilities, go well beyond what an interface engine does. We don't try to replace them.</li>
         </ul>
       </div>
@@ -398,7 +398,7 @@
         <div class="card">
           <h3>Choose MessageFoundry when…</h3>
           <ul class="feature-list" style="margin-top:12px">
-            <li>Your team thinks in code and git, not canvases.</li>
+            <li>You want guided setup with the option of full code and Git-based change control.</li>
             <li>You want a handful of reliable HL7 interfaces without a heavyweight platform.</li>
             <li>You need configuration diffable and reviewable in PRs — and no vendor lock-in.</li>
             <li>You're facing a Mirth or Ensemble migration and want an open, modern target.</li>

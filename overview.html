@@ -104,7 +104,7 @@
       <ul class="feature-list">
         <li><b>Runs as a background service</b> — install it as a Windows service with the included scripts.</li>
         <li><b>Headless and self-hosted</b> — no GUI required; deploy it where your PHI already lives.</li>
-        <li><b>Reliable by construction</b> — durable delivery, automatic retries, and replay, with no separate broker to run.</li>
+        <li><b>Reliable by construction</b> — durable, at-least-once delivery with automatic retries, dead-letter replay, and active-passive failover for high availability — no separate broker to run.</li>
         <li><b>Independent per destination</b> — a slow or down peer never holds up the others.</li>
         <li><b>One local API</b> — the console and the editor both attach to it; the deployment shape is a config choice.</li>
       </ul>
@@ -120,7 +120,7 @@
         <p class="lead">A full harness ships with the product, so you can exercise interfaces with synthetic, PHI-free data — by hand while you build, and automatically in CI before you ship.</p>
       </div>
       <ul class="feature-list">
-        <li><b>Send / receive bench</b> — drive MLLP and file endpoints interactively as you develop.</li>
+        <li><b>Send / receive bench</b> — drive inbound and outbound endpoints interactively as you develop.</li>
         <li><b>Automated scenario runner</b> — assert routing and transform behavior on every change, in CI.</li>
         <li><b>Synthetic data generator</b> — realistic, PHI-free HL7 for load and edge-case testing.</li>
         <li><b>Commit gate</b> — validate configuration before it can ship.</li>

@@ -47,7 +47,7 @@
     <div class="container">
       <span class="eyebrow">Get started</span>
       <h1 style="max-width:20ch">From clone to your first routed message</h1>
-      <p class="lead">MessageFoundry installs from source and runs locally. You'll need <b>Python 3.11+</b> and <b>git</b>. The engine serves a localhost API; the console and editor tooling attach to it.</p>
+      <p class="lead">MessageFoundry installs from source and runs locally — this quickstart uses <b>Python 3.11+</b> and <b>git</b>. Once it's running, you can build interfaces two ways: with <b>guided wizards</b> in the VS&nbsp;Code extension and admin console, or in <b>plain Python</b> for full control. It starts zero-config on SQLite; point it at PostgreSQL or SQL&nbsp;Server for production.</p>
     </div>
   </section>
 
@@ -99,7 +99,7 @@ pip install -e <span class="s">".[dev]"</span></pre>
 
         <div class="step">
           <h3>Open the admin console</h3>
-          <p>A separate PySide6 process that attaches to the API — dashboard, message browser, parse-tree viewer, and replay.</p>
+          <p>A separate desktop app that attaches to the API — dashboards, message search and browse, parse-tree viewer, and one-click replay.</p>
           <div class="code-card">
             <div class="code-card__bar"><i></i><i></i><i></i><span class="code-card__name">terminal</span></div>
 <pre class="code">pip install -e <span class="s">".[console]"</span>
@@ -109,7 +109,7 @@ python -m messagefoundry.console --url http://127.0.0.1:8765</pre>
 
         <div class="step">
           <h3>Author your own route</h3>
-          <p>Drop a Python module into your config directory. Name an inbound and outbound Connection, then wire a Router and Handler by name.</p>
+          <p>Prefer wizards? The VS&nbsp;Code extension's <b>New Connection</b> and <b>New Route</b> flows generate this for you. Or, if you prefer code, drop a Python module into your config directory — name an inbound and outbound Connection, then wire a Router and Handler by name:</p>
           <div class="code-card">
             <div class="code-card__bar"><i></i><i></i><i></i><span class="code-card__name">config/IB_Lab_ORU.py</span></div>
 <pre class="code"><span class="k">from</span> messagefoundry <span class="k">import</span> MLLP, Send, inbound, outbound, router, handler
@@ -144,10 +144,10 @@ python -m messagefoundry.console --url http://127.0.0.1:8765</pre>
         <p class="lead" style="margin-bottom:22px">The full documentation lives in the repository.</p>
         <div class="grid grid-3">
           <a class="card" href="https://github.com/MEFORORG/MessageFoundry/blob/main/docs/ARCHITECTURE.md" style="color:inherit">
-            <h3>Architecture →</h3><p>The engine/console split, the store-as-queue invariant, and the modularity standard.</p>
+            <h3>Architecture →</h3><p>The engine/console split, the durable inbox/outbox invariant, and the modularity standard.</p>
           </a>
           <a class="card" href="https://github.com/MEFORORG/MessageFoundry/blob/main/docs/CONNECTIONS.md" style="color:inherit">
-            <h3>Connections →</h3><p>Naming conventions and per-connector settings for MLLP and file endpoints.</p>
+            <h3>Connections →</h3><p>Naming conventions and per-connector settings for every connection type.</p>
           </a>
           <a class="card" href="https://github.com/MEFORORG/MessageFoundry/blob/main/docs/CONFIGURATION.md" style="color:inherit">
             <h3>Configuration →</h3><p>Service settings, environments, and how DEV/PROD values layer over your modules.</p>
@@ -156,7 +156,7 @@ python -m messagefoundry.console --url http://127.0.0.1:8765</pre>
             <h3>Security →</h3><p>Authentication, RBAC, sessions, and the audit log.</p>
           </a>
           <a class="card" href="https://github.com/MEFORORG/MessageFoundry/blob/main/docs/PHI.md" style="color:inherit">
-            <h3>PHI / HIPAA →</h3><p>The data-protection map: what's built vs planned for handling PHI.</p>
+            <h3>PHI / HIPAA →</h3><p>The data-protection map for handling PHI — controls, scope, and responsibilities.</p>
           </a>
           <a class="card" href="https://github.com/MEFORORG/MessageFoundry/blob/main/docs/SERVICE.md" style="color:inherit">
             <h3>Service →</h3><p>Running the engine as a Windows service via NSSM.</p>
