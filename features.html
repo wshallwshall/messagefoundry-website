@@ -4,14 +4,14 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Features — MessageFoundry</title>
-  <meta name="description" content="What MessageFoundry ships today: an open-source healthcare integration engine in Python, durable store-as-queue, two-tier HL7 parsing, RBAC and AES-256-GCM encryption-at-rest, a hash-chained audit log, a VS Code extension with setup wizards and a PHI-safe AI assistant, AI-assisted migration, a full test harness, and a pluggable store — PostgreSQL by default, plus SQL Server.">
+  <meta name="description" content="What MessageFoundry ships today: an open-source healthcare integration engine in Python, durable store-as-queue, two-tier HL7 parsing, RBAC and AES-256-GCM encryption-at-rest, a hash-chained audit log, a VS Code extension with setup wizards and a PHI-safe AI assistant, AI-assisted migration, a full test harness, and a pluggable store across SQLite, PostgreSQL, and SQL Server — from a zero-config single file to multi-node, highly available scale-out.">
   <link rel="canonical" href="https://messagefoundry.org/features.html">
   <link rel="icon" href="/assets/img/favicon.svg" type="image/svg+xml">
   <meta name="theme-color" content="#0b1220">
   <meta property="og:type" content="website">
   <meta property="og:site_name" content="MessageFoundry">
   <meta property="og:title" content="Features — MessageFoundry">
-  <meta property="og:description" content="Open-source healthcare integration in Python: durable store-as-queue, two-tier parsing, RBAC + encryption-at-rest, a hash-chained audit log, VS Code tooling with a PHI-safe AI assistant, AI-assisted migration, and a pluggable store on PostgreSQL (default) or SQL Server.">
+  <meta property="og:description" content="Open-source healthcare integration in Python: durable store-as-queue, two-tier parsing, RBAC + encryption-at-rest, a hash-chained audit log, VS Code tooling with a PHI-safe AI assistant, AI-assisted migration, and a pluggable store from a zero-config SQLite file to clustered PostgreSQL or SQL Server.">
   <meta property="og:url" content="https://messagefoundry.org/features.html">
   <meta property="og:image" content="https://messagefoundry.org/assets/img/og.png">
   <meta property="og:image:width" content="1200">
@@ -263,18 +263,29 @@
 
   <!-- database flexibility -->
   <section class="section section--alt">
-    <div class="container grid grid-2" style="align-items:start">
-      <div>
+    <div class="container">
+      <div class="center" style="margin-bottom:38px">
         <span class="eyebrow">Database flexibility</span>
-        <h2>Runs on the database you already have</h2>
-        <p class="lead">A pluggable message store on the standard databases you already run — PostgreSQL by default, with no proprietary data platform required.</p>
+        <h2>From a single file to a multi-node cluster</h2>
+        <p class="lead center">One pluggable message store behind a single contract, so the database is a deployment choice — not a code change. Start zero-config on SQLite, then scale out to PostgreSQL or SQL&nbsp;Server for multi-node, highly available production.</p>
       </div>
-      <ul class="feature-list">
-        <li><b>PostgreSQL by default</b> — a transactional RDBMS as the reliability backbone for the inbox/outbox queue.</li>
-        <li><b>SQL Server</b> — point the store at an existing SQL Server instance instead.</li>
-        <li><b>One store contract</b> — the same dispositions, retries, replay, and audit semantics across backends.</li>
-        <li><b>No data-platform lock-in</b> — your messages live in a database you control.</li>
-      </ul>
+      <div class="grid grid-3">
+        <div class="card">
+          <h3>SQLite</h3>
+          <p>The zero-config, single-node default — WAL, one file, no server to run. The "it just works" path for development, demos, embedded use, and small single-box sites — and the byte-identical baseline every other backend matches.</p>
+        </div>
+        <div class="card">
+          <h3>PostgreSQL</h3>
+          <p>The production server-DB for horizontal scale-out: many engine hosts share one store, with leader election, strict per-lane FIFO ordering, and failover/HA. The reference clustered backend for production at scale.</p>
+        </div>
+        <div class="card">
+          <h3>SQL Server</h3>
+          <p>A first-class production backend at parity with PostgreSQL — the same staged pipeline, concurrency-safe claiming, row leases, and multi-node HA — for shops standardized on SQL&nbsp;Server.</p>
+        </div>
+      </div>
+      <div class="callout" style="margin-top:26px">
+        <p><strong>One Store contract.</strong> The same staged-pipeline, at-least-once delivery model — dispositions, retries, replay, and audit semantics — runs across all three backends. PostgreSQL and SQL&nbsp;Server are interchangeable production server-DBs, so you pick whichever your environment already runs. No proprietary data platform required; your messages live in a database you control.</p>
+      </div>
     </div>
   </section>
 
