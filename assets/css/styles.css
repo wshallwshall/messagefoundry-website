@@ -225,6 +225,17 @@ table.cmp tbody th { font-weight: 700; color: var(--text); background: var(--sur
 table.cmp td.us { background: #fffaf1; font-weight: 600; color: var(--text); }
 table.cmp tr:last-child th, table.cmp tr:last-child td { border-bottom: 0; }
 
+/* feature index (features-table.html): two columns, grouped by area */
+table.cmp.feat { min-width: 600px; }
+table.cmp.feat tbody th { white-space: normal; width: 34%; }
+table.cmp.feat td { color: var(--muted); }
+table.cmp.feat tbody tr.grp th {
+  background: var(--ink); color: #fff; white-space: normal;
+  font-size: .8rem; font-weight: 700; letter-spacing: .1em; text-transform: uppercase;
+}
+table.cmp.feat tbody tr.grp:first-child th { border-top: 0; }
+table.cmp.feat tbody th code, table.cmp.feat td code { white-space: nowrap; }
+
 /* ------------------------------------------------------------------ callout */
 .callout {
   border: 1px solid #fde6c2; background: #fff8ee; border-left: 4px solid var(--accent-2);

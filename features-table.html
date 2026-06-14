@@ -1,0 +1,272 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Feature list — MessageFoundry</title>
+  <meta name="description" content="Every MessageFoundry feature in one scannable table (v0.1 Early Access): connections, message formats, reliability, routing & transformation, security & PHI, tooling, testing, CI/CD, the message store, and high availability — plus the 0.2+ roadmap.">
+  <link rel="canonical" href="https://messagefoundry.org/features-table.html">
+  <link rel="icon" href="/assets/img/favicon.svg" type="image/svg+xml">
+  <meta name="theme-color" content="#0b1220">
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="MessageFoundry">
+  <meta property="og:title" content="Feature list — MessageFoundry">
+  <meta property="og:description" content="The complete v0.1 Early Access feature set in one scannable table — grouped by area, with the 0.2+ roadmap at the end.">
+  <meta property="og:url" content="https://messagefoundry.org/features-table.html">
+  <meta property="og:image" content="https://messagefoundry.org/assets/img/og.png">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta property="og:image:type" content="image/png">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:image" content="https://messagefoundry.org/assets/img/og.png">
+  <link rel="stylesheet" href="/assets/css/styles.css">
+</head>
+<body>
+
+  <header class="site-header">
+    <div class="container header-inner">
+      <a class="brand" href="/" aria-label="MessageFoundry home">
+        <img class="brand-mark" src="/assets/img/logo.svg" alt="" width="28" height="28">
+        <span class="brand-name">Message<span class="brand-accent">Foundry</span></span>
+      </a>
+      <button class="nav-toggle" aria-expanded="false" aria-controls="site-nav" aria-label="Toggle navigation"><span></span><span></span><span></span></button>
+      <nav class="site-nav" id="site-nav">
+        <a href="/overview.html">Overview</a>
+        <a href="/features.html" class="active" aria-current="page">Features</a>
+        <a href="/security.html">Security</a>
+        <a href="/ai.html">AI assist</a>
+        <a href="/getting-started.html">Get started</a>
+        <a href="/comparison.html">Comparison</a>
+        <a href="/about.html">About</a>
+        <a class="btn btn-ghost" href="https://github.com/MEFORORG/MessageFoundry" target="_blank" rel="noopener">GitHub ↗</a>
+      </nav>
+    </div>
+  </header>
+
+  <!-- page header -->
+  <section class="section section--dark section--tight">
+    <div class="container">
+      <span class="eyebrow">Feature list</span>
+      <h1 style="max-width:24ch">Every feature, in one table</h1>
+      <p class="lead">A complete, scannable index of what MessageFoundry does in <b>v0.1 Early Access</b>, grouped by area. Want the story behind each capability? The detailed <a href="/features.html" style="color:var(--accent)">features page</a> walks through them. What's planned for 0.2 and beyond is in its own table at the end.</p>
+      <div class="btn-row">
+        <a class="btn btn-primary" href="/getting-started.html">Get started</a>
+        <a class="btn btn-ghost" href="/features.html">Full feature detail →</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- the feature table -->
+  <section class="section">
+    <div class="container">
+      <div class="table-wrap">
+        <table class="cmp feat">
+          <thead>
+            <tr>
+              <th scope="col">Feature</th>
+              <th scope="col">What it does</th>
+            </tr>
+          </thead>
+          <tbody>
+
+            <tr class="grp"><th colspan="2" scope="colgroup">Open source &amp; no lock-in</th></tr>
+            <tr><th scope="row">AGPL-3.0-or-later</th><td>Open license — read it, run it, fork it. A low-cost commercial edition is available when the AGPL doesn't fit.</td></tr>
+            <tr><th scope="row">Configuration as code</th><td>Connections, Routers, and Handlers are diffable, reviewable modules — wizard-generated or hand-written. The database holds runtime state and messages only, never configuration.</td></tr>
+            <tr><th scope="row">Standard databases</th><td>No proprietary data platform required, and no proprietary scripting language to staff for.</td></tr>
+            <tr><th scope="row">No runtime or contract lock-in</th><td>Self-hosted, on your infrastructure, on your terms.</td></tr>
+
+            <tr class="grp"><th colspan="2" scope="colgroup">Reliability</th></tr>
+            <tr><th scope="row">Durable before acknowledged</th><td>The inbound is ACKed only after the received message is committed to the store on ingest, so an accepted message survives a crash before any processing begins.</td></tr>
+            <tr><th scope="row">At-least-once delivery</th><td>Every accepted message is delivered at least once; nothing is silently dropped.</td></tr>
+            <tr><th scope="row">Ordered (FIFO) delivery</th><td>Messages to a given destination are delivered first-in, first-out, preserving per-connection sequence.</td></tr>
+            <tr><th scope="row">Per-outbound workers</th><td>Each destination drains independently; one slow or failing peer never blocks the others.</td></tr>
+            <tr><th scope="row">Automatic retries &amp; failure policy</th><td>Back off and retry on a configurable policy, then dead-letter, with a bulk-replay view for recovery.</td></tr>
+            <tr><th scope="row">Replay</th><td>Re-drive a stored message through delivery from the console or API.</td></tr>
+            <tr><th scope="row">Automatic crash recovery</th><td>After a restart or crash, in-flight messages resume from the durable store with no manual cleanup.</td></tr>
+            <tr><th scope="row">Nothing silently dropped</th><td>Every message is persisted on ingest, then processed to a recorded disposition — routed, filtered, or unrouted.</td></tr>
+
+            <tr class="grp"><th colspan="2" scope="colgroup">Message formats</th></tr>
+            <tr><th scope="row">HL7 v2, deeply parsed</th><td>Full parsing and validation: fast and tolerant on the hot path, strict and version-aware where you opt in — built to expect real-world, non-conformant HL7.</td></tr>
+            <tr><th scope="row">JSON, XML/SOAP, X12/EDI &amp; arbitrary payloads</th><td>Routed, transformed, enriched, and delivered alongside HL7 v2 (these flow through without structural parsing).</td></tr>
+            <tr><th scope="row">Encoding read from the message</th><td>For HL7 v2, the field, component, repetition, escape, and subcomponent separators come from MSH, never hardcoded.</td></tr>
+            <tr><th scope="row">Raw message preserved</th><td>Kept alongside the transformed form, so an operator always sees exactly what arrived.</td></tr>
+            <tr><th scope="row">Parse failures isolated</th><td>Routed to the error / dead-letter path and logged, so a bad message never takes down the connection.</td></tr>
+
+            <tr class="grp"><th colspan="2" scope="colgroup">Connections</th></tr>
+            <tr><th scope="row">MLLP</th><td>Correct <code>0x0B … 0x1C 0x0D</code> framing, inbound and outbound, with ACK/NAK generation (AA / AE / AR) and a per-connection ack mode.</td></tr>
+            <tr><th scope="row">TCP</th><td>Raw stream endpoints.</td></tr>
+            <tr><th scope="row">HTTP / REST &amp; SOAP destinations</th><td>Deliver to modern and legacy web-service APIs. (Inbound REST/SOAP listeners are on the roadmap.)</td></tr>
+            <tr><th scope="row">Files — local &amp; SFTP / FTP / FTPS</th><td>Local directories and remote file transfer, with templated output names (e.g. <code>{MSH-10}.hl7</code>).</td></tr>
+            <tr><th scope="row">Database</th><td>Poll records in and write results out.</td></tr>
+            <tr><th scope="row">Count-and-log invariant</th><td>Every message a connection takes in or puts out is counted and logged; a router or filter decision is a recorded outcome (<code>UNROUTED</code> / <code>FILTERED</code>), never a silent drop.</td></tr>
+
+            <tr class="grp"><th colspan="2" scope="colgroup">Routing &amp; transformation</th></tr>
+            <tr><th scope="row">One-to-many routing with filtering</th><td>Fan a message out to multiple destinations, or filter it out entirely; every decision is a recorded outcome.</td></tr>
+            <tr><th scope="row">Transform, enrich, validate</th><td>Reshape and augment messages mid-flight, with validation where you want it.</td></tr>
+            <tr><th scope="row">Reference tables &amp; live lookups</th><td>Enrich from static reference / lookup tables, or query a live database during processing.</td></tr>
+            <tr><th scope="row">Guided wizards or pure functions</th><td>New Connection / New Route wizards generate the wiring, or write Routers and Handlers as plain functions registered by name — no proprietary DSL.</td></tr>
+            <tr><th scope="row">Dry-run with before/after diff</th><td>Preview a route's effect on a real message before it ships.</td></tr>
+
+            <tr class="grp"><th colspan="2" scope="colgroup">Security &amp; PHI</th></tr>
+            <tr><th scope="row">Authentication</th><td>Local accounts and Active Directory (LDAP / Kerberos) sign-in, with opaque, revocable sessions.</td></tr>
+            <tr><th scope="row">RBAC</th><td>Fixed built-in roles, deny-by-default, with per-route and per-channel scoping.</td></tr>
+            <tr><th scope="row">Localhost-bound API</th><td>The API binds <code>127.0.0.1</code> by default and requires authentication.</td></tr>
+            <tr><th scope="row">TLS in transit</th><td>The API and MLLP run over TLS (including MLLP-over-TLS), so PHI never crosses the network in the clear.</td></tr>
+            <tr><th scope="row">Tamper-evident audit log</th><td>A hash-chained, user-attributed record of every PHI access (raw view, summary, replay), with a verification command.</td></tr>
+            <tr><th scope="row">Encryption at rest</th><td>Message bodies are encrypted with AES-256-GCM in the store.</td></tr>
+            <tr><th scope="row">Retention &amp; purge</th><td>Keep messages as long as policy requires, then purge on a configurable schedule.</td></tr>
+
+            <tr class="grp"><th colspan="2" scope="colgroup">Tooling — console, editor &amp; CLI</th></tr>
+            <tr><th scope="row">Admin console</th><td>Dashboards, message search and browse, an HL7 parse-tree viewer, delivery and audit trail, and one-click replay — a separate app reaching the engine only over the localhost API.</td></tr>
+            <tr><th scope="row">VS Code extension</th><td>Completion, live HL7-aware validate-on-save, a graph view of your integration, source-control integration, and Stage&nbsp;→&nbsp;Promote to a running engine.</td></tr>
+            <tr><th scope="row">CLI &amp; localhost API</th><td><code>messagefoundry serve</code> exposes connection control, message search/detail, replay, stats, and a live WebSocket feed; <code>check</code> gates commits and <code>generate</code> produces synthetic HL7.</td></tr>
+            <tr><th scope="row">Alerting</th><td>Webhook and email alerts when a connection stalls or a message dead-letters.</td></tr>
+            <tr><th scope="row">Hot-reload &amp; environment promotion</th><td>Configuration hot-reload, with DEV/PROD values layering over the same modules.</td></tr>
+            <tr><th scope="row">ACK modes &amp; guards</th><td>Configurable ACK modes plus message-size and segment guards.</td></tr>
+
+            <tr class="grp"><th colspan="2" scope="colgroup">Authoring &amp; AI assist</th></tr>
+            <tr><th scope="row">Setup wizards</th><td>Guided New Connection and New Route flows that generate the Python for you — guided authoring whose output is plain code you own and review.</td></tr>
+            <tr><th scope="row">PHI-safe AI assistance</th><td>An in-editor assistant governed by a central, environment-aware policy that sends only code, never message bodies, gated by RBAC.</td></tr>
+            <tr><th scope="row">AI-assisted migration</th><td>Paste existing Mirth / Cloverleaf / Rhapsody logic and the assistant helps you express it as Python — code-only and governed.</td></tr>
+
+            <tr class="grp"><th colspan="2" scope="colgroup">Test &amp; verify</th></tr>
+            <tr><th scope="row">Interactive test bench</th><td>Send / receive / file / compose / monitor tools for driving inbound and outbound endpoints by hand.</td></tr>
+            <tr><th scope="row">Headless scenario runner</th><td>Assert routing and transform behavior on every commit, in CI.</td></tr>
+            <tr><th scope="row">Test Bench dry-runs in VS Code</th><td>Run <code>.hl7</code> files through a route with before/after diffs.</td></tr>
+            <tr><th scope="row">Synthetic HL7 generator</th><td>Realistic, PHI-free messages for load and edge-case testing.</td></tr>
+            <tr><th scope="row"><code>check</code> commit gate</th><td>Validate configuration before it ships.</td></tr>
+
+            <tr class="grp"><th colspan="2" scope="colgroup">CI/CD</th></tr>
+            <tr><th scope="row">Pull-request review</th><td>Every interface change is a readable diff your team approves, with full history and instant rollback.</td></tr>
+            <tr><th scope="row">Build gate</th><td><code>messagefoundry check</code> validates config and dry-runs messages, failing the build on a broken route before it merges.</td></tr>
+            <tr><th scope="row">Automated tests in CI</th><td>A headless scenario runner asserts the engine's outcome on synthetic data in GitHub Actions, GitLab CI, Jenkins, or Azure DevOps.</td></tr>
+            <tr><th scope="row">Reproducible promotion</th><td>Only a reviewed, green change is promoted to each environment, so production matches git — no config drift.</td></tr>
+            <tr><th scope="row">Auditable by default</th><td>Reviewed, tested, timestamped change control, the way compliance already expects it.</td></tr>
+
+            <tr class="grp"><th colspan="2" scope="colgroup">Message store — three backends, one contract</th></tr>
+            <tr><th scope="row">SQLite</th><td>The zero-config, single-node default — WAL, one file, no server to run. The baseline every other backend matches byte-for-byte.</td></tr>
+            <tr><th scope="row">PostgreSQL</th><td>The production server-DB for horizontal scale-out: many engine hosts share one store, with leader election, strict per-lane FIFO ordering, and failover/HA.</td></tr>
+            <tr><th scope="row">SQL Server</th><td>A first-class production backend at parity with PostgreSQL — the same staged pipeline, concurrency-safe claiming, row leases, and multi-node HA.</td></tr>
+            <tr><th scope="row">One Store contract</th><td>The same at-least-once model — dispositions, retries, replay, audit, encryption at rest, and retention/purge — runs across all three backends.</td></tr>
+
+            <tr class="grp"><th colspan="2" scope="colgroup">High availability</th></tr>
+            <tr><th scope="row">Active-passive failover</th><td>A standby promotes on primary failure; in-flight work resumes from the durable store.</td></tr>
+            <tr><th scope="row">No message loss</th><td>Failover picks up from committed state, so nothing accepted is dropped.</td></tr>
+            <tr><th scope="row">Database-tier HA</th><td>PostgreSQL streaming replication or SQL&nbsp;Server Always On availability groups back the store.</td></tr>
+            <tr><th scope="row">Runs in your environment</th><td>On-premises, on your infrastructure, on your DR terms.</td></tr>
+
+            <tr class="grp"><th colspan="2" scope="colgroup">Deploy &amp; support</th></tr>
+            <tr><th scope="row">Windows service via NSSM</th><td>Install / uninstall scripts included.</td></tr>
+            <tr><th scope="row">Headless engine</th><td>No GUI imports; testable and runnable as a service.</td></tr>
+            <tr><th scope="row">One config, many environments</th><td>DEV/PROD values layer over the same Python modules.</td></tr>
+            <tr><th scope="row">Support &amp; consulting</th><td>Commercial support and expert HL7 + Python consulting — migration assistance, custom connectors, and operational guidance.</td></tr>
+
+          </tbody>
+        </table>
+      </div>
+      <p style="color:var(--muted);font-size:.86rem;margin-top:16px">Everything in this table ships in <b>v0.1 Early Access</b> and is described in present tense as what the engine does. Early Access has not yet had an external code review or penetration test. For the full narrative behind each item, see the <a href="/features.html">features page</a>.</p>
+    </div>
+  </section>
+
+  <!-- roadmap -->
+  <section class="section section--dark">
+    <div class="container">
+      <div class="center" style="margin-bottom:30px">
+        <span class="eyebrow">Roadmap</span>
+        <h2>What's next — 0.2 and beyond</h2>
+        <p class="lead center">Not in v0.1 Early Access. Listed here so the table above stays honest about today versus tomorrow.</p>
+      </div>
+      <div class="table-wrap">
+        <table class="cmp feat">
+          <thead>
+            <tr>
+              <th scope="col">Planned</th>
+              <th scope="col">What it adds</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr class="grp"><th colspan="2" scope="colgroup">Scale-out</th></tr>
+            <tr><th scope="row">Active-active clustering</th><td>Horizontal throughput across active nodes, beyond today's active-passive HA.</td></tr>
+            <tr><th scope="row">Partition-key parallelism</th><td>Ordered lanes per key (e.g. per patient) for parallel processing without losing per-key order.</td></tr>
+
+            <tr class="grp"><th colspan="2" scope="colgroup">Connectivity &amp; standards</th></tr>
+            <tr><th scope="row">Inbound REST &amp; SOAP listeners</th><td>Accept inbound web-service calls, complementing today's outbound REST/SOAP destinations.</td></tr>
+            <tr><th scope="row">FHIR</th><td>FHIR support alongside HL7 v2.</td></tr>
+            <tr><th scope="row">OAuth 2.0, SMART on FHIR &amp; SSO federation</th><td>OIDC/SAML and AD&nbsp;FS/Entra&nbsp;ID single sign-on.</td></tr>
+            <tr><th scope="row">More databases</th><td>MySQL/MariaDB and Oracle as additional store backends.</td></tr>
+
+            <tr class="grp"><th colspan="2" scope="colgroup">Security &amp; operations</th></tr>
+            <tr><th scope="row">Multi-factor authentication</th><td>MFA on top of the existing local and Active Directory sign-in.</td></tr>
+            <tr><th scope="row">Built-in de-identification</th><td>Native PHI de-identification.</td></tr>
+            <tr><th scope="row">Structured logging &amp; SIEM forwarding</th><td>Machine-readable logs forwarded to a SIEM.</td></tr>
+            <tr><th scope="row">Expanded console</th><td>A dead-letter page, alert management, and a multi-engine view.</td></tr>
+            <tr><th scope="row">Managed BAA-backed AI provider</th><td>A hosted AI option covered by a Business Associate Agreement.</td></tr>
+            <tr><th scope="row">Independent external review</th><td>An independent external code review and penetration test.</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="container">
+      <div class="cta-band">
+        <h2>See it run for yourself</h2>
+        <div class="btn-row center">
+          <a class="btn btn-primary" href="/getting-started.html">Get started</a>
+          <a class="btn btn-ghost" href="/comparison.html">See how it compares →</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <footer class="site-footer">
+    <div class="container">
+      <div class="footer-grid">
+        <div class="footer-brand">
+          <a class="brand" href="/" aria-label="MessageFoundry home">
+            <img class="brand-mark" src="/assets/img/logo.svg" alt="" width="28" height="28">
+            <span class="brand-name">Message<span class="brand-accent">Foundry</span></span>
+          </a>
+          <p>Open-source healthcare integration engine — secure by default, built to recognized standards, connecting a wide range of protocols and message types.</p>
+          <div class="badge-row" style="margin-top:16px">
+            <span class="badge">Open source</span>
+            <span class="badge">No lock-in</span>
+            <span class="badge">Self-hosted</span>
+          </div>
+        </div>
+        <div class="footer-col">
+          <h4>Product</h4>
+          <a href="/overview.html">Overview</a>
+          <a href="/features.html">Features</a>
+          <a href="/ai.html">AI assist</a>
+          <a href="/security.html">Security &amp; PHI</a>
+          <a href="/comparison.html">Comparison</a>
+          <a href="/getting-started.html">Get started</a>
+        </div>
+        <div class="footer-col">
+          <h4>Docs</h4>
+          <a href="https://github.com/MEFORORG/MessageFoundry/blob/main/docs/ARCHITECTURE.md">Architecture</a>
+          <a href="https://github.com/MEFORORG/MessageFoundry/blob/main/docs/CONNECTIONS.md">Connections</a>
+          <a href="https://github.com/MEFORORG/MessageFoundry/blob/main/docs/SECURITY.md">Security</a>
+          <a href="https://github.com/MEFORORG/MessageFoundry/blob/main/docs/PHI.md">PHI / HIPAA</a>
+        </div>
+        <div class="footer-col">
+          <h4>Project</h4>
+          <a href="https://github.com/MEFORORG/MessageFoundry" target="_blank" rel="noopener">GitHub</a>
+          <a href="https://github.com/MEFORORG/MessageFoundry/issues" target="_blank" rel="noopener">Issues</a>
+          <a href="/contact.html">Contact</a>
+          <a href="/licensing.html">License</a>
+          <a href="/about.html">About</a>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        <span>© 2026 MessageFoundry, a non-profit · Licensed under AGPL-3.0-or-later.</span>
+        <span>Mirth Connect, Cloverleaf, Rhapsody, Corepoint, and Ensemble are trademarks of their respective owners; MessageFoundry is independent and unaffiliated.</span>
+      </div>
+    </div>
+  </footer>
+
+  <script src="/assets/js/nav.js" defer></script>
+</body>
+</html>
