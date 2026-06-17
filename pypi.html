@@ -3,16 +3,16 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Ask a question — MessageFoundry</title>
-  <meta name="description" content="Questions about MessageFoundry — deployment, security and PHI, migrating off a legacy engine, or licensing? Send us a note and we'll get back to you.">
-  <link rel="canonical" href="https://messagefoundry.org/contact.html">
+  <title>MessageFoundry on PyPI — installing with pip</title>
+  <meta name="description" content="New to PyPI? What the Python Package Index is and why installing MessageFoundry from it is a better way to get the software: one pip command, signed and versioned releases you can verify — plus a link to the MessageFoundry project on PyPI.">
+  <link rel="canonical" href="https://messagefoundry.org/pypi.html">
   <link rel="icon" href="/assets/img/favicon.svg" type="image/svg+xml">
   <meta name="theme-color" content="#0b1220">
   <meta property="og:type" content="website">
   <meta property="og:site_name" content="MessageFoundry">
-  <meta property="og:title" content="Ask a question — MessageFoundry">
-  <meta property="og:description" content="Questions about deployment, security, migration, or licensing? Send us a note.">
-  <meta property="og:url" content="https://messagefoundry.org/contact.html">
+  <meta property="og:title" content="MessageFoundry on PyPI — installing with pip">
+  <meta property="og:description" content="What PyPI is, why installing from it is better (one command; signed, versioned releases you can verify), and a link to the MessageFoundry project on PyPI.">
+  <meta property="og:url" content="https://messagefoundry.org/pypi.html">
   <meta property="og:image" content="https://messagefoundry.org/assets/img/og.png">
   <meta property="og:image:width" content="1200">
   <meta property="og:image:height" content="630">
@@ -49,59 +49,81 @@
           <div class="nav-group__menu" id="nav-company">
             <a href="/about.html">About</a>
             <a href="/licensing.html">Licensing</a>
-            <a href="/contact.html" class="active" aria-current="page">Contact</a>
+            <a href="/contact.html">Contact</a>
           </div>
         </div>
-        <a class="btn btn-ghost" href="/pypi.html">PyPI</a>
+        <a class="btn btn-ghost" href="/pypi.html" aria-current="page">PyPI</a>
         <a class="btn btn-ghost" href="https://github.com/MEFORORG/MessageFoundry" target="_blank" rel="noopener">GitHub ↗</a>
       </nav>
     </div>
   </header>
 
   <section class="section section--dark section--tight">
-    <div class="container center">
-      <span class="eyebrow">Contact</span>
-      <h1 style="max-width:20ch;margin-inline:auto">Ask us a question</h1>
-      <p class="lead center">Evaluating MessageFoundry for your interfaces? Ask about deployment, security and PHI, migrating off a legacy engine, or licensing — we'll get back to you by email.</p>
+    <div class="container">
+      <span class="eyebrow">Install · PyPI</span>
+      <h1 style="max-width:24ch">Message<span class="wordmark-accent">Foundry</span> on PyPI</h1>
+      <p class="lead">PyPI is the standard catalog of Python software — the place <code>pip</code> installs from. MessageFoundry ships there as a <b>signed, versioned package</b>, so getting it is one command and every release is something you can verify. New to PyPI? Here's what it is and why it's a better way to get the software.</p>
     </div>
   </section>
 
   <section class="section">
+    <div class="container" style="max-width:820px">
+      <span class="eyebrow">New to PyPI?</span>
+      <h2>What PyPI is, in a minute</h2>
+      <p class="lead">The <b>Python Package Index</b> — PyPI — is the official, public catalog of Python software. It's where <code>pip</code>, Python's package installer, downloads from: the trusted distribution channel for Python libraries and tools, a bit like an app store for code.</p>
+      <p>When you run <code>pip install messagefoundry</code>, pip fetches the published MessageFoundry package from that channel and installs it along with the dependencies it declares — no cloning a repository, no building from source, no hunting for the right files. One command pulls a specific, published version onto your machine.</p>
+    </div>
+  </section>
+
+  <section class="section section--alt">
     <div class="container">
-      <!-- Web3Forms: submissions POST to api.web3forms.com and are emailed to questions@messagefoundry.org.
-           The destination address is NOT in this page — it's bound to the access_key below
-           (created at https://web3forms.com for questions@messagefoundry.org). -->
-      <form class="form" action="https://api.web3forms.com/submit" method="POST">
-        <input type="hidden" name="access_key" value="b2df9259-745d-4109-bd32-97166759e987">
-        <input type="hidden" name="subject" value="New question from messagefoundry.org">
-        <input type="hidden" name="from_name" value="MessageFoundry website">
-        <input type="hidden" name="redirect" value="https://messagefoundry.org/thanks.html">
-        <!-- honeypot: bots check this; humans never see it -->
-        <input type="checkbox" name="botcheck" class="hp" tabindex="-1" autocomplete="off" aria-hidden="true">
+      <div class="center" style="max-width:720px;margin-bottom:38px">
+        <span class="eyebrow">Why it matters</span>
+        <h2>Why installing from PyPI is better</h2>
+        <p class="lead center">A published package isn't only convenient — it's a stronger trust boundary than copying source code.</p>
+      </div>
+      <div class="grid grid-3">
+        <div class="card">
+          <h3>One command</h3>
+          <p>No clone, no build step. <code>pip install messagefoundry</code> fetches the package and its dependencies, and you're ready to run.</p>
+        </div>
+        <div class="card">
+          <h3>Versioned &amp; pinnable</h3>
+          <p>You install a specific, frozen release — <code>messagefoundry==X.Y.Z</code> — not whatever happens to be on a branch that day. Pin it, and every environment gets the identical build.</p>
+        </div>
+        <div class="card">
+          <h3>Signed &amp; verifiable</h3>
+          <p>Each release wheel is Sigstore-signed and carries build provenance and an SBOM, so you can verify what you installed came from the real source. <a href="/security.html">How releases are signed &amp; attested →</a></p>
+        </div>
+      </div>
+    </div>
+  </section>
 
-        <div class="field">
-          <label for="name">Name <span class="req" aria-hidden="true">*</span></label>
-          <input id="name" type="text" name="name" required autocomplete="name">
-        </div>
-        <div class="field">
-          <label for="email">Email <span class="req" aria-hidden="true">*</span></label>
-          <input id="email" type="email" name="email" required autocomplete="email" placeholder="you@hospital.org">
-        </div>
-        <div class="field">
-          <label for="organization">Organization</label>
-          <input id="organization" type="text" name="organization" autocomplete="organization">
-        </div>
-        <div class="field">
-          <label for="message">Your question <span class="req" aria-hidden="true">*</span></label>
-          <textarea id="message" name="message" required placeholder="Ask about deployment, security &amp; PHI, migration off a legacy engine, licensing…"></textarea>
-        </div>
+  <section class="section">
+    <div class="container" style="max-width:820px">
+      <span class="eyebrow">How to install</span>
+      <h2>Installing Message<span class="wordmark-accent">Foundry</span></h2>
+      <p class="lead">At the first tagged release, installation is a single line:</p>
+      <div class="code-card">
+        <div class="code-card__bar"><i></i><i></i><i></i><span class="code-card__name">terminal</span></div>
+<pre class="code">pip install messagefoundry</pre>
+      </div>
+      <div class="callout" style="margin-top:22px">
+        <p style="margin:0"><strong>During Early Access</strong>, the published install path is the <b>signed release wheel from GitHub Releases</b> — public PyPI lands at the first tagged release. Either way you get the same signed, versioned artifact, and the <a href="/getting-started.html">quickstart</a> walks through running it.</p>
+      </div>
+    </div>
+  </section>
 
-        <button type="submit" class="btn btn-primary">Send your question</button>
-
-        <div class="callout" style="margin-top:22px">
-          <p style="margin:0"><strong>Please don't include PHI or real patient data.</strong> This form is routed through a third-party form service and email — keep it to general questions. For anything sensitive, ask here and we'll arrange a secure channel.</p>
+  <section class="section section--alt">
+    <div class="container">
+      <div class="cta-band">
+        <h2>See Message<span class="wordmark-accent">Foundry</span> on PyPI</h2>
+        <p class="lead center" style="color:var(--muted-dk)">The project page lists the package, its versions, and release history — straight from the index.</p>
+        <div class="btn-row center">
+          <a class="btn btn-primary" href="https://pypi.org/project/messagefoundry/" target="_blank" rel="noopener">View on PyPI ↗</a>
+          <a class="btn btn-ghost" href="/getting-started.html">Get started</a>
         </div>
-      </form>
+      </div>
     </div>
   </section>
 
