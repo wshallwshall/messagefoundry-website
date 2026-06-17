@@ -1,0 +1,309 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Architecture — MessageFoundry</title>
+  <meta name="description" content="How MessageFoundry fits together: the system topology (clients, the localhost API boundary, and the headless engine), the runtime message flow through the durable staged queue with ACK-on-receipt, and the config wiring graph of Connections, Routers, and Handlers.">
+  <link rel="canonical" href="https://messagefoundry.org/architecture.html">
+  <link rel="icon" href="/assets/img/favicon.svg" type="image/svg+xml">
+  <meta name="theme-color" content="#0b1220">
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="MessageFoundry">
+  <meta property="og:title" content="Architecture — MessageFoundry">
+  <meta property="og:description" content="System topology, runtime message flow through the durable staged queue, and the config wiring graph — how the open-source healthcare integration engine fits together.">
+  <meta property="og:url" content="https://messagefoundry.org/architecture.html">
+  <meta property="og:image" content="https://messagefoundry.org/assets/img/og.png">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta property="og:image:type" content="image/png">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:image" content="https://messagefoundry.org/assets/img/og.png">
+  <link rel="stylesheet" href="/assets/css/styles.css">
+  <style>
+    /* Architecture diagrams — static SVG styled with the design tokens (no JS). */
+    svg.dg { width: 100%; height: auto; display: block; margin: 0 auto; max-width: 940px; }
+    svg.dg text { font-family: var(--font); }
+    .dg-box   { fill: #fff; stroke: #cdd6e3; stroke-width: 1.2; }
+    .dg-api   { fill: #fff8ee; stroke: var(--accent); stroke-width: 1.7; }
+    .dg-store { fill: #fff4e3; stroke: #fde6c2; stroke-width: 1.3; }
+    .dg-bound { fill: none; stroke: var(--border-dk); stroke-width: 1.2; }
+    .dg-ttl   { fill: var(--text); font-weight: 700; font-size: 14px; }
+    .dg-sub   { fill: var(--muted); font-size: 11px; }
+    .dg-bnd   { fill: var(--muted); font-weight: 600; font-size: 10.5px; letter-spacing: .05em; }
+    .dg-lg    { fill: var(--muted); font-size: 11px; }
+    .dg-solid { fill: none; stroke: var(--muted); stroke-width: 1.7; }
+    .dg-dash  { fill: none; stroke: #93a1b8; stroke-width: 1.4; stroke-dasharray: 4 4; }
+  </style>
+</head>
+<body>
+
+  <header class="site-header">
+    <div class="container header-inner">
+      <a class="brand" href="/" aria-label="MessageFoundry home">
+        <img class="brand-mark" src="/assets/img/logo.svg" alt="" width="28" height="28">
+        <span class="brand-name">Message<span class="brand-accent">Foundry</span></span>
+      </a>
+      <button class="nav-toggle" aria-expanded="false" aria-controls="site-nav" aria-label="Toggle navigation"><span></span><span></span><span></span></button>
+      <nav class="site-nav" id="site-nav">
+        <a href="/overview.html">Overview</a>
+        <a href="/features.html">Features</a>
+        <a href="/security.html">Security</a>
+        <a href="/ai.html">AI assist</a>
+        <a href="/getting-started.html">Get started</a>
+        <a href="/comparison.html">Comparison</a>
+        <a href="/about.html">About</a>
+        <a href="/architecture.html" class="active" aria-current="page">Architecture</a>
+        <a class="btn btn-ghost" href="https://github.com/MEFORORG/MessageFoundry" target="_blank" rel="noopener">GitHub ↗</a>
+      </nav>
+    </div>
+  </header>
+
+  <!-- shared arrow markers for the diagrams -->
+  <svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false">
+    <defs>
+      <marker id="dg-ah" markerWidth="10" markerHeight="10" refX="7.5" refY="4.5" orient="auto"><path d="M0,0 L9,4.5 L0,9 Z" fill="#51607a"/></marker>
+      <marker id="dg-ahd" markerWidth="10" markerHeight="10" refX="7.5" refY="4.5" orient="auto"><path d="M0,0 L9,4.5 L0,9 Z" fill="#93a1b8"/></marker>
+    </defs>
+  </svg>
+
+  <!-- hero -->
+  <section class="section section--dark section--tight">
+    <div class="container">
+      <span class="eyebrow">Architecture</span>
+      <h1 style="max-width:22ch">How MessageFoundry fits together</h1>
+      <p class="lead">Three views, each answering a different question: what the components are and where the process boundaries sit; how a received message moves through the durable staged queue and earns a disposition; and how Connections, Routers, and Handlers wire together by name. The prose source of truth is the engine's <a href="https://github.com/MEFORORG/MessageFoundry/blob/main/docs/ARCHITECTURE.md" target="_blank" rel="noopener" style="color:var(--accent)">ARCHITECTURE.md</a>.</p>
+    </div>
+  </section>
+
+  <!-- 1. system topology -->
+  <section class="section">
+    <div class="container">
+      <div class="center" style="margin-bottom:30px;max-width:760px">
+        <span class="eyebrow">1 · Components &amp; boundaries</span>
+        <h2>System topology</h2>
+        <p class="lead center">The engine is a headless service; clients are separate processes that reach it <b>only</b> through the localhost API. Dependencies point one way — the API depends on the engine, the engine never imports the API or a client.</p>
+      </div>
+      <svg class="dg" viewBox="0 16 800 510" role="img" aria-labelledby="t1 d1">
+        <title id="t1">System topology</title>
+        <desc id="d1">The admin console, VS Code extension, and test harness reach the engine only through a localhost API with auth and RBAC. The headless engine's pipeline depends on transports, parsing, the store (SQLite, PostgreSQL, SQL Server), and config.</desc>
+        <line class="dg-solid" x1="566" y1="34" x2="592" y2="34" marker-end="url(#dg-ah)"/>
+        <text class="dg-lg" x="600" y="38">depends on</text>
+        <line class="dg-dash" x1="566" y1="52" x2="592" y2="52" marker-end="url(#dg-ahd)"/>
+        <text class="dg-lg" x="600" y="56">over the API / wire</text>
+
+        <path class="dg-dash" d="M178,130 L330,176" marker-end="url(#dg-ahd)"/>
+        <path class="dg-dash" d="M400,130 L400,176" marker-end="url(#dg-ahd)"/>
+        <path class="dg-dash" d="M622,130 L470,176" marker-end="url(#dg-ahd)"/>
+        <path class="dg-solid" d="M400,230 L400,286" marker-end="url(#dg-ah)"/>
+        <path class="dg-solid" d="M360,338 L162,390" marker-end="url(#dg-ah)"/>
+        <path class="dg-solid" d="M388,340 L322,390" marker-end="url(#dg-ah)"/>
+        <path class="dg-solid" d="M412,340 L480,390" marker-end="url(#dg-ah)"/>
+        <path class="dg-solid" d="M440,338 L642,390" marker-end="url(#dg-ah)"/>
+
+        <rect class="dg-box" x="78" y="84" width="200" height="46" rx="10"/>
+        <text class="dg-ttl" x="178" y="105" text-anchor="middle">Admin console</text>
+        <text class="dg-sub" x="178" y="121" text-anchor="middle">separate process</text>
+        <rect class="dg-box" x="300" y="84" width="200" height="46" rx="10"/>
+        <text class="dg-ttl" x="400" y="105" text-anchor="middle">VS Code extension</text>
+        <text class="dg-sub" x="400" y="121" text-anchor="middle">authoring + ops</text>
+        <rect class="dg-box" x="522" y="84" width="200" height="46" rx="10"/>
+        <text class="dg-ttl" x="622" y="105" text-anchor="middle">Test harness</text>
+        <text class="dg-sub" x="622" y="121" text-anchor="middle">synthetic traffic</text>
+
+        <text class="dg-bnd" x="400" y="170" text-anchor="middle">LOCALHOST · THE ONLY EXTERNAL SURFACE</text>
+        <rect class="dg-api" x="220" y="178" width="360" height="52" rx="10"/>
+        <text class="dg-ttl" x="400" y="200" text-anchor="middle">API — HTTP + WebSocket</text>
+        <text class="dg-sub" x="400" y="217" text-anchor="middle">auth · RBAC · hash-chained audit</text>
+
+        <rect class="dg-bound" x="40" y="252" width="720" height="266" rx="14"/>
+        <text class="dg-bnd" x="58" y="273">ENGINE — HEADLESS ASYNCIO SERVICE</text>
+        <rect class="dg-box" x="260" y="286" width="280" height="52" rx="10"/>
+        <text class="dg-ttl" x="400" y="308" text-anchor="middle">Pipeline</text>
+        <text class="dg-sub" x="400" y="324" text-anchor="middle">listener · router · transform · delivery</text>
+
+        <rect class="dg-box" x="60" y="390" width="158" height="92" rx="10"/>
+        <text class="dg-ttl" x="139" y="414" text-anchor="middle">Transports</text>
+        <text class="dg-sub" x="139" y="433" text-anchor="middle">MLLP · TCP · HTTP</text>
+        <text class="dg-sub" x="139" y="448" text-anchor="middle">SOAP · DB · files</text>
+        <text class="dg-sub" x="139" y="463" text-anchor="middle">(SFTP/FTP/FTPS)</text>
+        <rect class="dg-box" x="234" y="390" width="158" height="92" rx="10"/>
+        <text class="dg-ttl" x="313" y="414" text-anchor="middle">Parsing</text>
+        <text class="dg-sub" x="313" y="433" text-anchor="middle">HL7 v2 deep parse;</text>
+        <text class="dg-sub" x="313" y="448" text-anchor="middle">JSON / XML / X12</text>
+        <text class="dg-sub" x="313" y="463" text-anchor="middle">routed</text>
+        <rect class="dg-store" x="408" y="390" width="158" height="92" rx="10"/>
+        <text class="dg-ttl" x="487" y="414" text-anchor="middle">Store</text>
+        <text class="dg-sub" x="487" y="433" text-anchor="middle">SQLite · PostgreSQL</text>
+        <text class="dg-sub" x="487" y="448" text-anchor="middle">· SQL Server</text>
+        <text class="dg-sub" x="487" y="463" text-anchor="middle">AES-256-GCM</text>
+        <rect class="dg-box" x="582" y="390" width="158" height="92" rx="10"/>
+        <text class="dg-ttl" x="661" y="414" text-anchor="middle">Config</text>
+        <text class="dg-sub" x="661" y="433" text-anchor="middle">Connections ·</text>
+        <text class="dg-sub" x="661" y="448" text-anchor="middle">Routers · Handlers</text>
+      </svg>
+    </div>
+  </section>
+
+  <!-- 2. runtime message flow -->
+  <section class="section section--alt">
+    <div class="container">
+      <div class="center" style="margin-bottom:30px;max-width:760px">
+        <span class="eyebrow">2 · Runtime message flow</span>
+        <h2>The durable staged queue</h2>
+        <p class="lead center">A received message is <b>ACKed on receipt</b> — once it's durably committed to the ingress stage, before routing, transform, or delivery. Each handoff is a single committed transaction, giving at-least-once delivery, retries, and replay with no separate broker.</p>
+      </div>
+      <svg class="dg" viewBox="0 0 940 332" role="img" aria-labelledby="t2 d2">
+        <title id="t2">Runtime message flow through the staged queue</title>
+        <desc id="d2">An inbound message is decoded and parsed by the listener, committed to the ingress stage, and ACKed on receipt. It then moves through routed and outbound stages via committed transactions — router, transform, and delivery workers — before reaching the outbound connection. Each message earns a disposition finalized by the store.</desc>
+
+        <path class="dg-solid" d="M142,148 L196,148" marker-end="url(#dg-ah)"/>
+        <text class="dg-sub" x="169" y="139" text-anchor="middle">listener</text>
+        <path class="dg-solid" d="M332,148 L406,148" marker-end="url(#dg-ah)"/>
+        <text class="dg-sub" x="369" y="139" text-anchor="middle">router</text>
+        <path class="dg-solid" d="M542,148 L616,148" marker-end="url(#dg-ah)"/>
+        <text class="dg-sub" x="579" y="139" text-anchor="middle">transform</text>
+        <path class="dg-solid" d="M752,148 L796,148" marker-end="url(#dg-ah)"/>
+        <text class="dg-sub" x="774" y="139" text-anchor="middle">deliver</text>
+        <path class="dg-solid" d="M265,112 L265,86" marker-end="url(#dg-ah)"/>
+
+        <rect class="dg-api" x="200" y="56" width="130" height="30" rx="8"/>
+        <text class="dg-sub" x="265" y="75" text-anchor="middle" style="font-weight:700;fill:var(--accent-ink)">ACK (AA) — on receipt</text>
+
+        <rect class="dg-box" x="22" y="120" width="120" height="56" rx="10"/>
+        <text class="dg-ttl" x="82" y="145" text-anchor="middle">Inbound</text>
+        <text class="dg-sub" x="82" y="161" text-anchor="middle">connection</text>
+
+        <rect class="dg-store" x="200" y="112" width="132" height="72" rx="10"/>
+        <text class="dg-ttl" x="266" y="142" text-anchor="middle">ingress</text>
+        <text class="dg-sub" x="266" y="159" text-anchor="middle">raw committed</text>
+        <rect class="dg-store" x="410" y="112" width="132" height="72" rx="10"/>
+        <text class="dg-ttl" x="476" y="142" text-anchor="middle">routed</text>
+        <text class="dg-sub" x="476" y="159" text-anchor="middle">one row / handler</text>
+        <rect class="dg-store" x="620" y="112" width="132" height="72" rx="10"/>
+        <text class="dg-ttl" x="686" y="142" text-anchor="middle">outbound</text>
+        <text class="dg-sub" x="686" y="159" text-anchor="middle">one row / dest.</text>
+
+        <rect class="dg-box" x="800" y="120" width="120" height="56" rx="10"/>
+        <text class="dg-ttl" x="860" y="145" text-anchor="middle">Outbound</text>
+        <text class="dg-sub" x="860" y="161" text-anchor="middle">idempotent send</text>
+
+        <rect class="dg-box" x="22" y="244" width="898" height="58" rx="10"/>
+        <text class="dg-bnd" x="44" y="266">DISPOSITION · count-and-log, finalized by the store</text>
+        <text class="dg-sub" x="898" y="266" text-anchor="end">decode/validate failures NAK synchronously, pre-ingress</text>
+        <text class="dg-ttl" x="44" y="289" style="font-size:13px">RECEIVED &#8594; ROUTED / UNROUTED &#8594; PROCESSED / FILTERED / ERROR</text>
+      </svg>
+    </div>
+  </section>
+
+  <!-- 3. config wiring -->
+  <section class="section">
+    <div class="container">
+      <div class="center" style="margin-bottom:30px;max-width:760px">
+        <span class="eyebrow">3 · Config wiring</span>
+        <h2>Connections, Routers, and Handlers — wired by name</h2>
+        <p class="lead center">An inbound Connection names a Router; the Router forwards to Handler(s) by name; each Handler sends to outbound Connection(s). There's no enclosing "channel" object — set it up with guided wizards, or write it in Python.</p>
+      </div>
+      <svg class="dg" viewBox="0 0 900 272" role="img" aria-labelledby="t3 d3">
+        <title id="t3">Config wiring graph</title>
+        <desc id="d3">An inbound connection IB_ACME_ADT (MLLP) names a router. The router forwards by name to two handlers — to_EHR and to_archive — which Send to outbound connections OB_EHR_ADT (MLLP) and OB_ARCHIVE (File).</desc>
+
+        <path class="dg-solid" d="M190,150 L246,150" marker-end="url(#dg-ah)"/>
+        <text class="dg-sub" x="218" y="141" text-anchor="middle">names</text>
+        <path class="dg-solid" d="M430,138 L486,94" marker-end="url(#dg-ah)"/>
+        <path class="dg-solid" d="M430,162 L486,206" marker-end="url(#dg-ah)"/>
+        <text class="dg-sub" x="455" y="118" text-anchor="middle">by name</text>
+        <path class="dg-solid" d="M650,94 L706,94" marker-end="url(#dg-ah)"/>
+        <text class="dg-sub" x="678" y="85" text-anchor="middle">Send</text>
+        <path class="dg-solid" d="M650,206 L706,206" marker-end="url(#dg-ah)"/>
+        <text class="dg-sub" x="678" y="197" text-anchor="middle">Send</text>
+
+        <rect class="dg-box" x="20" y="118" width="170" height="64" rx="10"/>
+        <text class="dg-ttl" x="105" y="145" text-anchor="middle">IB_ACME_ADT</text>
+        <text class="dg-sub" x="105" y="161" text-anchor="middle">inbound · MLLP</text>
+
+        <rect class="dg-api" x="246" y="112" width="184" height="76" rx="10"/>
+        <text class="dg-ttl" x="338" y="143" text-anchor="middle">@router</text>
+        <text class="dg-sub" x="338" y="160" text-anchor="middle">filters · forwards by name</text>
+
+        <rect class="dg-box" x="486" y="66" width="164" height="56" rx="10"/>
+        <text class="dg-ttl" x="568" y="91" text-anchor="middle">@handler: to_EHR</text>
+        <text class="dg-sub" x="568" y="107" text-anchor="middle">filter → transform</text>
+        <rect class="dg-box" x="486" y="178" width="164" height="56" rx="10"/>
+        <text class="dg-ttl" x="568" y="203" text-anchor="middle">@handler: to_archive</text>
+        <text class="dg-sub" x="568" y="219" text-anchor="middle">filter → transform</text>
+
+        <rect class="dg-box" x="706" y="66" width="174" height="56" rx="10"/>
+        <text class="dg-ttl" x="793" y="91" text-anchor="middle">OB_EHR_ADT</text>
+        <text class="dg-sub" x="793" y="107" text-anchor="middle">outbound · MLLP</text>
+        <rect class="dg-box" x="706" y="178" width="174" height="56" rx="10"/>
+        <text class="dg-ttl" x="793" y="203" text-anchor="middle">OB_ARCHIVE</text>
+        <text class="dg-sub" x="793" y="219" text-anchor="middle">outbound · File</text>
+      </svg>
+    </div>
+  </section>
+
+  <!-- cta -->
+  <section class="section section--tight">
+    <div class="container">
+      <div class="cta-band">
+        <h2>See it run for yourself</h2>
+        <p class="lead center" style="color:var(--muted-dk)">From clone to your first routed message — with the full feature set and the engine docs a click away.</p>
+        <div class="btn-row center">
+          <a class="btn btn-primary" href="/getting-started.html">Get started</a>
+          <a class="btn btn-ghost" href="/features.html">Browse features →</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <footer class="site-footer">
+    <div class="container">
+      <div class="footer-grid">
+        <div class="footer-brand">
+          <a class="brand" href="/" aria-label="MessageFoundry home">
+            <img class="brand-mark" src="/assets/img/logo.svg" alt="" width="28" height="28">
+            <span class="brand-name">Message<span class="brand-accent">Foundry</span></span>
+          </a>
+          <p>Open-source healthcare integration engine — secure by default, built to recognized standards, connecting a wide range of protocols and message types.</p>
+          <div class="badge-row" style="margin-top:16px">
+            <span class="badge">Open source</span>
+            <span class="badge">No lock-in</span>
+            <span class="badge">Self-hosted</span>
+          </div>
+        </div>
+        <div class="footer-col">
+          <h4>Product</h4>
+          <a href="/overview.html">Overview</a>
+          <a href="/features.html">Features</a>
+          <a href="/ai.html">AI assist</a>
+          <a href="/security.html">Security &amp; PHI</a>
+          <a href="/comparison.html">Comparison</a>
+          <a href="/getting-started.html">Get started</a>
+        </div>
+        <div class="footer-col">
+          <h4>Docs</h4>
+          <a href="https://github.com/MEFORORG/MessageFoundry/blob/main/docs/ARCHITECTURE.md">Architecture</a>
+          <a href="https://github.com/MEFORORG/MessageFoundry/blob/main/docs/CONNECTIONS.md">Connections</a>
+          <a href="https://github.com/MEFORORG/MessageFoundry/blob/main/docs/SECURITY.md">Security</a>
+          <a href="https://github.com/MEFORORG/MessageFoundry/blob/main/docs/PHI.md">PHI / HIPAA</a>
+        </div>
+        <div class="footer-col">
+          <h4>Project</h4>
+          <a href="https://github.com/MEFORORG/MessageFoundry" target="_blank" rel="noopener">GitHub</a>
+          <a href="https://github.com/MEFORORG/MessageFoundry/issues" target="_blank" rel="noopener">Issues</a>
+          <a href="/contact.html">Contact</a>
+          <a href="/licensing.html">License</a>
+          <a href="/about.html">About</a>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        <span>© 2026 MessageFoundry, a non-profit · Licensed under AGPL-3.0-or-later.</span>
+        <span>Mirth Connect, Cloverleaf, Rhapsody, Corepoint, and Ensemble are trademarks of their respective owners; MessageFoundry is independent and unaffiliated.</span>
+      </div>
+    </div>
+  </footer>
+
+  <script src="/assets/js/nav.js" defer></script>
+</body>
+</html>
