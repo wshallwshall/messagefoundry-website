@@ -4,7 +4,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Get started — MessageFoundry</title>
-  <meta name="description" content="Install MessageFoundry from source, run the engine and localhost API, send a test HL7 message over MLLP, open the admin console, and author your first Connection / Router / Handler in Python.">
+  <meta name="description" content="Install MessageFoundry from PyPI with a single pip install, run the engine and localhost API, send a test HL7 message over MLLP, open the admin console, and author your first Connection / Router / Handler in Python.">
   <link rel="canonical" href="https://messagefoundry.org/getting-started.html">
   <link rel="icon" href="/assets/img/favicon.svg" type="image/svg+xml">
   <meta name="theme-color" content="#0b1220">
@@ -47,8 +47,8 @@
   <section class="section section--dark section--tight">
     <div class="container">
       <span class="eyebrow">Get started</span>
-      <h1 style="max-width:20ch">From clone to your first routed message</h1>
-      <p class="lead">MessageFoundry installs from source and runs locally — this quickstart uses <b>Python 3.11+</b> and <b>git</b>. Once it's running, you can build interfaces two ways: with <b>guided wizards</b> in the VS&nbsp;Code extension and admin console, or in <b>plain Python</b> for full control. It starts zero-config on SQLite; point it at PostgreSQL or SQL&nbsp;Server for production.</p>
+      <h1 style="max-width:20ch">From install to your first routed message</h1>
+      <p class="lead">MessageFoundry installs from <b>PyPI</b> with a single <code>pip install messagefoundry</code> — a published, versioned release you can pin, not a moving source checkout — and runs locally on <b>Python&nbsp;3.11+</b>. Once it's running, you can build interfaces two ways: with <b>guided wizards</b> in the VS&nbsp;Code extension and admin console, or in <b>plain Python</b> for full control. It starts zero-config on SQLite; point it at PostgreSQL or SQL&nbsp;Server for production.</p>
     </div>
   </section>
 
@@ -60,19 +60,23 @@
       <div class="steps">
 
         <div class="step">
-          <h3>Clone and install</h3>
-          <p>Create a virtual environment and install the package (with the dev extras) in editable mode.</p>
+          <h3>Install</h3>
+          <p>Create a virtual environment and install MessageFoundry from <a href="https://pypi.org/project/messagefoundry/" target="_blank" rel="noopener"><b>PyPI</b></a> — a fixed, versioned snapshot you can pin to a known release, rather than installing from a moving git checkout. A published release keeps what you deploy reproducible and auditable.</p>
           <div class="code-card">
             <div class="code-card__bar"><i></i><i></i><i></i><span class="code-card__name">terminal</span></div>
-<pre class="code"><span class="c"># clone</span>
-git clone https://github.com/MEFORORG/MessageFoundry.git
-<span class="k">cd</span> MessageFoundry
-
-<span class="c"># virtual environment</span>
+<pre class="code"><span class="c"># virtual environment</span>
 python -m venv .venv
 <span class="c"># macOS / Linux:   . .venv/bin/activate</span>
 <span class="c"># Windows (PS):    .venv\Scripts\Activate.ps1</span>
 
+<span class="c"># install from PyPI</span>
+pip install messagefoundry</pre>
+          </div>
+          <p style="margin-top:14px">Prefer to build from source — or want the sample config and messages used below? Clone the repo and install the dev extras instead:</p>
+          <div class="code-card">
+            <div class="code-card__bar"><i></i><i></i><i></i><span class="code-card__name">terminal</span></div>
+<pre class="code">git clone https://github.com/MEFORORG/MessageFoundry.git
+<span class="k">cd</span> MessageFoundry
 pip install -e <span class="s">".[dev]"</span></pre>
           </div>
         </div>
@@ -106,7 +110,7 @@ pip install -e <span class="s">".[dev]"</span></pre>
           <p>A separate desktop app that attaches to the API — dashboards, message search and browse, parse-tree viewer, and one-click replay.</p>
           <div class="code-card">
             <div class="code-card__bar"><i></i><i></i><i></i><span class="code-card__name">terminal</span></div>
-<pre class="code">pip install -e <span class="s">".[console]"</span>
+<pre class="code">pip install <span class="s">"messagefoundry[console]"</span>
 python -m messagefoundry.console --url http://127.0.0.1:8765</pre>
           </div>
         </div>
