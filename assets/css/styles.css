@@ -125,6 +125,7 @@ code, pre, kbd { font-family: var(--mono); }
 }
 .site-nav .btn { padding: 9px 15px; border-color: rgba(205,213,226,.28); background: rgba(255,255,255,.045); }
 .site-nav .btn:hover { border-color: rgba(205,213,226,.55); background: rgba(255,255,255,.10); }
+.site-nav .nav-group + .btn { margin-left: 18px; }
 .nav-toggle {
   display: none; width: 42px; height: 38px; background: transparent;
   border: 1px solid var(--border-dk); border-radius: 9px; cursor: pointer; padding: 0;
@@ -422,6 +423,7 @@ table.cmp.feat tbody th code, table.cmp.feat td code { white-space: nowrap; }
   .site-nav a { padding: 12px 0; border-bottom: 1px solid var(--border-dk); }
   .site-nav a.active::after { display: none; }
   .site-nav .btn { margin-top: 12px; justify-content: center; }
+  .nav-group + .btn { margin-left: 0; }
   .nav-group { display: block; position: static; }
   .nav-group__btn { width: 100%; justify-content: space-between; padding: 12px 0; border-bottom: 1px solid var(--border-dk); color: var(--muted-dk); }
   .nav-group__menu {
