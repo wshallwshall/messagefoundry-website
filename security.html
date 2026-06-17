@@ -213,13 +213,15 @@
       <div>
         <span class="eyebrow">Secure SDLC &amp; supply chain</span>
         <h2>Provenance you can verify</h2>
-        <p class="lead">Open-source software is only as trustworthy as the pipeline that builds it. Ours is built to be auditable end to end.</p>
+        <p class="lead">Open-source software is only as trustworthy as the pipeline that builds it. MessageFoundry ships as <b>versioned, Sigstore-signed wheels</b> with attested build provenance and an SBOM — integrity-verifiable releases that implement <b>NIST&nbsp;SSDF</b> and <b>SLSA</b> build-integrity controls, going beyond what <b>OWASP ASVS L3</b> requires.</p>
       </div>
       <ul class="feature-list">
-        <li><b>Signed, verifiable releases</b> — each release is versioned, signed, and accompanied by a <b>software bill of materials (SBOM)</b>, so adopters can verify provenance and integrity.</li>
+        <li><b>Versioned &amp; immutable</b> — each release is a frozen <code>messagefoundry==X.Y.Z</code> wheel; the build fails unless the built version matches the release tag — not a branch that can be force-pushed under you.</li>
+        <li><b>Signed &amp; attested</b> — every wheel ships with <b>SLSA build provenance</b>, <b>Sigstore</b> keyless signatures, and a <b>CycloneDX SBOM</b> (plus <b>PEP&nbsp;740</b> attestations on PyPI), binding the artifact to the exact source commit and CI builder — so adopters can verify it (e.g.&nbsp;<code>gh attestation verify</code>) before installing.</li>
+        <li><b>Token-less publishing</b> — releases go out through OIDC-based <b>Trusted Publishing</b>, with no long-lived token to steal. Signed releases via GitHub Releases today; public PyPI at the first tagged release.</li>
+        <li><b>Reproducible installs</b> — pin a fully hash-locked dependency set and install with <code>--require-hashes</code>.</li>
         <li><b>CI security gates</b> — SAST, software-composition analysis, and secret scanning run on every change; builds fail on new high / critical findings.</li>
-        <li><b>Reviewed, protected code</b> — branch protection, required peer review, signed commits, no direct commits to main.</li>
-        <li><b>Coordinated disclosure</b> — a published <code>SECURITY.md</code> with a private reporting channel and a disclosure timeline feeds a tracked remediation process.</li>
+        <li><b>Reviewed, protected code</b> — branch protection, required peer review, signed commits, and no direct commits to main; a published <code>SECURITY.md</code> with a private reporting channel feeds tracked, coordinated disclosure.</li>
         <li><b>No real PHI in development</b> — synthetic or de-identified data only, on disk-encrypted developer machines.</li>
       </ul>
     </div>
