@@ -113,6 +113,8 @@ code, pre, kbd { font-family: var(--mono); }
    logo, which only sits on the dark header/footer.) */
 .wordmark-accent { color: var(--accent-ink); }
 .section--dark .wordmark-accent { color: var(--accent); }
+/* trademark mark on the logo lockup (header + footer) */
+.brand-tm { font-size: .5em; vertical-align: super; margin-left: .06em; font-weight: 600; color: var(--muted-dk); }
 .site-nav { display: flex; align-items: center; gap: 26px; }
 .site-nav a { color: var(--muted-dk); font-weight: 600; font-size: .98rem; }
 .site-nav a:hover { color: #fff; text-decoration: none; }
