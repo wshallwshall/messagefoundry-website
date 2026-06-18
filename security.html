@@ -4,14 +4,14 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Security, standards &amp; HIPAA — MessageFoundry</title>
-  <meta name="description" content="Security and hardening built to recognized standards: NIST SSDF (800-218), security testing per NIST 800-115, controls mapped to the HIPAA Security Rule (NIST 800-66 Rev. 2), and built to OWASP ASVS 5.0 Level 3. Secure by default, encrypted end to end, with a clear shared-responsibility model. v0.1 Early Access; an independent external code review and penetration test are planned.">
+  <meta name="description" content="Security and hardening built to recognized standards: NIST SSDF (800-218), security testing per NIST 800-115, controls mapped to the HIPAA Security Rule (NIST 800-66 Rev. 2), and self-assessed against OWASP ASVS 5.0 Level 3 (212 met, 0 fail, 0 partial, 133 N/A of 345). Secure by default, encrypted end to end, with a clear shared-responsibility model. v0.1 Early Access; an independent external code review and penetration test are planned.">
   <link rel="canonical" href="https://messagefoundry.org/security.html">
   <link rel="icon" href="/assets/img/favicon.svg" type="image/svg+xml">
   <meta name="theme-color" content="#0b1220">
   <meta property="og:type" content="website">
   <meta property="og:site_name" content="MessageFoundry">
   <meta property="og:title" content="Security, standards &amp; HIPAA — MessageFoundry">
-  <meta property="og:description" content="Built to NIST SSDF, security testing per 800-115, controls mapped to the HIPAA Security Rule (800-66), and built to OWASP ASVS 5.0 Level 3 — secure by default. v0.1 Early Access; external audit planned.">
+  <meta property="og:description" content="Built to NIST SSDF, security testing per 800-115, controls mapped to the HIPAA Security Rule (800-66), and self-assessed against OWASP ASVS 5.0 Level 3 — secure by default. v0.1 Early Access; external audit planned.">
   <meta property="og:url" content="https://messagefoundry.org/security.html">
   <meta property="og:image" content="https://messagefoundry.org/assets/img/og.png">
   <meta property="og:image:width" content="1200">
@@ -93,12 +93,12 @@
           <p>Implemented controls are mapped to the <b>HIPAA Security Rule via NIST SP 800-66 Rev. 2</b> — access control, audit, integrity, and transmission security.</p>
         </div>
         <div class="card">
-          <h3>OWASP ASVS 5.0 Level 3 — built to</h3>
-          <p>The application is developed to <b>OWASP ASVS 5.0 Level 3</b> — the highest assurance level, for applications that handle the most sensitive data — scoped chapter-by-chapter, with any exclusions documented and justified.</p>
+          <h3>OWASP ASVS 5.0 Level 3 — self-assessed</h3>
+          <p>Scoped chapter-by-chapter against <b>OWASP ASVS 5.0 Level 3</b> — the highest assurance level, for applications that handle the most sensitive data — with every exclusion documented and justified. Across all <b>345</b> Level 3 requirements: <b>212 met, 0 failed, 0 partial, 133 not applicable</b>.</p>
         </div>
       </div>
       <div class="callout" style="margin-top:26px">
-        <p><strong>Honest by design.</strong> NIST doesn't issue certificates for these frameworks, so we don't claim one — and in Early Access the software hasn't yet had an external audit. These are <b>alignment claims backed by evidence</b> — the Standards document, CI test reports, and an SBOM, published with our releases. "Built to," "mapped to" — never "certified."</p>
+        <p><strong>Honest by design.</strong> NIST doesn't issue certificates for these frameworks, so we don't claim one — and the ASVS Level 3 result is our own <b>self-assessment</b>, not a third-party audit. In Early Access the software hasn't yet had an external code review or penetration test. These are <b>alignment claims backed by evidence</b> — the Standards document, that ASVS self-assessment, CI test reports, and an SBOM, published with our releases. "Built to," "self-assessed," "mapped to" — never "certified."</p>
       </div>
     </div>
   </section>
@@ -174,9 +174,9 @@
           <h3>Message<span class="wordmark-accent">Foundry</span> (the project)</h3>
           <ul class="feature-list" style="margin-top:12px">
             <li>Secure development practices and secure-by-default configuration.</li>
-            <li>Security testing and attestation of the software.</li>
+            <li>Security testing and self-attestation of the software.</li>
             <li>Vulnerability response and coordinated disclosure.</li>
-            <li>Documentation, evidence, and published attestations.</li>
+            <li>Documentation, evidence, and published self-attestations.</li>
           </ul>
         </div>
         <div class="card">
@@ -190,7 +190,7 @@
         </div>
       </div>
       <div class="callout" style="margin-top:28px;background:rgba(245,158,11,.07);border-color:rgba(245,158,11,.28);color:var(--muted-dk)">
-        <p><strong style="color:var(--accent)">Said plainly.</strong> The software <b>supports a HIPAA-compliant deployment</b> — it doesn't make you compliant on its own. Our attestation that the software was built securely is evidence for <em>your</em> assessment, not a substitute for it.</p>
+        <p><strong style="color:var(--accent)">Said plainly.</strong> The software <b>supports a HIPAA-compliant deployment</b> — it doesn't make you compliant on its own. Our self-attestation that the software was built securely is evidence for <em>your</em> assessment, not a substitute for it.</p>
       </div>
     </div>
   </section>
@@ -255,7 +255,7 @@
       </div>
       <div>
         <ul class="feature-list">
-          <li><b>Self-attested</b> SSDF-aligned, security-tested per 800-115, built to ASVS 5.0 Level 3, and controls mapped to the HIPAA Security Rule (800-66) — published with each release.</li>
+          <li><b>Self-attested</b> SSDF-aligned, security-tested per 800-115, self-assessed against ASVS 5.0 Level 3 (212 met · 0 failed · 0 partial · 133 N/A across 345 requirements), and controls mapped to the HIPAA Security Rule (800-66) — published with each release.</li>
           <li><b>Independent external code review and penetration test</b> — planned after Early Access; Early Access has not yet been externally audited.</li>
           <li><b>A claims register</b> records each published claim, its wording, and the evidence behind it.</li>
           <li><b>Not a NIST certificate</b> — displayable certifications (SOC 2, ISO 27001, HITRUST) are a separate, organization-level track.</li>
