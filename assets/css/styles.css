@@ -126,6 +126,7 @@ code, pre, kbd { font-family: var(--mono); }
 .site-nav .btn { padding: 9px 15px; border-color: rgba(205,213,226,.28); background: rgba(255,255,255,.045); }
 .site-nav .btn:hover { border-color: rgba(205,213,226,.55); background: rgba(255,255,255,.10); }
 .site-nav .nav-group + .btn { margin-left: 18px; }
+.site-nav a[href="/pypi.html"] svg { stroke: #4d90fe; }
 .nav-toggle {
   display: none; width: 42px; height: 38px; background: transparent;
   border: 1px solid var(--border-dk); border-radius: 9px; cursor: pointer; padding: 0;
