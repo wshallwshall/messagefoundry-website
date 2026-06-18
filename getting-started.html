@@ -4,7 +4,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Get started — MessageFoundry</title>
-  <meta name="description" content="Install MessageFoundry, run the engine and localhost API, send a test HL7 message over MLLP, open the admin console, and author your first Connection / Router / Handler in Python.">
+  <meta name="description" content="Install MessageFoundry from PyPI with a single pip install, run the engine and localhost API, send a test HL7 message over MLLP, open the admin console, and author your first Connection / Router / Handler in Python.">
   <link rel="canonical" href="https://messagefoundry.org/getting-started.html">
   <link rel="icon" href="/assets/img/favicon.svg" type="image/svg+xml">
   <meta name="theme-color" content="#0b1220">
@@ -62,7 +62,7 @@
     <div class="container">
       <span class="eyebrow">Get started</span>
       <h1 style="max-width:20ch">From install to your first routed message</h1>
-      <p class="lead">MessageFoundry runs locally on <b>Python&nbsp;3.11+</b> and is distributed as <b>signed, versioned release wheels</b> — on GitHub Releases during Early Access, and on PyPI at the first tagged release — so you install a fixed, verifiable artifact, not a moving source checkout. Once it's running, you can build interfaces two ways: with <b>guided wizards</b> in the VS&nbsp;Code extension and admin console, or in <b>plain Python</b> for full control. It starts zero-config on SQLite; point it at PostgreSQL or SQL&nbsp;Server for production.</p>
+      <p class="lead">MessageFoundry installs from <b>PyPI</b> with a single <code>pip install messagefoundry</code> — a signed, versioned release you can verify, not a moving source checkout — and runs locally on <b>Python&nbsp;3.11+</b>. Once it's running, you can build interfaces two ways: with <b>guided wizards</b> in the VS&nbsp;Code extension and admin console, or in <b>plain Python</b> for full control. It starts zero-config on SQLite; point it at PostgreSQL or SQL&nbsp;Server for production.</p>
     </div>
   </section>
 
@@ -75,7 +75,7 @@
 
         <div class="step">
           <h3>Install</h3>
-          <p>Create a virtual environment, then install MessageFoundry. To follow this quickstart's sample-driven steps, clone the repo and install it in editable mode:</p>
+          <p>Create a virtual environment and install MessageFoundry from <a href="/pypi.html">PyPI</a> — a signed, versioned release. <a href="/security.html">How releases are signed &amp; attested →</a></p>
           <div class="code-card">
             <div class="code-card__bar"><i></i><i></i><i></i><span class="code-card__name">terminal</span></div>
 <pre class="code"><span class="c"># virtual environment</span>
@@ -83,12 +83,15 @@ python -m venv .venv
 <span class="c"># macOS / Linux:   . .venv/bin/activate</span>
 <span class="c"># Windows (PS):    .venv\Scripts\Activate.ps1</span>
 
-<span class="c"># clone + install (with dev extras)</span>
-git clone https://github.com/MEFORORG/MessageFoundry.git
-<span class="k">cd</span> MessageFoundry
-pip install -e <span class="s">".[dev]"</span></pre>
+<span class="c"># install from PyPI</span>
+pip install messagefoundry</pre>
           </div>
-          <p style="margin-top:14px">Not working from source? During Early Access, install the <b>signed release wheel</b> from <a href="https://github.com/MEFORORG/MessageFoundry/releases" target="_blank" rel="noopener">GitHub Releases</a> — public PyPI lands at the first tagged release. Each wheel is versioned, Sigstore-signed, and carries build provenance you can verify before installing; see <a href="/security.html">how releases are signed &amp; attested</a>.</p>
+          <p style="margin-top:14px">The sample-driven steps below use config and messages from the repository, so clone it alongside to follow along:</p>
+          <div class="code-card">
+            <div class="code-card__bar"><i></i><i></i><i></i><span class="code-card__name">terminal</span></div>
+<pre class="code">git clone https://github.com/MEFORORG/MessageFoundry.git
+<span class="k">cd</span> MessageFoundry</pre>
+          </div>
         </div>
 
         <div class="step">
@@ -120,7 +123,7 @@ pip install -e <span class="s">".[dev]"</span></pre>
           <p>A separate desktop app that attaches to the API — dashboards, message search and browse, parse-tree viewer, and one-click replay.</p>
           <div class="code-card">
             <div class="code-card__bar"><i></i><i></i><i></i><span class="code-card__name">terminal</span></div>
-<pre class="code">pip install -e <span class="s">".[console]"</span>
+<pre class="code">pip install <span class="s">"messagefoundry[console]"</span>
 python -m messagefoundry.console --url http://127.0.0.1:8765</pre>
           </div>
         </div>

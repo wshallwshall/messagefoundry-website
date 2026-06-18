@@ -232,7 +232,7 @@
       <ul class="feature-list">
         <li><b>Versioned &amp; immutable</b> — each release is a frozen <code>messagefoundry==X.Y.Z</code> wheel; the build fails unless the built version matches the release tag — not a branch that can be force-pushed under you.</li>
         <li><b>Signed &amp; attested</b> — every wheel ships with <b>SLSA build provenance</b>, <b>Sigstore</b> keyless signatures, and a <b>CycloneDX SBOM</b> (plus <b>PEP&nbsp;740</b> attestations on PyPI), binding the artifact to the exact source commit and CI builder — so adopters can verify it (e.g.&nbsp;<code>gh attestation verify</code>) before installing.</li>
-        <li><b>Token-less publishing</b> — releases go out through OIDC-based <b>Trusted Publishing</b>, with no long-lived token to steal. Signed releases via GitHub Releases today; public PyPI at the first tagged release.</li>
+        <li><b>Token-less publishing</b> — releases are published to PyPI through OIDC-based <b>Trusted Publishing</b>, with no long-lived token to steal.</li>
         <li><b>Reproducible installs</b> — pin a fully hash-locked dependency set and install with <code>--require-hashes</code>.</li>
         <li><b>CI security gates</b> — SAST, software-composition analysis, and secret scanning run on every change; builds fail on new high / critical findings.</li>
         <li><b>Reviewed, protected code</b> — branch protection, required peer review, signed commits, and no direct commits to main; a published <code>SECURITY.md</code> with a private reporting channel feeds tracked, coordinated disclosure.</li>
