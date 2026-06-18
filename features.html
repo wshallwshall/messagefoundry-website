@@ -288,8 +288,8 @@
     <div class="container">
       <div class="center" style="margin-bottom:38px">
         <span class="eyebrow">Database flexibility</span>
-        <h2>From a single file to a multi-node cluster</h2>
-        <p class="lead center">One pluggable message store behind a single contract, so the database is a deployment choice — not a code change. Start zero-config on SQLite, then scale out to PostgreSQL or SQL&nbsp;Server for multi-node, highly available production.</p>
+        <h2>From a single file to a highly available database</h2>
+        <p class="lead center">One pluggable message store behind a single contract, so the database is a deployment choice — not a code change. Start zero-config on SQLite, then move to PostgreSQL or SQL&nbsp;Server for highly available production with failover.</p>
       </div>
       <div class="grid grid-3">
         <div class="card">
@@ -298,11 +298,11 @@
         </div>
         <div class="card">
           <h3>PostgreSQL</h3>
-          <p>The production server-DB for horizontal scale-out: many engine hosts share one store, with leader election, strict per-lane FIFO ordering, and failover/HA. The reference clustered backend for production at scale.</p>
+          <p>The production server DB for high availability: a standby shares the same store and takes over on primary failure via leader election, preserving strict per-lane FIFO ordering. The reference production backend.</p>
         </div>
         <div class="card">
           <h3>SQL Server</h3>
-          <p>A first-class production backend at parity with PostgreSQL — the same staged pipeline, concurrency-safe claiming, row leases, and multi-node HA — for shops standardized on SQL&nbsp;Server.</p>
+          <p>A first-class production backend at parity with PostgreSQL — the same staged pipeline, concurrency-safe claiming, row leases, and high-availability failover — for shops standardized on SQL&nbsp;Server.</p>
         </div>
       </div>
       <div class="callout" style="margin-top:26px">

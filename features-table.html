@@ -160,8 +160,8 @@
 
             <tr class="grp"><th colspan="2" scope="colgroup">Message store — three backends, one contract</th></tr>
             <tr><th scope="row">SQLite</th><td>The zero-config, single-node default — WAL, one file, no server to run. The baseline every other backend matches byte-for-byte.</td></tr>
-            <tr><th scope="row">PostgreSQL</th><td>The production server-DB for horizontal scale-out: many engine hosts share one store, with leader election, strict per-lane FIFO ordering, and failover/HA.</td></tr>
-            <tr><th scope="row">SQL Server</th><td>A first-class production backend at parity with PostgreSQL — the same staged pipeline, concurrency-safe claiming, row leases, and multi-node HA.</td></tr>
+            <tr><th scope="row">PostgreSQL</th><td>The production server DB for high availability — a standby shares the store and takes over on primary failure via leader election, preserving strict per-lane FIFO ordering.</td></tr>
+            <tr><th scope="row">SQL Server</th><td>A first-class production backend at parity with PostgreSQL — the same staged pipeline, concurrency-safe claiming, row leases, and high-availability failover.</td></tr>
             <tr><th scope="row">One Store contract</th><td>The same at-least-once model — dispositions, retries, replay, audit, encryption at rest, and retention/purge — runs across all three backends.</td></tr>
 
             <tr class="grp"><th colspan="2" scope="colgroup">High availability</th></tr>
