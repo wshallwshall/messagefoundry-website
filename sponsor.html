@@ -3,21 +3,23 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Ask a question — MessageFoundry</title>
-  <meta name="description" content="Questions about MessageFoundry — deployment, security and PHI, migrating off a legacy engine, or licensing? Send us a note and we'll get back to you.">
-  <link rel="canonical" href="https://messagefoundry.org/contact.html">
+  <title>Sponsor &amp; support — MessageFoundry</title>
+  <meta name="description" content="MessageFoundry is a free, non-profit healthcare integration engine. Sponsorships and donations fund the tools, security reviews, and support that keep it independent and free. Ways to give are coming soon via a 501(c)(6) or 501(c)(3).">
+  <link rel="canonical" href="https://messagefoundry.org/sponsor.html">
   <link rel="icon" href="/assets/img/favicon.svg" type="image/svg+xml">
   <meta name="theme-color" content="#0b1220">
   <meta property="og:type" content="website">
   <meta property="og:site_name" content="MessageFoundry">
-  <meta property="og:title" content="Ask a question — MessageFoundry">
-  <meta property="og:description" content="Questions about deployment, security, migration, or licensing? Send us a note.">
-  <meta property="og:url" content="https://messagefoundry.org/contact.html">
+  <meta property="og:title" content="Sponsor &amp; support — MessageFoundry">
+  <meta property="og:description" content="Help keep MessageFoundry free and independent. Sponsorships and donations fund development, security audits, and support — with ways to give coming soon via a 501(c)(6) or 501(c)(3).">
+  <meta property="og:url" content="https://messagefoundry.org/sponsor.html">
   <meta property="og:image" content="https://messagefoundry.org/assets/img/og.png">
   <meta property="og:image:width" content="1200">
   <meta property="og:image:height" content="630">
   <meta property="og:image:type" content="image/png">
   <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Sponsor &amp; support — MessageFoundry">
+  <meta name="twitter:description" content="Help keep MessageFoundry free and independent. Ways to give are coming soon via a 501(c)(6) or 501(c)(3).">
   <meta name="twitter:image" content="https://messagefoundry.org/assets/img/og.png">
   <link rel="stylesheet" href="/assets/css/styles.css">
 </head>
@@ -49,8 +51,8 @@
           <div class="nav-group__menu" id="nav-company">
             <a href="/about.html">About</a>
             <a href="/licensing.html">Licensing</a>
-            <a href="/contact.html" class="active" aria-current="page">Contact</a>
-            <a href="/sponsor.html">Sponsor</a>
+            <a href="/contact.html">Contact</a>
+            <a href="/sponsor.html" class="active" aria-current="page">Sponsor</a>
           </div>
         </div>
         <a class="btn btn-ghost" href="/pypi.html">PyPI<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3l8 4.5l0 9l-8 4.5l-8 -4.5l0 -9l8 -4.5"/><path d="M12 12l8 -4.5"/><path d="M12 12l0 9"/><path d="M12 12l-8 -4.5"/><path d="M16 5.25l-8 4.5"/></svg></a>
@@ -59,50 +61,72 @@
     </div>
   </header>
 
+  <!-- hero -->
   <section class="section section--dark section--tight">
     <div class="container center">
-      <span class="eyebrow">Contact</span>
-      <h1 style="max-width:20ch;margin-inline:auto">Ask us a question</h1>
-      <p class="lead center">Evaluating MessageFoundry for your interfaces? Ask about deployment, security and PHI, migrating off a legacy engine, or licensing — we'll get back to you by email.</p>
+      <span class="eyebrow">Sponsor &amp; donate</span>
+      <h1 style="max-width:22ch;margin-inline:auto">Help keep MessageFoundry free</h1>
+      <p class="lead center">MessageFoundry is a non-profit, open-source project — free to run, with no per-interface fees and no investors expecting a return. Sponsorships and donations are what keep it independent: they cover the tools it's built with, the security work healthcare demands, and the people who help you adopt it.</p>
+      <div class="btn-row center">
+        <a class="btn btn-primary" href="/contact.html">Get in touch about sponsoring →</a>
+        <a class="btn btn-secondary" href="#goals">See where it goes →</a>
+      </div>
     </div>
   </section>
 
-  <section class="section">
+  <!-- short term -->
+  <section class="section" id="goals">
     <div class="container">
-      <!-- Web3Forms: submissions POST to api.web3forms.com and are emailed to questions@messagefoundry.org.
-           The destination address is NOT in this page — it's bound to the access_key below
-           (created at https://web3forms.com for questions@messagefoundry.org). -->
-      <form class="form" action="https://api.web3forms.com/submit" method="POST">
-        <input type="hidden" name="access_key" value="b2df9259-745d-4109-bd32-97166759e987">
-        <input type="hidden" name="subject" value="New question from messagefoundry.org">
-        <input type="hidden" name="from_name" value="MessageFoundry website">
-        <input type="hidden" name="redirect" value="https://messagefoundry.org/thanks.html">
-        <!-- honeypot: bots check this; humans never see it -->
-        <input type="checkbox" name="botcheck" class="hp" tabindex="-1" autocomplete="off" aria-hidden="true">
+      <div class="center" style="margin-bottom:38px">
+        <span class="eyebrow">Short term</span>
+        <h2>Keep the project running</h2>
+        <p class="lead center">First, support covers the everyday cost of building and shipping an open-source engine in the open.</p>
+      </div>
+      <div class="grid grid-2">
+        <div class="card">
+          <h3>Tools &amp; infrastructure</h3>
+          <p>The basics that keep development moving — GitHub, continuous integration, and the coding tools MessageFoundry is built and released with.</p>
+        </div>
+        <div class="card">
+          <h3>Legal &amp; accounting</h3>
+          <p>The essential legal and accounting work behind running a real non-profit — so the project stays properly organized and above board.</p>
+        </div>
+      </div>
+    </div>
+  </section>
 
-        <div class="field">
-          <label for="name">Name <span class="req" aria-hidden="true">*</span></label>
-          <input id="name" type="text" name="name" required autocomplete="name">
+  <!-- long term -->
+  <section class="section section--alt">
+    <div class="container">
+      <div class="center" style="margin-bottom:38px">
+        <span class="eyebrow">Long term</span>
+        <h2>Invest in trust and longevity</h2>
+        <p class="lead center">As support grows, it funds the things that make MessageFoundry safer to adopt and sustainable for the long haul.</p>
+      </div>
+      <div class="grid grid-3">
+        <div class="card">
+          <h3>Independent security review</h3>
+          <p>An external code review and penetration test, repeated every year. ASVS Level&nbsp;3 recommends an independent review; today MessageFoundry is self-assessed, and funding makes the outside review real.</p>
         </div>
-        <div class="field">
-          <label for="email">Email <span class="req" aria-hidden="true">*</span></label>
-          <input id="email" type="email" name="email" required autocomplete="email" placeholder="you@hospital.org">
+        <div class="card">
+          <h3>A support team</h3>
+          <p>Dedicated people to help organizations deploy, migrate off a legacy engine, and operate MessageFoundry with confidence.</p>
         </div>
-        <div class="field">
-          <label for="organization">Organization</label>
-          <input id="organization" type="text" name="organization" autocomplete="organization">
+        <div class="card">
+          <h3>SOC&nbsp;2 Type&nbsp;II</h3>
+          <p>A formal SOC&nbsp;2 Type&nbsp;II audit, repeated every year, for organizations whose procurement requires one.</p>
         </div>
-        <div class="field">
-          <label for="message">Your question <span class="req" aria-hidden="true">*</span></label>
-          <textarea id="message" name="message" required placeholder="Ask about deployment, security &amp; PHI, migration off a legacy engine, licensing…"></textarea>
-        </div>
+      </div>
+    </div>
+  </section>
 
-        <button type="submit" class="btn btn-primary">Send your question</button>
-
-        <div class="callout" style="margin-top:22px">
-          <p style="margin:0"><strong>Please don't include PHI or real patient data.</strong> This form is routed through a third-party form service and email — keep it to general questions. For anything sensitive, ask here and we'll arrange a secure channel.</p>
-        </div>
-      </form>
+  <!-- coming soon -->
+  <section class="section section--dark">
+    <div class="container center">
+      <span class="eyebrow">Coming soon</span>
+      <h2>Ways to give are on the way</h2>
+      <p class="lead center" style="max-width:62ch;margin-inline:auto">We're establishing a formal home for funding — a <b>501(c)(6) or 501(c)(3)</b> — so sponsorships and donations are handled transparently and put to work where they matter most. We'll publish how to contribute right here soon.</p>
+      <p class="center" style="color:var(--muted-dk);font-size:.95rem;margin:14px auto 0;max-width:62ch">In the meantime, organizations interested in sponsoring can <a href="/contact.html" style="color:var(--accent)">reach out directly</a> — we'd love to talk.</p>
     </div>
   </section>
 
