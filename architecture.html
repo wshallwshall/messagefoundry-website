@@ -86,15 +86,86 @@
     <div class="container">
       <span class="eyebrow">Architecture</span>
       <h1 style="max-width:22ch">How Message<span class="wordmark-accent">Foundry</span> fits together</h1>
-      <p class="lead">Three views, each answering a different question: what the components are and where the process boundaries sit; how a received message moves through the durable staged queue and earns a disposition; and how Connections, Routers, and Handlers wire together by name. The prose source of truth is the engine's <a href="https://github.com/MEFORORG/MessageFoundry/blob/main/docs/ARCHITECTURE.md" target="_blank" rel="noopener" style="color:var(--accent)">ARCHITECTURE.md</a>.</p>
+      <p class="lead">Four views, each answering a different question: every shipped component and how it relates to the engine; the engine's internal packages and where the process boundaries sit; how a received message moves through the durable staged queue and earns a disposition; and how Connections, Routers, and Handlers wire together by name. The prose source of truth is the engine's <a href="https://github.com/MEFORORG/MessageFoundry/blob/main/docs/ARCHITECTURE.md" target="_blank" rel="noopener" style="color:var(--accent)">ARCHITECTURE.md</a>.</p>
     </div>
   </section>
 
-  <!-- 1. system topology -->
+  <!-- 1. top-level components -->
+  <section class="section section--alt">
+    <div class="container">
+      <div class="center" style="margin-bottom:30px;max-width:760px">
+        <span class="eyebrow">1 · The whole system</span>
+        <h2>Top-level components</h2>
+        <p class="lead center">Beyond the engine itself, MessageFoundry ships as a set of <b>independent, separately-built components</b> — operator tools, the version-controlled config, the CLI and Windows service that run it, dev/test tooling, a standalone migration tee relay, and the CI-to-PyPI release path. Operator tools reach the engine <b>only</b> through the localhost API; the engine is the core, and everything else sits around it.</p>
+      </div>
+      <svg class="dg" viewBox="0 0 940 460" role="img" aria-labelledby="t0 d0">
+        <title id="t0">Top-level components — the whole system</title>
+        <desc id="d0">A central headless engine, reached only through a localhost API, surrounded by independent components: operator tools (admin console, VS Code extension), version-controlled author-time config, the CLI and Windows service that run it, dev and test tooling, live HL7 traffic, a standalone migration tee relay, and the CI-to-PyPI release path.</desc>
+
+        <path class="dg-solid" d="M490,76 L490,106" marker-end="url(#dg-ah)"/>
+        <path class="dg-solid" d="M490,158 L490,186" marker-end="url(#dg-ah)"/>
+        <path class="dg-solid" d="M490,260 L490,291" marker-end="url(#dg-ah)"/>
+        <path class="dg-solid" d="M252,176 L394,206" marker-end="url(#dg-ah)"/>
+        <path class="dg-solid" d="M252,262 L394,240" marker-end="url(#dg-ah)"/>
+        <path class="dg-dash" d="M584,212 L688,180" marker-end="url(#dg-ahd)"/>
+        <path class="dg-dash" d="M338,378 L412,262" marker-end="url(#dg-ahd)"/>
+
+        <text class="dg-sub" x="502" y="96">HTTP / WS</text>
+        <text class="dg-sub" x="298" y="180">loads config</text>
+        <text class="dg-sub" x="298" y="250">runs · MLLP</text>
+        <text class="dg-sub" x="598" y="190">MLLP / file</text>
+        <text class="dg-sub" x="356" y="330" text-anchor="end">shadow</text>
+
+        <rect class="dg-box" x="396" y="30" width="188" height="46" rx="10"/>
+        <text class="dg-ttl" x="490" y="50" text-anchor="middle">Operator tools</text>
+        <text class="dg-sub" x="490" y="66" text-anchor="middle">Admin console · VS Code extension</text>
+
+        <rect class="dg-api" x="396" y="108" width="188" height="50" rx="10"/>
+        <text class="dg-ttl" x="490" y="128" text-anchor="middle">API — 127.0.0.1</text>
+        <text class="dg-sub" x="490" y="145" text-anchor="middle">auth · RBAC · only external surface</text>
+
+        <rect class="dg-box" x="396" y="186" width="188" height="74" rx="10"/>
+        <text class="dg-ttl" x="490" y="208" text-anchor="middle">Engine — headless asyncio</text>
+        <text class="dg-sub" x="490" y="225" text-anchor="middle">pipeline · transports · parsing</text>
+        <text class="dg-sub" x="490" y="240" text-anchor="middle">store · config · auth</text>
+
+        <rect class="dg-store" x="396" y="291" width="188" height="48" rx="10"/>
+        <text class="dg-ttl" x="490" y="312" text-anchor="middle">Store</text>
+        <text class="dg-sub" x="490" y="328" text-anchor="middle">SQLite · PostgreSQL · SQL Server</text>
+
+        <rect class="dg-box" x="40" y="148" width="212" height="60" rx="10"/>
+        <text class="dg-ttl" x="146" y="168" text-anchor="middle">Author-time config</text>
+        <text class="dg-sub" x="146" y="184" text-anchor="middle">Connections · Routers · Handlers</text>
+        <text class="dg-sub" x="146" y="199" text-anchor="middle">+ environments · version-controlled</text>
+
+        <rect class="dg-box" x="40" y="236" width="212" height="60" rx="10"/>
+        <text class="dg-ttl" x="146" y="256" text-anchor="middle">Run it · dev / test</text>
+        <text class="dg-sub" x="146" y="272" text-anchor="middle">Windows service · CLI</text>
+        <text class="dg-sub" x="146" y="287" text-anchor="middle">generators · test harness</text>
+
+        <rect class="dg-box" x="688" y="148" width="212" height="60" rx="10"/>
+        <text class="dg-ttl" x="794" y="168" text-anchor="middle">Live HL7 traffic</text>
+        <text class="dg-sub" x="794" y="184" text-anchor="middle">Upstream senders</text>
+        <text class="dg-sub" x="794" y="199" text-anchor="middle">&#8597; downstream receivers</text>
+
+        <rect class="dg-box" x="688" y="236" width="212" height="60" rx="10"/>
+        <text class="dg-ttl" x="794" y="256" text-anchor="middle">Build / release</text>
+        <text class="dg-sub" x="794" y="272" text-anchor="middle">CI: tests · SAST · SBOM · sign</text>
+        <text class="dg-sub" x="794" y="287" text-anchor="middle">&#8594; PyPI · Trusted Publishing</text>
+
+        <rect class="dg-box" x="300" y="378" width="340" height="60" rx="10"/>
+        <text class="dg-ttl" x="470" y="398" text-anchor="middle">Migration — standalone tee relay</text>
+        <text class="dg-sub" x="470" y="414" text-anchor="middle">parallel-run parity vs a legacy engine · own SQLite</text>
+        <text class="dg-sub" x="470" y="429" text-anchor="middle">egress-suppressed shadow — imports no engine code</text>
+      </svg>
+    </div>
+  </section>
+
+  <!-- 2. system topology -->
   <section class="section">
     <div class="container">
       <div class="center" style="margin-bottom:30px;max-width:760px">
-        <span class="eyebrow">1 · Components &amp; boundaries</span>
+        <span class="eyebrow">2 · Components &amp; boundaries</span>
         <h2>System topology</h2>
         <p class="lead center">The engine is a headless service; clients are separate processes that reach it <b>only</b> through the localhost API. Dependencies point one way — the API depends on the engine, the engine never imports the API or a client.</p>
       </div>
@@ -163,7 +234,7 @@
   <section class="section section--alt">
     <div class="container">
       <div class="center" style="margin-bottom:30px;max-width:760px">
-        <span class="eyebrow">2 · Runtime message flow</span>
+        <span class="eyebrow">3 · Runtime message flow</span>
         <h2>The durable staged queue</h2>
         <p class="lead center">A received message is <b>ACKed on receipt</b> — once it's durably committed to the ingress stage, before routing, transform, or delivery. Each handoff is a single committed transaction, giving at-least-once delivery, retries, and replay with no separate broker.</p>
       </div>
@@ -214,7 +285,7 @@
   <section class="section">
     <div class="container">
       <div class="center" style="margin-bottom:30px;max-width:760px">
-        <span class="eyebrow">3 · Config wiring</span>
+        <span class="eyebrow">4 · Config wiring</span>
         <h2>Connections, Routers, and Handlers — wired by name</h2>
         <p class="lead center">An inbound Connection names a Router; the Router forwards to Handler(s) by name; each Handler sends to outbound Connection(s). There's no enclosing "channel" object — set it up with guided wizards, or write it in Python.</p>
       </div>
