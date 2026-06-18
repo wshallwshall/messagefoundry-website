@@ -6,7 +6,7 @@
 | **Applies to** | Any application developed under this standard. **MessageFoundry (MEFOR)** is the reference implementation (Appendix A). |
 | **Maintained by** | Project maintainers (open-source). Each deploying organization assigns its own local owner. |
 | **Status** | Released |
-| **Version** | 1.1 |
+| **Version** | 0.7 |
 | **Date** | June 18, 2026 |
 | **License** | Publishable under the project's open-source license; intended to be shared with adopters and reused across projects. |
 | **Review cadence** | At least annually, and on any material architecture or threat change |
@@ -307,5 +307,5 @@ MessageFoundry (MEFOR) is an open-source **HL7 v2.x integration engine** — a c
 | Version | Date | Change |
 |---|---|---|
 | 0.1–0.5 | June 12, 2026 | MEFOR-specific drafts: NIST SSDF/800-115/800-53/800-66 mapping; OWASP ASVS 5.0 L2 scope; file-handler and interface-authentication standards |
-| 1.0 | June 12, 2026 | **Genericized** into a reusable, project-agnostic standard. Added shared-responsibility (§2) and open-source project security (§7). Moved MEFOR-specific scope and choices to **Appendix A** applicability profile. Supersedes the MEFOR-specific drafts. |
-| 1.1 | June 18, 2026 | Moved the ASVS verification target from **Level 2 to Level 3** (PHI ⇒ highest assurance). Recorded the **L3 self-assessment** result (212 / 0 / 0 / 133 across 345) in Appendix A.3, and **decoupled** it from the independent external review + penetration test — which ASVS recommends at L3 but does not require, and which are **planned, pending resourcing** (not yet performed). |
+| 0.6 | June 12, 2026 | **Genericized** into a reusable, project-agnostic standard. Added shared-responsibility (§2) and open-source project security (§7). Moved MEFOR-specific scope and choices to **Appendix A** applicability profile. Supersedes the MEFOR-specific drafts. *(Previously numbered 1.0; renumbered onto the 0.x line so the standard tracks alongside the pre-1.0 product rather than reading as more mature than it.)* |
+| 0.7 | June 18, 2026 | Moved the ASVS verification target from **Level 2 to Level 3** (PHI ⇒ highest assurance). Recorded the **L3 self-assessment** result (212 / 0 / 0 / 133 across 345) in Appendix A.3, and **decoupled** it from the independent external review + penetration test — which ASVS recommends at L3 but does not require, and which are **planned, pending resourcing** (not yet performed). |
