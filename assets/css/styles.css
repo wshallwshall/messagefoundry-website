@@ -37,7 +37,10 @@
 
 /* ------------------------------------------------------------------ reset */
 *, *::before, *::after { box-sizing: border-box; }
-html { scroll-behavior: smooth; -webkit-text-size-adjust: 100%; }
+/* Offset in-page anchor jumps (#controls, #evidence, …) by the sticky header
+   height (~65px) + a little breathing room, so a section lands at its graphical
+   top below the nav instead of behind it. */
+html { scroll-behavior: smooth; scroll-padding-top: 80px; -webkit-text-size-adjust: 100%; }
 body {
   margin: 0;
   font-family: var(--font);
