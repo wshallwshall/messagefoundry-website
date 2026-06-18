@@ -121,7 +121,7 @@ code, pre, kbd { font-family: var(--mono); }
   content: ""; display: block; height: 2px; border-radius: 2px;
   background: var(--grad); margin-top: 4px;
 }
-.site-nav .btn { padding: 9px 15px; border-color: rgba(205,213,226,.28); background: rgba(255,255,255,.045); }
+.site-nav .btn { padding: 0 15px; height: 38px; border-color: rgba(205,213,226,.28); background: rgba(255,255,255,.045); }
 .site-nav .btn:hover { border-color: rgba(205,213,226,.55); background: rgba(255,255,255,.10); }
 .site-nav .nav-group + .btn { margin-left: 18px; }
 .site-nav .btn + .btn { margin-left: -16px; }
