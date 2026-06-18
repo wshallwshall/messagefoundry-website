@@ -78,7 +78,7 @@ Python alternative is exactly what the moment calls for**, and most buyers no lo
 | Native AI assist | **Yes — governed, code-only by default (PHI-safe mode optional, requires an enterprise agreement with an AI vendor)** | No | No | No | "Axon" (new) | No |
 | Reliability | Inbox/outbox WAL, no broker | Mature (proven scale) | Mature (proven scale) | Mature (proven scale) | Mature (KLAS-top) | Mature (high perf) |
 | Test tooling | **Full harness included** | Separate | Separate | Separate | Separate | Separate |
-| Connectors *(our gap)* | MLLP + File (more planned) | **800+** | Decades of adapters | Broad | Broad | Broad |
+| Connectivity *(transports ≈ parity)* | MLLP, TCP, HTTP/REST, SOAP, DB, files (SFTP/FTP/FTPS) + Python | Core transports + extensible | Broad transports + standards | Broad (+ JMS/Kafka) | Comparable transports | Broad + deep standards |
 | Maturity *(our gap)* | New | 15+ yrs | 30+ yrs | Mature | Mature | 30+ yrs |
 | Support & consulting | **Support + consulting** | Large community | Enterprise | **KLAS-leading** | **KLAS-leading** | Enterprise |
 
@@ -96,8 +96,9 @@ Each comparison follows the same honest shape: *their genuine strength → the s
 where they still win today.*
 
 ### vs Mirth Connect (NextGen Connect)
-- **Their strength:** the most widely adopted engine of the last decade — 800+ connectors, a huge
-  community, deep documentation, and a battle-tested channel architecture on a cross-platform JVM.
+- **Their strength:** the most widely adopted engine of the last decade — a huge community, deep
+  documentation, broad extensibility via JavaScript/Java transformers, and a battle-tested channel
+  architecture on a cross-platform JVM.
 - **The shift:** open source ended at v4.5.2; v4.6+ is closed and paid, with no patches to the free
   line.[1][2]
 - **Our wedge:** MessageFoundry is open source *by license* (AGPL) — the property Mirth users adopted
@@ -106,8 +107,9 @@ where they still win today.*
   database, and a real **VS Code** developer experience. (The Mirth forks preserve *old* Mirth;
   MessageFoundry is a fresh, modern architecture.) And because migration is **AI-assisted**, porting
   your existing channels to Python is typically far less work than re-platforming onto another engine.
-- **Where Mirth still wins today:** breadth of pre-built connectors, community size, and years of
-  production hardening. MessageFoundry is newer and ships fewer transports today.
+- **Where Mirth still wins today:** community size, ecosystem, and years of production hardening,
+  plus a larger pre-built-adapter ecosystem. MessageFoundry's transports are at rough parity, but it
+  is newer.
 
 ### vs Infor Cloverleaf
 - **Their strength:** 30+ years of enterprise maturity, an extensive library of healthcare adapters,
@@ -210,14 +212,15 @@ June 2026.
   bulk-replay view, configurable ACK modes, message-size/segment guards, and a synthetic HL7
   generator for testing.
 - **Database flexibility** — a pluggable message store on standard databases: SQLite by default
-  (zero-config, embedded), with SQL Server, PostgreSQL, MySQL, and Oracle — no proprietary data
+  (zero-config, embedded), with SQL Server and PostgreSQL — no proprietary data
   platform required.
 - **Support & consulting** — commercial support and expert HL7 + Python consulting for
   production deployments: migration assistance, custom connectors, and on-call operations.
 
 ### Planned (roadmap — not yet available)
-- **Additional transports** — TCP, HTTP, and database connections are planned; today the shipped
-  transports are **MLLP and File**.
+- **Additional transports** — FHIR and DICOM endpoints, inbound HTTP/SOAP listeners, JMS, email, and
+  remote-file schemes beyond SFTP (FTP/FTPS/SMB/S3) are planned. (v0.1 already ships MLLP, TCP,
+  HTTP/REST, SOAP, database, and files incl. local + SFTP/FTP/FTPS.)
 - **De-identification framework**, **MLLP-over-TLS** and outbound destination allow-listing,
   **centralized log redaction**, and **retention/purge enforcement** — all planned.
 - **Managed, BAA-backed AI** (for PHI-scoped assistance) — planned; today the assistant is code-only.
@@ -228,8 +231,11 @@ June 2026.
 
 A fair review names the gaps:
 
-- **Connector / adapter breadth** — Mirth's 800+ connectors and Cloverleaf's/Rhapsody's/InterSystems'
-  decades of healthcare adapters far exceed our current MLLP + File transports.
+- **Pre-built adapter ecosystem & maturity** — our v0.1 transports (MLLP, TCP, HTTP/REST, SOAP,
+  database, files incl. SFTP/FTP/FTPS) are at rough parity with the incumbents on connection methods;
+  where they lead is decades of field deployments and larger pre-built-adapter and partner ecosystems.
+  (Mirth's cited "800+" is NextGen's separate EHR-API integration-route count, not a count of Mirth
+  engine connectors — see Sources.)
 - **Proven scale and maturity** — the incumbents have 15–30 years and thousands of production sites.
   MessageFoundry is new.
 - **Third-party ecosystem & certifications** — Rhapsody and Corepoint are KLAS-leading on support, and
