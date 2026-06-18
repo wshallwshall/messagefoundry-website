@@ -215,11 +215,13 @@
               <td>Separate</td><td>Separate</td><td>Separate</td><td>Separate</td><td>Separate</td>
             </tr>
             <tr>
-              <th scope="row">Connectors <small style="color:var(--muted);font-weight:600">our gap</small></th>
-              <td class="us">MLLP, TCP, HTTP/REST, SOAP, DB, files (local + SFTP/FTP/FTPS)</td>
-              <td>800+</td>
-              <td>Decades of adapters</td>
-              <td>Broad</td><td>Broad</td><td>Broad</td>
+              <th scope="row">Connectivity <small style="color:var(--muted);font-weight:600">transports &#8776; parity</small></th>
+              <td class="us">MLLP, TCP, HTTP/REST, SOAP, DB, files (local + SFTP/FTP/FTPS) — + Python for the rest</td>
+              <td>Core transports + extensible</td>
+              <td>Broad transports + many standards</td>
+              <td>Broad (adds JMS/Kafka)</td>
+              <td>Comparable transports</td>
+              <td>Broad + deep standards</td>
             </tr>
             <tr>
               <th scope="row">Maturity <small style="color:var(--muted);font-weight:600">our gap</small></th>
@@ -271,10 +273,10 @@
         <div class="vs-panels">
           <article class="vs-panel" id="panel-mirth" aria-label="MessageFoundry versus Mirth Connect">
             <h3>Message<span class="wordmark-accent">Foundry</span> <b>vs</b> Mirth Connect (NextGen)</h3>
-            <div class="vs-row"><span class="vs-lbl vs-lbl--str">Their strength</span><p>The most widely adopted engine of the last decade — 800+ connectors, a huge community, deep documentation, and a battle-tested channel architecture on a cross-platform JVM.</p></div>
+            <div class="vs-row"><span class="vs-lbl vs-lbl--str">Their strength</span><p>The most widely adopted engine of the last decade — a huge community, deep documentation, broad extensibility via JavaScript/Java transformers, and a battle-tested channel architecture on a cross-platform JVM.</p></div>
             <div class="vs-row"><span class="vs-lbl vs-lbl--shift">The shift</span><p>Open source ended at v4.5.2; v4.6+ is closed and paid, with no security patches to the free line.</p></div>
             <div class="vs-row vs-row--wedge"><span class="vs-lbl vs-lbl--wedge">MessageFoundry advantage</span><p>Open source <em>by license</em> (AGPL) — the property Mirth users came for — on a modern foundation: <b>Python</b> instead of aging Rhino JavaScript, integration logic as plain code in your git repo instead of XML in a database, and a real VS Code experience. Because migration is AI-assisted, porting your channels to Python is typically far less work than re-platforming onto another engine.</p></div>
-            <div class="vs-row vs-row--win"><span class="vs-lbl vs-lbl--win">Where Mirth still wins today</span><p>Breadth of pre-built connectors, community size, and years of production hardening. MessageFoundry is newer and ships fewer transports today.</p></div>
+            <div class="vs-row vs-row--win"><span class="vs-lbl vs-lbl--win">Where Mirth still wins today</span><p>Community size, ecosystem depth, and years of production hardening. MessageFoundry's transports are at rough parity, but it hasn't built up a comparable pre-built-adapter ecosystem yet.</p></div>
           </article>
 
           <article class="vs-panel" id="panel-clover" aria-label="MessageFoundry versus Infor Cloverleaf">
@@ -387,7 +389,7 @@
       </div>
       <div class="grid grid-2" style="align-items:start">
         <ul class="feature-list">
-          <li><b>Connector / adapter breadth</b> — Mirth's 800+ connectors and the others' decades of healthcare adapters far exceed our v0.1 connection set (MLLP, TCP, HTTP/REST, SOAP, database, and local/remote files).</li>
+          <li><b>Pre-built adapter ecosystem &amp; maturity</b> — our v0.1 transports (MLLP, TCP, HTTP/REST, SOAP, database, and local/remote files) sit at rough parity with the incumbents, but they bring decades of field-hardened deployments and far larger pre-built-adapter and partner ecosystems. (The widely-cited Mirth "800+" is NextGen's EHR-API integration-route count, not a count of engine connectors.)</li>
           <li><b>Proven scale and maturity</b> — the incumbents have 15–30 years and thousands of production sites. MessageFoundry is new.</li>
           <li><b>Third-party ecosystem &amp; certifications</b> — Corepoint is the Best in KLAS integration engine (16 straight years) and Rhapsody rates highly too; large independent consulting ecosystems and formal certifications exist for all five.</li>
         </ul>
