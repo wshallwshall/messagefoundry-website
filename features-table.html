@@ -92,7 +92,7 @@
 
             <tr class="grp"><th colspan="2" scope="colgroup">Reliability</th></tr>
             <tr><th scope="row">Durable before acknowledged</th><td>The inbound is ACKed only after the received message is committed to the store on ingest, so an accepted message survives a crash before any processing begins.</td></tr>
-            <tr><th scope="row">At-least-once delivery</th><td>Every accepted message is delivered at least once; nothing is silently dropped.</td></tr>
+            <tr><th scope="row">Reliable delivery</th><td>Every accepted message is persisted and delivered; nothing is silently dropped.</td></tr>
             <tr><th scope="row">Ordered (FIFO) delivery</th><td>Messages to a given destination are delivered first-in, first-out, preserving per-connection sequence.</td></tr>
             <tr><th scope="row">Per-outbound workers</th><td>Each destination drains independently; one slow or failing peer never blocks the others.</td></tr>
             <tr><th scope="row">Automatic retries &amp; failure policy</th><td>Back off and retry on a configurable policy, then dead-letter, with a bulk-replay view for recovery.</td></tr>
@@ -162,7 +162,7 @@
             <tr><th scope="row">SQLite</th><td>The zero-config, single-node default — WAL, one file, no server to run. The baseline every other backend matches byte-for-byte.</td></tr>
             <tr><th scope="row">PostgreSQL</th><td>The production server DB for high availability — a standby shares the store and takes over on primary failure via leader election, preserving strict per-lane FIFO ordering.</td></tr>
             <tr><th scope="row">SQL Server</th><td>A first-class production backend at parity with PostgreSQL — the same staged pipeline, concurrency-safe claiming, row leases, and high-availability failover.</td></tr>
-            <tr><th scope="row">One Store contract</th><td>The same at-least-once model — dispositions, retries, replay, audit, encryption at rest, and retention/purge — runs across all three backends.</td></tr>
+            <tr><th scope="row">One Store contract</th><td>The same delivery model — dispositions, retries, replay, audit, encryption at rest, and retention/purge — runs across all three backends.</td></tr>
 
             <tr class="grp"><th colspan="2" scope="colgroup">High availability</th></tr>
             <tr><th scope="row">Active-passive failover</th><td>A standby promotes on primary failure; in-flight work resumes from the durable store.</td></tr>
