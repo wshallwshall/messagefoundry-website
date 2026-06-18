@@ -12,7 +12,7 @@ Living list of follow-ups for the marketing site. Keep it short; delete items wh
   lock-in / Self-hosted). If a quick spec (Python version, exact license) is wanted somewhere,
   the footer-bottom line already states the AGPL license.
 - **⚠ Reconcile the engine repo's public docs with the new security posture.** `security.html` now
-  makes strong, standards-led claims (NIST SSDF / 800-115 / 800-53 / 800-66, OWASP ASVS 5.0 L2,
+  makes strong, standards-led claims (NIST SSDF / 800-115 / 800-53 / 800-66, OWASP ASVS 5.0 L3,
   secure-by-default with TLS + at-rest encryption on, modern interface auth, in-order delivery). The
   page invites a reader to **"read the source."** The engine repo's `docs/SECURITY.md`, `docs/PHI.md`,
   and any CISO-review / architecture docs still describe the **older, gap-laden** posture (e.g. no TLS
@@ -123,7 +123,7 @@ Open: decide whether to promote the security page from the footer into the top n
   ("Pipeline-ready") pages, and Open Graph image dimension/type meta tags (1200×630, PNG) to every
   page.
 - **Rebuilt `security.html` as a standards-led differentiator page** — built-to-recognized-standards
-  (NIST SSDF / 800-115 / 800-53 / 800-66, OWASP ASVS 5.0 L2, with honest "aligned/tested/mapped/
+  (NIST SSDF / 800-115 / 800-53 / 800-66, OWASP ASVS 5.0 L3, with honest "aligned/tested/mapped/
   verified, not certified" wording), secure-by-default controls, modern interface authentication
   (mTLS / OAuth2 client-credentials / SMART-on-FHIR Backend Services / AD gMSA-Kerberos-LDAPS-
   federation), a shared-responsibility split, a HIPAA Security Rule mapping table, secure SDLC /

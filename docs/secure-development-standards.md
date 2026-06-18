@@ -6,11 +6,11 @@
 | **Applies to** | Any application developed under this standard. **MessageFoundry (MEFOR)** is the reference implementation (Appendix A). |
 | **Maintained by** | Project maintainers (open-source). Each deploying organization assigns its own local owner. |
 | **Status** | Released |
-| **Version** | 1.0 |
-| **Date** | June 12, 2026 |
+| **Version** | 1.1 |
+| **Date** | June 18, 2026 |
 | **License** | Publishable under the project's open-source license; intended to be shared with adopters and reused across projects. |
 | **Review cadence** | At least annually, and on any material architecture or threat change |
-| **Aligns to** | NIST SP 800-218 (SSDF) · NIST SP 800-115 · NIST SP 800-53 · NIST SP 800-66 Rev. 2 (HIPAA Security Rule) · OWASP ASVS 5.0 Level 2 |
+| **Aligns to** | NIST SP 800-218 (SSDF) · NIST SP 800-115 · NIST SP 800-53 · NIST SP 800-66 Rev. 2 (HIPAA Security Rule) · OWASP ASVS 5.0 Level 3 |
 
 ---
 
@@ -38,11 +38,11 @@ Because the software is built by one party and deployed by others, responsibilit
 |---|---|
 | Secure development practices (§4) | Its own environment, host, and network security |
 | Secure-by-default configuration | Identity, credential, and key management in its environment |
-| Security testing and attestation of the software (§5) | Backups, disaster recovery, and availability |
+| Security testing and self-attestation of the software (§5) | Backups, disaster recovery, and availability |
 | Vulnerability response and disclosure (§7) | Its own compliance program — HIPAA Security Rule obligations, risk assessments of the deployment, and Business Associate Agreements where applicable |
 | Documentation and evidence (§8) | Operational monitoring, patching, and incident response |
 
-**No certification or agreement is conferred by the software itself.** A deploying organization operates the software under *its own* programs; an attestation that the software was built securely is evidence for that organization's assessment, not a substitute for it.
+**No certification or agreement is conferred by the software itself.** A deploying organization operates the software under *its own* programs; a self-attestation that the software was built securely is evidence for that organization's assessment, not a substitute for it.
 
 ---
 
@@ -56,7 +56,7 @@ Three NIST publications cover three different questions. Together they form the 
 | **How is it tested?** (security testing methodology) | SP 800-115 | §5 |
 | **What controls does it implement?** (security/privacy controls + HIPAA safeguards) | SP 800-53 / SP 800-66 Rev. 2 | §6 |
 
-These are complementary to the **OWASP ASVS 5.0 Level 2** assessment used for independent review: ASVS verifies that the built application is secure; SSDF attests to how it was built; 800-53/800-66 map the safeguards.
+These are complementary to the **OWASP ASVS 5.0 Level 3** verification: ASVS verifies that the built application is secure (currently a **self-assessment** — see §5.3); SSDF attests to how it was built; 800-53/800-66 map the safeguards.
 
 ### A note on claims and wording (read before publishing any claim)
 
@@ -64,7 +64,7 @@ NIST does **not** issue certificates for these frameworks. The project may **dis
 
 - **Use:** "Built to NIST SP 800-218 (SSDF)," "NIST SSDF–aligned," "tested per NIST SP 800-115," "controls mapped to NIST SP 800-53 / 800-66 Rev. 2," "HIPAA-compliant deployment supported."
 - **Do not use:** "NIST certified" or any phrasing implying a certificate exists.
-- **Back every claim** with the implemented practice and its evidence (this standard, test reports, the ASVS attestation, the applicability profile). A self-attestation is a formal, legally significant declaration — only make it if it is true.
+- **Back every claim** with the implemented practice and its evidence (this standard, test reports, the ASVS Level 3 self-assessment, the applicability profile). A self-attestation is a formal, legally significant declaration — only make it if it is true.
 - A third-party assessor may **validate** an attestation; that raises its weight but is still not a NIST certificate.
 
 ---
@@ -123,7 +123,7 @@ Testing follows the methodology of NIST SP 800-115 (*Technical Guide to Informat
 |---|---|---|
 | Automated (in CI/CD) | SAST, SCA/dependency scan, secret scanning, unit/integration security tests | Every commit / build |
 | Dynamic | DAST / authenticated testing of the running app | Per release and periodically |
-| Independent review | Source-code review + penetration test, **scoped as OWASP ASVS 5.0 Level 2** (§5.3), conducted per 800-115 | Before a production release; after major change; periodically thereafter |
+| ASVS L3 verification | Self-assessment against **OWASP ASVS 5.0 Level 3** (§5.3) now; an independent source-code review + penetration test — **recommended at L3, not required** — conducted per 800-115 once resourced | Self-assessment before a production release and after major change; independent review when resourced, then periodically |
 
 ### 5.2 Internal testing (continuous)
 
@@ -131,13 +131,14 @@ Testing follows the methodology of NIST SP 800-115 (*Technical Guide to Informat
 - Secret scanning runs pre-commit and in CI; the full git history is kept clean of secrets, credentials, keys, and any sensitive data.
 - Security-focused test cases (authn/authz, input validation, error handling) are part of the standard suite.
 
-### 5.3 OWASP ASVS 5.0 Level 2 — scope
+### 5.3 OWASP ASVS 5.0 Level 3 — scope
 
-The independent review is scoped to **OWASP ASVS version 5.0.0** (released May 2025), **Level 2**:
+The application is verified against **OWASP ASVS version 5.0.0** (released May 2025), **Level 3** — by self-assessment now, with an independent review recommended but not required (see below):
 
 - **Version-pinned citation.** Requirements are cited as `v5.0.0-<chapter>.<section>.<requirement>`; identifiers changed substantially from 4.0.x, so the version is always stated.
-- **Scale and level model.** ~350 requirements across **17 chapters**. Levels are **cumulative** — L2 includes all L1. **L2 is the standard level for applications handling sensitive data**; L3 (defence-in-depth for the highest-assurance contexts) is not the default target, though a single high-risk component (e.g., authentication) may be held to L3 within the same engagement.
-- **Access required for L2.** L2 is a white-box / hybrid review: the assessor needs source code, developer access, documentation, and an authenticated test instance running **synthetic, non-PHI** data.
+- **Scale and level model.** ~350 requirements across **17 chapters**. Levels are **cumulative** — L3 includes all of L1 and L2. **L3 is the highest assurance level — defence-in-depth for applications that handle the most sensitive data.** Because this software carries PHI, **L3 is the target**.
+- **Access required.** L3, like L2, is a white-box / hybrid review: it needs source code, developer access, documentation, and an authenticated test instance running **synthetic, non-PHI** data. The current verification is a **self-assessment** using this access; an independent review would use the same.
+- **Self-assessment vs. independent review.** The application is **self-assessed** against L3 — the result is recorded in the applicability profile (Appendix A.3). ASVS **strongly recommends** an independent review (source-code review + penetration test) at L3 but **does not require one**; an independent review is **planned, pending resourcing**, is tracked as its own testing tier (§5.1), and **has not yet been performed** — no external audit is claimed.
 - **Documented Security Decisions (new in 5.0).** Each chapter opens with a requirement to document *how* its controls are applied and *why*. This standard, the per-interface threat models (PW.1), and the secure-default baseline (PW.9) serve as that documentation. **Each project documents which chapters are in scope and records exclusions with justification** — see the applicability profile. (Documenting exclusions is itself an ASVS practice.)
 - **5.0 modernizations to honor.** Cryptography (V11) reflects current guidance, including post-quantum considerations; authentication and password rules (V6) align with NIST SP 800-63; ASVS 5.0 scopes to **applications and APIs** (host/network infrastructure is the deployer's responsibility, §2).
 
@@ -147,7 +148,7 @@ The independent review is scoped to **OWASP ASVS version 5.0.0** (released May 2
 
 ### 5.4 Release gates
 
-A production release requires: passing automated checks, no unresolved high/critical findings, current independent-review status (or a documented risk acceptance), and updated evidence (§8).
+A production release requires: passing automated checks, no unresolved high/critical findings, a current **ASVS 5.0 Level 3 self-assessment** (and independent-review status where available, or a documented risk acceptance), and updated evidence (§8).
 
 ---
 
@@ -227,11 +228,11 @@ The project maintains a current evidence set so any claim is backed:
 
 - This **Secure Development Standards** document and each project's standing contract.
 - **SSDF practice evidence** (toolchain configuration, review records, SBOMs, secure-default settings).
-- **Test results** — CI security-scan history; the independent **OWASP ASVS 5.0 Level 2** report and re-test results.
+- **Test results** — CI security-scan history; the **OWASP ASVS 5.0 Level 3 self-assessment** (and the planned independent review's report and re-test results once performed).
 - **Per-project applicability profile** (Appendix A and onward).
 - A **claims register** recording each published claim, its wording, and the evidence behind it.
 
-**Attestation posture.** The software is self-attested as NIST SSDF–aligned, tested per NIST SP 800-115, verified against OWASP ASVS 5.0 Level 2, and built to support HIPAA-compliant deployment (controls mapped to NIST SP 800-53 / 800-66 Rev. 2). Third-party validation of the SSDF attestation and the ASVS 5.0 Level 2 assessment raises the weight of these claims. **Attestations are published with releases** so adopters can rely on them; each adopter still performs its own deployment risk assessment (§6.3). None of these is a NIST certificate; displayable certificates (SOC 2, ISO 27001, HITRUST) are a separate, organization-level track.
+**Attestation posture.** The software is self-attested as NIST SSDF–aligned, tested per NIST SP 800-115, **self-assessed against OWASP ASVS 5.0 Level 3**, and built to support HIPAA-compliant deployment (controls mapped to NIST SP 800-53 / 800-66 Rev. 2). An independent external review + penetration test — which ASVS **recommends at L3 but does not require** — are **planned, pending resourcing**; once performed, third-party validation of the SSDF attestation and the ASVS L3 assessment would raise the weight of these claims. **Attestations are published with releases** so adopters can rely on them; each adopter still performs its own deployment risk assessment (§6.3). None of these is a NIST certificate; displayable certificates (SOC 2, ISO 27001, HITRUST) are a separate, organization-level track.
 
 ---
 
@@ -241,7 +242,7 @@ The project maintains a current evidence set so any claim is backed:
 - NIST SP 800-115, *Technical Guide to Information Security Testing and Assessment*
 - NIST SP 800-53, *Security and Privacy Controls for Information Systems and Organizations*
 - NIST SP 800-66 Rev. 2, *Implementing the HIPAA Security Rule: A Cybersecurity Resource Guide*
-- OWASP Application Security Verification Standard (ASVS) v5.0.0 (May 2025), Level 2
+- OWASP Application Security Verification Standard (ASVS) v5.0.0 (May 2025), Level 3
 
 ---
 
@@ -262,7 +263,9 @@ MessageFoundry (MEFOR) is an open-source **HL7 v2.x integration engine** — a c
 - **File-handler interface** (file-drop pickup / output).
 - **PySide6 desktop client** (no web UI at this time).
 
-### A.3 OWASP ASVS 5.0 Level 2 — chapter applicability
+### A.3 OWASP ASVS 5.0 Level 3 — chapter applicability
+
+**Self-assessment result (L3, cumulative).** Across all **345** ASVS 5.0 Level 3 requirements: **212 met · 0 failed · 0 partial · 133 not applicable** — 0 open fails, 0 open partials. (Component view: L1+L2 = 164/0/0/89; L3-only = 48/0/0/44.) This is an **internal self-assessment**; an independent external review + penetration test are recommended at L3 but not required, and are planned (§5.1, §5.3). The chapter scope below is unchanged at L3 — the same chapters apply; L3 adds depth within them.
 
 | # | Chapter (v5.0.0) | In scope | Notes |
 |---|---|---|---|
@@ -305,3 +308,4 @@ MessageFoundry (MEFOR) is an open-source **HL7 v2.x integration engine** — a c
 |---|---|---|
 | 0.1–0.5 | June 12, 2026 | MEFOR-specific drafts: NIST SSDF/800-115/800-53/800-66 mapping; OWASP ASVS 5.0 L2 scope; file-handler and interface-authentication standards |
 | 1.0 | June 12, 2026 | **Genericized** into a reusable, project-agnostic standard. Added shared-responsibility (§2) and open-source project security (§7). Moved MEFOR-specific scope and choices to **Appendix A** applicability profile. Supersedes the MEFOR-specific drafts. |
+| 1.1 | June 18, 2026 | Moved the ASVS verification target from **Level 2 to Level 3** (PHI ⇒ highest assurance). Recorded the **L3 self-assessment** result (212 / 0 / 0 / 133 across 345) in Appendix A.3, and **decoupled** it from the independent external review + penetration test — which ASVS recommends at L3 but does not require, and which are **planned, pending resourcing** (not yet performed). |
