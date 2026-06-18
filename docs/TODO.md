@@ -32,7 +32,7 @@ Living list of follow-ups for the marketing site. Keep it short; delete items wh
 `security.html` links the **Secure Development Standards** PDF
 (`assets/MessageFoundry-Secure-Development-Standards.pdf`). Source of truth is the markdown at
 `docs/secure-development-standards.md` (mirrored from the engine owner's
-`Secure_Development_Standards.md`; the website copy has the status set to **Released**, not "Draft for
+`Secure_Development_Standards.md`; the website copy has the status set to **Draft (v0.7)**, distinct from the engine source's "Draft for
 review"). Regenerate after edits — render the markdown to a branded HTML page, then print it to PDF:
 
 1. `python` + `markdown` (extensions: `tables`, `fenced_code`, `sane_lists`) wrapped in the branded

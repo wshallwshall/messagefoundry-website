@@ -12,6 +12,8 @@
 | **Review cadence** | At least annually, and on any material architecture or threat change |
 | **Aligns to** | NIST SP 800-218 (SSDF) · NIST SP 800-115 · NIST SP 800-53 · NIST SP 800-66 Rev. 2 (HIPAA Security Rule) · OWASP ASVS 5.0 Level 3 |
 
+> **Disclaimer.** This is a **draft, pre-release** document (v0.7) describing the secure-development practices of software that is itself pre-release — **MessageFoundry v0.1 Early Access**. Its security claims are the project's own **self-attestations and self-assessment** — **not** a third-party audit, penetration test, or certification, and **not** a NIST certificate. The software **supports a HIPAA-compliant deployment**; it does not, by itself, make any deployment compliant. Contents are subject to change without notice.
+
 ---
 
 ## 1. Purpose and scope
