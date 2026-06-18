@@ -5,7 +5,7 @@
 | **Document** | Secure Development Standards |
 | **Applies to** | Any application developed under this standard. **MessageFoundry (MEFOR)** is the reference implementation (Appendix A). |
 | **Maintained by** | Project maintainers (open-source). Each deploying organization assigns its own local owner. |
-| **Status** | Released |
+| **Status** | Draft |
 | **Version** | 0.7 |
 | **Date** | June 18, 2026 |
 | **License** | Publishable under the project's open-source license; intended to be shared with adopters and reused across projects. |
