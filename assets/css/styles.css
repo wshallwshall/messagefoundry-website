@@ -108,12 +108,9 @@ code, pre, kbd { font-family: var(--mono); }
 .brand:hover { text-decoration: none; }
 .brand-mark { width: 28px; height: 28px; flex: 0 0 auto; }
 .brand-accent { color: var(--accent); }
-/* "Foundry" wordmark accent for headings/copy: deep amber on light surfaces, bright
-   amber on dark — same contrast rule as .eyebrow. (.brand-accent stays bright for the
-   logo, which only sits on the dark header/footer.) */
-.wordmark-accent { color: var(--accent-ink); }
-.section--dark .wordmark-accent { color: var(--accent); }
-.cta-band .wordmark-accent { color: var(--accent); }
+/* "Foundry" wordmark accent in headings/copy — the brand amber everywhere
+   (owner preference over the deeper, higher-contrast on-light variant). */
+.wordmark-accent { color: var(--accent); }
 /* trademark mark on the logo lockup (header + footer) */
 .brand-tm { font-size: .7em; vertical-align: super; margin-left: .08em; font-weight: 600; color: var(--muted-dk); }
 .site-nav { display: flex; align-items: center; gap: 26px; }
