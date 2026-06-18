@@ -235,6 +235,12 @@ pre.code .n { color: #c9a3ff; }                           /* number/const */
 .feature-list li b { color: var(--text); font-weight: 650; }
 .section--dark .feature-list li { color: var(--muted-dk); }
 .section--dark .feature-list li b { color: #fff; }
+/* White cards can sit inside dark sections too. Their background stays white, so keep
+   their text dark — otherwise .section--dark's light-on-dark heading/list colors paint
+   white-on-white and the card headers vanish. */
+.section--dark .card h1, .section--dark .card h2, .section--dark .card h3 { color: var(--text); }
+.section--dark .card .feature-list li { color: var(--muted); }
+.section--dark .card .feature-list li b { color: var(--text); }
 
 /* ------------------------------------------------------------------ pipeline diagram */
 .pipeline { display: flex; align-items: stretch; gap: 0; flex-wrap: wrap; margin-top: 14px; }
