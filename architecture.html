@@ -281,6 +281,9 @@
         <text class="dg-sub" x="898" y="266" text-anchor="end">decode/validate failures NAK synchronously, pre-ingress</text>
         <text class="dg-ttl" x="44" y="289" style="font-size:13px">RECEIVED &#8594; ROUTED / UNROUTED &#8594; PROCESSED / FILTERED / ERROR</text>
       </svg>
+      <div class="callout" style="margin-top:30px;max-width:900px;margin-inline:auto">
+        <p><strong>Why nothing is lost.</strong> Every message is committed to the store before it's ACKed, and each stage handoff is a single transaction — so a crash can only ever repeat the last step, never skip it. In normal operation every message is delivered exactly once. The one edge case: if the engine crashes after a downstream send but before it records that success, on restart it re-sends that single in-flight message rather than risk dropping it. (Engineers call this "deliver again rather than lose" guarantee <b>at-least-once</b> — the deliberate opposite of <em>at-most-once</em>, which can silently lose clinical data.) That rare re-send is detectable, not noise: a re-delivered HL7 message carries the same <code>MSH-10</code> control ID, so a downstream sees a retry of a known message — exactly where deduplication belongs.</p>
+      </div>
     </div>
   </section>
 
@@ -401,7 +404,7 @@
         </div>
       </div>
       <div class="footer-bottom">
-        <span>© 2026 MessageFoundry, a non-profit · Licensed under AGPL-3.0-or-later.</span>
+        <span>© 2026 MessageFoundry, a non-profit — this website and its content, all rights reserved. The MessageFoundry engine is separately open source, licensed under AGPL-3.0-or-later.</span>
         <span>MessageFoundry and the MessageFoundry word mark are trademarks of the MessageFoundry Organization. Mirth Connect, Cloverleaf, Rhapsody, Corepoint, and Ensemble are trademarks of their respective owners; MessageFoundry is independent and unaffiliated.</span>
       </div>
     </div>
