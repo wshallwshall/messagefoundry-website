@@ -1,0 +1,260 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>The toolkit — what's in the box — MessageFoundry</title>
+  <meta name="description" content="MessageFoundry isn't one program — it's a small toolkit around the engine and its localhost API: the engine service, the command-line tool, the admin console, the VS Code extension, a test harness, and a migration tee relay. One contract, many clients.">
+  <link rel="canonical" href="https://messagefoundry.org/tools.html">
+  <link rel="icon" href="/assets/img/favicon.svg" type="image/svg+xml">
+  <meta name="theme-color" content="#0b1220">
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="MessageFoundry">
+  <meta property="og:title" content="The toolkit — what's in the box — MessageFoundry">
+  <meta property="og:description" content="The whole set of MessageFoundry tools — engine service, CLI, admin console, VS Code extension, test harness, and tee relay — each a separate process, every UI a client of the one localhost API.">
+  <meta property="og:url" content="https://messagefoundry.org/tools.html">
+  <meta property="og:image" content="https://messagefoundry.org/assets/img/og.png">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta property="og:image:type" content="image/png">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="The toolkit — what's in the box — MessageFoundry">
+  <meta name="twitter:description" content="One engine, one localhost API, many clients — the whole MessageFoundry toolkit.">
+  <meta name="twitter:image" content="https://messagefoundry.org/assets/img/og.png">
+  <link rel="stylesheet" href="/assets/css/styles.css">
+  <style>
+    /* Toolkit diagram — static SVG styled with the design tokens (no JS). */
+    svg.dg { width: 100%; height: auto; display: block; margin: 0 auto; max-width: 940px; }
+    svg.dg text { font-family: var(--font); }
+    .dg-box   { fill: #fff; stroke: #cdd6e3; stroke-width: 1.2; }
+    .dg-api   { fill: #fff8ee; stroke: var(--accent); stroke-width: 1.7; }
+    .dg-ttl   { fill: var(--text); font-weight: 700; font-size: 14px; }
+    .dg-sub   { fill: var(--muted); font-size: 11px; }
+    .dg-solid { fill: none; stroke: var(--muted); stroke-width: 1.7; }
+    .dg-dash  { fill: none; stroke: #93a1b8; stroke-width: 1.7; stroke-dasharray: 4 4; }
+    .tool-cmd { display:inline-block; font-family: var(--mono); font-size: .82rem; color: var(--accent-ink);
+                background: #fff4e3; border: 1px solid #fde6c2; border-radius: 7px; padding: 3px 9px; margin: 2px 0 12px; }
+  </style>
+</head>
+<body>
+
+  <header class="site-header">
+    <div class="container header-inner">
+      <a class="brand" href="/" aria-label="MessageFoundry home">
+        <img class="brand-mark" src="/assets/img/logo.svg" alt="" width="28" height="28">
+        <span class="brand-name">Message<span class="brand-accent">Foundry</span><span class="brand-tm">™</span></span>
+      </a>
+      <button class="nav-toggle" aria-expanded="false" aria-controls="site-nav" aria-label="Toggle navigation"><span></span><span></span><span></span></button>
+      <nav class="site-nav" id="site-nav">
+        <div class="nav-group">
+          <button type="button" class="nav-group__btn" aria-expanded="false" aria-haspopup="true" aria-controls="nav-product">Product</button>
+          <div class="nav-group__menu" id="nav-product">
+            <a href="/overview.html">Overview</a>
+            <a href="/features.html">Features</a>
+            <a href="/features-table.html">Feature list</a>
+            <a href="/architecture.html">Architecture</a>
+            <a href="/tools.html" class="active" aria-current="page">Tools</a>
+            <a href="/ai.html">AI assist</a>
+          </div>
+        </div>
+        <a href="/security.html">Security</a>
+        <a href="/comparison.html">Comparison</a>
+        <a href="/getting-started.html">Get started</a>
+        <div class="nav-group">
+          <button type="button" class="nav-group__btn" aria-expanded="false" aria-haspopup="true" aria-controls="nav-company">About Us</button>
+          <div class="nav-group__menu" id="nav-company">
+            <a href="/about.html">About</a>
+            <a href="/licensing.html">Licensing</a>
+            <a href="/contact.html">Contact</a>
+            <a href="/sponsor.html">Sponsor</a>
+          </div>
+        </div>
+        <a class="btn btn-ghost" href="/pypi.html">PyPI<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3l8 4.5l0 9l-8 4.5l-8 -4.5l0 -9l8 -4.5"/><path d="M12 12l8 -4.5"/><path d="M12 12l0 9"/><path d="M12 12l-8 -4.5"/><path d="M16 5.25l-8 4.5"/></svg></a>
+        <a class="btn btn-ghost" href="https://github.com/MEFORORG/MessageFoundry" target="_blank" rel="noopener">GitHub ↗</a>
+      </nav>
+    </div>
+  </header>
+
+  <!-- shared arrow markers for the diagram -->
+  <svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false">
+    <defs>
+      <marker id="dg-ah" markerWidth="10" markerHeight="10" refX="7.5" refY="4.5" orient="auto"><path d="M0,0 L9,4.5 L0,9 Z" fill="#51607a"/></marker>
+      <marker id="dg-ahd" markerWidth="10" markerHeight="10" refX="7.5" refY="4.5" orient="auto"><path d="M0,0 L9,4.5 L0,9 Z" fill="#93a1b8"/></marker>
+    </defs>
+  </svg>
+
+  <!-- hero -->
+  <section class="section section--dark section--tight">
+    <div class="container center">
+      <span class="eyebrow">The toolkit</span>
+      <h1 style="max-width:20ch;margin-inline:auto">What's in the box</h1>
+      <p class="lead center">MessageFoundry isn't one program — it's a small toolkit arranged around the engine and its localhost API. Each tool is its own process you run on its own, and every UI is just a client of that one API. Here's the whole set.</p>
+    </div>
+  </section>
+
+  <!-- diagram -->
+  <section class="section">
+    <div class="container">
+      <div class="center" style="margin-bottom:30px;max-width:720px">
+        <span class="eyebrow">One contract, many clients</span>
+        <h2>One engine, one API, many tools</h2>
+        <p class="lead center">The engine is the only long-running service — and the only thing that touches the store. Everything else talks to it over the one localhost API; the tee relay sits in front.</p>
+      </div>
+      <svg class="dg" viewBox="0 0 940 470" role="img" aria-labelledby="tk-t tk-d">
+        <title id="tk-t">The toolkit — one engine, many clients</title>
+        <desc id="tk-d">A central Engine service exposes one localhost API. Four tools — the command-line tool, the admin console, the VS Code extension, and the test harness — are separate processes that talk to it over that API. A tee relay sits in front of the engine, forwarding bytes during migration.</desc>
+
+        <path class="dg-solid" d="M470,192 L470,212" marker-end="url(#dg-ah)"/>
+        <path class="dg-solid" d="M254,148 L368,157" marker-end="url(#dg-ah)"/>
+        <path class="dg-solid" d="M686,148 L572,157" marker-end="url(#dg-ah)"/>
+        <path class="dg-solid" d="M254,278 L368,182" marker-end="url(#dg-ah)"/>
+        <path class="dg-solid" d="M686,278 L572,182" marker-end="url(#dg-ah)"/>
+        <path class="dg-dash" d="M470,372 L470,292" marker-end="url(#dg-ahd)"/>
+        <text class="dg-sub" x="492" y="338">in front</text>
+
+        <rect class="dg-api" x="372" y="140" width="196" height="52" rx="10"/>
+        <text class="dg-ttl" x="470" y="165" text-anchor="middle">localhost API</text>
+        <text class="dg-sub" x="470" y="181" text-anchor="middle">the one contract · HTTP / WS</text>
+
+        <rect class="dg-box" x="360" y="214" width="220" height="76" rx="10"/>
+        <text class="dg-ttl" x="470" y="240" text-anchor="middle">Engine service</text>
+        <text class="dg-sub" x="470" y="256" text-anchor="middle">headless runtime</text>
+        <text class="dg-sub" x="470" y="271" text-anchor="middle">owns the store &amp; staged queue</text>
+
+        <rect class="dg-box" x="44" y="116" width="210" height="64" rx="10"/>
+        <text class="dg-ttl" x="149" y="141" text-anchor="middle">Command-line tool</text>
+        <text class="dg-sub" x="149" y="157" text-anchor="middle">messagefoundry &lt;cmd&gt;</text>
+        <text class="dg-sub" x="149" y="172" text-anchor="middle">serve · check · generate</text>
+
+        <rect class="dg-box" x="686" y="116" width="210" height="64" rx="10"/>
+        <text class="dg-ttl" x="791" y="141" text-anchor="middle">Admin console</text>
+        <text class="dg-sub" x="791" y="157" text-anchor="middle">dashboard · replay</text>
+        <text class="dg-sub" x="791" y="172" text-anchor="middle">delivery &amp; audit trail</text>
+
+        <rect class="dg-box" x="44" y="250" width="210" height="64" rx="10"/>
+        <text class="dg-ttl" x="149" y="275" text-anchor="middle">VS Code extension</text>
+        <text class="dg-sub" x="149" y="291" text-anchor="middle">wizards · test bench</text>
+        <text class="dg-sub" x="149" y="306" text-anchor="middle">Stage → Promote · AI</text>
+
+        <rect class="dg-box" x="686" y="250" width="210" height="64" rx="10"/>
+        <text class="dg-ttl" x="791" y="275" text-anchor="middle">Test harness</text>
+        <text class="dg-sub" x="791" y="291" text-anchor="middle">python -m harness</text>
+        <text class="dg-sub" x="791" y="306" text-anchor="middle">synthetic, PHI-free load</text>
+
+        <rect class="dg-box" x="300" y="372" width="340" height="64" rx="10"/>
+        <text class="dg-ttl" x="470" y="397" text-anchor="middle">Tee relay</text>
+        <text class="dg-sub" x="470" y="413" text-anchor="middle">sits in front of a legacy + a shadow engine,</text>
+        <text class="dg-sub" x="470" y="428" text-anchor="middle">forwards the same bytes to both · test only</text>
+      </svg>
+    </div>
+  </section>
+
+  <!-- the tools, up close -->
+  <section class="section section--alt">
+    <div class="container">
+      <div class="center" style="margin-bottom:38px">
+        <span class="eyebrow">Each tool, up close</span>
+        <h2>How you run it, and what it's for</h2>
+      </div>
+      <div class="grid grid-3">
+        <div class="card">
+          <h3>Engine service</h3>
+          <span class="tool-cmd">messagefoundry serve</span>
+          <p>The headless runtime: it owns the store, runs your Connections, Routers, and Handlers through the staged queue, and exposes the localhost HTTP/WebSocket API. Everything else talks to this. Runs as a Windows service via NSSM.</p>
+        </div>
+        <div class="card">
+          <h3>Command-line tool</h3>
+          <span class="tool-cmd">messagefoundry &lt;cmd&gt;</span>
+          <p>One binary, many jobs: <code>serve</code>, <code>init</code> (scaffold a config repo), <code>validate</code> / <code>dryrun</code> / <code>check</code> (the commit/CI gate), <code>connection</code> (edit connections.toml), and <code>generate</code> (synthetic HL7), plus key &amp; audit ops. The introspection commands touch no network — git hooks and the VS Code extension shell them.</p>
+        </div>
+        <div class="card">
+          <h3>Admin &amp; monitoring console</h3>
+          <span class="tool-cmd">python -m messagefoundry.console</span>
+          <p>The operator GUI: a connection dashboard, a message browser with each message's disposition and delivery/audit trail, an HL7 parse-tree viewer, a dead-letter queue with one-click replay, and user/session/MFA management. A pure API client — it never touches the database.</p>
+        </div>
+        <div class="card">
+          <h3>VS Code configuration extension</h3>
+          <span class="tool-cmd">open in VS Code → F5</span>
+          <p>The authoring surface: a New Route Wizard, validate-on-save, a Test Bench that dry-runs <code>.hl7</code> files with before/after diffs, Stage&nbsp;→&nbsp;Promote to a running engine, and an HL7-aware <code>@messagefoundry</code> AI chat participant. It shells the CLI's introspection commands.</p>
+        </div>
+        <div class="card">
+          <h3>Test harness</h3>
+          <span class="tool-cmd">python -m harness</span>
+          <p>Exercises a running engine with synthetic, PHI-free traffic: Send / Receive / File / Compose / Monitor tabs (inject ACK faults, malformed messages, delivery failures), headless CI scenarios that assert dispositions, and a separate load-testing engine with tunable profiles (warmup → ramp → soak) and an SLO report.</p>
+        </div>
+        <div class="card">
+          <h3>Tee relay</h3>
+          <span class="tool-cmd">python -m tee</span>
+          <p>A migration de-risking tool: sit it in front of a legacy engine and a shadow MessageFoundry, ACK on receipt, and forward the same bytes to both — so you can compare output before cutover (rollback is just stopping the relay). Test and synthetic data only; not PHI-hardened.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- throughline + cta -->
+  <section class="section section--dark">
+    <div class="container">
+      <div class="callout" style="background:rgba(245,158,11,.07);border-color:rgba(245,158,11,.28);color:var(--text-dk);max-width:880px;margin:0 auto 30px">
+        <p style="margin:0"><strong style="color:var(--accent)">One contract, many clients.</strong> The engine is the only long-running service — and the only thing that touches the store. The console, the extension, and the harness are separate processes that drive or observe it over that one localhost API; the tee relay sits in front. That's the <a href="/architecture.html" style="color:var(--accent)">architecture</a>, made concrete.</p>
+      </div>
+      <div class="center">
+        <div class="btn-row center">
+          <a class="btn btn-primary" href="/getting-started.html">Get started</a>
+          <a class="btn btn-secondary" href="/architecture.html">See how it fits together →</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <footer class="site-footer">
+    <div class="container">
+      <div class="footer-grid">
+        <div class="footer-brand">
+          <a class="brand" href="/" aria-label="MessageFoundry home">
+            <img class="brand-mark" src="/assets/img/logo.svg" alt="" width="28" height="28">
+            <span class="brand-name">Message<span class="brand-accent">Foundry</span><span class="brand-tm">™</span></span>
+          </a>
+          <p>Open-source healthcare integration engine — secure by default, built to recognized standards, connecting a wide range of protocols and message types.</p>
+          <div class="badge-row" style="margin-top:16px">
+            <span class="badge">Open source</span>
+            <span class="badge">No lock-in</span>
+            <span class="badge">Self-hosted</span>
+          </div>
+        </div>
+        <div class="footer-col">
+          <h4>Product</h4>
+          <a href="/overview.html">Overview</a>
+          <a href="/features.html">Features</a>
+          <a href="/tools.html">Tools</a>
+          <a href="/ai.html">AI assist</a>
+          <a href="/security.html">Security &amp; PHI</a>
+          <a href="/comparison.html">Comparison</a>
+          <a href="/getting-started.html">Get started</a>
+        </div>
+        <div class="footer-col">
+          <h4>Docs</h4>
+          <a href="https://github.com/MEFORORG/MessageFoundry/blob/main/docs/ARCHITECTURE.md">Architecture</a>
+          <a href="https://github.com/MEFORORG/MessageFoundry/blob/main/docs/CONNECTIONS.md">Connections</a>
+          <a href="https://github.com/MEFORORG/MessageFoundry/blob/main/docs/SECURITY.md">Security</a>
+          <a href="https://github.com/MEFORORG/MessageFoundry/blob/main/docs/PHI.md">PHI / HIPAA</a>
+        </div>
+        <div class="footer-col">
+          <h4>Project</h4>
+          <a href="https://github.com/MEFORORG/MessageFoundry" target="_blank" rel="noopener">GitHub</a>
+          <a href="https://github.com/MEFORORG/MessageFoundry/issues" target="_blank" rel="noopener">Issues</a>
+          <a href="/contact.html">Contact</a>
+          <a href="/licensing.html">License</a>
+          <a href="/about.html">About</a>
+          <a href="/sponsor.html">Sponsor</a>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        <span>© 2026 MessageFoundry, a non-profit · Licensed under AGPL-3.0-or-later.</span>
+        <span>MessageFoundry and the MessageFoundry word mark are trademarks of the MessageFoundry Organization. Mirth Connect, Cloverleaf, Rhapsody, Corepoint, and Ensemble are trademarks of their respective owners; MessageFoundry is independent and unaffiliated.</span>
+      </div>
+    </div>
+  </footer>
+
+  <script src="/assets/js/nav.js" defer></script>
+</body>
+</html>
