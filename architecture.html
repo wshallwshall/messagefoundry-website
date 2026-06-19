@@ -328,6 +328,19 @@
         <text class="dg-ttl" x="793" y="203" text-anchor="middle">OB_ARCHIVE</text>
         <text class="dg-sub" x="793" y="219" text-anchor="middle">outbound · File</text>
       </svg>
+      <div class="grid grid-2" style="margin-top:42px;align-items:start">
+        <div>
+          <span class="eyebrow">Why wire it this way</span>
+          <h3 style="margin-top:8px">A wiring diagram, not a stack of channels</h3>
+          <p class="lead">Because the links are just names, each box is defined once and the arrows are cheap — what a bundled "channel" can't give you.</p>
+        </div>
+        <ul class="feature-list">
+          <li><b>Define once, reuse anywhere</b> — name a destination, a shared transform, or a router and reference it from anywhere, instead of copying it into every channel that needs it.</li>
+          <li><b>Rewiring is a one-line diff</b> — add a destination with one more Send, or reroute a feed by changing a name. No "channel" surgery, and every change is a small version-controlled diff.</li>
+          <li><b>Mistakes caught at load</b> — an unknown router, a dangling handler, a duplicate name or port are errors at check time, not silent surprises in production.</li>
+          <li><b>Each piece is small and testable</b> — a Router or Handler is a tiny function with a clear contract, so your team (or an AI agent) can build and test parts in parallel.</li>
+        </ul>
+      </div>
     </div>
   </section>
 

@@ -195,7 +195,7 @@
   <section class="section section--dark">
     <div class="container">
       <div class="callout" style="background:rgba(245,158,11,.07);border-color:rgba(245,158,11,.28);color:var(--text-dk);max-width:880px;margin:0 auto 30px">
-        <p style="margin:0"><strong style="color:var(--accent)">One contract, many clients.</strong> The engine is the only long-running service — and the only thing that touches the store. The console, the extension, and the harness are separate processes that drive or observe it over that one localhost API; the tee relay sits in front. That's the <a href="/architecture.html" style="color:var(--accent)">architecture</a>, made concrete.</p>
+        <p style="margin:0"><strong style="color:var(--accent)">One contract, many clients.</strong> The engine is the only long-running service — and the only thing that touches the store. The console, the extension, and the harness are separate processes that drive or observe it over that one localhost API; the tee relay sits in front. And because that one API is the only door in — the console can't import the engine or reach the store directly — authentication, RBAC, and audit sit at a single choke point nothing slips past. That's the <a href="/architecture.html" style="color:var(--accent)">architecture</a>, made concrete.</p>
       </div>
       <div class="center">
         <div class="btn-row center">

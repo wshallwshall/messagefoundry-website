@@ -121,7 +121,7 @@
       </div>
       <ul class="feature-list">
         <li><b>HL7 v2, deeply parsed</b> — full parsing and validation: fast and tolerant on the hot path, strict and version-aware where you opt in. Real-world HL7 is frequently non-conformant, and the engine is built to expect that.</li>
-        <li><b>JSON, XML/SOAP, X12/EDI, database records, and arbitrary payloads</b> — routed, transformed, enriched, and delivered. (HL7 v2 is the deeply parsed one; these flow through without structural parsing.)</li>
+        <li><b>JSON, XML/SOAP, X12/EDI, database records, and arbitrary payloads</b> — routed, transformed, enriched, and delivered with the full power of Python (a ready X12 codec, one-call JSON parsing, your own library for the rest). HL7 v2 is the one with a structured, standard-aware transform model built in — a difference in built-in support, not in what's possible.</li>
         <li><b>Encoding read from the message</b> — for HL7 v2, the field, component, repetition, escape, and subcomponent separators come from MSH, never hardcoded.</li>
         <li><b>Raw message preserved</b> alongside the transformed form, so an operator always sees exactly what arrived.</li>
         <li><b>Parse failures are isolated</b> — routed to the error / dead-letter path and logged, so a bad message never takes down the connection.</li>
