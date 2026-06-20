@@ -104,7 +104,7 @@
 
             <tr class="grp"><th colspan="2" scope="colgroup">Message formats</th></tr>
             <tr><th scope="row">HL7 v2, deeply parsed</th><td>Full parsing and validation: fast and tolerant on the hot path, strict and version-aware where you opt in — built to expect real-world, non-conformant HL7.</td></tr>
-            <tr><th scope="row">JSON, XML/SOAP, X12/EDI &amp; arbitrary payloads</th><td>Routed, transformed, enriched, and delivered alongside HL7 v2 (these flow through without structural parsing).</td></tr>
+            <tr><th scope="row">JSON, XML/SOAP, X12/EDI &amp; arbitrary payloads</th><td>Routed, transformed, enriched, and delivered alongside HL7 v2 — with on-demand structured access (a ready X12 codec, a FHIR codec with FHIRPath, one-call JSON, and an XXE-safe XML parser) when you want it, plus the full power of Python for the rest. HL7 v2 is the one with a structured transform model applied automatically.</td></tr>
             <tr><th scope="row">Encoding read from the message</th><td>For HL7 v2, the field, component, repetition, escape, and subcomponent separators come from MSH, never hardcoded.</td></tr>
             <tr><th scope="row">Raw message preserved</th><td>Kept alongside the transformed form, so an operator always sees exactly what arrived.</td></tr>
             <tr><th scope="row">Parse failures isolated</th><td>Routed to the error / dead-letter path and logged, so a bad message never takes down the connection.</td></tr>
@@ -112,6 +112,7 @@
             <tr class="grp"><th colspan="2" scope="colgroup">Connections</th></tr>
             <tr><th scope="row">MLLP</th><td>Correct <code>0x0B … 0x1C 0x0D</code> framing, inbound and outbound, with ACK/NAK generation (AA / AE / AR) and a per-connection ack mode.</td></tr>
             <tr><th scope="row">TCP</th><td>Raw stream endpoints.</td></tr>
+            <tr><th scope="row">X12 / EDI</th><td>ISA/IEA-framed X12 interchanges over TCP, inbound and outbound — paired with an on-demand X12 codec for structured access.</td></tr>
             <tr><th scope="row">HTTP / REST &amp; SOAP destinations</th><td>Deliver to modern and legacy web-service APIs. (Inbound REST/SOAP listeners are on the roadmap.)</td></tr>
             <tr><th scope="row">FHIR REST destination</th><td>Create / update / transaction against a FHIR server — R4B default (R5 / STU3) — with a FHIR codec and FHIRPath. (An inbound FHIR listener is on the roadmap.)</td></tr>
             <tr><th scope="row">Files — local &amp; SFTP / FTP / FTPS</th><td>Local directories and remote file transfer, with templated output names (e.g. <code>{MSH-10}.hl7</code>).</td></tr>
@@ -135,10 +136,11 @@
             <tr><th scope="row">Retention &amp; purge</th><td>Keep messages as long as policy requires, then purge on a configurable schedule.</td></tr>
 
             <tr class="grp"><th colspan="2" scope="colgroup">Tooling — console, editor &amp; CLI</th></tr>
-            <tr><th scope="row">Admin console</th><td>Dashboards, message search and browse, an HL7 parse-tree viewer, delivery and audit trail, and one-click replay — a separate app reaching the engine only over the localhost API.</td></tr>
+            <tr><th scope="row">Admin console</th><td>Dashboards, message search and browse, an HL7 parse-tree viewer, delivery and audit trail, a dead-letter page, an alert-rules view, and one-click replay — a separate app reaching the engine only over the localhost API.</td></tr>
             <tr><th scope="row">VS Code extension</th><td>Completion, live HL7-aware validate-on-save, a graph view of your integration (a boxes-and-arrows diagram), source-control integration, and Stage&nbsp;→&nbsp;Promote to a running engine.</td></tr>
             <tr><th scope="row">CLI &amp; localhost API</th><td><code>messagefoundry serve</code> exposes connection control, message search/detail, replay, stats, and a live WebSocket feed; <code>check</code> gates commits and <code>generate</code> produces synthetic HL7.</td></tr>
             <tr><th scope="row">Alerting</th><td>Webhook and email alerts when a connection stalls or a message dead-letters.</td></tr>
+            <tr><th scope="row">Metrics export</th><td>A Prometheus / OpenTelemetry-compatible <code>/metrics</code> endpoint (access-controlled) for scraping engine and connection metrics into your monitoring stack.</td></tr>
             <tr><th scope="row">Hot-reload &amp; environment promotion</th><td>Configuration hot-reload, with DEV/PROD values layering over the same modules.</td></tr>
             <tr><th scope="row">ACK modes &amp; guards</th><td>Configurable ACK modes plus message-size and segment guards.</td></tr>
 
@@ -163,7 +165,7 @@
 
             <tr class="grp"><th colspan="2" scope="colgroup">Message store — three backends, one contract</th></tr>
             <tr><th scope="row">SQLite</th><td>The zero-config, single-node default — WAL, one file, no server to run. The baseline every other backend matches byte-for-byte.</td></tr>
-            <tr><th scope="row">PostgreSQL</th><td>The production server DB for high availability — a standby shares the store and takes over on primary failure via leader election, preserving strict per-lane FIFO ordering.</td></tr>
+            <tr><th scope="row">PostgreSQL</th><td>The production server DB for high availability — a standby shares the store and takes over on primary failure via leader election, preserving strict per-destination FIFO ordering.</td></tr>
             <tr><th scope="row">SQL Server</th><td>A first-class production backend at parity with PostgreSQL — the same staged pipeline, concurrency-safe claiming, row leases, and high-availability failover.</td></tr>
             <tr><th scope="row">One Store contract</th><td>The same delivery model — dispositions, retries, replay, audit, encryption at rest, and retention/purge — runs across all three backends.</td></tr>
 
@@ -215,7 +217,7 @@
             <tr><th scope="row">Multi-factor authentication</th><td>MFA on top of the existing local and Active Directory sign-in.</td></tr>
             <tr><th scope="row">Built-in de-identification</th><td>Native PHI de-identification.</td></tr>
             <tr><th scope="row">Structured logging &amp; SIEM forwarding</th><td>Machine-readable logs forwarded to a SIEM.</td></tr>
-            <tr><th scope="row">Expanded console</th><td>A dead-letter page, alert management, and a multi-engine view.</td></tr>
+            <tr><th scope="row">Multi-engine console view</th><td>Manage several engines from one console (CLI/API equivalents exist today).</td></tr>
             <tr><th scope="row">Managed BAA-backed AI provider</th><td>A hosted AI option covered by a Business Associate Agreement.</td></tr>
             <tr><th scope="row">Independent external review</th><td>An independent external code review and penetration test.</td></tr>
           </tbody>

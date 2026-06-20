@@ -4,7 +4,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Features — MessageFoundry</title>
-  <meta name="description" content="MessageFoundry is an open-source healthcare integration engine (v0.1 Early Access). Connect MLLP, TCP, HTTP/REST, SOAP, databases, and files (local + SFTP/FTP/FTPS); route, transform, and deliver HL7 v2, JSON, XML, X12/EDI, and FHIR; durable delivery, active-passive high availability, RBAC and AES-256-GCM encryption, an admin console and VS Code tooling — set up with guided wizards or extended in Python, on SQLite, PostgreSQL, or SQL Server.">
+  <meta name="description" content="MessageFoundry is an open-source healthcare integration engine (v0.1 Early Access). Connect MLLP, TCP, X12/EDI, HTTP/REST, SOAP, databases, and files (local + SFTP/FTP/FTPS); route, transform, and deliver HL7 v2, JSON, XML, X12/EDI, and FHIR; durable delivery, active-passive high availability, RBAC and AES-256-GCM encryption, an admin console and VS Code tooling — set up with guided wizards or extended in Python, on SQLite, PostgreSQL, or SQL Server.">
   <link rel="canonical" href="https://messagefoundry.org/features.html">
   <link rel="icon" href="/assets/img/favicon.svg" type="image/svg+xml">
   <meta name="theme-color" content="#0b1220">
@@ -122,6 +122,7 @@
       <ul class="feature-list">
         <li><b>HL7 v2, deeply parsed</b> — full parsing and validation: fast and tolerant on the hot path, strict and version-aware where you opt in. Real-world HL7 is frequently non-conformant, and the engine is built to expect that.</li>
         <li><b>JSON, XML/SOAP, X12/EDI, database records, and arbitrary payloads</b> — routed, transformed, enriched, and delivered with the full power of Python (a ready X12 codec, a FHIR codec with FHIRPath, one-call JSON parsing, your own library for the rest). HL7 v2 is the one with a structured, standard-aware transform model built in — a difference in built-in support, not in what's possible.</li>
+        <li><b>XML parsing is hardened</b> — XML payloads are read with an XXE-safe parser, so a hostile document (external entities, embedded DOCTYPE, billion-laughs expansion) is rejected, not parsed.</li>
         <li><b>Encoding read from the message</b> — for HL7 v2, the field, component, repetition, escape, and subcomponent separators come from MSH, never hardcoded.</li>
         <li><b>Raw message preserved</b> alongside the transformed form, so an operator always sees exactly what arrived.</li>
         <li><b>Parse failures are isolated</b> — routed to the error / dead-letter path and logged, so a bad message never takes down the connection.</li>
@@ -140,7 +141,7 @@
       <div class="grid grid-3">
         <div class="card">
           <h3>Network</h3>
-          <p><b>MLLP</b> — correct <code>0x0B … 0x1C 0x0D</code> framing, inbound and outbound, with ACK/NAK generation (AA / AE / AR) and a per-connection ack mode. <b>TCP</b> for raw stream endpoints.</p>
+          <p><b>MLLP</b> — correct <code>0x0B … 0x1C 0x0D</code> framing, inbound and outbound, with ACK/NAK generation (AA / AE / AR) and a per-connection ack mode. <b>TCP</b> for raw stream endpoints. <b>X12 / EDI</b> over TCP — ISA/IEA-framed interchanges, inbound and outbound.</p>
         </div>
         <div class="card">
           <h3>Web services</h3>
@@ -205,7 +206,7 @@
         <div class="card">
           <span class="ico"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M4 4h16a1 1 0 0 1 1 1v11a1 1 0 0 1-1 1h-7v2h3v2H8v-2h3v-2H4a1 1 0 0 1-1-1V5a1 1 0 0 1 1-1zm1 2v9h14V6H5z"/></svg></span>
           <h3>Admin console</h3>
-          <p>Dashboards, message search and browse, an HL7 parse-tree viewer, delivery and audit trail, and one-click replay. A separate app that reaches the engine only over the localhost API.</p>
+          <p>Dashboards, message search and browse, an HL7 parse-tree viewer, delivery and audit trail, a dead-letter page, an alert-rules view, and one-click replay. A separate app that reaches the engine only over the localhost API.</p>
         </div>
         <div class="card">
           <span class="ico"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M3 5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5zm6.5 3L6 11.5 9.5 15 11 13.5 8.9 11.5 11 9.5 9.5 8zm5 0L13 9.5l2.1 2-2.1 2L14.5 15 18 11.5 14.5 8z"/></svg></span>
@@ -219,7 +220,7 @@
         </div>
       </div>
       <div class="callout" style="margin-top:26px">
-        <p><strong>Alerting &amp; operational niceties.</strong> Alerting via webhook and email when a connection stalls or a message dead-letters; configuration hot-reload and environment promotion (DEV/PROD values layer over the same modules); configurable ACK modes, message-size and segment guards; and a synthetic HL7 generator for testing — all included.</p>
+        <p><strong>Alerting &amp; operational niceties.</strong> Alerting via webhook and email when a connection stalls or a message dead-letters; a Prometheus / OpenTelemetry <code>/metrics</code> endpoint to scrape engine and connection metrics into your monitoring stack; configuration hot-reload and environment promotion (DEV/PROD values layer over the same modules); configurable ACK modes, message-size and segment guards; and a synthetic HL7 generator for testing — all included.</p>
       </div>
     </div>
   </section>
@@ -300,7 +301,7 @@
         </div>
         <div class="card">
           <h3>PostgreSQL</h3>
-          <p>The production server DB for high availability: a standby shares the same store and takes over on primary failure via leader election, preserving strict per-lane FIFO ordering. The reference production backend.</p>
+          <p>The production server DB for high availability: a standby shares the same store and takes over on primary failure via leader election, preserving strict per-destination FIFO ordering. The reference production backend.</p>
         </div>
         <div class="card">
           <h3>SQL Server</h3>
@@ -366,7 +367,7 @@
         </div>
         <div class="card">
           <h3>Security &amp; operations</h3>
-          <p>Multi-factor authentication, built-in de-identification, structured logging with SIEM forwarding, an expanded console (dead-letter page, alert management, multi-engine view), a managed BAA-backed AI provider, and an independent external code review and penetration test.</p>
+          <p>Multi-factor authentication, built-in de-identification, structured logging with SIEM forwarding, a multi-engine console view, a managed BAA-backed AI provider, and an independent external code review and penetration test.</p>
         </div>
       </div>
     </div>
