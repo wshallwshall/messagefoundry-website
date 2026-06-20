@@ -113,6 +113,7 @@
             <tr><th scope="row">MLLP</th><td>Correct <code>0x0B … 0x1C 0x0D</code> framing, inbound and outbound, with ACK/NAK generation (AA / AE / AR) and a per-connection ack mode.</td></tr>
             <tr><th scope="row">TCP</th><td>Raw stream endpoints.</td></tr>
             <tr><th scope="row">HTTP / REST &amp; SOAP destinations</th><td>Deliver to modern and legacy web-service APIs. (Inbound REST/SOAP listeners are on the roadmap.)</td></tr>
+            <tr><th scope="row">FHIR REST destination</th><td>Create / update / transaction against a FHIR server — R4B default (R5 / STU3) — with a FHIR codec and FHIRPath. (An inbound FHIR listener is on the roadmap.)</td></tr>
             <tr><th scope="row">Files — local &amp; SFTP / FTP / FTPS</th><td>Local directories and remote file transfer, with templated output names (e.g. <code>{MSH-10}.hl7</code>).</td></tr>
             <tr><th scope="row">Database</th><td>Poll records in and write results out.</td></tr>
             <tr><th scope="row">Count-and-log invariant</th><td>Every message a connection takes in or puts out is counted and logged; a router or filter decision is a recorded outcome (<code>UNROUTED</code> / <code>FILTERED</code>), never a silent drop.</td></tr>
@@ -206,8 +207,7 @@
             <tr><th scope="row">Partition-key parallelism</th><td>Ordered lanes per key (e.g. per patient) for parallel processing without losing per-key order.</td></tr>
 
             <tr class="grp"><th colspan="2" scope="colgroup">Connectivity &amp; standards</th></tr>
-            <tr><th scope="row">Inbound REST &amp; SOAP listeners</th><td>Accept inbound web-service calls, complementing today's outbound REST/SOAP destinations.</td></tr>
-            <tr><th scope="row">FHIR</th><td>FHIR support alongside HL7 v2.</td></tr>
+            <tr><th scope="row">Inbound REST, SOAP &amp; FHIR listeners</th><td>Accept inbound web-service calls (including a FHIR server facade), complementing today's outbound REST / SOAP / FHIR destinations.</td></tr>
             <tr><th scope="row">OAuth 2.0, SMART on FHIR &amp; SSO federation</th><td>OIDC/SAML and AD&nbsp;FS/Entra&nbsp;ID single sign-on.</td></tr>
             <tr><th scope="row">More databases</th><td>MySQL/MariaDB and Oracle as additional store backends.</td></tr>
 
