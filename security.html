@@ -139,7 +139,6 @@
           <h3>Operators (people)</h3>
           <ul class="feature-list" style="margin-top:12px">
             <li><b>Local accounts</b> or <b>Active Directory</b> sign-in (LDAP), with opaque, revocable sessions and timeouts. <span style="color:var(--muted-dk)">Passwordless Windows SSO (Kerberos / Integrated Windows Auth) is on the roadmap.</span></li>
-            <li><b>gMSA service accounts</b> — auto-rotated passwords, never stored in config; integrated DB auth.</li>
             <li>Roles mapped to AD groups; deny-by-default, least-privilege RBAC on every action.</li>
           </ul>
         </div>
@@ -147,6 +146,7 @@
           <h3>Connections (systems)</h3>
           <ul class="feature-list" style="margin-top:12px">
             <li>Per-connection credentials — HTTP Basic over TLS or per-connection API keys — vaulted, scoped, rotated, and recorded.</li>
+            <li>Run the engine's Windows service under a <b>group-Managed Service Account (gMSA)</b> — auto-rotated password, never stored in config — and use that identity for integrated database authentication.</li>
             <li><b>TLS everywhere</b>, including MLLP-over-TLS; no cleartext PHI on the wire.</li>
             <li>Per-connection IP allow-listing and network segmentation as defense-in-depth.</li>
           </ul>
