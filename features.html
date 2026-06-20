@@ -184,7 +184,7 @@
         <p class="lead">This engine carries PHI, so authentication, authorization, audit, and encryption-at-rest are built in — not bolted on. The API binds <code>127.0.0.1</code> by default and requires authentication.</p>
       </div>
       <ul class="feature-list">
-        <li><b>Authentication</b> — local accounts and Active Directory (LDAP / Kerberos) sign-in, with opaque, revocable sessions.</li>
+        <li><b>Authentication</b> — local accounts and Active Directory (LDAP) sign-in, with opaque, revocable sessions.</li>
         <li><b>RBAC</b> — fixed built-in roles, deny-by-default, per-route and per-channel scoping.</li>
         <li><b>TLS in transit</b> — the API and MLLP run over TLS (including MLLP-over-TLS), so PHI never crosses the network in the clear.</li>
         <li><b>Tamper-evident audit log</b> — a hash-chained, user-attributed record of every PHI access (raw view, summary, replay), with a verification command.</li>
@@ -362,7 +362,7 @@
         </div>
         <div class="card">
           <h3>Connectivity &amp; standards</h3>
-          <p>Inbound REST, SOAP, and FHIR listener endpoints; OAuth&nbsp;2.0, SMART on FHIR, and SSO federation (OIDC/SAML, AD&nbsp;FS/Entra&nbsp;ID); and more databases — MySQL/MariaDB and Oracle.</p>
+          <p>Inbound REST, SOAP, and FHIR listener endpoints; OAuth&nbsp;2.0, SMART on FHIR, and single sign-on (OIDC/SAML, AD&nbsp;FS/Entra&nbsp;ID, and passwordless Windows/Kerberos); and more databases — MySQL/MariaDB and Oracle.</p>
         </div>
         <div class="card">
           <h3>Security &amp; operations</h3>
