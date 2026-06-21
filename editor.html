@@ -1,0 +1,239 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Build interfaces in VS Code — MessageFoundry</title>
+  <meta name="description" content="MessageFoundry turns the VS Code you already use into an HL7-aware workspace for integration: HL7 autocomplete and validate-on-save, a New Route wizard, a connections.toml editor, a Test Bench with step-through debugging, and one-click Stage → Promote — plus an optional, PHI-safe @messagefoundry AI chat. No proprietary IDE to learn.">
+  <link rel="canonical" href="https://messagefoundry.org/editor.html">
+  <link rel="icon" href="/assets/img/favicon.svg" type="image/svg+xml">
+  <meta name="theme-color" content="#0b1220">
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="MessageFoundry">
+  <meta property="og:title" content="Build interfaces in VS Code — MessageFoundry">
+  <meta property="og:description" content="The MessageFoundry VS Code extension: HL7 autocomplete + validate-on-save, route wizards, a Test Bench, and Stage → Promote — author, test, and ship interfaces without leaving your editor.">
+  <meta property="og:url" content="https://messagefoundry.org/editor.html">
+  <meta property="og:image" content="https://messagefoundry.org/assets/img/og.png">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta property="og:image:type" content="image/png">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Build interfaces in VS Code — MessageFoundry">
+  <meta name="twitter:description" content="HL7-aware editing, route wizards, a Test Bench, and Stage → Promote — the MessageFoundry VS Code extension.">
+  <meta name="twitter:image" content="https://messagefoundry.org/assets/img/og.png">
+  <link rel="stylesheet" href="/assets/css/styles.css">
+</head>
+<body>
+
+  <header class="site-header">
+    <div class="container header-inner">
+      <a class="brand" href="/" aria-label="MessageFoundry home">
+        <img class="brand-mark" src="/assets/img/logo.svg" alt="" width="28" height="28">
+        <span class="brand-name">Message<span class="brand-accent">Foundry</span><span class="brand-tm">™</span></span>
+      </a>
+      <button class="nav-toggle" aria-expanded="false" aria-controls="site-nav" aria-label="Toggle navigation"><span></span><span></span><span></span></button>
+      <nav class="site-nav" id="site-nav">
+        <div class="nav-group">
+          <button type="button" class="nav-group__btn" aria-expanded="false" aria-haspopup="true" aria-controls="nav-product">Product</button>
+          <div class="nav-group__menu" id="nav-product">
+            <a href="/overview.html">Overview</a>
+            <a href="/features.html">Features</a>
+            <a href="/features-table.html">Feature list</a>
+            <a href="/architecture.html">Architecture</a>
+            <a href="/tools.html">Tools</a>
+            <a href="/editor.html" class="active" aria-current="page">Editor</a>
+            <a href="/ai.html">AI assist</a>
+          </div>
+        </div>
+        <a href="/security.html">Security</a>
+        <a href="/comparison.html">Comparison</a>
+        <a href="/getting-started.html">Get started</a>
+        <div class="nav-group">
+          <button type="button" class="nav-group__btn" aria-expanded="false" aria-haspopup="true" aria-controls="nav-company">About Us</button>
+          <div class="nav-group__menu" id="nav-company">
+            <a href="/about.html">About</a>
+            <a href="/licensing.html">Licensing</a>
+            <a href="/contact.html">Contact</a>
+            <a href="/sponsor.html">Sponsor</a>
+          </div>
+        </div>
+        <a class="btn btn-ghost" href="/pypi.html">PyPI<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3l8 4.5l0 9l-8 4.5l-8 -4.5l0 -9l8 -4.5"/><path d="M12 12l8 -4.5"/><path d="M12 12l0 9"/><path d="M12 12l-8 -4.5"/><path d="M16 5.25l-8 4.5"/></svg></a>
+        <a class="btn btn-ghost" href="https://github.com/MEFORORG/MessageFoundry" target="_blank" rel="noopener">GitHub ↗</a>
+      </nav>
+    </div>
+  </header>
+
+  <!-- hero -->
+  <section class="section section--dark section--tight">
+    <div class="container center">
+      <span class="eyebrow">In your editor</span>
+      <h1 style="max-width:20ch;margin-inline:auto">Build your interfaces in VS&nbsp;Code</h1>
+      <p class="lead center">The MessageFoundry extension turns the editor your team already uses into an HL7-aware workspace for integration — author with wizards or code, autocomplete HL7 as you type, test on synthetic data, and promote to a running engine, all without leaving VS&nbsp;Code. No proprietary IDE to learn, and it's entirely optional.</p>
+      <div class="btn-row center">
+        <a class="btn btn-primary" href="/getting-started.html">Get started</a>
+        <a class="btn btn-secondary" href="/tools.html">See the whole toolkit →</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- HL7-aware editing -->
+  <section class="section">
+    <div class="container grid grid-2" style="align-items:center">
+      <div>
+        <span class="eyebrow">HL7-aware editing</span>
+        <h2>Autocomplete the HL7, catch mistakes on save</h2>
+        <p class="lead">Write a handler and the editor already knows HL7. Segment and field references autocomplete from a bundled HL7 schema, so <code>PID-5</code> or <code>MSH-9.2</code> come from a list — not a spec PDF on your second monitor.</p>
+        <p>And it's checked the moment you save: <b>validate-on-save</b> flags an unknown segment, a malformed field path, or a typo before it ever reaches a running engine — so HL7 mistakes surface in the editor, not in production.</p>
+      </div>
+      <div class="code-card">
+        <div class="code-card__bar"><i></i><i></i><i></i><span class="code-card__name">route_adt.py — MessageFoundry</span></div>
+<pre class="code"><span class="d">@handler</span>(<span class="s">"route_adt"</span>)
+<span class="k">def</span> <span class="f">route_adt</span>(msg):
+    mrn   = msg[<span class="s">"PID-3.1"</span>]    <span class="c"># ⌄ from the HL7 schema</span>
+    name  = msg[<span class="s">"PID-5.1"</span>]
+    event = msg[<span class="s">"MSH-9.2"</span>]    <span class="c"># A01 / A04 / A08 …</span>
+
+    <span class="k">if</span> event <span class="k">not in</span> (<span class="s">"A01"</span>, <span class="s">"A04"</span>, <span class="s">"A08"</span>):
+        <span class="k">return</span> <span class="n">None</span>
+    <span class="k">return</span> <span class="f">Send</span>(<span class="s">"EHR_Out"</span>, msg)
+
+<span class="c"># Typo a segment? Flagged the moment you save.</span></pre>
+      </div>
+    </div>
+  </section>
+
+  <!-- author -->
+  <section class="section section--alt">
+    <div class="container">
+      <div class="center" style="margin-bottom:38px;max-width:720px;margin-inline:auto">
+        <span class="eyebrow">Author, your way</span>
+        <h2>Wizards for the routine, code for the rest</h2>
+        <p class="lead center">Stand up a whole interface from a guided flow, or drop into Python when you need to — it's the same config either way.</p>
+      </div>
+      <div class="grid grid-3">
+        <div class="card">
+          <h3>New Route Wizard</h3>
+          <p>Build a full interface in one flow — inbound connection → router → handler → outbound — with the wizard scaffolding the Python and wiring it by name. No blank page to stare at.</p>
+        </div>
+        <div class="card">
+          <h3>Connections sidebar</h3>
+          <p>Every connection in a filterable, groupable tree, with a Home authoring page — see and open your whole config at a glance instead of hunting through files.</p>
+        </div>
+        <div class="card">
+          <h3><code>connections.toml</code> editor</h3>
+          <p>Edit connection settings as data — in a GUI form, by hand, or with the <code>messagefoundry&nbsp;connection</code> CLI. Your choice, the same file.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- test + promote -->
+  <section class="section">
+    <div class="container grid grid-2" style="align-items:start">
+      <div>
+        <span class="eyebrow">Test Bench</span>
+        <h2>Prove it on synthetic data before it ships</h2>
+        <p class="lead">Dry-run a real <code>.hl7</code> message through a route right in the editor and see a <b>before/after diff</b> of exactly what your handlers did — no running engine, no PHI required.</p>
+        <ul class="feature-list">
+          <li><b>Step-through debugging</b> — set a breakpoint and walk a message through your router and handlers line by line.</li>
+          <li><b>Synthetic, PHI-free</b> — the Test Bench runs on generated sample messages, so testing never touches patient data.</li>
+        </ul>
+      </div>
+      <div class="card">
+        <h3 style="margin-bottom:.5em">Stage → Promote</h3>
+        <p>When a route checks out, push it to a running engine straight from the editor — staged first, then promoted on your say-so. The config you tested is the config that runs; there's no separate proprietary platform to export to or learn.</p>
+        <p style="margin-top:14px;color:var(--muted);font-size:.95rem">Every introspection step shells the MessageFoundry CLI — so what the editor does, your git hooks and CI can do too.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- optional AI -->
+  <section class="section section--dark">
+    <div class="container grid grid-2" style="align-items:center">
+      <div>
+        <span class="eyebrow">Optional AI</span>
+        <h2>An <code>@messagefoundry</code> chat that speaks the API</h2>
+        <p class="lead">The extension also includes an optional chat assistant, primed with MessageFoundry's real Router and Handler API. It runs on whatever model you've already set up in VS&nbsp;Code (e.g. GitHub Copilot) — MessageFoundry bundles no model and ships no keys.</p>
+        <p><b>PHI-safe by construction:</b> it only ever sees your code and your config-graph names — never a message body, never patient data. Centrally governed, with a hard off switch.</p>
+        <p style="margin-top:8px"><a href="/ai.html" style="color:var(--accent)">How AI works, and how it's governed →</a></p>
+      </div>
+      <div class="card">
+        <h3 style="margin-bottom:.6em">Slash commands</h3>
+        <ul class="feature-list">
+          <li><b><code>/explain</code></b> — walk through what a router or handler does.</li>
+          <li><b><code>/transform</code></b> — draft a <code>@handler</code> from a description of the mapping.</li>
+          <li><b><code>/review</code></b> — review the handler you're writing, against the real API.</li>
+        </ul>
+        <p style="margin-top:14px;color:var(--muted);font-size:.95rem">More commands are in progress.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- just VS Code + cta -->
+  <section class="section">
+    <div class="container">
+      <div class="callout" style="max-width:880px;margin:0 auto 30px">
+        <p><strong>It's just VS&nbsp;Code.</strong> The MessageFoundry editor is a standard extension over the editor your developers already know — your configuration stays plain Python and <code>connections.toml</code> in <em>your</em> git repository, never locked inside a proprietary IDE. Install it or don't: the wizards, autocomplete, and Test Bench are conveniences, and everything they produce is ordinary code you can write and run by hand.</p>
+      </div>
+      <div class="center">
+        <div class="btn-row center">
+          <a class="btn btn-primary" href="/getting-started.html">Get started</a>
+          <a class="btn btn-secondary" href="/tools.html">See the whole toolkit →</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <footer class="site-footer">
+    <div class="container">
+      <div class="footer-grid">
+        <div class="footer-brand">
+          <a class="brand" href="/" aria-label="MessageFoundry home">
+            <img class="brand-mark" src="/assets/img/logo.svg" alt="" width="28" height="28">
+            <span class="brand-name">Message<span class="brand-accent">Foundry</span><span class="brand-tm">™</span></span>
+          </a>
+          <p>Open-source healthcare integration engine — secure by default, built to recognized standards, connecting a wide range of protocols and message types.</p>
+          <div class="badge-row" style="margin-top:16px">
+            <span class="badge">Open source</span>
+            <span class="badge">No lock-in</span>
+            <span class="badge">Self-hosted</span>
+          </div>
+        </div>
+        <div class="footer-col">
+          <h4>Product</h4>
+          <a href="/overview.html">Overview</a>
+          <a href="/features.html">Features</a>
+          <a href="/tools.html">Tools</a>
+          <a href="/editor.html">Editor</a>
+          <a href="/ai.html">AI assist</a>
+          <a href="/security.html">Security &amp; PHI</a>
+          <a href="/comparison.html">Comparison</a>
+          <a href="/getting-started.html">Get started</a>
+        </div>
+        <div class="footer-col">
+          <h4>Docs</h4>
+          <a href="https://github.com/MEFORORG/MessageFoundry/blob/main/docs/ARCHITECTURE.md">Architecture</a>
+          <a href="https://github.com/MEFORORG/MessageFoundry/blob/main/docs/CONNECTIONS.md">Connections</a>
+          <a href="https://github.com/MEFORORG/MessageFoundry/blob/main/docs/SECURITY.md">Security</a>
+          <a href="https://github.com/MEFORORG/MessageFoundry/blob/main/docs/PHI.md">PHI / HIPAA</a>
+        </div>
+        <div class="footer-col">
+          <h4>Project</h4>
+          <a href="https://github.com/MEFORORG/MessageFoundry" target="_blank" rel="noopener">GitHub</a>
+          <a href="https://github.com/MEFORORG/MessageFoundry/issues" target="_blank" rel="noopener">Issues</a>
+          <a href="/contact.html">Contact</a>
+          <a href="/licensing.html">License</a>
+          <a href="/about.html">About</a>
+          <a href="/sponsor.html">Sponsor</a>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        <span>© 2026 MessageFoundry, a non-profit — this website and its content, all rights reserved. The MessageFoundry engine is separately open source, licensed under AGPL-3.0-or-later.</span>
+        <span>MessageFoundry and the MessageFoundry word mark are trademarks of the MessageFoundry Organization. Mirth Connect, Cloverleaf, Rhapsody, Corepoint, and Ensemble are trademarks of their respective owners; MessageFoundry is independent and unaffiliated.</span>
+      </div>
+    </div>
+  </footer>
+
+  <script src="/assets/js/nav.js" defer></script>
+</body>
+</html>
