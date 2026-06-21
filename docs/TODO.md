@@ -40,8 +40,18 @@ review"). Regenerate after edits — render the markdown to a branded HTML page,
 2. Print that to PDF, then delete the temp HTML:
 
        chrome --headless=new --disable-gpu --no-pdf-header-footer \
-         --print-to-pdf="assets/MessageFoundry-Secure-Development-Standards.pdf" \
-         "file:///ABSOLUTE/PATH/docs/_standards-src.html"
+         --user-data-dir="$(mktemp -d)" \
+         --print-to-pdf="C:/ABSOLUTE/PATH/assets/MessageFoundry-Secure-Development-Standards.pdf" \
+         "file:///C:/ABSOLUTE/PATH/docs/_standards-src.html"
+
+   **Gotcha (cost an hour once):** `--print-to-pdf` must be an **absolute** path. Chrome resolves a
+   *relative* output path against its own working directory (not the shell's) and silently writes
+   nothing while exiting 0 — so the old PDF stays and any content-based check passes falsely. Use an
+   absolute output path (or write to a temp file and move it into `assets/`), and pass
+   `--user-data-dir` to a throwaway dir so an already-running Chrome doesn't swallow the headless call.
+   To highlight scores, wrap them in `<mark class="asvs-clean">` (green) in the rendered HTML and keep
+   `print-color-adjust: exact` so it prints. The branded print-CSS template can be recovered from the
+   retired `docs/security-posture-summary.html` in git history.
 
 (The earlier sanitized **posture-summary** PDF and its `docs/security-posture-summary.html` source were
 retired when the standards-led page shipped.)
@@ -68,6 +78,10 @@ Open: decide whether to promote the security page from the footer into the top n
 
 ## Recently done (Jun 2026)
 
+- Regenerated the **Secure Development Standards PDF** to highlight the OWASP ASVS 5.0 L3
+  self-assessment scores that have **zero fails/partials** — the cumulative 212·0·0·133 and the
+  L1+L2 / L3-only component views (green `mark.asvs-clean`). Content unchanged (v0.7/Draft/L3);
+  regenerated from the same source markdown.
 - Public engine repo went live as a mirror at **`github.com/MEFORORG/MessageFoundry`** → repointed
   every GitHub link site-wide (nav, footers, CTAs, getting-started clone + `cd MessageFoundry`, the
   "Go deeper" doc cards, About/Licensing links, README) from the earlier `messagefoundry/messagefoundry`
