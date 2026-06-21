@@ -111,13 +111,13 @@
         <p>Each request goes straight from your editor to your provider — the <b>engine is never in the loop</b>.</p>
       </div>
       <div class="card">
-        <h3 style="margin-bottom:.6em">Three commands, primed with the API</h3>
+        <h3 style="margin-bottom:.6em">Slash commands, primed with the API</h3>
         <ul class="feature-list">
           <li><b><code>/explain</code></b> — walk through what a router or handler does, in plain language.</li>
           <li><b><code>/transform</code></b> — draft a <code>@handler</code> transform from a description of the mapping you need.</li>
           <li><b><code>/review</code></b> — get a review of the handler you're writing, against the real MessageFoundry API.</li>
         </ul>
-        <p style="margin-top:14px;color:var(--muted);font-size:.95rem">Provider-agnostic by design — you bring the model; MessageFoundry holds no keys.</p>
+        <p style="margin-top:14px;color:var(--muted);font-size:.95rem"><b>More commands are in progress.</b> Provider-agnostic by design — you bring the model; MessageFoundry holds no keys.</p>
       </div>
     </div>
   </section>
@@ -211,30 +211,28 @@
     <div class="container">
       <div class="center" style="margin-bottom:36px">
         <span class="eyebrow">Governed &amp; PHI-safe</span>
-        <h2>One central policy — never your messages</h2>
-        <p class="lead center" style="max-width:72ch;margin-inline:auto">The assistant carries PHI implications, so whoever operates the install sets the policy — not each developer. A central &ldquo;off&rdquo;, or a cap on what the assistant may ever see, is honored on every workstation, and the editor resolves that policy before every request.</p>
+        <h2>PHI-safe by construction — never your messages</h2>
+        <p class="lead center" style="max-width:74ch;margin-inline:auto">Safety is enforced in the code path, not left to a policy promise. The assistant only ever sees your code and the <em>names</em> in your config graph (connections, routers, handlers) — never a message body, never patient data — whatever model or provider sits behind it. On top of that, whoever runs the install sets one central policy that every workstation honors.</p>
       </div>
       <div class="grid grid-2">
         <div class="card">
-          <h3>Two dials, one ceiling</h3>
-          <p>The policy is two independent settings:</p>
-          <ul class="feature-list" style="margin-top:10px">
-            <li><b><code>mode</code></b> — whether and how AI runs: <code>off</code>, <code>byo</code> (bring-your-own — the path that works today), or an engine-brokered <b>managed</b> mode, including a BAA-backed variant (both on the roadmap).</li>
-            <li><b><code>data_scope</code></b> — the most sensitive data the assistant may ever see, lowest to highest: <code>code_only</code> → <code>synthetic</code> → <code>de-identified</code> → <code>phi</code>.</li>
-            <li><b>A production posture</b> sets a <em>ceiling</em> on <code>data_scope</code> — never on <code>mode</code>. Production can cap the data, and a central <code>off</code> can&rsquo;t be overridden anywhere.</li>
+          <h3>Code-only, by construction</h3>
+          <ul class="feature-list">
+            <li><b>Only code, never messages</b> — the assistant sends your code plus the config-graph names, and nothing else. <b>No message bodies, no patient data</b>, regardless of the model or provider behind it.</li>
+            <li><b>Bounded context</b> — what it sends is capped (default 8,000 characters, tunable), and any truncation is line-aligned and clearly marked.</li>
+            <li><b>On-prem, localhost-first</b> — the engine binds to <code>127.0.0.1</code> and requires auth; nothing leaves the workstation through the assistant.</li>
           </ul>
-          <p style="margin-top:12px">The effective policy is computed by clamping your request down to what&rsquo;s allowed — and every adjustment is recorded with a plain-English reason you can read.</p>
         </div>
         <div class="card">
-          <h3>How it&rsquo;s enforced</h3>
+          <h3>Your model, centrally governed</h3>
           <ul class="feature-list">
-            <li><b>Code-only, today</b> — in practice the assistant attaches only <code>code_only</code> context: the names in your config graph (connections, routers, handlers) plus a capped slice of the file you&rsquo;re editing. <b>No message bodies or patient data are ever sent</b>, whatever the mode or provider.</li>
-            <li><b>RBAC-gated</b> — an <code>ai:assist</code> permission controls who may use it, granted to the Coding and Administrator roles only — deny-by-default, like the rest of the engine.</li>
-            <li><b>Fails safe</b> — the editor reads the policy from a no-auth <code>GET /ai/policy</code> (so even a token-less client still obeys a central &ldquo;off&rdquo;), with an offline <code>messagefoundry ai-policy</code> CLI fallback and a conservative default. It disables itself if AI is off, if it can&rsquo;t service a managed mode, or if you lack the permission — and never silently downgrades a managed mode to bring-your-own.</li>
+            <li><b>Your model, your agreement</b> — bring whatever you've set up in VS&nbsp;Code (e.g. GitHub Copilot under your own HIPAA BAA). MessageFoundry bundles no model and holds no keys.</li>
+            <li><b>Hard kill-switch</b> — ops/admin sets the policy per install; a central <code>off</code> is honored on every workstation and can't be overridden locally.</li>
+            <li><b>RBAC-gated</b> — an <code>ai:assist</code> permission controls who may use it, deny-by-default like the rest of the engine.</li>
+            <li><b>Fails safe</b> — the editor checks the policy before every request and disables the assistant rather than guess.</li>
           </ul>
         </div>
       </div>
-      <p class="center" style="color:var(--muted-dk);font-size:.95rem;margin:24px auto 0;max-width:72ch">On the roadmap: an engine-brokered <b>managed</b> mode, including a BAA-backed variant that would be the only way the assistant could ever be given PHI. The de-identified scope waits on that work and falls back automatically until then — so today, the assistant stays strictly code-only.</p>
     </div>
   </section>
 
