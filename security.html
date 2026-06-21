@@ -146,7 +146,7 @@
         <div class="card">
           <h3>Operators (people)</h3>
           <ul class="feature-list" style="margin-top:12px">
-            <li><b>Local accounts</b> — with <b>built-in, required multi-factor authentication (MFA)</b> — or <b>Active Directory</b> sign-in (LDAP), with opaque, revocable sessions and timeouts. <span style="color:var(--muted-dk)">Passwordless Windows SSO (Kerberos / Integrated Windows Auth) is on the roadmap.</span></li>
+            <li><b>Local accounts</b> — with <b>built-in, required multi-factor authentication (MFA)</b> — or <b>Active Directory</b> sign-in (LDAP), with opaque, revocable sessions and timeouts.</li>
             <li>Roles mapped to AD groups; deny-by-default, least-privilege RBAC on every action.</li>
           </ul>
         </div>
@@ -154,15 +154,16 @@
           <h3>Connections (systems)</h3>
           <ul class="feature-list" style="margin-top:12px">
             <li>Per-connection credentials — HTTP Basic over TLS or per-connection API keys — vaulted, scoped, rotated, and recorded.</li>
+            <li><b>Mutual TLS (mTLS)</b> client-certificate auth, <b>OAuth&nbsp;2.0</b> client-credentials, and <b>SMART on FHIR</b> (Backend Services), for connections that require them.</li>
             <li><b>group-Managed Service Account (gMSA) — optional.</b> For Active Directory deployments, run the engine's Windows service under a gMSA so its password is AD-rotated and never stored in config, and use that identity for integrated database authentication. Not required — SQL authentication with a vaulted secret also works.</li>
             <li><b>TLS everywhere</b>, including MLLP-over-TLS; no cleartext PHI on the wire.</li>
             <li>Per-connection IP allow-listing and network segmentation as defense-in-depth.</li>
           </ul>
         </div>
         <div class="card">
-          <h3>On the roadmap (0.2+)</h3>
+          <h3>On the roadmap</h3>
           <ul class="feature-list" style="margin-top:12px">
-            <li>Mutual TLS (mTLS) client-certificate auth; OAuth&nbsp;2.0 client-credentials; SMART on FHIR (Backend Services).</li>
+            <li><b>Passwordless Windows SSO</b> — Kerberos / Integrated Windows Auth, so domain users sign in without a separate password.</li>
             <li>SSO federation via AD&nbsp;FS / Entra&nbsp;ID (OIDC / SAML) — so enterprise sign-in, and the MFA your organization's identity provider already enforces, flows through your existing IdP.</li>
           </ul>
         </div>
@@ -258,7 +259,7 @@
     <div class="container grid grid-2" style="align-items:center">
       <div>
         <span class="eyebrow">Evidence &amp; attestation</span>
-        <h2>Don't take our word — take the evidence</h2>
+        <h2>Don't take our word — review the evidence</h2>
         <p class="lead">We publish our Secure Development Standards and the evidence behind every claim, so your security team can review it directly. MessageFoundry is open source, so you can also read the code.</p>
         <div class="btn-row">
           <a class="btn btn-primary" href="/assets/MessageFoundry-Secure-Development-Standards.pdf" target="_blank" rel="noopener">Download the Standards (PDF) ↓</a>
@@ -272,6 +273,39 @@
           <li><b>A claims register</b> records each published claim, its wording, and the evidence behind it.</li>
           <li><b>Not a NIST certificate</b> — displayable certifications (SOC 2, ISO 27001, HITRUST) are a separate, organization-level track.</li>
         </ul>
+      </div>
+    </div>
+  </section>
+
+  <!-- assurance roadmap / what's next -->
+  <section class="section">
+    <div class="container">
+      <div class="center" style="margin-bottom:34px">
+        <span class="eyebrow">What's next</span>
+        <h2>The assurance roadmap</h2>
+        <p class="lead center">An OWASP&nbsp;ASVS&nbsp;Level&nbsp;3 self-assessment is a high bar to hold ourselves to — but it's still <em>our</em> assessment. The next steps are independent validation and the formal, organization-level certifications a mature vendor carries. Here's where each stands, plainly.</p>
+      </div>
+      <div class="grid grid-2" style="align-items:start">
+        <div class="card">
+          <h3>Independent validation</h3>
+          <p>ASVS strongly recommends an external review at Level&nbsp;3 — and we agree it's the right next step.</p>
+          <ul class="feature-list" style="margin-top:12px">
+            <li><b>External code review</b> — a third-party security firm reviews the source against the same standard we self-assessed.</li>
+            <li><b>Penetration test</b> — an independent test of a real deployment, with the results summarized for adopters.</li>
+          </ul>
+          <p style="margin-top:12px;color:var(--muted-dk)">Both are <b>planned after Early Access</b> — today's release has not yet been externally audited.</p>
+        </div>
+        <div class="card">
+          <h3>Why not SOC&nbsp;2 or HITRUST yet?</h3>
+          <p>Because those certify an <b>organization</b>, not a piece of software. SOC&nbsp;2 Type&nbsp;II and HITRUST attest that an operating company ran a defined set of controls over a period of time — they presume a staffed company, an audit window, and a recurring budget.</p>
+          <p style="margin-top:10px">MessageFoundry is an open-source project in Early Access. We've put the <em>software's</em> security on the record now — secure-by-default controls, the ASVS&nbsp;L3 self-assessment, and signed, attested builds — and the company-level marks come as the project and its funding mature. <b>SOC&nbsp;2</b>, <b>HITRUST</b>, and <b>ISO&nbsp;27001</b> sit on that organization-level track.</p>
+        </div>
+      </div>
+      <div class="callout" style="margin-top:28px;background:rgba(245,158,11,.07);border-color:rgba(245,158,11,.28)">
+        <p><strong style="color:var(--accent)">These four take funding.</strong> An external code review, a penetration test, SOC&nbsp;2 Type&nbsp;II, and HITRUST each carry real upfront and recurring costs — the kind an open-source project covers through sponsorship rather than license fees. If your organization wants to see them sooner, you can help make them happen.</p>
+        <div class="btn-row" style="margin-top:16px">
+          <a class="btn btn-primary" href="/sponsor.html">Sponsor MessageFoundry</a>
+        </div>
       </div>
     </div>
   </section>
