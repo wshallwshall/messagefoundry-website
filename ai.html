@@ -123,7 +123,7 @@
       <div>
         <span class="eyebrow">In your editor</span>
         <h2>A chat assistant that speaks Message<span class="wordmark-accent">Foundry</span></h2>
-        <p class="lead">Install the MessageFoundry VS&nbsp;Code extension and you get a <code>@messagefoundry</code> chat participant. Ask it about an interface in plain language — it's primed with MessageFoundry's real Router and Handler API, so its answers and drafts use the actual <code>msg[...]</code> and <code>Send(...)</code> surface, not generic, almost-right guesses.</p>
+        <p class="lead">The MessageFoundry VS&nbsp;Code extension is <b>optional</b>. Install it and you get a <code>@messagefoundry</code> chat participant — ask it about an interface in plain language, and because it's primed with MessageFoundry's real Router and Handler API, its answers and drafts use the actual <code>msg[...]</code> and <code>Send(...)</code> surface, not generic, almost-right guesses.</p>
         <p>It runs on the model you already use in VS&nbsp;Code's Chat — Copilot, Claude, whatever you've configured — so there's <b>no vendor to adopt and no API key for MessageFoundry to hold</b>. Each request goes straight from your editor to that provider; the engine is never in the loop.</p>
       </div>
       <div class="card">
@@ -148,7 +148,7 @@
         <p>MessageFoundry's configuration <em>is</em> code, so the assistant can do the mechanical translation for you: paste a legacy channel or open its export, and it drafts the matching <code>inbound</code> / <code>outbound</code> Connections, a <code>@router</code>, and the <code>@handler</code> transforms in Python. You stay in control — every line lands as a diff you read, adjust, and approve.</p>
       </div>
       <div class="card">
-        <h3 style="margin-bottom:.4em">What the assistant drafts for you</h3>
+        <h3 style="margin-bottom:.4em">What the assistant can draft for you</h3>
         <p style="margin:0 0 .9em;color:var(--muted);font-size:.95rem">Point it at one legacy channel and it writes a first-pass version of each piece in Python — yours to read, adjust, and approve before anything runs:</p>
         <ul class="feature-list">
           <li><b>Connections</b> — MLLP, TCP, X12/EDI, HTTP/REST, SOAP, FHIR REST, database, and file endpoints (local and SFTP/FTP/FTPS) mapped from your existing source/destination config.</li>
