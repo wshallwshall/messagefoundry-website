@@ -3,21 +3,23 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Overview — MessageFoundry</title>
-  <meta name="description" content="The four pieces your interface team actually works with: a monitoring console, configuration in VS Code with setup wizards, a fast engine that runs as a service, and a complete testing harness — designed to work together.">
-  <link rel="canonical" href="https://messagefoundry.org/overview.html">
+  <title>The monitoring console — MessageFoundry</title>
+  <meta name="description" content="The MessageFoundry admin & monitoring console: a live operations view of every interface — status, throughput, queue depth and backlog — with alerts, a dead-letter list with one-click replay, message tracing with disposition and audit trail, an HL7 parse-tree viewer, engine health, and user/session management. A pure client of the engine's localhost API.">
+  <link rel="canonical" href="https://messagefoundry.org/console.html">
   <link rel="icon" href="/assets/img/favicon.svg" type="image/svg+xml">
   <meta name="theme-color" content="#0b1220">
   <meta property="og:type" content="website">
   <meta property="og:site_name" content="MessageFoundry">
-  <meta property="og:title" content="Overview — MessageFoundry">
-  <meta property="og:description" content="A monitoring console, VS Code configuration with wizards, a fast engine that runs as a service, and a complete testing harness — the whole interface workflow in one product.">
-  <meta property="og:url" content="https://messagefoundry.org/overview.html">
+  <meta property="og:title" content="The monitoring console — MessageFoundry">
+  <meta property="og:description" content="A live operations view of every interface — status, throughput, queue depth and backlog — plus alerts, dead-letter replay, message tracing, engine health, and user management.">
+  <meta property="og:url" content="https://messagefoundry.org/console.html">
   <meta property="og:image" content="https://messagefoundry.org/assets/img/og.png">
   <meta property="og:image:width" content="1200">
   <meta property="og:image:height" content="630">
   <meta property="og:image:type" content="image/png">
   <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="The monitoring console — MessageFoundry">
+  <meta name="twitter:description" content="A live operations view of every interface — status, throughput, alerts, dead-letter replay, message tracing, and engine health.">
   <meta name="twitter:image" content="https://messagefoundry.org/assets/img/og.png">
   <link rel="stylesheet" href="/assets/css/styles.css">
 </head>
@@ -34,13 +36,13 @@
         <div class="nav-group">
           <button type="button" class="nav-group__btn" aria-expanded="false" aria-haspopup="true" aria-controls="nav-product">Product</button>
           <div class="nav-group__menu" id="nav-product">
-            <a href="/overview.html" class="active" aria-current="page">Overview</a>
+            <a href="/overview.html">Overview</a>
             <a href="/features.html">Features</a>
             <a href="/features-table.html">Feature list</a>
             <a href="/architecture.html">Architecture</a>
             <a href="/tools.html">Tools</a>
             <a href="/editor.html">Editor</a>
-            <a href="/console.html">Console</a>
+            <a href="/console.html" class="active" aria-current="page">Console</a>
             <a href="/ai.html">AI assist</a>
           </div>
         </div>
@@ -71,98 +73,92 @@
   <!-- hero -->
   <section class="section section--dark section--tight">
     <div class="container center">
-      <span class="eyebrow">Overview</span>
-      <h1 style="max-width:20ch;margin-inline:auto">The whole interface workflow, in one product</h1>
-      <p class="lead">MessageFoundry isn't just an engine. It's the <b>console</b> your team watches, the <b>editor</b> where you configure, the <b>service</b> that runs your interfaces, and the <b>harness</b> that proves them — four pieces designed to work together, so a small team can run reliable interfaces with confidence.</p>
-      <div class="btn-row">
+      <span class="eyebrow">Admin &amp; monitoring console</span>
+      <h1 style="max-width:20ch;margin-inline:auto">Watch every interface, live</h1>
+      <p class="lead center">The operations view for the people running MessageFoundry — every interface's health and throughput on one screen, the tools to trace a single message end to end, and start/stop, alerts, and replay close at hand. It reads and drives the engine through one localhost API, so what you see is exactly what the engine is doing.</p>
+      <div class="btn-row center">
         <a class="btn btn-primary" href="/getting-started.html">Get started</a>
-        <a class="btn btn-secondary" href="/features.html">See the full feature list →</a>
+        <a class="btn btn-secondary" href="/tools.html">See the whole toolkit →</a>
+      </div>
+      <figure style="margin:44px auto 0;max-width:1080px">
+        <img src="/assets/img/console.png" width="2220" height="1080" alt="The MessageFoundry monitoring console showing the live Connections dashboard: a left sidebar (Connections, Alerts, Dead Letters, Log Search, Engine Status, Users) and a table of interfaces with a status badge each — RUNNING, DEGRADED, FAILED, STOPPED — plus direction, method, per-connection logs, idle time, and counts for errored, read and written messages, queue depth, and backlog. The header shows the signed-in admin and a 2-second auto-refresh." style="width:100%;height:auto;display:block;border:1px solid var(--border-dk);border-radius:12px;box-shadow:var(--shadow-lg)">
+      </figure>
+    </div>
+  </section>
+
+  <!-- connection dashboard -->
+  <section class="section">
+    <div class="container grid grid-2" style="align-items:center">
+      <div>
+        <span class="eyebrow">Connection dashboard</span>
+        <h2>Every interface, at a glance</h2>
+        <p class="lead">The home screen is a live table of every connection — inbound and outbound — refreshing on its own. One look tells you what's healthy, what's slow, and what's stuck.</p>
+        <p>Click into any connection's logs, or select one and start, stop, or run an action — the controls are right there, gated by your role.</p>
+      </div>
+      <ul class="feature-list">
+        <li><b>Status at a glance</b> — <span style="color:#15803d;font-weight:600">RUNNING</span>, <span style="color:#b45309;font-weight:600">DEGRADED</span>, <span style="color:#b91c1c;font-weight:600">FAILED</span>, or <span style="color:#b91c1c;font-weight:600">STOPPED</span> — and a <code>SIM</code> tag when a destination is running in simulation.</li>
+        <li><b>Throughput, per connection</b> — messages read, written, and errored, so a climbing error count is obvious immediately.</li>
+        <li><b>Queue depth &amp; backlog</b> — see exactly where messages are piling up, and how far behind a slow peer has fallen.</li>
+        <li><b>Per-connection logs</b> — jump straight from a row to that interface's log stream.</li>
+        <li><b>Start / Stop / Actions</b> — operate interfaces in place, permission-gated.</li>
+        <li><b>Auto-refresh</b> — the view updates every couple of seconds; no reloading.</li>
+      </ul>
+    </div>
+  </section>
+
+  <!-- alerts / dead letters / trace -->
+  <section class="section section--alt">
+    <div class="container">
+      <div class="center" style="margin-bottom:38px;max-width:720px;margin-inline:auto">
+        <span class="eyebrow">When something needs attention</span>
+        <h2>Catch problems, then chase them down</h2>
+        <p class="lead center">From a red status to the exact message that failed, the trail is short.</p>
+      </div>
+      <div class="grid grid-3">
+        <div class="card">
+          <h3>Alerts</h3>
+          <p>A single page of the alert rules in effect and what they're watching — so the conditions that page someone are written down and visible, not buried in a config file.</p>
+        </div>
+        <div class="card">
+          <h3>Dead Letters</h3>
+          <p>Every message that exhausted its retries, in one list. Inspect why it failed and <b>replay it with one click</b> once the downstream is healthy again — no database surgery.</p>
+        </div>
+        <div class="card">
+          <h3>Trace a message</h3>
+          <p>Search the log for a message, then follow it: its <b>disposition</b> (routed, filtered, or unrouted), its full <b>delivery &amp; audit trail</b>, and an <b>HL7 parse-tree viewer</b> to read it field by field — with replay when you need it.</p>
+        </div>
       </div>
     </div>
   </section>
 
-  <!-- monitoring console -->
+  <!-- engine health + users + pure API client -->
   <section class="section">
     <div class="container grid grid-2" style="align-items:start">
       <div>
-        <span class="eyebrow">Monitoring console</span>
-        <h2>Know your interfaces are healthy — at a glance</h2>
-        <p class="lead">A desktop console that shows what's flowing right now, so problems surface before a clinician or a downstream system ever notices.</p>
+        <span class="eyebrow">Operate with confidence</span>
+        <h2>Engine health and access, built in</h2>
+        <ul class="feature-list">
+          <li><b>Engine Status</b> — the engine's health at a glance, with a heartbeat indicator that's green when all is well.</li>
+          <li><b>Users &amp; sessions</b> — manage accounts, roles, and active sessions from the console; every action is recorded in the tamper-evident audit log.</li>
+        </ul>
       </div>
-      <ul class="feature-list">
-        <li><b>Live dashboard</b> — every connection's status and throughput in one view.</li>
-        <li><b>Search and inspect</b> any message, with a readable view of its HL7 structure.</li>
-        <li><b>Delivery &amp; audit trail</b> — see exactly what happened to a message, and who looked at it.</li>
-        <li><b>One-click replay</b> — re-send a stored message after you've fixed the cause.</li>
-        <li><b>Read-only by design</b> — it reaches the engine over a local API, never the database directly.</li>
-      </ul>
-    </div>
-  </section>
-
-  <!-- vs code configuration -->
-  <section class="section section--alt">
-    <div class="container grid grid-2" style="align-items:start">
-      <div>
-        <span class="eyebrow">Configuration in VS Code</span>
-        <h2>Set up interfaces with wizards — full Python for the tricky parts</h2>
-        <p class="lead">A custom VS Code extension lets your whole team build interfaces in a familiar editor. Wizards generate the wiring for you; the full power of Python is there when a case gets genuinely complex.</p>
+      <div class="card" style="height:auto;align-self:start">
+        <h3>A pure API client</h3>
+        <p>The console drives and observes the engine <em>only</em> through the one localhost API — it never imports the engine or touches the database directly. So authentication, RBAC, and the audit log sit at a single choke point nothing slips past.</p>
+        <p style="margin-top:12px;color:var(--muted);font-size:.95rem">Monitoring is read-only; actions like start/stop and replay are permission-gated. The same API powers the CLI and the VS&nbsp;Code editor — see how it <a href="/architecture.html" style="color:var(--accent-ink)">fits together</a>.</p>
       </div>
-      <ul class="feature-list">
-        <li><b>Setup wizards</b> — guided <em>New Connection</em> and <em>New Route</em> flows generate the wiring so you don't start from a blank file.</li>
-        <li><b>Validate as you save</b> — mistakes are caught in the editor, not in production.</li>
-        <li><b>Dry-run Test Bench</b> — run a real message through a route and see the before/after, without touching a live system.</li>
-        <li><b>Stage → Promote</b> — push a reviewed change to a running engine when you're ready.</li>
-        <li><b>Pipeline-ready</b> — interfaces are plain Python in git, so they review in pull requests and test in your CI like any other code.</li>
-        <li><b>AI assistance, PHI-safe</b> — an in-editor assistant that helps author and migrate, sending only code, never message bodies.</li>
-      </ul>
-    </div>
-  </section>
-
-  <!-- engine as a service -->
-  <section class="section">
-    <div class="container grid grid-2" style="align-items:start">
-      <div>
-        <span class="eyebrow">A fast engine, run as a service</span>
-        <h2>Runs quietly in the background, where your data lives</h2>
-        <p class="lead">The engine is built to run headless as a service in your own environment — on-prem or cloud — and keep moving messages reliably without anyone watching.</p>
-      </div>
-      <ul class="feature-list">
-        <li><b>Runs as a background service</b> — install it as a Windows service with the included scripts.</li>
-        <li><b>Headless and self-hosted</b> — no GUI required; deploy it where your PHI already lives.</li>
-        <li><b>Reliable by construction</b> — durable delivery with automatic retries, dead-letter replay, and active-passive failover for high availability — no separate broker to run.</li>
-        <li><b>Independent per destination</b> — a slow or down peer never holds up the others.</li>
-        <li><b>One local API</b> — the console and the editor both attach to it; the deployment shape is a config choice.</li>
-      </ul>
-    </div>
-  </section>
-
-  <!-- testing harness -->
-  <section class="section section--alt">
-    <div class="container grid grid-2" style="align-items:start">
-      <div>
-        <span class="eyebrow">A complete testing harness</span>
-        <h2>Prove an interface works before it goes live</h2>
-        <p class="lead">A full harness ships with the product, so you can exercise interfaces with synthetic, PHI-free data — by hand while you build, and automatically in CI before you ship.</p>
-      </div>
-      <ul class="feature-list">
-        <li><b>Send / receive bench</b> — drive inbound and outbound endpoints interactively as you develop.</li>
-        <li><b>Automated scenario runner</b> — assert routing and transform behavior on every change, in CI.</li>
-        <li><b>Synthetic data generator</b> — realistic, PHI-free HL7 for load and edge-case testing.</li>
-        <li><b>Commit gate</b> — validate configuration before it can ship.</li>
-        <li><b>No real PHI required</b> — prove correctness without ever touching patient data.</li>
-      </ul>
     </div>
   </section>
 
   <!-- cta -->
-  <section class="section section--dark section--tight">
+  <section class="section section--dark">
     <div class="container">
       <div class="cta-band">
-        <h2>One product, end to end</h2>
-        <p class="lead center" style="color:var(--muted-dk)">Configure in your editor, run it as a service, watch it in the console, and prove it in the harness — all open source, all self-hosted.</p>
+        <h2>One engine, one console, full visibility</h2>
+        <p class="lead center" style="color:var(--muted-dk)">Run your interfaces in the open — see every message's fate, and act on it.</p>
         <div class="btn-row center">
           <a class="btn btn-primary" href="/getting-started.html">Get started</a>
-          <a class="btn btn-ghost" href="/comparison.html">Compare the engines →</a>
+          <a class="btn btn-ghost" href="/tools.html">See the whole toolkit →</a>
         </div>
       </div>
     </div>

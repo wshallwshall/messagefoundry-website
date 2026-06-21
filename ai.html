@@ -4,14 +4,14 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>AI assistance &amp; legacy migration — MessageFoundry</title>
-  <meta name="description" content="MessageFoundry's AI coding assistant turns a legacy-engine migration into a code review: it drafts Connections, Routers, and Handlers in Python from your existing channel logic — governed by a central, environment-aware policy that sends only code, never message bodies.">
+  <meta name="description" content="AI is optional in MessageFoundry: the engine needs no AI to run and never sends message traffic to a model. The VS Code extension's @messagefoundry assistant uses whatever model you've set up — no bundled vendor, no keys — to help write the Python that drives feeds, under a central, code-only policy.">
   <link rel="canonical" href="https://messagefoundry.org/ai.html">
   <link rel="icon" href="/assets/img/favicon.svg" type="image/svg+xml">
   <meta name="theme-color" content="#0b1220">
   <meta property="og:type" content="website">
   <meta property="og:site_name" content="MessageFoundry">
   <meta property="og:title" content="AI assistance &amp; legacy migration — MessageFoundry">
-  <meta property="og:description" content="Move off a legacy engine at the speed of code. The AI assistant drafts Python from your existing channel logic — governed, RBAC-gated, and code-only by construction.">
+  <meta property="og:description" content="AI is optional and never touches your messages. The engine needs no AI to run. The VS Code extension's @messagefoundry assistant runs on your own model (Copilot, Claude, …) to help write the Python that drives feeds — code-only, governed by a central policy.">
   <meta property="og:url" content="https://messagefoundry.org/ai.html">
   <meta property="og:image" content="https://messagefoundry.org/assets/img/og.png">
   <meta property="og:image:width" content="1200">
@@ -39,6 +39,8 @@
             <a href="/features-table.html">Feature list</a>
             <a href="/architecture.html">Architecture</a>
             <a href="/tools.html">Tools</a>
+            <a href="/editor.html">Editor</a>
+            <a href="/console.html">Console</a>
             <a href="/ai.html" class="active" aria-current="page">AI assist</a>
           </div>
         </div>
@@ -68,13 +70,63 @@
 
   <!-- hero -->
   <section class="section section--dark section--tight">
-    <div class="container">
-      <span class="eyebrow">AI assistance</span>
-      <h1 style="max-width:22ch">Move off a legacy engine at the speed of code</h1>
-      <p class="lead">Migrating interfaces between engines is usually a re-platforming project measured in months. MessageFoundry treats it as a code review instead: an AI assistant in your editor reads your existing channel logic and drafts the equivalent <b>Connections, Routers, and Handlers</b> in Python — which you review, test, and promote like any other change. It's <b>code-only by construction</b> and governed by a central policy, so nothing leaves your control. Prefer not to write code? Guided wizards handle routine setup, with the assistant for the rest.</p>
+    <div class="container center">
+      <span class="eyebrow">Optional AI assistance</span>
+      <h1 style="max-width:26ch;margin-inline:auto">AI is optional — and it never touches your messages</h1>
+      <p class="lead">MessageFoundry is a modern, secure healthcare integration engine — powerful and fully capable on its own, with <b>no model anywhere in the message path</b>. Whether you use AI is <b>entirely your choice</b>: an optional aid at the keyboard that speeds up the work and never touches your messages.</p>
       <div class="btn-row">
         <a class="btn btn-primary" href="/getting-started.html">Get started</a>
-        <a class="btn btn-secondary" href="/comparison.html">See what you're migrating from →</a>
+        <a class="btn btn-secondary" href="/security.html">How we handle PHI →</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- where AI fits -->
+  <section class="section section--tight">
+    <div class="container" style="max-width:760px">
+      <p class="lead">AI shows up only at the keyboard, as an <b>optional</b> coding aid. It works through whatever model you've already set up in your editor — Copilot, Claude, and others — so MessageFoundry <b>bundles no AI vendor and ships no keys</b>. It helps write and edit the <b>Python that drives each feed</b>, with a developer reviewing every line.</p>
+      <p>We build MessageFoundry's own feeds this way too. Prefer to skip AI entirely? Guided wizards and plain Python do the same job.</p>
+    </div>
+  </section>
+
+  <!-- the essentials, up front -->
+  <section class="section section--alt section--tight">
+    <div class="container">
+      <div class="grid grid-3">
+        <div class="card">
+          <h3>Optional, always</h3>
+          <p>Switch AI off entirely and nothing about how MessageFoundry runs changes. Guided wizards and plain Python build and operate every feed without it.</p>
+        </div>
+        <div class="card">
+          <h3>No AI in the message path</h3>
+          <p>The engine moves, routes, and transforms messages with ordinary code. No model runs a feed, sits between your systems, or is needed to start one.</p>
+        </div>
+        <div class="card">
+          <h3>Your messages never reach a model</h3>
+          <p>The engine never sends message traffic to an AI. The coding assistant only ever sees the Python you're editing — never a message body, never PHI.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- the assistant itself -->
+  <section class="section">
+    <div class="container grid grid-2" style="align-items:start">
+      <div>
+        <span class="eyebrow">In your editor</span>
+        <h2>A chat assistant that speaks Message<span class="wordmark-accent">Foundry</span></h2>
+        <p class="lead">The MessageFoundry VS&nbsp;Code extension is <b>optional</b>. Install it and you get a <code>@messagefoundry</code> chat participant — ask it about an interface in plain language, and because it's primed with MessageFoundry's real Router and Handler API, its answers and drafts use the actual <code>msg[...]</code> and <code>Send(...)</code> surface, not generic, almost-right guesses.</p>
+        <p>Each request goes straight from your editor to your provider — the <b>engine is never in the loop</b>.</p>
+        <p style="margin-top:8px"><a href="/editor.html" style="color:var(--accent)">The chat is one part of the MessageFoundry editor — see the whole editor →</a></p>
+      </div>
+      <div class="card" style="height:auto;align-self:start">
+        <h3 style="margin-bottom:.6em">Slash commands, primed with the API</h3>
+        <ul class="feature-list">
+          <li><b><code>/explain</code></b> — walk through what a router or handler does, in plain language.</li>
+          <li><b><code>/transform</code></b> — draft a <code>@handler</code> transform from a description of the mapping you need.</li>
+          <li><b><code>/review</code></b> — get a review of the handler you're writing, against the real MessageFoundry API.</li>
+        </ul>
+        <p style="margin-top:14px;color:var(--muted);font-size:.95rem"><b>More commands are in progress.</b> Provider-agnostic by design — you bring the model; MessageFoundry holds no keys.</p>
       </div>
     </div>
   </section>
@@ -89,9 +141,10 @@
         <p>MessageFoundry's configuration <em>is</em> code, so the assistant can do the mechanical translation for you: paste a legacy channel or open its export, and it drafts the matching <code>inbound</code> / <code>outbound</code> Connections, a <code>@router</code>, and the <code>@handler</code> transforms in Python. You stay in control — every line lands as a diff you read, adjust, and approve.</p>
       </div>
       <div class="card">
-        <h3 style="margin-bottom:.6em">What it drafts for you</h3>
+        <h3 style="margin-bottom:.4em">What the assistant can draft for you</h3>
+        <p style="margin:0 0 .9em;color:var(--muted);font-size:.95rem">Point it at one legacy channel and it writes a first-pass version of each piece in Python — yours to read, adjust, and approve before anything runs:</p>
         <ul class="feature-list">
-          <li><b>Connections</b> — MLLP, TCP, HTTP/REST, SOAP, database, and file endpoints (local and SFTP/FTP/FTPS) mapped from your existing source/destination config.</li>
+          <li><b>Connections</b> — MLLP, TCP, X12/EDI, HTTP/REST, SOAP, FHIR REST, database, and file endpoints (local and SFTP/FTP/FTPS) mapped from your existing source/destination config.</li>
           <li><b>Routing</b> — a <code>@router</code> that mirrors your channel's filter and routing rules.</li>
           <li><b>Transforms</b> — <code>@handler</code> functions that reproduce field mappings and reshaping as pure Python.</li>
           <li><b>Tests</b> — starting points for harness scenarios so you can prove parity before cutover.</li>
@@ -164,19 +217,31 @@
 
   <!-- governance -->
   <section class="section section--dark">
-    <div class="container grid grid-2" style="align-items:start">
-      <div>
+    <div class="container">
+      <div class="center" style="margin-bottom:36px">
         <span class="eyebrow">Governed &amp; PHI-safe</span>
-        <h2>Code only — never message bodies</h2>
-        <p class="lead">The assistant carries PHI implications, so it's controlled centrally, not per developer. Whoever operates the install sets a single policy — from fully off to PHI-safe — and every workstation honors it.</p>
+        <h2>PHI-safe by construction — never your messages</h2>
+        <p class="lead center" style="max-width:74ch;margin-inline:auto">Safety is enforced in the code path, not left to a policy promise. The assistant only ever sees your code and the <em>names</em> in your config graph (connections, routers, handlers) — never a message body, never patient data — whatever model or provider sits behind it. On top of that, whoever runs the install sets one central policy that every workstation honors.</p>
       </div>
-      <ul class="feature-list">
-        <li><b>Bring-your-own provider</b> — the IDE assistant uses your configured model; the engine never sees the traffic.</li>
-        <li><b>Code-only by construction</b> — the assistant only ever sends graph names (the names of your connections and routes) and the code in your editor — never a message body.</li>
-        <li><b>RBAC-gated</b> — a dedicated permission controls who may use it, deny-by-default like the rest of the engine.</li>
-        <li><b>Environment ceilings</b> — a central, environment-aware policy clamps what data the assistant may ever be given; an un-tuned install resolves to the tightest setting.</li>
-        <li><b>PHI-safe mode (on the roadmap)</b> — a managed provider under a BAA will be the path to PHI-scoped assistance; today the assistant stays strictly code-only.</li>
-      </ul>
+      <div class="grid grid-2">
+        <div class="card">
+          <h3>Code-only, by construction</h3>
+          <ul class="feature-list">
+            <li><b>Only code, never messages</b> — the assistant sends your code plus the config-graph names, and nothing else. <b>No message bodies, no patient data</b>, regardless of the model or provider behind it.</li>
+            <li><b>Bounded context</b> — what it sends is capped (default 8,000 characters, tunable), and any truncation is line-aligned and clearly marked.</li>
+            <li><b>On-prem, localhost-first</b> — the engine binds to <code>127.0.0.1</code> and requires auth; nothing leaves the workstation through the assistant.</li>
+          </ul>
+        </div>
+        <div class="card">
+          <h3>Your model, centrally governed</h3>
+          <ul class="feature-list">
+            <li><b>Your model, your agreement</b> — bring whatever you've set up in VS&nbsp;Code (e.g. GitHub Copilot under your own HIPAA BAA). MessageFoundry bundles no model and holds no keys.</li>
+            <li><b>Hard kill-switch</b> — ops/admin sets the policy per install; a central <code>off</code> is honored on every workstation and can't be overridden locally.</li>
+            <li><b>RBAC-gated</b> — an <code>ai:assist</code> permission controls who may use it, deny-by-default like the rest of the engine.</li>
+            <li><b>Fails safe</b> — the editor checks the policy before every request and disables the assistant rather than guess.</li>
+          </ul>
+        </div>
+      </div>
     </div>
   </section>
 
@@ -222,6 +287,8 @@
           <a href="/overview.html">Overview</a>
           <a href="/features.html">Features</a>
           <a href="/tools.html">Tools</a>
+          <a href="/editor.html">Editor</a>
+          <a href="/console.html">Console</a>
           <a href="/ai.html">AI assist</a>
           <a href="/security.html">Security &amp; PHI</a>
           <a href="/comparison.html">Comparison</a>

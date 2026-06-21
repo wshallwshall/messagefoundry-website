@@ -39,6 +39,8 @@
             <a href="/features-table.html">Feature list</a>
             <a href="/architecture.html">Architecture</a>
             <a href="/tools.html">Tools</a>
+            <a href="/editor.html">Editor</a>
+            <a href="/console.html">Console</a>
             <a href="/ai.html">AI assist</a>
           </div>
         </div>
@@ -68,9 +70,9 @@
 
   <!-- hero -->
   <section class="section section--dark section--tight">
-    <div class="container">
+    <div class="container center">
       <span class="eyebrow">Security &amp; PHI</span>
-      <h1 style="max-width:24ch">Engineered for PHI — and built to recognized standards</h1>
+      <h1 style="max-width:24ch;margin-inline:auto">Engineered for PHI — and built to recognized standards</h1>
       <p class="lead">For a healthcare integration engine, security isn't a feature — it's the foundation. MessageFoundry is built to a published <b>Secure Development Standard</b> and aligned with the frameworks a CISO already trusts: <b>NIST SSDF</b>, <b>NIST 800-66 Rev. 2</b> (the HIPAA Security Rule), and <b>OWASP ASVS 5.0 Level 3</b>. It's secure by default, encrypted end to end, and clear about who's responsible for what.</p>
       <div class="btn-row">
         <a class="btn btn-primary" href="/assets/MessageFoundry-Secure-Development-Standards.pdf" target="_blank" rel="noopener">Read the Secure Development Standards (PDF)</a>
@@ -145,7 +147,6 @@
           <h3>Operators (people)</h3>
           <ul class="feature-list" style="margin-top:12px">
             <li><b>Local accounts</b> — with <b>built-in, required multi-factor authentication (MFA)</b> — or <b>Active Directory</b> sign-in (LDAP), with opaque, revocable sessions and timeouts. <span style="color:var(--muted-dk)">Passwordless Windows SSO (Kerberos / Integrated Windows Auth) is on the roadmap.</span></li>
-            <li><b>gMSA service accounts (optional)</b> — for Active Directory deployments, the engine's Windows service can run under a group-Managed Service Account, so its password is AD-rotated and never stored in config (and it enables integrated DB auth). Not required — SQL auth with a vaulted secret is also supported.</li>
             <li>Roles mapped to AD groups; deny-by-default, least-privilege RBAC on every action.</li>
           </ul>
         </div>
@@ -153,6 +154,7 @@
           <h3>Connections (systems)</h3>
           <ul class="feature-list" style="margin-top:12px">
             <li>Per-connection credentials — HTTP Basic over TLS or per-connection API keys — vaulted, scoped, rotated, and recorded.</li>
+            <li><b>group-Managed Service Account (gMSA) — optional.</b> For Active Directory deployments, run the engine's Windows service under a gMSA so its password is AD-rotated and never stored in config, and use that identity for integrated database authentication. Not required — SQL authentication with a vaulted secret also works.</li>
             <li><b>TLS everywhere</b>, including MLLP-over-TLS; no cleartext PHI on the wire.</li>
             <li>Per-connection IP allow-listing and network segmentation as defense-in-depth.</li>
           </ul>
@@ -308,6 +310,8 @@
           <a href="/overview.html">Overview</a>
           <a href="/features.html">Features</a>
           <a href="/tools.html">Tools</a>
+          <a href="/editor.html">Editor</a>
+          <a href="/console.html">Console</a>
           <a href="/ai.html">AI assist</a>
           <a href="/security.html">Security &amp; PHI</a>
           <a href="/comparison.html">Comparison</a>
