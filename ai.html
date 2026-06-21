@@ -62,38 +62,22 @@
 
   <!-- hero -->
   <section class="section section--dark section--tight">
-    <div class="container grid grid-2" style="align-items:center;gap:48px">
-      <div>
-        <span class="eyebrow">Optional AI assistance</span>
-        <h1 style="text-wrap:balance">AI is optional — and it never touches your messages</h1>
-        <p class="lead">MessageFoundry needs no AI to run. The engine moves, routes, and transforms every message on its own, and <b>the engine never sends message traffic to an AI</b> — there is no model anywhere in the message path.</p>
-        <p class="lead">AI shows up only at the keyboard, as an <b>optional</b> coding aid. The <b>MessageFoundry VS&nbsp;Code extension</b> adds a chat assistant that works through whatever model you've already set up in your editor — Copilot, Claude, and others — so MessageFoundry <b>bundles no AI vendor and ships no keys</b>. It helps write and edit the <b>Python that drives each feed</b>, with a developer reviewing every line.</p>
-        <p class="lead">We build MessageFoundry's own feeds this way too. Prefer to skip AI entirely? Guided wizards and plain Python do the same job.</p>
-        <div class="btn-row">
-          <a class="btn btn-primary" href="/getting-started.html">Get started</a>
-          <a class="btn btn-secondary" href="/security.html">How we handle PHI →</a>
-        </div>
+    <div class="container">
+      <span class="eyebrow">Optional AI assistance</span>
+      <h1 style="max-width:26ch">AI is optional — and it never touches your messages</h1>
+      <p class="lead">MessageFoundry needs no AI to run, and <b>the engine never sends message traffic to an AI</b> — there is no model anywhere in the message path.</p>
+      <div class="btn-row">
+        <a class="btn btn-primary" href="/getting-started.html">Get started</a>
+        <a class="btn btn-secondary" href="/security.html">How we handle PHI →</a>
       </div>
-      <div class="code-card">
-        <div class="code-card__bar"><i></i><i></i><i></i><span class="code-card__name">@messagefoundry · VS&nbsp;Code</span></div>
-<pre class="code"><span class="c"># @messagefoundry · /transform</span>
-<span class="c"># "Map the ADT patient name to a FHIR Patient."</span>
+    </div>
+  </section>
 
-<span class="d">@handler</span>(<span class="s">"to_fhir"</span>)
-<span class="k">def</span> <span class="f">to_fhir</span>(msg):
-    patient = {
-        <span class="s">"resourceType"</span>: <span class="s">"Patient"</span>,
-        <span class="s">"name"</span>:       msg[<span class="s">"PID-5"</span>],
-        <span class="s">"identifier"</span>: msg[<span class="s">"PID-3"</span>],
-        <span class="s">"birthDate"</span>:  msg[<span class="s">"PID-7"</span>],
-    }
-    <span class="k">return</span> <span class="f">Send</span>(<span class="s">"FHIR_Out"</span>, patient)
-
-<span class="c"># What the assistant is given:</span>
-<span class="c">#   - your code + connection / route names</span>
-<span class="c">#   - never a message body, never PHI</span>
-<span class="c"># You review every line. Runs on your model.</span></pre>
-      </div>
+  <!-- where AI fits -->
+  <section class="section section--tight">
+    <div class="container" style="max-width:760px">
+      <p class="lead">AI shows up only at the keyboard, as an <b>optional</b> coding aid. It works through whatever model you've already set up in your editor — Copilot, Claude, and others — so MessageFoundry <b>bundles no AI vendor and ships no keys</b>. It helps write and edit the <b>Python that drives each feed</b>, with a developer reviewing every line.</p>
+      <p>We build MessageFoundry's own feeds this way too. Prefer to skip AI entirely? Guided wizards and plain Python do the same job.</p>
     </div>
   </section>
 
@@ -124,7 +108,7 @@
         <span class="eyebrow">In your editor</span>
         <h2>A chat assistant that speaks Message<span class="wordmark-accent">Foundry</span></h2>
         <p class="lead">The MessageFoundry VS&nbsp;Code extension is <b>optional</b>. Install it and you get a <code>@messagefoundry</code> chat participant — ask it about an interface in plain language, and because it's primed with MessageFoundry's real Router and Handler API, its answers and drafts use the actual <code>msg[...]</code> and <code>Send(...)</code> surface, not generic, almost-right guesses.</p>
-        <p>It runs on the model you already use in VS&nbsp;Code's Chat — Copilot, Claude, whatever you've configured — so there's <b>no vendor to adopt and no API key for MessageFoundry to hold</b>. Each request goes straight from your editor to that provider; the engine is never in the loop.</p>
+        <p>Each request goes straight from your editor to your provider — the <b>engine is never in the loop</b>.</p>
       </div>
       <div class="card">
         <h3 style="margin-bottom:.6em">Three commands, primed with the API</h3>
