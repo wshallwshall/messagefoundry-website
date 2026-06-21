@@ -208,6 +208,7 @@ pre.code .n { color: #c9a3ff; }                           /* number/const */
   padding: .12em .4em; font-size: .88em; color: var(--accent-ink);
 }
 .section--dark :not(pre) > code { background: rgba(255,255,255,.07); border-color: var(--border-dk); color: #f6c177; }
+.section--dark .card :not(pre) > code { background: var(--surface-2); border-color: var(--border); color: var(--accent-ink); }
 
 /* ------------------------------------------------------------------ grids & cards */
 .grid { display: grid; gap: 22px; }
