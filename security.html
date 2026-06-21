@@ -44,7 +44,13 @@
         </div>
         <a href="/security.html" class="active" aria-current="page">Security</a>
         <a href="/comparison.html">Comparison</a>
-        <a href="/getting-started.html">Get started</a>
+        <div class="nav-group">
+          <button type="button" class="nav-group__btn" aria-expanded="false" aria-haspopup="true" aria-controls="nav-getstarted">Get started</button>
+          <div class="nav-group__menu" id="nav-getstarted">
+            <a href="/getting-started.html">Quickstart</a>
+            <a href="/getting-started.html#documents">Documents</a>
+          </div>
+        </div>
         <div class="nav-group">
           <button type="button" class="nav-group__btn" aria-expanded="false" aria-haspopup="true" aria-controls="nav-company">About Us</button>
           <div class="nav-group__menu" id="nav-company">
@@ -107,7 +113,7 @@
 
   <!-- secure by default -->
   <section class="section section--alt" id="controls">
-    <div class="container grid grid-2" style="align-items:start">
+    <div class="container grid grid-2" style="align-items:center">
       <div>
         <span class="eyebrow">Secure by default</span>
         <h2>The safe configuration is the default one</h2>
@@ -138,8 +144,8 @@
         <div class="card">
           <h3>Operators (people)</h3>
           <ul class="feature-list" style="margin-top:12px">
-            <li><b>Local accounts</b> or <b>Active Directory</b> sign-in (LDAP), with opaque, revocable sessions and timeouts. <span style="color:var(--muted-dk)">Passwordless Windows SSO (Kerberos / Integrated Windows Auth) is on the roadmap.</span></li>
-            <li><b>gMSA service accounts</b> — auto-rotated passwords, never stored in config; integrated DB auth.</li>
+            <li><b>Local accounts</b> — with <b>built-in, required multi-factor authentication (MFA)</b> — or <b>Active Directory</b> sign-in (LDAP), with opaque, revocable sessions and timeouts. <span style="color:var(--muted-dk)">Passwordless Windows SSO (Kerberos / Integrated Windows Auth) is on the roadmap.</span></li>
+            <li><b>gMSA service accounts (optional)</b> — for Active Directory deployments, the engine's Windows service can run under a group-Managed Service Account, so its password is AD-rotated and never stored in config (and it enables integrated DB auth). Not required — SQL auth with a vaulted secret is also supported.</li>
             <li>Roles mapped to AD groups; deny-by-default, least-privilege RBAC on every action.</li>
           </ul>
         </div>
@@ -155,7 +161,7 @@
           <h3>On the roadmap (0.2+)</h3>
           <ul class="feature-list" style="margin-top:12px">
             <li>Mutual TLS (mTLS) client-certificate auth; OAuth&nbsp;2.0 client-credentials; SMART on FHIR (Backend Services).</li>
-            <li>SSO federation via AD&nbsp;FS / Entra&nbsp;ID (OIDC / SAML); multi-factor authentication.</li>
+            <li>SSO federation via AD&nbsp;FS / Entra&nbsp;ID (OIDC / SAML) — so enterprise sign-in, and the MFA your organization's identity provider already enforces, flows through your existing IdP.</li>
           </ul>
         </div>
       </div>
@@ -227,7 +233,7 @@
 
   <!-- secure sdlc -->
   <section class="section">
-    <div class="container grid grid-2" style="align-items:start">
+    <div class="container grid grid-2" style="align-items:center">
       <div>
         <span class="eyebrow">Secure SDLC &amp; supply chain</span>
         <h2>Provenance you can verify</h2>

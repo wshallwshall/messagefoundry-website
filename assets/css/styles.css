@@ -214,6 +214,8 @@ pre.code .n { color: #c9a3ff; }                           /* number/const */
 .grid > * { min-width: 0; }
 .grid-2 { grid-template-columns: repeat(2, 1fr); }
 .grid-3 { grid-template-columns: repeat(3, 1fr); }
+/* "PDF" chip for downloadable-document cards */
+.pdf-tag { display: inline-block; margin-left: .5em; padding: 2px 6px; font-size: .6em; font-weight: 800; letter-spacing: .06em; vertical-align: middle; color: var(--accent-ink); background: rgba(245,158,11,.12); border: 1px solid rgba(245,158,11,.38); border-radius: 5px; }
 .card {
   background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius);
   padding: 26px; box-shadow: var(--shadow); height: 100%;
