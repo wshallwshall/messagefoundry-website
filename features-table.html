@@ -136,10 +136,12 @@
 
             <tr class="grp"><th colspan="2" scope="colgroup">Security &amp; PHI</th></tr>
             <tr><th scope="row">Authentication</th><td>Local accounts and Active Directory (LDAP) sign-in, with opaque, revocable sessions.</td></tr>
+            <tr><th scope="row">Multi-factor authentication</th><td>Built-in, required TOTP multi-factor authentication for local accounts.</td></tr>
             <tr><th scope="row">RBAC</th><td>Fixed built-in roles, deny-by-default, with per-route and per-channel scoping.</td></tr>
             <tr><th scope="row">Localhost-bound API</th><td>The API binds <code>127.0.0.1</code> by default and requires authentication.</td></tr>
             <tr><th scope="row">TLS in transit</th><td>The API and MLLP run over TLS (including MLLP-over-TLS), so PHI never crosses the network in the clear.</td></tr>
             <tr><th scope="row">Tamper-evident audit log</th><td>A hash-chained, user-attributed record of every PHI access (raw view, summary, replay), with a verification command.</td></tr>
+            <tr><th scope="row">Off-box log &amp; audit forwarding</th><td>Operational and audit logs forward to your syslog or SIEM collector.</td></tr>
             <tr><th scope="row">Encryption at rest</th><td>Message bodies are encrypted with AES-256-GCM in the store.</td></tr>
             <tr><th scope="row">Retention &amp; purge</th><td>Keep messages as long as policy requires, then purge on a configurable schedule.</td></tr>
 
@@ -221,8 +223,6 @@
             <tr><th scope="row">More databases</th><td>MySQL/MariaDB and Oracle as additional store backends.</td></tr>
 
             <tr class="grp"><th colspan="2" scope="colgroup">Security &amp; operations</th></tr>
-            <tr><th scope="row">Multi-factor authentication</th><td>MFA on top of the existing local and Active Directory sign-in.</td></tr>
-            <tr><th scope="row">Structured logging &amp; SIEM forwarding</th><td>Machine-readable logs forwarded to a SIEM.</td></tr>
             <tr><th scope="row">Multi-engine console view</th><td>Manage several engines from one console (CLI/API equivalents exist today).</td></tr>
             <tr><th scope="row">Independent external review</th><td>An independent external code review and penetration test.</td></tr>
           </tbody>
