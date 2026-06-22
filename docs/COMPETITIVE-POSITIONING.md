@@ -221,8 +221,8 @@ June 2026.
 - **Additional transports** — FHIR and DICOM endpoints, inbound HTTP/SOAP listeners, JMS, email, and
   remote-file schemes beyond SFTP (FTP/FTPS/SMB/S3) are planned. (v0.1 already ships MLLP, TCP,
   HTTP/REST, SOAP, database, and files incl. local + SFTP/FTP/FTPS.)
-- **De-identification framework**, **MLLP-over-TLS** and outbound destination allow-listing,
-  **centralized log redaction**, and **retention/purge enforcement** — all planned.
+- **De-identification framework**, outbound destination allow-listing, **centralized log redaction**,
+  and **retention/purge enforcement** — all planned.
 - **Managed, BAA-backed AI** (for PHI-scoped assistance) — planned; today the assistant is code-only.
 
 ---

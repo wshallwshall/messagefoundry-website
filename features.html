@@ -193,10 +193,11 @@
         <p class="lead">This engine carries PHI, so authentication, authorization, audit, and encryption-at-rest are built in — not bolted on. The API binds <code>127.0.0.1</code> by default and requires authentication.</p>
       </div>
       <ul class="feature-list">
-        <li><b>Authentication</b> — local accounts and Active Directory (LDAP) sign-in, with opaque, revocable sessions.</li>
+        <li><b>Authentication</b> — local accounts with built-in, required multi-factor authentication (MFA), or Active Directory (LDAP) sign-in, with opaque, revocable sessions.</li>
         <li><b>RBAC</b> — fixed built-in roles, deny-by-default, per-route and per-channel scoping.</li>
         <li><b>TLS in transit</b> — the API and MLLP run over TLS (including MLLP-over-TLS), so PHI never crosses the network in the clear.</li>
         <li><b>Tamper-evident audit log</b> — a hash-chained, user-attributed record of every PHI access (raw view, summary, replay), with a verification command.</li>
+        <li><b>Off-box log &amp; audit forwarding</b> — operational and audit logs forward to your syslog or SIEM collector.</li>
         <li><b>Encryption at rest</b> — message bodies are encrypted with AES-256-GCM in the store.</li>
         <li><b>Retention &amp; purge</b> — keep messages as long as policy requires, then purge on a configurable schedule.</li>
       </ul>
@@ -374,7 +375,7 @@
         </div>
         <div class="card">
           <h3>Security &amp; operations</h3>
-          <p>Multi-factor authentication, structured logging with SIEM forwarding, a multi-engine console view, and an independent external code review and penetration test.</p>
+          <p>A multi-engine console view, and an independent external code review and penetration test.</p>
         </div>
       </div>
     </div>
