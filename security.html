@@ -123,7 +123,7 @@
         <p class="lead">You don't have to harden it — it ships hardened. TLS is on, encryption is on, accounts are least-privilege, and audit logging is verbose out of the box. Insecure options require an explicit, documented opt-in.</p>
       </div>
       <ul class="feature-list">
-        <li><b>TLS everywhere</b> — all network communication over TLS 1.2+ (prefer 1.3), including <b>MLLP-over-TLS</b>. No cleartext PHI on the wire.</li>
+        <li><b>TLS everywhere, on by default</b> — all network communication over TLS 1.2+ (prefer 1.3), including <b>MLLP-over-TLS</b>. No cleartext PHI on the wire.</li>
         <li><b>Encryption at rest, on by default</b> — message bodies encrypted with <b>AES-256-GCM</b> in the store (SQLCipher / database-native).</li>
         <li><b>Logic can't be injected through the data layer</b> — Routers and Handlers are version-controlled code, never stored in the database. A data-layer breach (SQL injection, stolen DB credentials) reaches data that's already encrypted, RBAC-gated, and audited — but it can't change what the engine does.</li>
         <li><b>One audited door</b> — the console and every other client reach the engine and its PHI only through the authenticated, RBAC-gated API; nothing holds a privileged in-process backdoor to the store.</li>
