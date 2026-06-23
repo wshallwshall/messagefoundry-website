@@ -4,7 +4,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Security, standards &amp; HIPAA — MessageFoundry</title>
-  <meta name="description" content="Security and hardening built to recognized standards: NIST SSDF (800-218), security testing per NIST 800-115, controls mapped to the HIPAA Security Rule (NIST 800-66 Rev. 2), and self-assessed against OWASP ASVS 5.0 Level 3 (212 met, 0 fail, 0 partial, 133 N/A of 345). Secure by default, encrypted end to end, with a clear shared-responsibility model. v0.2.0rc1 Early Access; an independent external code review and penetration test are planned.">
+  <meta name="description" content="Security and hardening built to recognized standards: NIST SSDF (800-218), security testing per NIST 800-115, controls mapped to the HIPAA Security Rule (NIST 800-66 Rev. 2), and self-assessed against OWASP ASVS 5.0 Level 3 (212 met, 0 fail, 0 partial, 133 N/A of 345). Secure by default, encrypted in transit and at rest, with a clear shared-responsibility model. v0.2.0rc1 Early Access; an independent external code review and penetration test are planned.">
   <link rel="canonical" href="https://messagefoundry.org/security.html">
   <link rel="icon" href="/assets/img/favicon.svg" type="image/svg+xml">
   <meta name="theme-color" content="#0b1220">
@@ -74,7 +74,7 @@
     <div class="container center">
       <span class="eyebrow">Security &amp; PHI</span>
       <h1 style="max-width:24ch;margin-inline:auto">Engineered for PHI — and built to recognized standards</h1>
-      <p class="lead">For a healthcare integration engine, security isn't a feature — it's the foundation. MessageFoundry is built to a published <b>Secure Development Standard</b> and aligned with the frameworks a CISO already trusts: <b>NIST SSDF</b>, <b>NIST 800-66 Rev. 2</b> (the HIPAA Security Rule), and <b>OWASP ASVS 5.0 Level 3</b>. It's secure by default, encrypted end to end, and clear about who's responsible for what.</p>
+      <p class="lead">For a healthcare integration engine, security isn't a feature — it's the foundation. MessageFoundry is built to a published <b>Secure Development Standard</b> and aligned with the frameworks a CISO already trusts: <b>NIST SSDF</b>, <b>NIST 800-66 Rev. 2</b> (the HIPAA Security Rule), and <b>OWASP ASVS 5.0 Level 3</b>. It's secure by default, encrypted in transit and at rest, and clear about who's responsible for what.</p>
       <div class="btn-row">
         <a class="btn btn-primary" href="/assets/MessageFoundry-Secure-Development-Standards.pdf" target="_blank" rel="noopener">Read the Secure Development Standards (PDF)</a>
         <a class="btn btn-secondary" href="#controls">See the controls →</a>
@@ -123,7 +123,7 @@
         <p class="lead">You don't have to harden it — it ships hardened. TLS is on, encryption is on, accounts are least-privilege, and audit logging is verbose out of the box. Insecure options require an explicit, documented opt-in.</p>
       </div>
       <ul class="feature-list">
-        <li><b>TLS everywhere, on by default</b> — all network communication over TLS 1.2+ (prefer 1.3), including <b>MLLP-over-TLS</b>. No cleartext PHI on the wire.</li>
+        <li><b>TLS by default</b> — network connections use TLS 1.2+ (prefer 1.3), including <b>MLLP-over-TLS</b>. When a connected system can't speak TLS, plaintext is supported within your secure network perimeter.</li>
         <li><b>Encryption at rest, on by default</b> — message bodies encrypted with <b>AES-256-GCM</b> in the store (SQLCipher / database-native).</li>
         <li><b>Logic can't be injected through the data layer</b> — Routers and Handlers are version-controlled code, never stored in the database. A data-layer breach (SQL injection, stolen DB credentials) reaches data that's already encrypted, RBAC-gated, and audited — but it can't change what the engine does.</li>
         <li><b>One audited door</b> — the console and every other client reach the engine and its PHI only through the authenticated, RBAC-gated API; nothing holds a privileged in-process backdoor to the store.</li>
@@ -157,7 +157,7 @@
             <li>Per-connection credentials — HTTP Basic over TLS or per-connection API keys — vaulted, scoped, rotated, and recorded.</li>
             <li><b>Mutual TLS (mTLS)</b> client-certificate auth, <b>OAuth&nbsp;2.0</b> client-credentials, and <b>SMART on FHIR</b> (Backend Services), for connections that require them.</li>
             <li><b>group-Managed Service Account (gMSA) — optional.</b> For Active Directory deployments, run the engine's Windows service under a gMSA so its password is AD-rotated and never stored in config, and use that identity for integrated database authentication. Not required — SQL authentication with a vaulted secret also works.</li>
-            <li><b>TLS everywhere</b>, including MLLP-over-TLS; no cleartext PHI on the wire.</li>
+            <li><b>TLS by default</b>, including MLLP-over-TLS — with plaintext supported for endpoints that can't do TLS, inside your secure network perimeter.</li>
             <li>Per-connection IP allow-listing and network segmentation as defense-in-depth.</li>
           </ul>
         </div>
@@ -170,7 +170,7 @@
         </div>
       </div>
       <div class="callout" style="margin-top:26px">
-        <p><strong>Across every mechanism:</strong> TLS everywhere, credentials and keys in a secret store (never in code or config), per-connection least privilege, and per-connection IP allow-listing / network segmentation as defense-in-depth.</p>
+        <p><strong>Across every mechanism:</strong> TLS by default, credentials and keys in a secret store (never in code or config), per-connection least privilege, and per-connection IP allow-listing / network segmentation as defense-in-depth.</p>
       </div>
     </div>
   </section>
@@ -226,7 +226,7 @@
             <tr><th scope="row">Access control — unique ID, authn, auto-logoff</th><td>Authenticated, role-based, least-privilege access with session controls and timeouts</td></tr>
             <tr><th scope="row">Audit controls</th><td>Tamper-resistant, timestamped audit log; no sensitive data in logs</td></tr>
             <tr><th scope="row">Integrity</th><td>Input validation; durable, ordered processing of messages</td></tr>
-            <tr><th scope="row">Transmission security</th><td>TLS for all sensitive transport (including MLLP-over-TLS)</td></tr>
+            <tr><th scope="row">Transmission security</th><td>TLS by default for network transport (including MLLP-over-TLS)</td></tr>
             <tr><th scope="row">Encryption (at rest &amp; in transit)</th><td>Encryption at rest on by default, and TLS in transit</td></tr>
             <tr><th scope="row">Administrative &amp; physical</th><td><em>The deployer's environment and program</em> — supported with evidence, not replaced</td></tr>
           </tbody>
@@ -317,7 +317,7 @@
         <div class="faq-item"><h3>Is MessageFoundry HIPAA compliant?</h3><p>HIPAA compliance is a property of your whole deployment, not any single product. MessageFoundry is built to support it: PHI stays on your own infrastructure, every operator is authenticated, access to patient data is audited, traffic is encrypted with TLS and message bodies with AES-256-GCM, and controls map to the HIPAA Security Rule (NIST 800-66).</p></div>
         <div class="faq-item"><h3>Is MessageFoundry PHI-safe — where does patient data live?</h3><p>Yes. MessageFoundry is self-hosted, so PHI never leaves your infrastructure. There is no vendor cloud, no third-party processor, and no telemetry of message contents — you run the engine on your own servers, on-premises or in your own private cloud.</p></div>
         <div class="faq-item"><h3>Is MessageFoundry self-hosted and on-premises?</h3><p>Yes. MessageFoundry runs entirely on your own servers, on-premises or in your private cloud. It installs from PyPI, starts zero-config on SQLite, and scales to PostgreSQL or SQL Server. Nothing is sent to a vendor service.</p></div>
-        <div class="faq-item"><h3>How does MessageFoundry encrypt data?</h3><p>All network traffic uses TLS 1.2+ (TLS 1.3 preferred), including MLLP-over-TLS, on by default — so there is no cleartext PHI on the wire. Message bodies are encrypted at rest with AES-256-GCM in the store.</p></div>
+        <div class="faq-item"><h3>How does MessageFoundry encrypt data?</h3><p>TLS is enabled by default — network connections use TLS 1.2+ (TLS 1.3 preferred), including MLLP-over-TLS. Some older ancillary systems can't speak TLS; MessageFoundry also supports plaintext transport for those, which remains HIPAA-compliant inside your organization's secure network perimeter. At rest, message bodies are encrypted with AES-256-GCM.</p></div>
         <div class="faq-item"><h3>Has MessageFoundry been independently security audited?</h3><p>MessageFoundry publishes a self-assessment against OWASP ASVS 5.0 Level 3 (212 met, 0 failed, 0 partial, 133 N/A of 345) plus its Secure Development Standards. It has not yet had an independent external code review or penetration test — both are planned after Early Access.</p></div>
       </div>
     </div>
@@ -357,7 +357,7 @@
       "name": "How does MessageFoundry encrypt data?",
       "acceptedAnswer": {
         "@type": "Answer",
-        "text": "All network traffic uses TLS 1.2+ (TLS 1.3 preferred), including MLLP-over-TLS, on by default — so there is no cleartext PHI on the wire. Message bodies are encrypted at rest with AES-256-GCM in the store."
+        "text": "TLS is enabled by default — network connections use TLS 1.2+ (TLS 1.3 preferred), including MLLP-over-TLS. Some older ancillary systems can't speak TLS; MessageFoundry also supports plaintext transport for those, which remains HIPAA-compliant inside your organization's secure network perimeter. At rest, message bodies are encrypted with AES-256-GCM."
       }
     },
     {
