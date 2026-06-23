@@ -61,6 +61,16 @@
     <priority>0.8</priority>
   </url>
   <url>
+    <loc>https://messagefoundry.org/build-an-hl7-interface/</loc>
+    <lastmod>2026-06-23</lastmod>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://messagefoundry.org/migrate/</loc>
+    <lastmod>2026-06-23</lastmod>
+    <priority>0.8</priority>
+  </url>
+  <url>
     <loc>https://messagefoundry.org/pypi.html</loc>
     <lastmod>2026-06-17</lastmod>
     <priority>0.7</priority>
