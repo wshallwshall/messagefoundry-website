@@ -51,7 +51,7 @@
           <button type="button" class="nav-group__btn" aria-expanded="false" aria-haspopup="true" aria-controls="nav-getstarted">Get started</button>
           <div class="nav-group__menu" id="nav-getstarted">
             <a href="/getting-started.html" class="active" aria-current="page">Quickstart</a>
-            <a href="/getting-started.html#documents">Documents</a>
+            <a href="/documents.html">Documents</a>
           </div>
         </div>
         <div class="nav-group">
@@ -75,7 +75,7 @@
       <h1 style="max-width:20ch;margin-inline:auto">From install to your first routed message</h1>
       <p class="lead">MessageFoundry installs from <b>PyPI</b> with a single <code>pip install messagefoundry</code> — a signed, versioned release you can verify, not a moving source checkout — and runs locally on <b>Python&nbsp;3.11+</b>. Once it's running, you can build interfaces two ways: with <b>guided wizards</b> in the VS&nbsp;Code extension and admin console, or in <b>plain Python</b> for full control. It starts zero-config on SQLite; point it at PostgreSQL or SQL&nbsp;Server for production.</p>
       <div class="btn-row center" style="margin-top:24px">
-        <a class="btn btn-ghost" href="#documents">Browse the documents ↓</a>
+        <a class="btn btn-ghost" href="/documents.html">Browse the documents →</a>
       </div>
     </div>
   </section>
@@ -171,52 +171,6 @@ python -m messagefoundry.console --url http://127.0.0.1:8765</pre>
           </div>
         </div>
 
-      </div>
-
-      <!-- documents -->
-      <div style="margin-top:56px" id="documents">
-        <h2>Documents</h2>
-        <p class="lead" style="margin-bottom:22px">Guides and references as downloadable PDFs. The full source also lives in the <a href="https://github.com/MEFORORG/MessageFoundry">repository</a>.</p>
-
-        <div class="callout" style="margin:0 0 10px">
-          <p><strong>Start with the standard.</strong> The <a href="/assets/MessageFoundry-Secure-Development-Standards.pdf" target="_blank" rel="noopener">Secure Development Standards (PDF)</a> is the foundation — the full NIST SSDF / 800-115 / 800-66 mapping and the OWASP ASVS 5.0 Level 3 self-assessment (212 met · 0 failed · 0 partial · 133 N/A of 345).</p>
-        </div>
-
-        <div class="table-wrap" style="margin-top:6px">
-          <table class="cmp feat">
-            <thead><tr><th scope="col">Document</th><th scope="col">What's in it</th></tr></thead>
-            <tbody>
-              <tr class="grp"><th colspan="2" scope="colgroup">Start here</th></tr>
-              <tr><th scope="row"><a href="/assets/docs/MessageFoundry-User-Guide.pdf" target="_blank" rel="noopener">User guide</a> <span class="pdf-tag">PDF</span></th><td>Task-oriented walkthrough — from a clean machine to authoring Connections, Routers, and Handlers, then operating and monitoring the engine.</td></tr>
-              <tr><th scope="row"><a href="/assets/docs/MessageFoundry-Mental-Model.pdf" target="_blank" rel="noopener">Mental model</a> <span class="pdf-tag">PDF</span></th><td>The big-picture orientation: the four building blocks, how a message flows, and the invariants that keep nothing lost.</td></tr>
-              <tr><th scope="row"><a href="/assets/docs/MessageFoundry-Install-Guide.pdf" target="_blank" rel="noopener">Installation guide</a> <span class="pdf-tag">PDF</span></th><td>Install the pinned engine and stand up your own private config repo — one repo driving Test, Production, and more.</td></tr>
-              <tr class="grp"><th colspan="2" scope="colgroup">Install &amp; deploy</th></tr>
-              <tr><th scope="row"><a href="/assets/docs/MessageFoundry-Deployment-Guide.pdf" target="_blank" rel="noopener">Deployment &amp; network exposure</a> <span class="pdf-tag">PDF</span></th><td>How every channel binds, whether it carries TLS, and how it's authenticated before you expose it off loopback.</td></tr>
-              <tr><th scope="row"><a href="/assets/docs/MessageFoundry-System-Requirements.pdf" target="_blank" rel="noopener">System requirements &amp; sizing</a> <span class="pdf-tag">PDF</span></th><td>Hardware, OS, runtime, database, and volume-based sizing guidance for running the engine.</td></tr>
-              <tr><th scope="row"><a href="/assets/docs/MessageFoundry-Windows-Service.pdf" target="_blank" rel="noopener">Windows service</a> <span class="pdf-tag">PDF</span></th><td>Run the engine as a long-lived Windows service with NSSM: boot-start, crash-restart, graceful drain, hardening.</td></tr>
-              <tr><th scope="row"><a href="/assets/docs/MessageFoundry-Remote-Console-Customer-Guide.pdf" target="_blank" rel="noopener">Remote console — customer setup</a> <span class="pdf-tag">PDF</span></th><td>An IT-admin guide to running the console from staff PCs: give the engine a TLS certificate, open it to the network securely, and connect each console — with optional mutual TLS.</td></tr>
-              <tr class="grp"><th colspan="2" scope="colgroup">Adopt &amp; operate</th></tr>
-              <tr><th scope="row"><a href="/assets/docs/MessageFoundry-HA-Reference-Architecture.pdf" target="_blank" rel="noopener">HA reference architecture</a> <span class="pdf-tag">PDF</span></th><td>Active/passive HA via an app-level leader lease in the shared SQL store — no WSFC or AD — plus an operator VIP.</td></tr>
-              <tr><th scope="row"><a href="/assets/docs/MessageFoundry-Adoption-Guide.pdf" target="_blank" rel="noopener">Adoption &amp; rollout guide</a> <span class="pdf-tag">PDF</span></th><td>A practical playbook from first install to full production, with staged go/no-go gates.</td></tr>
-              <tr><th scope="row"><a href="/assets/docs/MessageFoundry-Migration-Guide.pdf" target="_blank" rel="noopener">Migrating from a legacy engine (Corepoint, Rhapsody, Mirth, etc.)</a> <span class="pdf-tag">PDF</span></th><td>A vendor-fair playbook for moving interfaces to MessageFoundry: inventory, map, validate, cut over with rollback.</td></tr>
-              <tr class="grp"><th colspan="2" scope="colgroup">Concepts &amp; reference</th></tr>
-              <tr><th scope="row"><a href="/assets/docs/MessageFoundry-Architecture.pdf" target="_blank" rel="noopener">Architecture overview</a> <span class="pdf-tag">PDF</span></th><td>A modular, contract-bounded engine with a store-as-queue pipeline for at-least-once delivery.</td></tr>
-              <tr><th scope="row"><a href="/assets/docs/MessageFoundry-HL7-Validation.pdf" target="_blank" rel="noopener">HL7 validation</a> <span class="pdf-tag">PDF</span></th><td>Three composable tiers — tolerant peek, strict structural, and cross-field business consistency.</td></tr>
-              <tr><th scope="row"><a href="/assets/docs/MessageFoundry-CI-Quality.pdf" target="_blank" rel="noopener">Automated testing &amp; quality</a> <span class="pdf-tag">PDF</span></th><td>How thousands of automated tests run on every change to keep the engine reliable.</td></tr>
-              <tr class="grp"><th colspan="2" scope="colgroup">Security &amp; compliance</th></tr>
-              <tr><th scope="row"><a href="/assets/docs/MessageFoundry-Security-Overview.pdf" target="_blank" rel="noopener">Security overview</a> <span class="pdf-tag">PDF</span></th><td>Secure-by-default controls, a secure SDLC, the per-interface threat model, and the ASVS L3 self-assessment.</td></tr>
-              <tr><th scope="row"><a href="/assets/docs/MessageFoundry-Users-and-Security.pdf" target="_blank" rel="noopener">Users &amp; security</a> <span class="pdf-tag">PDF</span></th><td>How every operator is authenticated and authorized — local accounts, MFA, Active Directory, RBAC, and audit.</td></tr>
-              <tr><th scope="row"><a href="/assets/docs/MessageFoundry-ASVS-HIPAA-Penalty.pdf" target="_blank" rel="noopener">App security &amp; HIPAA penalties</a> <span class="pdf-tag">PDF</span></th><td>How application-security verification (OWASP ASVS) shapes HIPAA breach-penalty tier exposure.</td></tr>
-            </tbody>
-          </table>
-        </div>
-
-        <p style="margin-top:30px;color:var(--muted-dk)">Also in the repository:
-          <a href="https://github.com/MEFORORG/MessageFoundry/blob/main/docs/CONFIGURATION.md">Configuration</a> ·
-          <a href="https://github.com/MEFORORG/MessageFoundry/blob/main/docs/CLUSTERING.md">Clustering</a> ·
-          <a href="https://github.com/MEFORORG/MessageFoundry/blob/main/docs/MENTAL-MODEL.md">Mental model</a> ·
-          <a href="https://github.com/MEFORORG/MessageFoundry">all docs on GitHub →</a>
-        </p>
       </div>
     </div>
   </section>

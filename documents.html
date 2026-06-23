@@ -1,0 +1,183 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Documents — MessageFoundry</title>
+  <meta name="description" content="MessageFoundry's guides and references as downloadable PDFs — orientation, install and deploy, operations, security, and compliance — plus the Secure Development Standards. Full source also on GitHub.">
+  <link rel="canonical" href="https://messagefoundry.org/documents.html">
+  <link rel="icon" href="/assets/img/favicon.svg" type="image/svg+xml">
+  <meta name="theme-color" content="#0b1220">
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="MessageFoundry">
+  <meta property="og:title" content="Documents — MessageFoundry">
+  <meta property="og:description" content="Guides and references as downloadable PDFs — orientation, deploy, operate, security, and compliance.">
+  <meta property="og:url" content="https://messagefoundry.org/documents.html">
+  <meta property="og:image" content="https://messagefoundry.org/assets/img/og.png">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta property="og:image:type" content="image/png">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:image" content="https://messagefoundry.org/assets/img/og.png">
+  <link rel="stylesheet" href="/assets/css/styles.css">
+</head>
+<body>
+
+  <header class="site-header">
+    <div class="container header-inner">
+      <a class="brand" href="/" aria-label="MessageFoundry home">
+        <img class="brand-mark" src="/assets/img/logo.svg" alt="" width="28" height="28">
+        <span class="brand-name">Message<span class="brand-accent">Foundry</span><span class="brand-tm">™</span></span>
+      </a>
+      <button class="nav-toggle" aria-expanded="false" aria-controls="site-nav" aria-label="Toggle navigation"><span></span><span></span><span></span></button>
+      <nav class="site-nav" id="site-nav">
+        <div class="nav-group">
+          <button type="button" class="nav-group__btn" aria-expanded="false" aria-haspopup="true" aria-controls="nav-product">Product</button>
+          <div class="nav-group__menu" id="nav-product">
+            <a href="/overview.html">Overview</a>
+            <a href="/features.html">Features</a>
+            <a href="/features-table.html">Feature list</a>
+            <a href="/architecture.html">Architecture</a>
+            <a href="/reliability.html">Reliability (CI)</a>
+            <a href="/tools.html">Tools</a>
+            <a href="/editor.html">Editor</a>
+            <a href="/console.html">Console</a>
+            <a href="/ai.html">AI assist</a>
+          </div>
+        </div>
+        <a href="/security.html">Security</a>
+        <a href="/comparison.html">Comparison</a>
+        <div class="nav-group">
+          <button type="button" class="nav-group__btn" aria-expanded="false" aria-haspopup="true" aria-controls="nav-getstarted">Get started</button>
+          <div class="nav-group__menu" id="nav-getstarted">
+            <a href="/getting-started.html">Quickstart</a>
+            <a href="/documents.html" class="active" aria-current="page">Documents</a>
+          </div>
+        </div>
+        <div class="nav-group">
+          <button type="button" class="nav-group__btn" aria-expanded="false" aria-haspopup="true" aria-controls="nav-company">About Us</button>
+          <div class="nav-group__menu" id="nav-company">
+            <a href="/about.html">About</a>
+            <a href="/licensing.html">Licensing</a>
+            <a href="/contact.html">Contact</a>
+            <a href="/sponsor.html">Sponsor</a>
+          </div>
+        </div>
+        <a class="btn btn-ghost" href="/pypi.html">PyPI<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3l8 4.5l0 9l-8 4.5l-8 -4.5l0 -9l8 -4.5"/><path d="M12 12l8 -4.5"/><path d="M12 12l0 9"/><path d="M12 12l-8 -4.5"/><path d="M16 5.25l-8 4.5"/></svg></a>
+        <a class="btn btn-ghost" href="https://github.com/MEFORORG/MessageFoundry" target="_blank" rel="noopener">GitHub ↗</a>
+      </nav>
+    </div>
+  </header>
+
+  <section class="section section--dark section--tight">
+    <div class="container center">
+      <span class="eyebrow">Documentation</span>
+      <h1 style="max-width:22ch;margin-inline:auto">Guides &amp; references</h1>
+      <p class="lead">Everything as downloadable PDFs — orientation, install &amp; deploy, operations, security, and compliance. The full source also lives in the <a href="https://github.com/MEFORORG/MessageFoundry">repository</a>.</p>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="container" style="max-width:860px">
+
+      <div class="callout" style="margin:0 0 10px">
+        <p><strong>Start with the standard.</strong> The <a href="/assets/MessageFoundry-Secure-Development-Standards.pdf" target="_blank" rel="noopener">Secure Development Standards (PDF)</a> is the foundation — the full NIST SSDF / 800-115 / 800-66 mapping and the OWASP ASVS 5.0 Level 3 self-assessment (212 met · 0 failed · 0 partial · 133 N/A of 345).</p>
+      </div>
+
+      <div class="table-wrap" style="margin-top:6px">
+        <table class="cmp feat">
+          <thead><tr><th scope="col">Document</th><th scope="col">What's in it</th></tr></thead>
+          <tbody>
+            <tr class="grp"><th colspan="2" scope="colgroup">Start here</th></tr>
+            <tr><th scope="row"><a href="/assets/docs/MessageFoundry-User-Guide.pdf" target="_blank" rel="noopener">User guide</a> <span class="pdf-tag">PDF</span></th><td>Task-oriented walkthrough — from a clean machine to authoring Connections, Routers, and Handlers, then operating and monitoring the engine.</td></tr>
+            <tr><th scope="row"><a href="/assets/docs/MessageFoundry-Mental-Model.pdf" target="_blank" rel="noopener">Mental model</a> <span class="pdf-tag">PDF</span></th><td>The big-picture orientation: the four building blocks, how a message flows, and the invariants that keep nothing lost.</td></tr>
+            <tr><th scope="row"><a href="/assets/docs/MessageFoundry-Install-Guide.pdf" target="_blank" rel="noopener">Installation guide</a> <span class="pdf-tag">PDF</span></th><td>Install the pinned engine and stand up your own private config repo — one repo driving Test, Production, and more.</td></tr>
+            <tr class="grp"><th colspan="2" scope="colgroup">Install &amp; deploy</th></tr>
+            <tr><th scope="row"><a href="/assets/docs/MessageFoundry-Deployment-Guide.pdf" target="_blank" rel="noopener">Deployment &amp; network exposure</a> <span class="pdf-tag">PDF</span></th><td>How every channel binds, whether it carries TLS, and how it's authenticated before you expose it off loopback.</td></tr>
+            <tr><th scope="row"><a href="/assets/docs/MessageFoundry-System-Requirements.pdf" target="_blank" rel="noopener">System requirements &amp; sizing</a> <span class="pdf-tag">PDF</span></th><td>Hardware, OS, runtime, database, and volume-based sizing guidance for running the engine.</td></tr>
+            <tr><th scope="row"><a href="/assets/docs/MessageFoundry-Windows-Service.pdf" target="_blank" rel="noopener">Windows service</a> <span class="pdf-tag">PDF</span></th><td>Run the engine as a long-lived Windows service with NSSM: boot-start, crash-restart, graceful drain, hardening.</td></tr>
+            <tr><th scope="row"><a href="/assets/docs/MessageFoundry-Remote-Console-Customer-Guide.pdf" target="_blank" rel="noopener">Remote console — customer setup</a> <span class="pdf-tag">PDF</span></th><td>An IT-admin guide to running the console from staff PCs: give the engine a TLS certificate, open it to the network securely, and connect each console — with optional mutual TLS.</td></tr>
+            <tr class="grp"><th colspan="2" scope="colgroup">Adopt &amp; operate</th></tr>
+            <tr><th scope="row"><a href="/assets/docs/MessageFoundry-HA-Reference-Architecture.pdf" target="_blank" rel="noopener">HA reference architecture</a> <span class="pdf-tag">PDF</span></th><td>Active/passive HA via an app-level leader lease in the shared SQL store — no WSFC or AD — plus an operator VIP.</td></tr>
+            <tr><th scope="row"><a href="/assets/docs/MessageFoundry-Adoption-Guide.pdf" target="_blank" rel="noopener">Adoption &amp; rollout guide</a> <span class="pdf-tag">PDF</span></th><td>A practical playbook from first install to full production, with staged go/no-go gates.</td></tr>
+            <tr><th scope="row"><a href="/assets/docs/MessageFoundry-Migration-Guide.pdf" target="_blank" rel="noopener">Migrating from a legacy engine (Corepoint, Rhapsody, Mirth, etc.)</a> <span class="pdf-tag">PDF</span></th><td>A vendor-fair playbook for moving interfaces to MessageFoundry: inventory, map, validate, cut over with rollback.</td></tr>
+            <tr class="grp"><th colspan="2" scope="colgroup">Concepts &amp; reference</th></tr>
+            <tr><th scope="row"><a href="/assets/docs/MessageFoundry-Architecture.pdf" target="_blank" rel="noopener">Architecture overview</a> <span class="pdf-tag">PDF</span></th><td>A modular, contract-bounded engine with a store-as-queue pipeline for at-least-once delivery.</td></tr>
+            <tr><th scope="row"><a href="/assets/docs/MessageFoundry-HL7-Validation.pdf" target="_blank" rel="noopener">HL7 validation</a> <span class="pdf-tag">PDF</span></th><td>Three composable tiers — tolerant peek, strict structural, and cross-field business consistency.</td></tr>
+            <tr><th scope="row"><a href="/assets/docs/MessageFoundry-CI-Quality.pdf" target="_blank" rel="noopener">Automated testing &amp; quality</a> <span class="pdf-tag">PDF</span></th><td>How thousands of automated tests run on every change to keep the engine reliable.</td></tr>
+            <tr class="grp"><th colspan="2" scope="colgroup">Security &amp; compliance</th></tr>
+            <tr><th scope="row"><a href="/assets/docs/MessageFoundry-Security-Overview.pdf" target="_blank" rel="noopener">Security overview</a> <span class="pdf-tag">PDF</span></th><td>Secure-by-default controls, a secure SDLC, the per-interface threat model, and the ASVS L3 self-assessment.</td></tr>
+            <tr><th scope="row"><a href="/assets/docs/MessageFoundry-Users-and-Security.pdf" target="_blank" rel="noopener">Users &amp; security</a> <span class="pdf-tag">PDF</span></th><td>How every operator is authenticated and authorized — local accounts, MFA, Active Directory, RBAC, and audit.</td></tr>
+            <tr><th scope="row"><a href="/assets/docs/MessageFoundry-ASVS-HIPAA-Penalty.pdf" target="_blank" rel="noopener">App security &amp; HIPAA penalties</a> <span class="pdf-tag">PDF</span></th><td>How application-security verification (OWASP ASVS) shapes HIPAA breach-penalty tier exposure.</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <p style="margin-top:30px;color:var(--muted-dk)">Also in the repository:
+        <a href="https://github.com/MEFORORG/MessageFoundry/blob/main/docs/CONFIGURATION.md">Configuration</a> ·
+        <a href="https://github.com/MEFORORG/MessageFoundry/blob/main/docs/CLUSTERING.md">Clustering</a> ·
+        <a href="https://github.com/MEFORORG/MessageFoundry/blob/main/docs/MENTAL-MODEL.md">Mental model</a> ·
+        <a href="https://github.com/MEFORORG/MessageFoundry">all docs on GitHub →</a>
+      </p>
+
+      <p style="margin-top:24px"><a class="btn btn-ghost" href="/getting-started.html">← Back to the quickstart</a></p>
+
+    </div>
+  </section>
+
+  <footer class="site-footer">
+    <div class="container">
+      <div class="footer-grid">
+        <div class="footer-brand">
+          <a class="brand" href="/" aria-label="MessageFoundry home">
+            <img class="brand-mark" src="/assets/img/logo.svg" alt="" width="28" height="28">
+            <span class="brand-name">Message<span class="brand-accent">Foundry</span><span class="brand-tm">™</span></span>
+          </a>
+          <p>Open-source healthcare integration engine — secure by default, built to recognized standards, connecting a wide range of protocols and message types.</p>
+          <div class="badge-row" style="margin-top:16px">
+            <span class="badge">Open source</span>
+            <span class="badge">No lock-in</span>
+            <span class="badge">Self-hosted</span>
+          </div>
+        </div>
+        <div class="footer-col">
+          <h4>Product</h4>
+          <a href="/overview.html">Overview</a>
+          <a href="/features.html">Features</a>
+          <a href="/tools.html">Tools</a>
+          <a href="/editor.html">Editor</a>
+          <a href="/console.html">Console</a>
+          <a href="/ai.html">AI assist</a>
+          <a href="/reliability.html">Reliability</a>
+          <a href="/dicom.html">DICOM</a>
+          <a href="/security.html">Security &amp; PHI</a>
+          <a href="/comparison.html">Comparison</a>
+          <a href="/getting-started.html">Get started</a>
+        </div>
+        <div class="footer-col">
+          <h4>Docs</h4>
+          <a href="https://github.com/MEFORORG/MessageFoundry/blob/main/docs/ARCHITECTURE.md">Architecture</a>
+          <a href="https://github.com/MEFORORG/MessageFoundry/blob/main/docs/CONNECTIONS.md">Connections</a>
+          <a href="https://github.com/MEFORORG/MessageFoundry/blob/main/docs/SECURITY.md">Security</a>
+          <a href="https://github.com/MEFORORG/MessageFoundry/blob/main/docs/PHI.md">PHI / HIPAA</a>
+        </div>
+        <div class="footer-col">
+          <h4>Project</h4>
+          <a href="https://github.com/MEFORORG/MessageFoundry" target="_blank" rel="noopener">GitHub</a>
+          <a href="https://github.com/MEFORORG/MessageFoundry/issues" target="_blank" rel="noopener">Issues</a>
+          <a href="/contact.html">Contact</a>
+          <a href="/licensing.html">License</a>
+          <a href="/about.html">About</a>
+          <a href="/sponsor.html">Sponsor</a>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        <span>© 2026 MessageFoundry, a non-profit — this website and its content, all rights reserved. The MessageFoundry engine is separately open source, licensed under AGPL-3.0-or-later.</span>
+        <span>MessageFoundry and the MessageFoundry word mark are trademarks of the MessageFoundry Organization. Mirth Connect, Cloverleaf, Rhapsody, Corepoint, and Ensemble are trademarks of their respective owners; MessageFoundry is independent and unaffiliated.</span>
+      </div>
+    </div>
+  </footer>
+
+  <script src="/assets/js/nav.js" defer></script>
+</body>
+</html>
