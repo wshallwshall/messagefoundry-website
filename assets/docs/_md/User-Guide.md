@@ -457,7 +457,7 @@ On success the session token is stored in your OS keyring (Windows Credential Ma
 
 ### A tour of the console pages
 
-The left nav holds **Connections, Alerts, Log Search, Engine Status**, and **Users** (the last only if you hold `users:manage`). A heart glyph in the lower-left reflects overall health (green healthy, orange low disk, red engine/DB stopped), and an auto-refresh interval (top-right) drives the active page.
+The left nav holds **Connections, Alerts, Dead Letters, Log Search, Engine Status**, and **Users** (the last only if you hold `users:manage`). A heart glyph in the lower-left reflects overall health (green healthy, orange low disk, red engine/DB stopped), and an auto-refresh interval (top-right) drives the active page.
 
 - **Connections** — one row per endpoint (each inbound + each outbound). Select inbound (source) rows and use **Start / Stop / Restart**; select outbound (destination) rows and use the **Actions ▾** menu to **Purge Top Message** or **Purge All Queued Messages** (a confirmed, irreversible drain that cancels queued deliveries — they will not retry). Each row's **Logs** link jumps to Log Search filtered to that connection. Columns show live counts (# Read / # Written / # Errored), queue depth, idle time, and delivery backlog.
 
@@ -467,9 +467,9 @@ The left nav holds **Connections, Alerts, Log Search, Engine Status**, and **Use
 
 - **Users** (gated by `users:manage`) — RBAC administration: **Add user…**, **Set roles…**, **Set scope…** (per-channel scope), **Delete**, and **Revoke sessions**. Every operation is audited server-side. Role definitions live in [SECURITY.md](https://github.com/MEFORORG/MessageFoundry/blob/main/docs/SECURITY.md).
 
-- **Alerts** — a placeholder surface ("coming soon"); alert routing today runs through the engine's AlertSink rather than this page (see [Monitoring dispositions and troubleshooting](#monitoring-dispositions-and-troubleshooting)).
+- **Alerts** — a read-only view of the loaded alert configuration: whether the webhook / email transports are wired, the global re-alert interval, and the ordered list of operator-authored alert rules ([ADR 0014](https://github.com/MEFORORG/MessageFoundry/blob/main/docs/adr/0014-alerting-rules-engine.md)). Alert *delivery* still flows through the engine's AlertSink to those transports (see [Monitoring dispositions and troubleshooting](#monitoring-dispositions-and-troubleshooting)).
 
-**Dead letters and replay.** There is no surfaced Dead Letters page in the console nav — a failed or dead-lettered message surfaces in **Log Search** (filter by status, or open it from a connection's **Logs** link), where the **Deliveries** tab shows the per-destination error and the **Replay** button re-drives it. For diagnosing and clearing stuck deliveries, see the troubleshooting guidance in [EARLY-ADOPTER-GUIDE.md](https://github.com/MEFORORG/MessageFoundry/blob/main/docs/EARLY-ADOPTER-GUIDE.md).
+- **Dead Letters** — a dedicated page listing dead-lettered deliveries, each with its last error, plus **Replay selected…** and **Replay all…** actions (re-queuing is gated on the `messages:replay` permission and step-up re-auth, and audited server-side). A failed delivery also surfaces in **Log Search** — the **Deliveries** tab shows the per-destination error and a **Replay** button. For diagnosing and clearing stuck deliveries, see the troubleshooting guidance in [EARLY-ADOPTER-GUIDE.md](https://github.com/MEFORORG/MessageFoundry/blob/main/docs/EARLY-ADOPTER-GUIDE.md).
 
 ### The VS Code extension (for config authors)
 
@@ -523,7 +523,7 @@ To recover:
 
 1. **Find the dead-letters.** Console: open the message in Log Search and read its delivery row's **Last error**. API: `GET /dead-letters` (optionally `?channel_id=&destination_name=`) lists dead deliveries newest-first; each row carries `last_error`.
 2. **Fix the cause** (the downstream endpoint, the transform, the config).
-3. **Replay.** `POST /dead-letters/replay` re-queues the dead deliveries (optionally scoped by `channel_id` / `destination_name`); each affected message reverts from `error` to `received` and re-drains. Already-delivered rows are left alone. Replay requires the `messages:replay` permission and is **step-up (re-auth) gated**, and may be held for a second approver when `[approvals]` is configured. (A surfaced console **Dead Letters page** is not yet in the nav — drive replay via the API/CLI; see the [Feature Map](https://github.com/MEFORORG/MessageFoundry/blob/main/docs/FEATURE-MAP.md).)
+3. **Replay.** `POST /dead-letters/replay` re-queues the dead deliveries (optionally scoped by `channel_id` / `destination_name`); each affected message reverts from `error` to `received` and re-drains. Already-delivered rows are left alone. Replay requires the `messages:replay` permission and is **step-up (re-auth) gated**, and may be held for a second approver when `[approvals]` is configured. (The console's **Dead Letters** page drives this same replay from the UI — **Replay selected…** / **Replay all…**.)
 
 > Replaying re-transmits real message bodies — it is audited per acting user. Treat it like any PHI action ([PHI.md](https://github.com/MEFORORG/MessageFoundry/blob/main/docs/PHI.md)).
 
@@ -548,7 +548,7 @@ transports = ["webhook"]
 
 The SMTP password is a secret — supply it via `MEFOR_ALERTS_EMAIL_PASSWORD`, never the file. Per-event severity, transport routing, thresholds, suppression, and cooldown are tuned with ordered `[[alerts.rules]]` tables ([ADR 0014](https://github.com/MEFORORG/MessageFoundry/blob/main/docs/adr/0014-alerting-rules-engine.md)); an event matching no rule notifies every configured transport at `warning`.
 
-**Important:** alerts are **fire-and-forward notifications**, not a queryable history. There is no alerts API endpoint and no surfaced console Alerts page yet — once configured, you rely on your webhook/email target to see them. Payloads carry only the connection name and queue shape, never message content (no PHI).
+**Important:** fired alerts are **fire-and-forward notifications**, not a queryable event history — once configured, you rely on your webhook/email target to see them as they happen. (The console's **Alerts** page and `GET /alerts/rules` show the *configured* transports and rules, read-only — not a log of past alerts.) Payloads carry only the connection name and queue shape, never message content (no PHI).
 
 ### Common problems
 
