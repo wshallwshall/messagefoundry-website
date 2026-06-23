@@ -20,6 +20,28 @@
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:image" content="https://messagefoundry.org/assets/img/og.png">
   <link rel="stylesheet" href="/assets/css/styles.css">
+  <script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "SoftwareApplication",
+  "@id": "https://messagefoundry.org/#software",
+  "name": "MessageFoundry",
+  "applicationCategory": "Healthcare integration engine",
+  "applicationSubCategory": "HL7 interface engine",
+  "operatingSystem": "Windows, Linux, macOS",
+  "softwareVersion": "0.2.0rc1",
+  "url": "https://messagefoundry.org/",
+  "downloadUrl": "https://pypi.org/project/messagefoundry/",
+  "description": "MessageFoundry is an open-source, self-hosted healthcare integration engine written in Python. It routes, transforms, and validates messages across a wide range of protocols and message types, with deep HL7 v2 support — a modern alternative to legacy engines like Mirth Connect, Rhapsody, and Corepoint.",
+  "license": "https://www.gnu.org/licenses/agpl-3.0.html",
+  "isAccessibleForFree": true,
+  "offers": {
+    "@type": "Offer",
+    "price": "0",
+    "priceCurrency": "USD"
+  }
+}
+  </script>
 </head>
 <body>
 
@@ -381,6 +403,60 @@
       </div>
     </div>
   </section>
+
+  <!-- faq -->
+  <section class="section">
+    <div class="container">
+      <div class="center" style="margin-bottom:28px"><span class="eyebrow">FAQ</span><h2>Frequently asked questions</h2></div>
+      <div class="faq">
+        <div class="faq-item"><h3>Does MessageFoundry support HL7 v2 and FHIR?</h3><p>Yes. MessageFoundry has deep HL7 v2 support — parsing, validation, routing, and transformation — and works with FHIR, alongside X12/EDI, DICOM, JSON, and XML payloads.</p></div>
+        <div class="faq-item"><h3>What systems and protocols can MessageFoundry connect?</h3><p>It connects the systems you already run over MLLP (with TLS), TCP, HTTP/REST, SOAP, FHIR REST, files, SFTP/FTP, databases, and DICOM — so a wide range of protocols and message types flow through one engine.</p></div>
+        <div class="faq-item"><h3>Do I write interfaces in code or with a GUI?</h3><p>Both. You can set up Connections, Routers, and Handlers with guided wizards in the VS Code extension and admin console, or write them in plain Python for full control — version-controlled like any codebase.</p></div>
+        <div class="faq-item"><h3>Is MessageFoundry built for PHI and security?</h3><p>Yes. PHI is a first-class concern: it stays self-hosted, traffic is encrypted with TLS, message bodies at rest with AES-256-GCM, every operator is authenticated, and access is audited. It's built to NIST SSDF / 800-66 and self-assessed against OWASP ASVS Level 3.</p></div>
+      </div>
+    </div>
+  </section>
+
+  <script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    {
+      "@type": "Question",
+      "name": "Does MessageFoundry support HL7 v2 and FHIR?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Yes. MessageFoundry has deep HL7 v2 support — parsing, validation, routing, and transformation — and works with FHIR, alongside X12/EDI, DICOM, JSON, and XML payloads."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "What systems and protocols can MessageFoundry connect?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "It connects the systems you already run over MLLP (with TLS), TCP, HTTP/REST, SOAP, FHIR REST, files, SFTP/FTP, databases, and DICOM — so a wide range of protocols and message types flow through one engine."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Do I write interfaces in code or with a GUI?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Both. You can set up Connections, Routers, and Handlers with guided wizards in the VS Code extension and admin console, or write them in plain Python for full control — version-controlled like any codebase."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Is MessageFoundry built for PHI and security?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Yes. PHI is a first-class concern: it stays self-hosted, traffic is encrypted with TLS, message bodies at rest with AES-256-GCM, every operator is authenticated, and access is audited. It's built to NIST SSDF / 800-66 and self-assessed against OWASP ASVS Level 3."
+      }
+    }
+  ]
+}
+  </script>
 
   <section class="section">
     <div class="container">
