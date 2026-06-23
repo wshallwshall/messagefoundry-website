@@ -139,7 +139,7 @@
           <p>Every config module imports and <b>every <code>inbound&nbsp;→&nbsp;router&nbsp;→&nbsp;handler</code> reference resolves</b>. A router named but never defined, a dangling binding, or an import error fails the build.</p>
         </div>
         <div class="card">
-          <h3>Dry-run — <span style="color:var(--accent)">the one that matters</span></h3>
+          <h3>Dry-run — the one that matters</h3>
           <p>Synthetic messages route through the engine's <b>real routing core</b> — the same function production runs — with no store, network, or connectors. <b>Green in CI means it routes identically in production;</b> there's no separate test path to drift from reality.</p>
         </div>
         <div class="card">
