@@ -218,7 +218,7 @@
       <ul class="feature-list">
         <li><b>Authentication</b> — local accounts with built-in, required multi-factor authentication (MFA), or Active Directory (LDAP) sign-in, with opaque, revocable sessions.</li>
         <li><b>RBAC</b> — fixed built-in roles, deny-by-default, per-route and per-channel scoping.</li>
-        <li><b>TLS in transit</b> — the API and MLLP run over TLS (including MLLP-over-TLS), so PHI never crosses the network in the clear.</li>
+        <li><b>TLS in transit, by default</b> — the API and MLLP run over TLS (including MLLP-over-TLS); for endpoints that can't do TLS, plaintext is supported within your secure network perimeter.</li>
         <li><b>Tamper-evident audit log</b> — a hash-chained, user-attributed record of every PHI access (raw view, summary, replay), with a verification command.</li>
         <li><b>Off-box log &amp; audit forwarding</b> — operational and audit logs forward to your syslog or SIEM collector.</li>
         <li><b>Encryption at rest</b> — message bodies are encrypted with AES-256-GCM in the store.</li>
