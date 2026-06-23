@@ -338,6 +338,9 @@ table.cmp.feat tbody th code, table.cmp.feat td code { white-space: nowrap; }
 .prose h2 { margin-top: 1.6em; }
 .prose ul { padding-left: 1.2em; color: var(--muted); }
 .prose li { margin-bottom: .5em; }
+/* breathing room above step/section headings that sit in flowing content (guides, etc.) */
+.section .container > h2 { margin-top: 3rem; }
+.section .container > h2:first-child { margin-top: 0; }
 
 /* ------------------------------------------------------------------ competitor selector (CSS-only) */
 .vs { position: relative; }
