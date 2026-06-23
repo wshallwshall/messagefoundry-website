@@ -52,13 +52,13 @@ On each host, create a virtual environment and install the engine at a **pinned 
 ```powershell
 python -m venv .venv
 .\.venv\Scripts\Activate.ps1                 # Linux/macOS: . .venv/bin/activate
-pip install "messagefoundry==0.2.0rc1"          # pin the exact version (core runtime only)
+pip install "messagefoundry==0.2.0"          # pin the exact version (core runtime only)
 ```
 
-> ⚠️ **Early access.** `0.2.0rc1` is an **Early Access** release on public PyPI — feature-complete and
+> ⚠️ **Early access.** `0.2.0` is an **Early Access** release on public PyPI — feature-complete and
 > test-validated, but the external review + pen test that gate a security-certified **v1.0** land after
-> launch. The exact-pin command above (`==0.2.0rc1`) resolves today; the earlier `0.2.0rc1` pre-release also
-> remains installable (`pip install messagefoundry==0.2.0rc1`). You can equally install from the engine's
+> launch. The exact-pin command above (`==0.2.0`) resolves today; the earlier `0.2.0` pre-release also
+> remains installable (`pip install messagefoundry==0.2.0`). You can equally install from the engine's
 > **GitHub Release assets** or your organization's **private index**.
 
 Add extras only for what a host actually runs — `messagefoundry[postgres]` (PostgreSQL store),
@@ -85,7 +85,7 @@ the **GitHub CLI** (`gh` ≥ 2.49), and optionally `sigstore` (`pip install sigs
 file that passes.
 
 ```powershell
-$V = "0.2.0rc1"   # the exact version you intend to install
+$V = "0.2.0"   # the exact version you intend to install
 
 # Download the wheel + its Sigstore bundle from that release's assets
 gh release download "v$V" --repo MEFORORG/MessageFoundry `
@@ -107,7 +107,7 @@ The same attestation also covers the **public PyPI** copy of the wheel (it is by
 GitHub-built artifact, so the digest matches), so you can download-verify-then-install from the index:
 
 ```powershell
-$V = "0.2.0rc1"
+$V = "0.2.0"
 pip download "messagefoundry==$V" --no-deps -d .\verify
 gh attestation verify (Get-ChildItem ".\verify\messagefoundry-$V-*.whl").FullName --repo MEFORORG/MessageFoundry
 pip install --no-index --find-links .\verify "messagefoundry==$V"
@@ -117,7 +117,7 @@ A registry/mirror substitution or a relabelled file **fails** the check. For a f
 this with `pip install --require-hashes -r requirements.lock` (the identity check above is the part
 `--require-hashes` cannot give you — it proves bytes-match-lockfile, not who built them). The
 `-rc`-tagged pre-releases publish to production PyPI too; the `--cert-identity` ref above must match the
-tag you are installing (e.g. `refs/tags/v0.2.0rc1`).
+tag you are installing (e.g. `refs/tags/v0.2.0`).
 
 ---
 
@@ -140,7 +140,7 @@ my-config-repo/
 ├─ environments/prod.toml
 ├─ messages/sets/example_adt.hl7   # a synthetic fixture (NO real PHI) that gates `check`
 ├─ messagefoundry.toml             # THIS instance's settings (environment + posture + store + API + egress)
-├─ requirements.txt                # pins the engine:  messagefoundry==0.2.0rc1
+├─ requirements.txt                # pins the engine:  messagefoundry==0.2.0
 ├─ .github/workflows/check.yml     # CI: install the pinned engine + run `messagefoundry check` on every PR
 ├─ .vscode/settings.json           # points the VS Code extension at config/ + messages/
 ├─ .gitignore  .gitattributes      # excludes stores, secrets, captures, venvs, caches
@@ -235,7 +235,7 @@ talks to the engine over its localhost API. Install the console extra, then drop
 shortcut so it opens with a double-click, no terminal:
 
 ```powershell
-pip install "messagefoundry[console]==0.2.0rc1"     # PySide6 + keyring, into the same venv
+pip install "messagefoundry[console]==0.2.0"     # PySide6 + keyring, into the same venv
 .\scripts\console\install-console-shortcut.ps1   # per-user icon (add -AllUsers, elevated, for machine-wide)
 ```
 
@@ -266,7 +266,7 @@ instance.** You do **not** maintain per-environment branches. Each host differs 
         │ data_class=…  │  │ data_class=phi│  │ production=f  │
         │ MEFOR_* (test)│  │ MEFOR_* (prod)│  │ MEFOR_* (poc) │
         └───────────────┘  └───────────────┘  └───────────────┘
-       engine 0.2.0rc1 wheel  engine 0.2.0rc1 wheel  engine 0.2.0rc1 wheel  (pinned, identical)
+       engine 0.2.0 wheel  engine 0.2.0 wheel  engine 0.2.0 wheel  (pinned, identical)
 ```
 
 Promotion = merge to `main` → deploy that commit everywhere. A Test instance resolves
@@ -293,7 +293,7 @@ There is simply no developer workflow that routes through engine source — by c
 
 ## 10. Upgrading the engine
 
-1. Bump the pin in `requirements.txt` (e.g. `messagefoundry==0.2.0rc1`) on a branch.
+1. Bump the pin in `requirements.txt` (e.g. `messagefoundry==0.2.0`) on a branch.
 2. `pip install -r requirements.txt` and run `messagefoundry check` locally; open a PR — CI re-validates
    your whole config against the new engine.
 3. Merge, and roll the new commit to Test first, then Production. Because everything is pinned and your

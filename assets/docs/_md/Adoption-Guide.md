@@ -157,7 +157,7 @@ version**, the same way you pin any other production dependency. Create a venv a
 ```powershell
 python -m venv .venv
 .\.venv\Scripts\Activate.ps1
-pip install "messagefoundry==0.2.0rc1"        # pin the exact engine version (core runtime only)
+pip install "messagefoundry==0.2.0"        # pin the exact engine version (core runtime only)
 ```
 
 The pinned install pulls only the **core runtime** — what a headless engine needs. Add extras (section
@@ -173,7 +173,7 @@ with the **GitHub CLI** (`gh` ≥ 2.49), and optionally `sigstore` (`pip install
 **only** the file that passes:
 
 ```powershell
-$V = "0.2.0rc1"   # the exact version you intend to install
+$V = "0.2.0"   # the exact version you intend to install
 
 # Download the wheel + its Sigstore bundle from that release's assets
 gh release download "v$V" --repo MEFORORG/MessageFoundry `
