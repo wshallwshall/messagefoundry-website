@@ -94,11 +94,13 @@
             <tr><th scope="row"><a href="/assets/docs/MessageFoundry-Install-Guide.pdf" target="_blank" rel="noopener">Installation guide</a> <span class="pdf-tag">PDF</span></th><td>Install the pinned engine and stand up your own private config repo — one repo driving Test, Production, and more.</td></tr>
             <tr class="grp"><th colspan="2" scope="colgroup">Install &amp; deploy</th></tr>
             <tr><th scope="row"><a href="/assets/docs/MessageFoundry-Deployment-Guide.pdf" target="_blank" rel="noopener">Deployment &amp; network exposure</a> <span class="pdf-tag">PDF</span></th><td>How every channel binds, whether it carries TLS, and how it's authenticated before you expose it off loopback.</td></tr>
+            <tr><th scope="row"><a href="/assets/docs/MessageFoundry-Configuration.pdf" target="_blank" rel="noopener">Configuration &amp; settings</a> <span class="pdf-tag">PDF</span></th><td>Every setting the engine reads — the config file and environment overrides, and what each option controls.</td></tr>
             <tr><th scope="row"><a href="/assets/docs/MessageFoundry-System-Requirements.pdf" target="_blank" rel="noopener">System requirements &amp; sizing</a> <span class="pdf-tag">PDF</span></th><td>Hardware, OS, runtime, database, and volume-based sizing guidance for running the engine.</td></tr>
             <tr><th scope="row"><a href="/assets/docs/MessageFoundry-Windows-Service.pdf" target="_blank" rel="noopener">Windows service</a> <span class="pdf-tag">PDF</span></th><td>Run the engine as a long-lived Windows service with NSSM: boot-start, crash-restart, graceful drain, hardening.</td></tr>
             <tr><th scope="row"><a href="/assets/docs/MessageFoundry-Remote-Console-Customer-Guide.pdf" target="_blank" rel="noopener">Remote console — customer setup</a> <span class="pdf-tag">PDF</span></th><td>An IT-admin guide to running the console from staff PCs: give the engine a TLS certificate, open it to the network securely, and connect each console — with optional mutual TLS.</td></tr>
             <tr class="grp"><th colspan="2" scope="colgroup">Adopt &amp; operate</th></tr>
             <tr><th scope="row"><a href="/assets/docs/MessageFoundry-HA-Reference-Architecture.pdf" target="_blank" rel="noopener">HA reference architecture</a> <span class="pdf-tag">PDF</span></th><td>Active/passive HA via an app-level leader lease in the shared SQL store — no WSFC or AD — plus an operator VIP.</td></tr>
+            <tr><th scope="row"><a href="/assets/docs/MessageFoundry-Clustering.pdf" target="_blank" rel="noopener">Clustering (active-passive HA)</a> <span class="pdf-tag">PDF</span></th><td>Running MessageFoundry as an active-passive cluster — leader election, failover behavior, and operating the pair.</td></tr>
             <tr><th scope="row"><a href="/assets/docs/MessageFoundry-Adoption-Guide.pdf" target="_blank" rel="noopener">Adoption &amp; rollout guide</a> <span class="pdf-tag">PDF</span></th><td>A practical playbook from first install to full production, with staged go/no-go gates.</td></tr>
             <tr><th scope="row"><a href="/assets/docs/MessageFoundry-Migration-Guide.pdf" target="_blank" rel="noopener">Migrating from a legacy engine (Corepoint, Rhapsody, Mirth, etc.)</a> <span class="pdf-tag">PDF</span></th><td>A vendor-fair playbook for moving interfaces to MessageFoundry: inventory, map, validate, cut over with rollback.</td></tr>
             <tr class="grp"><th colspan="2" scope="colgroup">Concepts &amp; reference</th></tr>
@@ -112,13 +114,6 @@
           </tbody>
         </table>
       </div>
-
-      <p style="margin-top:30px;color:var(--muted-dk)">Also in the repository:
-        <a href="https://github.com/MEFORORG/MessageFoundry/blob/main/docs/CONFIGURATION.md">Configuration</a> ·
-        <a href="https://github.com/MEFORORG/MessageFoundry/blob/main/docs/CLUSTERING.md">Clustering</a> ·
-        <a href="https://github.com/MEFORORG/MessageFoundry/blob/main/docs/MENTAL-MODEL.md">Mental model</a> ·
-        <a href="https://github.com/MEFORORG/MessageFoundry">all docs on GitHub →</a>
-      </p>
 
     </div>
   </section>
