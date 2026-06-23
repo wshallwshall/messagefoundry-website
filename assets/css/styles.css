@@ -79,6 +79,7 @@ code, pre, kbd { font-family: var(--mono); }
 .section--dark .eyebrow { color: var(--accent); background: rgba(245,158,11,.1); border-color: rgba(245,158,11,.28); }
 .lead { font-size: 1.18rem; color: var(--muted); max-width: 60ch; }
 .section--dark .lead { color: var(--muted-dk); }
+.section--dark .lead a { color: var(--accent); }
 .center { text-align: center; margin-inline: auto; }
 .center .lead { margin-inline: auto; }
 
