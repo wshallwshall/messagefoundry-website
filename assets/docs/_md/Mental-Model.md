@@ -1,6 +1,6 @@
 # MessageFoundry — A Mental Model
 
-*Open-source healthcare integration engine · Python · v0.2rc1 (Early Access)*
+*Open-source healthcare integration engine · Python · v0.2.0rc1 (Early Access)*
 
 This document is an orientation map, not a manual. It builds the **mental model** you need to reason about MessageFoundry: what it is, the four building blocks, how a message flows, the invariants you must not break, and where everything lives. Read it top to bottom once and the rest of the documentation — and the engine's behavior — will make sense.
 
@@ -340,7 +340,7 @@ Keep the message store on a fast *local* disk, not a network share — the stage
 
 ## 13. Deployment & operations
 
-- **Install:** the supported production artifact is the signed, version-pinned PyPI wheel (pip install "messagefoundry==0.2.0"); then messagefoundry init scaffolds your own config repo (ADR 0017). Extras are opt-in: \[postgres\], \[sqlserver\], \[console\], \[sftp\].
+- **Install:** the supported production artifact is the signed, version-pinned PyPI wheel (pip install "messagefoundry==0.2.0rc1"); then messagefoundry init scaffolds your own config repo (ADR 0017). Extras are opt-in: \[postgres\], \[sqlserver\], \[console\], \[sftp\].
 
 - **Run headless:** python -m messagefoundry serve --config samples/config --db ./messagefoundry.db --env dev — API on http://127.0.0.1:8765 (GET /connections, /messages, /stats, WS /ws/stats).
 
