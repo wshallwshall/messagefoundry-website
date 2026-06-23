@@ -81,6 +81,13 @@ code, pre, kbd { font-family: var(--mono); }
 .section--dark .lead { color: var(--muted-dk); }
 .section--dark .lead a { color: var(--accent); }
 .center { text-align: center; margin-inline: auto; }
+.faq { max-width: 760px; margin-inline: auto; }
+.faq-item { border-top: 1px solid var(--border); padding: 18px 2px; }
+.faq-item:last-child { border-bottom: 1px solid var(--border); }
+.faq-item h3 { margin: 0 0 6px; font-size: 1.06rem; }
+.faq-item p { margin: 0; color: var(--muted); }
+.section--dark .faq-item { border-color: var(--border-dk); }
+.section--dark .faq-item p { color: var(--muted-dk); }
 .center .lead { margin-inline: auto; }
 
 /* ------------------------------------------------------------------ buttons */

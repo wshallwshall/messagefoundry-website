@@ -20,6 +20,41 @@
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:image" content="https://messagefoundry.org/assets/img/og.png">
   <link rel="stylesheet" href="/assets/css/styles.css">
+  <script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "HowTo",
+  "name": "Get started with MessageFoundry",
+  "description": "Install MessageFoundry from PyPI, run the engine, send a test HL7 message over MLLP, open the admin console, and author your first route in Python.",
+  "step": [
+    {
+      "@type": "HowToStep",
+      "name": "Install",
+      "text": "Create a virtual environment and install MessageFoundry from PyPI with: pip install messagefoundry."
+    },
+    {
+      "@type": "HowToStep",
+      "name": "Run the engine",
+      "text": "Load the sample config, open the store, and serve the localhost API on 127.0.0.1:8765."
+    },
+    {
+      "@type": "HowToStep",
+      "name": "Send a test message",
+      "text": "Send an HL7 ADT message to the sample MLLP listener on port 2575 and watch it route."
+    },
+    {
+      "@type": "HowToStep",
+      "name": "Open the admin console",
+      "text": "Install the console extra and attach the desktop admin console to the API for dashboards, message search, and one-click replay."
+    },
+    {
+      "@type": "HowToStep",
+      "name": "Author your own route",
+      "text": "Add a Python module to your config directory that names an inbound and outbound Connection, then wires a Router and Handler by name."
+    }
+  ]
+}
+  </script>
 </head>
 <body>
 

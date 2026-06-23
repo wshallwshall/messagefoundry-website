@@ -312,6 +312,69 @@
     </div>
   </section>
 
+  <!-- faq -->
+  <section class="section">
+    <div class="container">
+      <div class="center" style="margin-bottom:28px"><span class="eyebrow">FAQ</span><h2>Frequently asked questions</h2></div>
+      <div class="faq">
+        <div class="faq-item"><h3>Is MessageFoundry HIPAA compliant?</h3><p>HIPAA compliance is a property of your whole deployment, not any single product. MessageFoundry is built to support it: PHI stays on your own infrastructure, every operator is authenticated, access to patient data is audited, traffic is encrypted with TLS and message bodies with AES-256-GCM, and controls map to the HIPAA Security Rule (NIST 800-66).</p></div>
+        <div class="faq-item"><h3>Is MessageFoundry PHI-safe — where does patient data live?</h3><p>Yes. MessageFoundry is self-hosted, so PHI never leaves your infrastructure. There is no vendor cloud, no third-party processor, and no telemetry of message contents — you run the engine on your own servers, on-premises or in your own private cloud.</p></div>
+        <div class="faq-item"><h3>Is MessageFoundry self-hosted and on-premises?</h3><p>Yes. MessageFoundry runs entirely on your own servers, on-premises or in your private cloud. It installs from PyPI, starts zero-config on SQLite, and scales to PostgreSQL or SQL Server. Nothing is sent to a vendor service.</p></div>
+        <div class="faq-item"><h3>How does MessageFoundry encrypt data?</h3><p>All network traffic uses TLS 1.2+ (TLS 1.3 preferred), including MLLP-over-TLS, on by default — so there is no cleartext PHI on the wire. Message bodies are encrypted at rest with AES-256-GCM in the store.</p></div>
+        <div class="faq-item"><h3>Has MessageFoundry been independently security audited?</h3><p>MessageFoundry publishes a self-assessment against OWASP ASVS 5.0 Level 3 (212 met, 0 failed, 0 partial, 133 N/A of 345) plus its Secure Development Standards. It has not yet had an independent external code review or penetration test — both are planned after Early Access.</p></div>
+      </div>
+    </div>
+  </section>
+
+  <script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    {
+      "@type": "Question",
+      "name": "Is MessageFoundry HIPAA compliant?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "HIPAA compliance is a property of your whole deployment, not any single product. MessageFoundry is built to support it: PHI stays on your own infrastructure, every operator is authenticated, access to patient data is audited, traffic is encrypted with TLS and message bodies with AES-256-GCM, and controls map to the HIPAA Security Rule (NIST 800-66)."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Is MessageFoundry PHI-safe — where does patient data live?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Yes. MessageFoundry is self-hosted, so PHI never leaves your infrastructure. There is no vendor cloud, no third-party processor, and no telemetry of message contents — you run the engine on your own servers, on-premises or in your own private cloud."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Is MessageFoundry self-hosted and on-premises?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Yes. MessageFoundry runs entirely on your own servers, on-premises or in your private cloud. It installs from PyPI, starts zero-config on SQLite, and scales to PostgreSQL or SQL Server. Nothing is sent to a vendor service."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "How does MessageFoundry encrypt data?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "All network traffic uses TLS 1.2+ (TLS 1.3 preferred), including MLLP-over-TLS, on by default — so there is no cleartext PHI on the wire. Message bodies are encrypted at rest with AES-256-GCM in the store."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Has MessageFoundry been independently security audited?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "MessageFoundry publishes a self-assessment against OWASP ASVS 5.0 Level 3 (212 met, 0 failed, 0 partial, 133 N/A of 345) plus its Secure Development Standards. It has not yet had an independent external code review or penetration test — both are planned after Early Access."
+      }
+    }
+  ]
+}
+  </script>
+
   <!-- cta -->
   <section class="section section--tight">
     <div class="container">
