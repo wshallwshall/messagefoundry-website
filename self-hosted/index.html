@@ -1,0 +1,205 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Self-hosted, PHI-safe integration engine — MessageFoundry</title>
+  <meta name="description" content="MessageFoundry is a self-hosted, PHI-safe healthcare integration engine: it runs entirely on your own infrastructure — on-premises or in your private cloud — so PHI never leaves your environment. No vendor cloud, no per-interface licensing.">
+  <link rel="canonical" href="https://messagefoundry.org/self-hosted/">
+  <link rel="icon" href="/assets/img/favicon.svg" type="image/svg+xml">
+  <meta name="theme-color" content="#0b1220">
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="MessageFoundry">
+  <meta property="og:title" content="Self-hosted, PHI-safe integration engine — MessageFoundry">
+  <meta property="og:description" content="A self-hosted healthcare integration engine — PHI never leaves your infrastructure. On-premises or your private cloud, no vendor cloud, no per-interface fees.">
+  <meta property="og:url" content="https://messagefoundry.org/self-hosted/">
+  <meta property="og:image" content="https://messagefoundry.org/assets/img/og.png">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta property="og:image:type" content="image/png">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:image" content="https://messagefoundry.org/assets/img/og.png">
+  <link rel="stylesheet" href="/assets/css/styles.css">
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    "mainEntity": [
+      { "@type": "Question", "name": "Is MessageFoundry self-hosted?", "acceptedAnswer": { "@type": "Answer", "text": "Yes. MessageFoundry runs entirely on your own servers — on-premises or in your private cloud. It installs from PyPI, starts zero-config on SQLite, and scales to PostgreSQL or SQL Server. There is no vendor cloud and nothing is sent to a managed service." } },
+      { "@type": "Question", "name": "What does PHI-safe mean?", "acceptedAnswer": { "@type": "Answer", "text": "Because MessageFoundry is self-hosted, PHI never leaves your infrastructure. There is no third-party processor and no telemetry of message contents — you hold the data, the encryption keys, and the network. Message bodies are encrypted at rest with AES-256-GCM." } },
+      { "@type": "Question", "name": "Can I run MessageFoundry on-premises or in my own private cloud?", "acceptedAnswer": { "@type": "Answer", "text": "Both. MessageFoundry runs headless wherever your data lives — a hospital data center, a VM, or your own private cloud account. It can run as a long-lived Windows service, and a single config repository can drive Test, Production, and more." } },
+      { "@type": "Question", "name": "Does MessageFoundry support a HIPAA-compliant deployment?", "acceptedAnswer": { "@type": "Answer", "text": "Yes — compliance is a property of your whole deployment, and MessageFoundry is built to support it: self-hosted PHI, TLS enabled by default, message bodies encrypted at rest, authenticated and audited access, and controls mapped to the HIPAA Security Rule (NIST 800-66). You stay in control of your environment." } }
+    ]
+  }
+  </script>
+</head>
+<body>
+
+  <header class="site-header">
+    <div class="container header-inner">
+      <a class="brand" href="/" aria-label="MessageFoundry home">
+        <img class="brand-mark" src="/assets/img/logo.svg" alt="" width="28" height="28">
+        <span class="brand-name">Message<span class="brand-accent">Foundry</span><span class="brand-tm">™</span></span>
+      </a>
+      <button class="nav-toggle" aria-expanded="false" aria-controls="site-nav" aria-label="Toggle navigation"><span></span><span></span><span></span></button>
+      <nav class="site-nav" id="site-nav">
+        <div class="nav-group">
+          <button type="button" class="nav-group__btn" aria-expanded="false" aria-haspopup="true" aria-controls="nav-product">Product</button>
+          <div class="nav-group__menu" id="nav-product">
+            <a href="/overview.html">Overview</a>
+            <a href="/features.html">Features</a>
+            <a href="/features-table.html">Feature list</a>
+            <a href="/architecture.html">Architecture</a>
+            <a href="/reliability.html">Reliability (CI)</a>
+            <a href="/tools.html">Tools</a>
+            <a href="/editor.html">Editor</a>
+            <a href="/console.html">Console</a>
+            <a href="/ai.html">AI assist</a>
+          </div>
+        </div>
+        <a href="/security.html">Security</a>
+        <a href="/comparison.html">Comparison</a>
+        <div class="nav-group">
+          <button type="button" class="nav-group__btn" aria-expanded="false" aria-haspopup="true" aria-controls="nav-getstarted">Get started</button>
+          <div class="nav-group__menu" id="nav-getstarted">
+            <a href="/getting-started.html">Quickstart</a>
+            <a href="/documents.html">Documents</a>
+          </div>
+        </div>
+        <div class="nav-group">
+          <button type="button" class="nav-group__btn" aria-expanded="false" aria-haspopup="true" aria-controls="nav-company">About Us</button>
+          <div class="nav-group__menu" id="nav-company">
+            <a href="/about.html">About</a>
+            <a href="/licensing.html">Licensing</a>
+            <a href="/contact.html">Contact</a>
+            <a href="/sponsor.html">Sponsor</a>
+          </div>
+        </div>
+        <a class="btn btn-ghost" href="/pypi.html">PyPI<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3l8 4.5l0 9l-8 4.5l-8 -4.5l0 -9l8 -4.5"/><path d="M12 12l8 -4.5"/><path d="M12 12l0 9"/><path d="M12 12l-8 -4.5"/><path d="M16 5.25l-8 4.5"/></svg></a>
+        <a class="btn btn-ghost" href="https://github.com/MEFORORG/MessageFoundry" target="_blank" rel="noopener">GitHub ↗</a>
+      </nav>
+    </div>
+  </header>
+
+  <section class="section section--dark section--tight">
+    <div class="container center">
+      <span class="eyebrow">Self-hosted &amp; PHI-safe</span>
+      <h1 style="max-width:18ch;margin-inline:auto">A self-hosted, PHI-safe integration engine</h1>
+      <p class="lead"><b>MessageFoundry</b> runs entirely on your own infrastructure — on-premises or in your private cloud. PHI never leaves your environment: no vendor cloud, no third-party processor, and no telemetry of message contents. You hold the data, the keys, and the network.</p>
+      <div class="btn-row center" style="margin-top:24px">
+        <a class="btn btn-primary" href="/getting-started.html">Get started</a>
+        <a class="btn btn-secondary" href="/security.html">Security &amp; PHI →</a>
+      </div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="container" style="max-width:880px">
+      <div class="grid grid-2" style="align-items:start">
+        <div class="card">
+          <h3>PHI stays on your infrastructure</h3>
+          <p>Self-hosted isn't a deployment option bolted onto a cloud product — it's the whole model.</p>
+          <ul class="feature-list" style="margin-top:12px">
+            <li><b>No vendor cloud, no processor</b> — message contents are never sent to a managed service.</li>
+            <li><b>No telemetry of PHI</b> — you control what, if anything, leaves your network.</li>
+            <li><b>You hold the keys</b> — message bodies are encrypted at rest with <b>AES-256-GCM</b> in your store.</li>
+          </ul>
+        </div>
+        <div class="card">
+          <h3>Runs where your data lives</h3>
+          <p>One engine, your environment — a data center, a VM, or your private cloud account.</p>
+          <ul class="feature-list" style="margin-top:12px">
+            <li><b>Installs from PyPI</b> — <code>pip install messagefoundry</code>, on Python 3.11+.</li>
+            <li><b>Zero-config on SQLite</b>, scaling to <b>PostgreSQL</b> or <b>SQL&nbsp;Server</b> for production.</li>
+            <li><b>Runs headless</b>, including as a long-lived <b>Windows service</b>; one config repo drives every environment.</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="grid grid-2" style="align-items:start;margin-top:22px">
+        <div class="card">
+          <h3>Secure by default</h3>
+          <ul class="feature-list">
+            <li><b>TLS enabled by default</b> (TLS 1.2+, incl. MLLP-over-TLS); plaintext is supported for endpoints that can't do TLS, within your secure network perimeter.</li>
+            <li><b>Authenticated &amp; audited</b> — local accounts, MFA, Active Directory, RBAC, and a tamper-evident audit trail.</li>
+            <li><b>Built to recognized standards</b> — NIST SSDF, the HIPAA Security Rule (800-66), and an OWASP ASVS Level 3 self-assessment. <a href="/security.html">See the evidence →</a></li>
+          </ul>
+        </div>
+        <div class="card">
+          <h3>No lock-in, no per-interface fees</h3>
+          <ul class="feature-list">
+            <li><b>Open source</b> under AGPL-3.0 — read every line, run as many interfaces as you like.</li>
+            <li><b>No cloud subscription</b> and <b>no per-interface licensing</b> — your interfaces are plain Python in your own repo.</li>
+            <li><b>A low-cost commercial license</b> is available from the non-profit when copyleft terms don't fit. <a href="/licensing.html">Licensing →</a></li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="callout" style="margin-top:30px">
+        <p style="margin:0"><strong>Data sovereignty, by construction.</strong> With a cloud or iPaaS engine, your PHI flows through someone else's systems. With MessageFoundry it doesn't move at all — the engine comes to your data. That's what <b>PHI-safe</b> means here. <a href="/comparison.html">Compare the models →</a></p>
+      </div>
+
+      <div class="btn-row" style="margin-top:30px">
+        <a class="btn btn-primary" href="/getting-started.html">Get started</a>
+        <a class="btn btn-secondary" href="/hl7-integration-engine/">More than an HL7 engine</a>
+        <a class="btn btn-ghost" href="https://github.com/MEFORORG/MessageFoundry" target="_blank" rel="noopener">View on GitHub ↗</a>
+      </div>
+    </div>
+  </section>
+
+  <footer class="site-footer">
+    <div class="container">
+      <div class="footer-grid">
+        <div class="footer-brand">
+          <a class="brand" href="/" aria-label="MessageFoundry home">
+            <img class="brand-mark" src="/assets/img/logo.svg" alt="" width="28" height="28">
+            <span class="brand-name">Message<span class="brand-accent">Foundry</span><span class="brand-tm">™</span></span>
+          </a>
+          <p>Open-source healthcare integration engine — secure by default, built to recognized standards, connecting a wide range of protocols and message types.</p>
+          <div class="badge-row" style="margin-top:16px">
+            <span class="badge">Open source</span>
+            <span class="badge">No lock-in</span>
+            <span class="badge">Self-hosted</span>
+          </div>
+        </div>
+        <div class="footer-col">
+          <h4>Product</h4>
+          <a href="/overview.html">Overview</a>
+          <a href="/features.html">Features</a>
+          <a href="/tools.html">Tools</a>
+          <a href="/editor.html">Editor</a>
+          <a href="/console.html">Console</a>
+          <a href="/ai.html">AI assist</a>
+          <a href="/reliability.html">Reliability</a>
+          <a href="/dicom.html">DICOM</a>
+          <a href="/security.html">Security &amp; PHI</a>
+          <a href="/comparison.html">Comparison</a>
+          <a href="/getting-started.html">Get started</a>
+        </div>
+        <div class="footer-col">
+          <h4>Docs</h4>
+          <a href="https://github.com/MEFORORG/MessageFoundry/blob/main/docs/ARCHITECTURE.md">Architecture</a>
+          <a href="https://github.com/MEFORORG/MessageFoundry/blob/main/docs/CONNECTIONS.md">Connections</a>
+          <a href="https://github.com/MEFORORG/MessageFoundry/blob/main/docs/SECURITY.md">Security</a>
+          <a href="https://github.com/MEFORORG/MessageFoundry/blob/main/docs/PHI.md">PHI / HIPAA</a>
+        </div>
+        <div class="footer-col">
+          <h4>Project</h4>
+          <a href="https://github.com/MEFORORG/MessageFoundry" target="_blank" rel="noopener">GitHub</a>
+          <a href="https://github.com/MEFORORG/MessageFoundry/issues" target="_blank" rel="noopener">Issues</a>
+          <a href="/contact.html">Contact</a>
+          <a href="/licensing.html">License</a>
+          <a href="/about.html">About</a>
+          <a href="/sponsor.html">Sponsor</a>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        <span>© 2026 MessageFoundry, a non-profit — this website and its content, all rights reserved. The MessageFoundry engine is separately open source, licensed under AGPL-3.0-or-later.</span>
+        <span>MessageFoundry and the MessageFoundry word mark are trademarks of the MessageFoundry Organization. Mirth Connect, Cloverleaf, Rhapsody, Corepoint, and Ensemble are trademarks of their respective owners; MessageFoundry is independent and unaffiliated.</span>
+      </div>
+    </div>
+  </footer>
+
+  <script src="/assets/js/nav.js" defer></script>
+</body>
+</html>
