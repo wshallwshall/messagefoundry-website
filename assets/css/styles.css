@@ -101,10 +101,13 @@ code, pre, kbd { font-family: var(--mono); }
 .btn:active { transform: translateY(0); }
 .btn-primary { background: var(--grad); color: #1a1206; box-shadow: 0 8px 22px rgba(245,158,11,.32); }
 .btn-primary:hover { box-shadow: 0 12px 30px rgba(245,158,11,.42); color: #1a1206; }
-.btn-secondary { background: #fff; color: var(--text); border-color: var(--border); }
-.btn-secondary:hover { border-color: #c8d2e0; }
-.btn-ghost { background: transparent; color: var(--text-dk); border-color: var(--border-dk); }
-.btn-ghost:hover { background: rgba(255,255,255,.06); color: #fff; }
+.btn-secondary { background: #fff; color: var(--text); border-color: #cbd5e1; }
+.btn-secondary:hover { border-color: #aab4c4; }
+.btn-ghost { background: transparent; color: var(--text); border-color: #cbd5e1; }
+.btn-ghost:hover { background: var(--surface-2); color: var(--text); }
+/* ghost buttons on dark surfaces (nav, dark sections, CTA bands) keep light text */
+.site-header .btn-ghost, .section--dark .btn-ghost, .cta-band .btn-ghost { color: var(--text-dk); border-color: var(--border-dk); }
+.site-header .btn-ghost:hover, .section--dark .btn-ghost:hover, .cta-band .btn-ghost:hover { background: rgba(255,255,255,.06); color: #fff; }
 .btn-row { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 26px; }
 .center .btn-row { justify-content: center; }
 
