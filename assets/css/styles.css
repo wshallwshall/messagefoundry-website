@@ -287,8 +287,9 @@ table.cmp.feat { min-width: 600px; }
 table.cmp.feat tbody th { white-space: normal; width: 34%; }
 table.cmp.feat td { color: var(--muted); }
 table.cmp.feat tbody tr.grp th {
-  background: var(--ink); color: #fff; white-space: normal;
-  font-size: .8rem; font-weight: 700; letter-spacing: .1em; text-transform: uppercase;
+  background: var(--surface-2); color: var(--accent-ink); white-space: normal;
+  font-size: .78rem; font-weight: 800; letter-spacing: .1em; text-transform: uppercase;
+  border-top: 2px solid var(--border);
 }
 table.cmp.feat tbody tr.grp:first-child th { border-top: 0; }
 table.cmp.feat tbody th code, table.cmp.feat td code { white-space: nowrap; }
