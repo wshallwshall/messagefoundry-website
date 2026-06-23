@@ -41,6 +41,11 @@
     <priority>0.7</priority>
   </url>
   <url>
+    <loc>https://messagefoundry.org/hl7-over-mllp/</loc>
+    <lastmod>2026-06-23</lastmod>
+    <priority>0.7</priority>
+  </url>
+  <url>
     <loc>https://messagefoundry.org/pypi.html</loc>
     <lastmod>2026-06-17</lastmod>
     <priority>0.7</priority>
