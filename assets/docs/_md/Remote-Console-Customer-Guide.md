@@ -2,7 +2,7 @@
 
 **A customer setup guide.** This guide is for the IT administrator who wants staff to run the
 MessageFoundry **admin console** from their own PCs instead of only on the server that hosts the
-engine. It walks through the three things you need to do â€” prepare a certificate, open the engine to
+engine. It walks through the three things you need to do — prepare a certificate, open the engine to
 the network securely, and point each console at it.
 
 No code changes are required; everything here is configuration.
@@ -21,20 +21,20 @@ To use the console from another PC, you:
 2. Tell the engine to **listen on the network**, then
 3. Point each remote console at the engine's `https://` address.
 
-The connection is encrypted end-to-end and every user signs in â€” the same authentication the local
+The connection is encrypted end-to-end and every user signs in — the same authentication the local
 console already uses. Nothing is exposed until you make these changes deliberately.
 
-> **Before you begin â€” checklist**
+> **Before you begin — checklist**
 > - The engine server's hostname or IP address (e.g. `mefor-srv01.hospital.local`).
 > - A TLS certificate for that hostname (see Step 1).
 > - The MessageFoundry console installed on each remote PC.
-> - A network path from the PCs to the engine on its API port (default **8765**) â€” open the firewall
+> - A network path from the PCs to the engine on its API port (default **8765**) — open the firewall
 >   if needed.
 > - A MessageFoundry user account for each person who will sign in.
 
 ---
 
-## Step 1 â€” Prepare a TLS certificate for the engine
+## Step 1 — Prepare a TLS certificate for the engine
 
 The engine needs a certificate so traffic (including login credentials) is encrypted. Choose **one**:
 
@@ -42,7 +42,7 @@ The engine needs a certificate so traffic (including login credentials) is encry
 |---|---|---|
 | **Your organization's internal CA** (e.g. Active Directory Certificate Services) | **Recommended** for most sites | Issue a server certificate for the engine's hostname. Domain-joined PCs already trust your CA, so the console needs no extra setup. |
 | **A public CA** (e.g. a commercial cert) | The engine has a public DNS name | Trusted everywhere automatically. |
-| **A self-signed certificate** | Small/internal setups, pilots | Works fine â€” each console points at the certificate with `--cacert` (Step 3). |
+| **A self-signed certificate** | Small/internal setups, pilots | Works fine — each console points at the certificate with `--cacert` (Step 3). |
 
 Whichever you choose, the certificate's **Subject Alternative Name (SAN)** must include the hostname
 or IP address the console will connect to. You'll end up with two files (or one combined file):
@@ -54,7 +54,7 @@ Place them somewhere the engine's service account can read, e.g. `C:\MessageFoun
 
 ---
 
-## Step 2 â€” Configure the engine server
+## Step 2 — Configure the engine server
 
 Edit the engine's configuration file, **`messagefoundry.toml`**, on the server. Add or update the
 `[api]` section:
@@ -72,7 +72,7 @@ Notes:
 - `host = "0.0.0.0"` listens on all network interfaces; you can instead use a specific address (e.g.
   `"10.0.0.12"`) to limit it to one network.
 - If your private key is **password-protected**, supply the passphrase via the environment variable
-  `MEFOR_API_TLS_KEY_PASSWORD` â€” never put it in the file.
+  `MEFOR_API_TLS_KEY_PASSWORD` — never put it in the file.
 - The engine **will refuse to start** if you open it to the network **without** a certificate (this
   protects you from accidentally sending credentials in clear text).
 
@@ -86,7 +86,7 @@ Open the firewall on the chosen port (default **8765/TCP**) so remote PCs can re
 
 ---
 
-## Step 3 â€” Connect the console from a remote PC
+## Step 3 — Connect the console from a remote PC
 
 On each PC, launch the console pointed at the engine's `https://` address:
 
@@ -96,10 +96,10 @@ messagefoundry-console --url https://mefor-srv01.hospital.local:8765
 
 (or, from a command prompt, `python -m messagefoundry.console --url https://mefor-srv01.hospital.local:8765`)
 
-**Certificate trust â€” usually nothing to configure:**
+**Certificate trust — usually nothing to configure:**
 
 - If the engine's certificate was issued by **your organization's CA** and the PC is **domain-joined**,
-  it's already trusted â€” it just works.
+  it's already trusted — it just works.
 - If you used a **public CA**, it's also already trusted.
 - If you used a **self-signed certificate** (or an internal CA not yet installed on the PC), add
   `--cacert` pointing at the engine's certificate file:
@@ -112,11 +112,11 @@ messagefoundry-console --url https://mefor-srv01.hospital.local:8765
   drop the flag.)
 
 Finally, **sign in** with your MessageFoundry account. If multi-factor authentication is enabled,
-you'll be prompted for your second factor â€” the same as on the local console.
+you'll be prompted for your second factor — the same as on the local console.
 
 ---
 
-## Step 4 â€” Verify it's working
+## Step 4 — Verify it's working
 
 - The console connects and shows the engine **Status** page with live connection counts.
 - The status indicator shows the engine is reachable and refreshes on its own.
@@ -125,10 +125,10 @@ If the console can't connect, see Troubleshooting below.
 
 ---
 
-## Optional â€” require a client certificate (mutual TLS)
+## Optional — require a client certificate (mutual TLS)
 
 For higher assurance you can require each console to present its **own** certificate, so only
-PCs holding an approved certificate can connect â€” in addition to the user signing in.
+PCs holding an approved certificate can connect — in addition to the user signing in.
 
 - On the engine, set `tls_client_ca_file` under `[api]` to the CA that issued the console
   certificates.
@@ -148,7 +148,7 @@ This is optional and off by default.
 | What you see | What it means / what to do |
 |---|---|
 | `certificate verify failed` / "not trusted by the trust provider" | The PC doesn't trust the engine's certificate. Add `--cacert <file>`, or install the issuing CA into the PC's Windows certificate store. |
-| `refusing to use plaintext http to non-loopback host â€¦` | You used an `http://` address to a remote engine. Use the `https://` address (configure the certificate in Step 2). |
+| `refusing to use plaintext http to non-loopback host …` | You used an `http://` address to a remote engine. Use the `https://` address (configure the certificate in Step 2). |
 | The **engine** won't start after editing the config | You set `host` to a network address without a certificate. Add `tls_cert_file` (+ `tls_key_file`) under `[api]`, or revert `host` to `127.0.0.1`. |
 | "hostname mismatch" when connecting | The certificate's name (SAN) doesn't match the address in `--url`. Reissue the certificate for the correct hostname/IP. |
 | Console can't reach the server at all | Check the firewall on the engine server (default port **8765/TCP**) and that the service is running. |
@@ -158,8 +158,8 @@ This is optional and off by default.
 ## Security notes
 
 - **Stays on your network.** The engine runs on-premises; remote access is to *your* server over
-  *your* network â€” no data leaves your environment.
-- **Encrypted in transit.** All consoleâ€“engine traffic, including login, is protected by TLS.
+  *your* network — no data leaves your environment.
+- **Encrypted in transit.** All console–engine traffic, including login, is protected by TLS.
 - **Authenticated and audited.** Every user signs in, and access to patient data is recorded with the
   acting user. We recommend enabling **multi-factor authentication** for any network-exposed engine.
 - `--insecure` only permits unencrypted `http` on a trusted test network; it does **not** weaken
