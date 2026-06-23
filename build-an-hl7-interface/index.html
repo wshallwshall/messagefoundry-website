@@ -1,0 +1,234 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Build an HL7 interface in Python — MessageFoundry</title>
+  <meta name="description" content="Build an HL7 interface in plain Python with MessageFoundry: the four building blocks (Connection, Router, Handler, Message), a complete worked example, validation, testing before production, and operating it. Open-source and self-hosted.">
+  <link rel="canonical" href="https://messagefoundry.org/build-an-hl7-interface/">
+  <link rel="icon" href="/assets/img/favicon.svg" type="image/svg+xml">
+  <meta name="theme-color" content="#0b1220">
+  <meta property="og:type" content="article">
+  <meta property="og:site_name" content="MessageFoundry">
+  <meta property="og:title" content="Build an HL7 interface in Python — MessageFoundry">
+  <meta property="og:description" content="The four building blocks, a worked example, validation, and testing — build an HL7 interface as plain Python you can version-control.">
+  <meta property="og:url" content="https://messagefoundry.org/build-an-hl7-interface/">
+  <meta property="og:image" content="https://messagefoundry.org/assets/img/og.png">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta property="og:image:type" content="image/png">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:image" content="https://messagefoundry.org/assets/img/og.png">
+  <link rel="stylesheet" href="/assets/css/styles.css">
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "HowTo",
+    "name": "Build an HL7 interface in Python",
+    "description": "Build an HL7 v2 interface with MessageFoundry: declare inbound and outbound Connections, write a Router and Handler, validate the config with the commit gate, and test it before production.",
+    "step": [
+      { "@type": "HowToStep", "name": "Install MessageFoundry", "text": "Install the engine from PyPI with pip install messagefoundry." },
+      { "@type": "HowToStep", "name": "Declare your Connections", "text": "Name an inbound Connection that receives messages and an outbound Connection that sends them." },
+      { "@type": "HowToStep", "name": "Write a Router and Handler", "text": "A Router decides where each message goes; a Handler transforms it and sends it to an outbound Connection." },
+      { "@type": "HowToStep", "name": "Validate the interface", "text": "Run the commit gate to validate the config before it ships." },
+      { "@type": "HowToStep", "name": "Test, then run it", "text": "Send a sample message to confirm routing, then run the engine to operate the interface." }
+    ]
+  }
+  </script>
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    "mainEntity": [
+      { "@type": "Question", "name": "How do I build an HL7 interface?", "acceptedAnswer": { "@type": "Answer", "text": "In MessageFoundry you build an HL7 interface from four blocks: a Connection (inbound and outbound), a Router that decides where each message goes, and a Handler that transforms and sends it. You write them as plain Python in a config module, validate with the commit gate, then run the engine." } },
+      { "@type": "Question", "name": "Do I have to write code, or can I use a GUI?", "acceptedAnswer": { "@type": "Answer", "text": "Either. The VS Code extension and admin console offer guided wizards for Connections and routes, or you can write them directly in Python for full control. Both produce the same version-controlled config." } },
+      { "@type": "Question", "name": "How do I test an HL7 interface before production?", "acceptedAnswer": { "@type": "Answer", "text": "Validate the config with the commit gate (python -m messagefoundry check), then send sample messages and watch each message reach a recorded disposition — routed, filtered, or unrouted. Because interfaces are plain Python, you can also unit-test routers and handlers like any code." } }
+    ]
+  }
+  </script>
+</head>
+<body>
+
+  <header class="site-header">
+    <div class="container header-inner">
+      <a class="brand" href="/" aria-label="MessageFoundry home">
+        <img class="brand-mark" src="/assets/img/logo.svg" alt="" width="28" height="28">
+        <span class="brand-name">Message<span class="brand-accent">Foundry</span><span class="brand-tm">™</span></span>
+      </a>
+      <button class="nav-toggle" aria-expanded="false" aria-controls="site-nav" aria-label="Toggle navigation"><span></span><span></span><span></span></button>
+      <nav class="site-nav" id="site-nav">
+        <div class="nav-group">
+          <button type="button" class="nav-group__btn" aria-expanded="false" aria-haspopup="true" aria-controls="nav-product">Product</button>
+          <div class="nav-group__menu" id="nav-product">
+            <a href="/overview.html">Overview</a>
+            <a href="/features.html">Features</a>
+            <a href="/features-table.html">Feature list</a>
+            <a href="/architecture.html">Architecture</a>
+            <a href="/reliability.html">Reliability (CI)</a>
+            <a href="/tools.html">Tools</a>
+            <a href="/editor.html">Editor</a>
+            <a href="/console.html">Console</a>
+            <a href="/ai.html">AI assist</a>
+          </div>
+        </div>
+        <a href="/security.html">Security</a>
+        <a href="/comparison.html">Comparison</a>
+        <div class="nav-group">
+          <button type="button" class="nav-group__btn" aria-expanded="false" aria-haspopup="true" aria-controls="nav-getstarted">Get started</button>
+          <div class="nav-group__menu" id="nav-getstarted">
+            <a href="/getting-started.html">Quickstart</a>
+            <a href="/documents.html">Documents</a>
+          </div>
+        </div>
+        <div class="nav-group">
+          <button type="button" class="nav-group__btn" aria-expanded="false" aria-haspopup="true" aria-controls="nav-company">About Us</button>
+          <div class="nav-group__menu" id="nav-company">
+            <a href="/about.html">About</a>
+            <a href="/licensing.html">Licensing</a>
+            <a href="/contact.html">Contact</a>
+            <a href="/sponsor.html">Sponsor</a>
+          </div>
+        </div>
+        <a class="btn btn-ghost" href="/pypi.html">PyPI<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3l8 4.5l0 9l-8 4.5l-8 -4.5l0 -9l8 -4.5"/><path d="M12 12l8 -4.5"/><path d="M12 12l0 9"/><path d="M12 12l-8 -4.5"/><path d="M16 5.25l-8 4.5"/></svg></a>
+        <a class="btn btn-ghost" href="https://github.com/MEFORORG/MessageFoundry" target="_blank" rel="noopener">GitHub ↗</a>
+      </nav>
+    </div>
+  </header>
+
+  <section class="section section--dark section--tight">
+    <div class="container center">
+      <span class="eyebrow">Developer guide</span>
+      <h1 style="max-width:18ch;margin-inline:auto">Build an HL7 interface in Python</h1>
+      <p class="lead">An interface in <b>MessageFoundry</b> is four small pieces of plain Python: a <b>Connection</b> in, a <b>Router</b> to decide where messages go, a <b>Handler</b> to transform and send them, and a <b>Connection</b> out. Here's the whole thing — build it, validate it, and test it before it goes live.</p>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="container" style="max-width:820px">
+
+      <h2>The four building blocks</h2>
+      <ul class="feature-list">
+        <li><b>Connection</b> — an endpoint that receives (<code>inbound</code>) or sends (<code>outbound</code>) messages over a transport like MLLP, files, HTTP, or a database.</li>
+        <li><b>Router</b> — a function that looks at a message and returns the names of the Handlers that should process it.</li>
+        <li><b>Handler</b> — a function that transforms a message and sends it to an outbound Connection (or filters it).</li>
+        <li><b>Message</b> — the parsed HL7, addressed by path: <code>msg["MSH-9.1"]</code>, <code>msg["PID-3"]</code>, and so on.</li>
+      </ul>
+
+      <h2>1. Install and create a config directory</h2>
+      <p>Install the engine from <a href="/pypi.html">PyPI</a>; your interfaces live as Python modules in a config directory you own.</p>
+      <div class="code-card">
+        <div class="code-card__bar"><i></i><i></i><i></i><span class="code-card__name">terminal</span></div>
+<pre class="code">pip install messagefoundry
+mkdir config</pre>
+      </div>
+
+      <h2>2. Declare your Connections</h2>
+      <p>Name an inbound Connection to receive messages and an outbound Connection to send them. Point the inbound at a Router.</p>
+      <div class="code-card">
+        <div class="code-card__bar"><i></i><i></i><i></i><span class="code-card__name">config/adt_feed.py</span></div>
+<pre class="code"><span class="k">from</span> messagefoundry <span class="k">import</span> MLLP, Send, inbound, outbound, router, handler
+
+<span class="f">inbound</span>(<span class="s">"IB_ADT"</span>, <span class="f">MLLP</span>(port=<span class="n">2575</span>), router=<span class="s">"adt_router"</span>)
+<span class="f">outbound</span>(<span class="s">"OB_EHR"</span>, <span class="f">MLLP</span>(host=<span class="s">"10.0.0.21"</span>, port=<span class="n">6661</span>))</pre>
+      </div>
+
+      <h2>3. Write a Router and a Handler</h2>
+      <p>The Router decides routing; the Handler does the work. Address HL7 fields by path; return an empty list to leave a message <em>unrouted</em>, or <code>None</code> from a Handler to <em>filter</em> it.</p>
+      <div class="code-card">
+        <div class="code-card__bar"><i></i><i></i><i></i><span class="code-card__name">config/adt_feed.py</span></div>
+<pre class="code"><span class="d">@router</span>(<span class="s">"adt_router"</span>)
+<span class="k">def</span> <span class="f">route</span>(msg):
+    <span class="k">if</span> msg[<span class="s">"MSH-9.1"</span>] != <span class="s">"ADT"</span>:
+        <span class="k">return</span> []                    <span class="c"># UNROUTED — not an admit/discharge/transfer</span>
+    <span class="k">return</span> [<span class="s">"to_ehr"</span>]
+
+<span class="d">@handler</span>(<span class="s">"to_ehr"</span>)
+<span class="k">def</span> <span class="f">to_ehr</span>(msg):
+    <span class="k">return</span> <span class="f">Send</span>(<span class="s">"OB_EHR"</span>, msg)</pre>
+      </div>
+
+      <h2>4. Validate the interface</h2>
+      <p>Run the commit gate. It checks that every Connection, Router, and Handler is wired correctly before anything ships — the same gate you'd put in CI.</p>
+      <div class="code-card">
+        <div class="code-card__bar"><i></i><i></i><i></i><span class="code-card__name">terminal</span></div>
+<pre class="code">python -m messagefoundry check --config config</pre>
+      </div>
+
+      <h2>5. Test it, then run it</h2>
+      <p>Run the engine and send a sample message. Every message reaches a recorded disposition — <b>routed</b>, <b>filtered</b>, or <b>unrouted</b> — so nothing is ever silently dropped. Because routers and handlers are plain Python, you can also unit-test them like any function.</p>
+      <div class="code-card">
+        <div class="code-card__bar"><i></i><i></i><i></i><span class="code-card__name">terminal</span></div>
+<pre class="code">python -m messagefoundry serve --config config --db messagefoundry.db
+<span class="c"># in another shell — send a sample ADT to the MLLP port</span>
+python samples/send_mllp.py samples/messages/adt_a01.hl7</pre>
+      </div>
+
+      <div class="callout" style="margin-top:30px">
+        <p style="margin:0"><strong>That's a complete interface.</strong> Receive, route, transform, send — version-controlled, validated, and testable. Add more interfaces by adding more modules; one config repo can drive Test, Production, and more.</p>
+      </div>
+
+      <div class="btn-row" style="margin-top:30px">
+        <a class="btn btn-primary" href="/hl7-over-mllp/">HL7 over MLLP →</a>
+        <a class="btn btn-secondary" href="/hl7-to-fhir/">HL7 to FHIR →</a>
+        <a class="btn btn-ghost" href="/getting-started.html">Full quickstart</a>
+      </div>
+
+    </div>
+  </section>
+
+  <footer class="site-footer">
+    <div class="container">
+      <div class="footer-grid">
+        <div class="footer-brand">
+          <a class="brand" href="/" aria-label="MessageFoundry home">
+            <img class="brand-mark" src="/assets/img/logo.svg" alt="" width="28" height="28">
+            <span class="brand-name">Message<span class="brand-accent">Foundry</span><span class="brand-tm">™</span></span>
+          </a>
+          <p>Open-source healthcare integration engine — secure by default, built to recognized standards, connecting a wide range of protocols and message types.</p>
+          <div class="badge-row" style="margin-top:16px">
+            <span class="badge">Open source</span>
+            <span class="badge">No lock-in</span>
+            <span class="badge">Self-hosted</span>
+          </div>
+        </div>
+        <div class="footer-col">
+          <h4>Product</h4>
+          <a href="/overview.html">Overview</a>
+          <a href="/features.html">Features</a>
+          <a href="/tools.html">Tools</a>
+          <a href="/editor.html">Editor</a>
+          <a href="/console.html">Console</a>
+          <a href="/ai.html">AI assist</a>
+          <a href="/reliability.html">Reliability</a>
+          <a href="/dicom.html">DICOM</a>
+          <a href="/security.html">Security &amp; PHI</a>
+          <a href="/comparison.html">Comparison</a>
+          <a href="/getting-started.html">Get started</a>
+        </div>
+        <div class="footer-col">
+          <h4>Docs</h4>
+          <a href="https://github.com/MEFORORG/MessageFoundry/blob/main/docs/ARCHITECTURE.md">Architecture</a>
+          <a href="https://github.com/MEFORORG/MessageFoundry/blob/main/docs/CONNECTIONS.md">Connections</a>
+          <a href="https://github.com/MEFORORG/MessageFoundry/blob/main/docs/SECURITY.md">Security</a>
+          <a href="https://github.com/MEFORORG/MessageFoundry/blob/main/docs/PHI.md">PHI / HIPAA</a>
+        </div>
+        <div class="footer-col">
+          <h4>Project</h4>
+          <a href="https://github.com/MEFORORG/MessageFoundry" target="_blank" rel="noopener">GitHub</a>
+          <a href="https://github.com/MEFORORG/MessageFoundry/issues" target="_blank" rel="noopener">Issues</a>
+          <a href="/contact.html">Contact</a>
+          <a href="/licensing.html">License</a>
+          <a href="/about.html">About</a>
+          <a href="/sponsor.html">Sponsor</a>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        <span>© 2026 MessageFoundry, a non-profit — this website and its content, all rights reserved. The MessageFoundry engine is separately open source, licensed under AGPL-3.0-or-later.</span>
+        <span>MessageFoundry and the MessageFoundry word mark are trademarks of the MessageFoundry Organization. Mirth Connect, Cloverleaf, Rhapsody, Corepoint, and Ensemble are trademarks of their respective owners; MessageFoundry is independent and unaffiliated.</span>
+      </div>
+    </div>
+  </footer>
+
+  <script src="/assets/js/nav.js" defer></script>
+</body>
+</html>
