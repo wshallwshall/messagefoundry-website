@@ -126,6 +126,7 @@
             <tr><th scope="row">FHIR REST destination</th><td>Create / update / transaction against a FHIR server — R4B default (R5 / STU3) — with a FHIR codec and FHIRPath. (An inbound FHIR listener is on the roadmap.)</td></tr>
             <tr><th scope="row">Files — local &amp; SFTP / FTP / FTPS</th><td>Local directories and remote file transfer, with templated output names (e.g. <code>{MSH-10}.hl7</code>).</td></tr>
             <tr><th scope="row">Database</th><td>Poll records in and write results out.</td></tr>
+            <tr><th scope="row">DICOM imaging</th><td>C-STORE SCP (receive) and SCU (send) plus C-ECHO over DIMSE, and DICOMweb STOW-RS over HTTP, with a code-first SR→HL7 v2 transform. <a href="/dicom.html">DICOM details →</a></td></tr>
             <tr><th scope="row">Count-and-log invariant</th><td>Every message a connection takes in or puts out is counted and logged; a router or filter decision is a recorded outcome (<code>UNROUTED</code> / <code>FILTERED</code>), never a silent drop.</td></tr>
 
             <tr class="grp"><th colspan="2" scope="colgroup">Routing &amp; transformation</th></tr>
@@ -268,6 +269,7 @@
           <a href="/console.html">Console</a>
           <a href="/ai.html">AI assist</a>
           <a href="/reliability.html">Reliability</a>
+          <a href="/dicom.html">DICOM</a>
           <a href="/security.html">Security &amp; PHI</a>
           <a href="/comparison.html">Comparison</a>
           <a href="/getting-started.html">Get started</a>

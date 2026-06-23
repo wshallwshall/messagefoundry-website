@@ -218,9 +218,9 @@ June 2026.
   production deployments: migration assistance, custom connectors, and on-call operations.
 
 ### Planned (roadmap — not yet available)
-- **Additional transports** — FHIR and DICOM endpoints, inbound HTTP/SOAP listeners, JMS, email, and
-  remote-file schemes beyond SFTP (FTP/FTPS/SMB/S3) are planned. (v0.1 already ships MLLP, TCP,
-  HTTP/REST, SOAP, database, and files incl. local + SFTP/FTP/FTPS.)
+- **Additional transports** — inbound HTTP/SOAP/FHIR listeners, JMS, email, and remote-file schemes
+  beyond SFTP (SMB/S3) are planned. (Already shipped: MLLP, TCP, X12/EDI, HTTP/REST, SOAP, FHIR REST,
+  DICOM — C-STORE SCP/SCU, C-ECHO, DICOMweb STOW-RS — database, and files incl. local + SFTP/FTP/FTPS.)
 - **De-identification framework**, outbound destination allow-listing, **centralized log redaction**,
   and **retention/purge enforcement** — all planned.
 - **Managed, BAA-backed AI** (for PHI-scoped assistance) — planned; today the assistant is code-only.

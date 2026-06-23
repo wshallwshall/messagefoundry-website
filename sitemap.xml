@@ -56,6 +56,11 @@
     <priority>0.7</priority>
   </url>
   <url>
+    <loc>https://messagefoundry.org/dicom.html</loc>
+    <lastmod>2026-06-22</lastmod>
+    <priority>0.6</priority>
+  </url>
+  <url>
     <loc>https://messagefoundry.org/about.html</loc>
     <lastmod>2026-06-12</lastmod>
     <priority>0.6</priority>
