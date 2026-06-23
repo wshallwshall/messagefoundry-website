@@ -1,0 +1,187 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>More than just an HL7 integration engine — MessageFoundry</title>
+  <meta name="description" content="MessageFoundry is a capable HL7 integration engine — deep HL7 v2 parsing, validation, routing, and transformation — and a broader healthcare integration engine that also connects FHIR, X12/EDI, and DICOM. Open-source, self-hosted, Python-native.">
+  <link rel="canonical" href="https://messagefoundry.org/hl7-integration-engine/">
+  <link rel="icon" href="/assets/img/favicon.svg" type="image/svg+xml">
+  <meta name="theme-color" content="#0b1220">
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="MessageFoundry">
+  <meta property="og:title" content="More than just an HL7 integration engine — MessageFoundry">
+  <meta property="og:description" content="A capable HL7 integration engine with deep HL7 v2 support — and a broader healthcare integration engine that also connects FHIR, X12/EDI, and DICOM.">
+  <meta property="og:url" content="https://messagefoundry.org/hl7-integration-engine/">
+  <meta property="og:image" content="https://messagefoundry.org/assets/img/og.png">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta property="og:image:type" content="image/png">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:image" content="https://messagefoundry.org/assets/img/og.png">
+  <link rel="stylesheet" href="/assets/css/styles.css">
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    "mainEntity": [
+      { "@type": "Question", "name": "Is MessageFoundry an HL7 integration engine?", "acceptedAnswer": { "@type": "Answer", "text": "Yes — and more. MessageFoundry has deep HL7 v2 support: parsing, tiered validation, routing, and transformation over MLLP. It is also a broader healthcare integration engine that connects FHIR, X12/EDI, and DICOM across many transports — so one engine handles HL7 and everything around it." } },
+      { "@type": "Question", "name": "What does MessageFoundry support besides HL7 v2?", "acceptedAnswer": { "@type": "Answer", "text": "FHIR (REST), X12/EDI, and DICOM, plus JSON and XML payloads — over MLLP, TCP, HTTP/REST, SOAP, files, SFTP/FTP, and databases. It connects a wide range of healthcare protocols and message types from a single, self-hosted engine." } },
+      { "@type": "Question", "name": "Is MessageFoundry an HL7 interface engine or a healthcare integration engine?", "acceptedAnswer": { "@type": "Answer", "text": "Both terms fit. MessageFoundry handles classic HL7 v2 interfaces and the broader integration work — FHIR, X12, DICOM — in one open-source, self-hosted, Python-native engine, so you don't need a separate tool per standard." } }
+    ]
+  }
+  </script>
+</head>
+<body>
+
+  <header class="site-header">
+    <div class="container header-inner">
+      <a class="brand" href="/" aria-label="MessageFoundry home">
+        <img class="brand-mark" src="/assets/img/logo.svg" alt="" width="28" height="28">
+        <span class="brand-name">Message<span class="brand-accent">Foundry</span><span class="brand-tm">™</span></span>
+      </a>
+      <button class="nav-toggle" aria-expanded="false" aria-controls="site-nav" aria-label="Toggle navigation"><span></span><span></span><span></span></button>
+      <nav class="site-nav" id="site-nav">
+        <div class="nav-group">
+          <button type="button" class="nav-group__btn" aria-expanded="false" aria-haspopup="true" aria-controls="nav-product">Product</button>
+          <div class="nav-group__menu" id="nav-product">
+            <a href="/overview.html">Overview</a>
+            <a href="/features.html">Features</a>
+            <a href="/features-table.html">Feature list</a>
+            <a href="/architecture.html">Architecture</a>
+            <a href="/reliability.html">Reliability (CI)</a>
+            <a href="/tools.html">Tools</a>
+            <a href="/editor.html">Editor</a>
+            <a href="/console.html">Console</a>
+            <a href="/ai.html">AI assist</a>
+          </div>
+        </div>
+        <a href="/security.html">Security</a>
+        <a href="/comparison.html">Comparison</a>
+        <div class="nav-group">
+          <button type="button" class="nav-group__btn" aria-expanded="false" aria-haspopup="true" aria-controls="nav-getstarted">Get started</button>
+          <div class="nav-group__menu" id="nav-getstarted">
+            <a href="/getting-started.html">Quickstart</a>
+            <a href="/documents.html">Documents</a>
+          </div>
+        </div>
+        <div class="nav-group">
+          <button type="button" class="nav-group__btn" aria-expanded="false" aria-haspopup="true" aria-controls="nav-company">About Us</button>
+          <div class="nav-group__menu" id="nav-company">
+            <a href="/about.html">About</a>
+            <a href="/licensing.html">Licensing</a>
+            <a href="/contact.html">Contact</a>
+            <a href="/sponsor.html">Sponsor</a>
+          </div>
+        </div>
+        <a class="btn btn-ghost" href="/pypi.html">PyPI<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3l8 4.5l0 9l-8 4.5l-8 -4.5l0 -9l8 -4.5"/><path d="M12 12l8 -4.5"/><path d="M12 12l0 9"/><path d="M12 12l-8 -4.5"/><path d="M16 5.25l-8 4.5"/></svg></a>
+        <a class="btn btn-ghost" href="https://github.com/MEFORORG/MessageFoundry" target="_blank" rel="noopener">GitHub ↗</a>
+      </nav>
+    </div>
+  </header>
+
+  <section class="section section--dark section--tight">
+    <div class="container center">
+      <span class="eyebrow">HL7 — and well beyond</span>
+      <h1 style="max-width:20ch;margin-inline:auto">More than just an HL7 integration engine</h1>
+      <p class="lead">Yes, <b>MessageFoundry</b> is a capable <b>HL7 integration engine</b> — with deep HL7 v2 parsing, validation, routing, and transformation. But it's a full <b>healthcare integration engine</b>: the same engine connects FHIR, X12/EDI, and DICOM across a wide range of transports — open-source, self-hosted, and written in Python.</p>
+      <div class="btn-row center" style="margin-top:24px">
+        <a class="btn btn-primary" href="/features.html">See all the formats</a>
+        <a class="btn btn-secondary" href="/getting-started.html">Get started →</a>
+      </div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="container" style="max-width:880px">
+      <div class="grid grid-2" style="align-items:start">
+        <div class="card">
+          <h3>A capable HL7 v2 engine</h3>
+          <p>If you came looking for an HL7 interface engine, you're in the right place. MessageFoundry does the classic HL7 v2 work and does it well:</p>
+          <ul class="feature-list" style="margin-top:12px">
+            <li><b>Receive and send over MLLP</b> (with MLLP-over-TLS), TCP, and files.</li>
+            <li><b>Tiered validation</b> — tolerant peek, strict structural, and cross-field business checks.</li>
+            <li><b>Route, filter, and transform</b> in plain Python, addressed by HL7 path (<code>MSH-9.1</code>, <code>OBR-25</code>, …).</li>
+          </ul>
+          <p style="margin-top:12px"><a href="/hl7-over-mllp/">HL7 over MLLP in Python →</a></p>
+        </div>
+        <div class="card">
+          <h3>…and a broad healthcare integration engine</h3>
+          <p>The same engine, the same Python config, reaches well past HL7 v2:</p>
+          <ul class="feature-list" style="margin-top:12px">
+            <li><b>FHIR</b> — deliver resources and Bundles to a FHIR server over REST (R4B/R5/STU3).</li>
+            <li><b>X12/EDI</b> and <b>DICOM</b> imaging alongside HL7 — no separate tool per standard.</li>
+            <li><b>Many transports</b> — HTTP/REST, SOAP, SFTP/FTP, and databases, plus JSON and XML payloads.</li>
+          </ul>
+          <p style="margin-top:12px"><a href="/hl7-to-fhir/">HL7 v2 to FHIR in Python →</a></p>
+        </div>
+      </div>
+
+      <div class="callout" style="margin-top:30px">
+        <p style="margin:0"><strong>One engine, every interface.</strong> The reason "HL7 integration engine" undersells it: healthcare integration rarely stops at HL7 v2. MessageFoundry connects <b>a wide range of protocols and message types</b> from a single open-source, self-hosted, Python-native engine — so HL7 and everything around it run side by side, version-controlled like any codebase. <a href="/comparison.html">See how that compares to legacy engines →</a></p>
+      </div>
+
+      <div class="btn-row" style="margin-top:30px">
+        <a class="btn btn-primary" href="/features.html">Explore the features</a>
+        <a class="btn btn-secondary" href="/features-table.html">Full feature list</a>
+        <a class="btn btn-ghost" href="https://github.com/MEFORORG/MessageFoundry" target="_blank" rel="noopener">View on GitHub ↗</a>
+      </div>
+    </div>
+  </section>
+
+  <footer class="site-footer">
+    <div class="container">
+      <div class="footer-grid">
+        <div class="footer-brand">
+          <a class="brand" href="/" aria-label="MessageFoundry home">
+            <img class="brand-mark" src="/assets/img/logo.svg" alt="" width="28" height="28">
+            <span class="brand-name">Message<span class="brand-accent">Foundry</span><span class="brand-tm">™</span></span>
+          </a>
+          <p>Open-source healthcare integration engine — secure by default, built to recognized standards, connecting a wide range of protocols and message types.</p>
+          <div class="badge-row" style="margin-top:16px">
+            <span class="badge">Open source</span>
+            <span class="badge">No lock-in</span>
+            <span class="badge">Self-hosted</span>
+          </div>
+        </div>
+        <div class="footer-col">
+          <h4>Product</h4>
+          <a href="/overview.html">Overview</a>
+          <a href="/features.html">Features</a>
+          <a href="/tools.html">Tools</a>
+          <a href="/editor.html">Editor</a>
+          <a href="/console.html">Console</a>
+          <a href="/ai.html">AI assist</a>
+          <a href="/reliability.html">Reliability</a>
+          <a href="/dicom.html">DICOM</a>
+          <a href="/security.html">Security &amp; PHI</a>
+          <a href="/comparison.html">Comparison</a>
+          <a href="/getting-started.html">Get started</a>
+        </div>
+        <div class="footer-col">
+          <h4>Docs</h4>
+          <a href="https://github.com/MEFORORG/MessageFoundry/blob/main/docs/ARCHITECTURE.md">Architecture</a>
+          <a href="https://github.com/MEFORORG/MessageFoundry/blob/main/docs/CONNECTIONS.md">Connections</a>
+          <a href="https://github.com/MEFORORG/MessageFoundry/blob/main/docs/SECURITY.md">Security</a>
+          <a href="https://github.com/MEFORORG/MessageFoundry/blob/main/docs/PHI.md">PHI / HIPAA</a>
+        </div>
+        <div class="footer-col">
+          <h4>Project</h4>
+          <a href="https://github.com/MEFORORG/MessageFoundry" target="_blank" rel="noopener">GitHub</a>
+          <a href="https://github.com/MEFORORG/MessageFoundry/issues" target="_blank" rel="noopener">Issues</a>
+          <a href="/contact.html">Contact</a>
+          <a href="/licensing.html">License</a>
+          <a href="/about.html">About</a>
+          <a href="/sponsor.html">Sponsor</a>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        <span>© 2026 MessageFoundry, a non-profit — this website and its content, all rights reserved. The MessageFoundry engine is separately open source, licensed under AGPL-3.0-or-later.</span>
+        <span>MessageFoundry and the MessageFoundry word mark are trademarks of the MessageFoundry Organization. Mirth Connect, Cloverleaf, Rhapsody, Corepoint, and Ensemble are trademarks of their respective owners; MessageFoundry is independent and unaffiliated.</span>
+      </div>
+    </div>
+  </footer>
+
+  <script src="/assets/js/nav.js" defer></script>
+</body>
+</html>
