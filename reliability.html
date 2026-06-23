@@ -1,0 +1,271 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Reliability — MessageFoundry</title>
+  <meta name="description" content="Your interfaces live in your own git repository as version-controlled code — reviewed, tested by CI against the real engine, and reversible. Config-as-code plus a CI gate makes a customer's interfaces more reliable than channels buried in an engine database.">
+  <link rel="canonical" href="https://messagefoundry.org/reliability.html">
+  <link rel="icon" href="/assets/img/favicon.svg" type="image/svg+xml">
+  <meta name="theme-color" content="#0b1220">
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="MessageFoundry">
+  <meta property="og:title" content="Reliability — MessageFoundry">
+  <meta property="og:description" content="Interfaces as version-controlled code in your own git repo, with a CI gate that routes synthetic messages through the real engine before anything merges. Reviewable, tested, reversible.">
+  <meta property="og:url" content="https://messagefoundry.org/reliability.html">
+  <meta property="og:image" content="https://messagefoundry.org/assets/img/og.png">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta property="og:image:type" content="image/png">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:image" content="https://messagefoundry.org/assets/img/og.png">
+  <link rel="stylesheet" href="/assets/css/styles.css">
+</head>
+<body>
+
+  <header class="site-header">
+    <div class="container header-inner">
+      <a class="brand" href="/" aria-label="MessageFoundry home">
+        <img class="brand-mark" src="/assets/img/logo.svg" alt="" width="28" height="28">
+        <span class="brand-name">Message<span class="brand-accent">Foundry</span><span class="brand-tm">™</span></span>
+      </a>
+      <button class="nav-toggle" aria-expanded="false" aria-controls="site-nav" aria-label="Toggle navigation"><span></span><span></span><span></span></button>
+      <nav class="site-nav" id="site-nav">
+        <div class="nav-group">
+          <button type="button" class="nav-group__btn" aria-expanded="false" aria-haspopup="true" aria-controls="nav-product">Product</button>
+          <div class="nav-group__menu" id="nav-product">
+            <a href="/overview.html">Overview</a>
+            <a href="/features.html">Features</a>
+            <a href="/features-table.html">Feature list</a>
+            <a href="/architecture.html">Architecture</a>
+            <a href="/reliability.html" class="active" aria-current="page">Reliability</a>
+            <a href="/tools.html">Tools</a>
+            <a href="/editor.html">Editor</a>
+            <a href="/console.html">Console</a>
+            <a href="/ai.html">AI assist</a>
+          </div>
+        </div>
+        <a href="/security.html">Security</a>
+        <a href="/comparison.html">Comparison</a>
+        <div class="nav-group">
+          <button type="button" class="nav-group__btn" aria-expanded="false" aria-haspopup="true" aria-controls="nav-getstarted">Get started</button>
+          <div class="nav-group__menu" id="nav-getstarted">
+            <a href="/getting-started.html">Quickstart</a>
+            <a href="/getting-started.html#documents">Documents</a>
+          </div>
+        </div>
+        <div class="nav-group">
+          <button type="button" class="nav-group__btn" aria-expanded="false" aria-haspopup="true" aria-controls="nav-company">About Us</button>
+          <div class="nav-group__menu" id="nav-company">
+            <a href="/about.html">About</a>
+            <a href="/licensing.html">Licensing</a>
+            <a href="/contact.html">Contact</a>
+            <a href="/sponsor.html">Sponsor</a>
+          </div>
+        </div>
+        <a class="btn btn-ghost" href="/pypi.html">PyPI<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3l8 4.5l0 9l-8 4.5l-8 -4.5l0 -9l8 -4.5"/><path d="M12 12l8 -4.5"/><path d="M12 12l0 9"/><path d="M12 12l-8 -4.5"/><path d="M16 5.25l-8 4.5"/></svg></a>
+        <a class="btn btn-ghost" href="https://github.com/MEFORORG/MessageFoundry" target="_blank" rel="noopener">GitHub ↗</a>
+      </nav>
+    </div>
+  </header>
+
+  <!-- hero -->
+  <section class="section section--dark section--tight">
+    <div class="container center">
+      <span class="eyebrow">Reliability</span>
+      <h1 style="max-width:20ch;margin-inline:auto">Your interfaces live in your git — reviewed, tested, reversible</h1>
+      <p class="lead">With Message<span class="wordmark-accent">Foundry</span>, your integration logic isn't buried in an engine's database. It's <b>ordinary code in your own version-controlled repository</b> — so every change is a reviewable diff, every change is tested by CI against the real engine before it ships, and rolling back is one <code>git</code> command. That's what makes a small team's interfaces dependable.</p>
+      <div class="btn-row">
+        <a class="btn btn-primary" href="/getting-started.html">Get started</a>
+        <a class="btn btn-secondary" href="#ci">How the CI gate works ↓</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- the problem -->
+  <section class="section">
+    <div class="container">
+      <div class="center" style="margin-bottom:34px">
+        <span class="eyebrow">The usual problem</span>
+        <h2>Where interface logic usually lives</h2>
+        <p class="lead center">On most legacy engines, a channel's filters and transforms live <em>inside the engine's own database</em>. That has consequences teams feel for years.</p>
+      </div>
+      <div class="grid grid-3">
+        <div class="card">
+          <h3>Hard to review</h3>
+          <p>Logic in a database blob is hard to diff, peer-review, or reason about. Changes land without the author, history, and review that other code gets.</p>
+        </div>
+        <div class="card">
+          <h3>Drifts between environments</h3>
+          <p>"Someone changed it in the Prod GUI, and now Staging ≠ Prod." Without one source of truth, environments quietly diverge.</p>
+        </div>
+        <div class="card">
+          <h3>Risky to change</h3>
+          <p>No commit-time gate means a broken route or a bad transform is often found in production — and rollback means restoring a database, not reverting a commit.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- config as code -->
+  <section class="section section--alt">
+    <div class="container grid grid-2" style="align-items:center">
+      <div>
+        <span class="eyebrow">Config as code</span>
+        <h2>Your interfaces, in a repository you own</h2>
+        <p class="lead">Connections, Routers, and Handlers are plain Python in <b>your</b> private git repo — scaffolded by <code>messagefoundry init</code>. The engine itself is a pinned, signed dependency your team installs but never edits.</p>
+        <p>One reviewed commit of that repo deploys to <b>every</b> environment; only a small per-environment values file differs, so Test can't drift from Prod. Git is the source of truth — and it carries <b>no secrets and no PHI</b> (those come from environment variables, never the repo).</p>
+      </div>
+      <ul class="feature-list">
+        <li><b>Every change is a diff</b> — reviewed, attributed, and kept in full history like any other code.</li>
+        <li><b>Rollback is one command</b> — revert the commit (or pin the engine back); no database surgery.</li>
+        <li><b>One source of truth</b> — the same modules run unchanged in dev, staging, and prod.</li>
+        <li><b>A breach can't rewrite logic</b> — routing/transform code reaches production only through a reviewed pipeline, never the data store.</li>
+      </ul>
+    </div>
+  </section>
+
+  <!-- the CI gate -->
+  <section class="section" id="ci">
+    <div class="container">
+      <div class="center" style="margin-bottom:34px">
+        <span class="eyebrow">The CI gate</span>
+        <h2>Nothing merges until it passes — against the real engine</h2>
+        <p class="lead center"><code>messagefoundry init</code> scaffolds a ready-made CI workflow in your repo. It runs on <b>every pull request and every push to <code>main</code></b>, and the same gate runs in the VS&nbsp;Code editor and an optional pre-commit hook — so a green CI means a green desk.</p>
+      </div>
+      <div class="grid grid-3">
+        <div class="card">
+          <h3>Validate</h3>
+          <p>Every config module imports and <b>every <code>inbound&nbsp;→&nbsp;router&nbsp;→&nbsp;handler</code> reference resolves</b>. A router named but never defined, a dangling binding, or an import error fails the build.</p>
+        </div>
+        <div class="card">
+          <h3>Dry-run <span style="color:var(--muted-dk)">— the one that matters</span></h3>
+          <p>Synthetic messages route through the engine's <b>real routing core</b> — the same function production runs — with no store, network, or connectors. <b>Green in CI means it routes identically in production;</b> there's no separate test path to drift from reality.</p>
+        </div>
+        <div class="card">
+          <h3>Posture</h3>
+          <p>Catches the environment / security-posture foot-gun that would make the engine refuse to start — at commit time, not at 2&nbsp;a.m. on the Prod box.</p>
+        </div>
+        <div class="card">
+          <h3>Supply-chain verify</h3>
+          <p>Before install, CI verifies the pinned engine wheel's <b>build provenance</b> (SLSA&nbsp;/&nbsp;Sigstore). A swapped or relabelled wheel <b>fails the build</b> instead of shipping silently.</p>
+        </div>
+        <div class="card">
+          <h3>Branch protection</h3>
+          <p>Make the gate a merge requirement on <code>main</code>: no interface change lands unless <b>validate</b> and <b>dry-run</b> are green and reviewed.</p>
+        </div>
+        <div class="card">
+          <h3>One gate, three places</h3>
+          <p>The exact same check runs in the editor as you work, in your pre-commit hook, and in CI on the PR — so problems surface early and consistently.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- what it buys you -->
+  <section class="section section--dark">
+    <div class="container">
+      <div class="center" style="margin-bottom:34px">
+        <span class="eyebrow">What it buys you</span>
+        <h2>Reliability you can see — and prove</h2>
+      </div>
+      <div class="grid grid-3">
+        <div class="card">
+          <h3>Reviewed before it ships</h3>
+          <p>Interface logic gets the same rigor as application code: branch, pull request, review, merge — with CI exercising your routes on representative traffic first.</p>
+        </div>
+        <div class="card">
+          <h3>Reversible by design</h3>
+          <p>Every change has an author and a history; reverting is a <code>git</code> operation. Engine upgrades are a deliberate, pinned, one-line bump you can roll back.</p>
+        </div>
+        <div class="card">
+          <h3>No surprise drift</h3>
+          <p>Promotion is "merge to <code>main</code>, deploy that commit everywhere." Environments stay in lock-step because they run the same reviewed code.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- honest scope -->
+  <section class="section">
+    <div class="container" style="max-width:860px">
+      <div class="center" style="margin-bottom:24px">
+        <span class="eyebrow">Honest scope</span>
+        <h2>What the gate proves — and what's still on you</h2>
+      </div>
+      <div class="callout">
+        <p>The CI gate proves your config <b>loads, wires, and routes representative traffic without error</b>, using the production routing logic. It does <b>not</b> by itself prove that a transform's output matches a downstream system byte-for-byte — a transform can produce valid-but-wrong HL7 and still pass.</p>
+        <p style="margin-bottom:0">Output parity is a separate discipline, and MessageFoundry gives you the tools for it: a synthetic test corpus you build with <code>messagefoundry generate</code>, the standalone <b>test harness</b> (disposition coverage and fault injection), and a <b>reconciliation window</b> (golden in/out pairs, sent-vs-delivered) before and after cutover. We say this plainly because reliability you can trust is reliability stated honestly.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- cta -->
+  <section class="section section--tight">
+    <div class="container">
+      <div class="cta-band">
+        <h2>Adopt interfaces you can review, test, and roll back</h2>
+        <p class="lead center" style="color:var(--muted-dk)">Scaffold a config repo with the CI gate already wired in, and run your first message in minutes.</p>
+        <div class="btn-row center">
+          <a class="btn btn-primary" href="/getting-started.html">Get started</a>
+          <a class="btn btn-ghost" href="/getting-started.html#documents">Read the guides</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <footer class="site-footer">
+    <div class="container">
+      <div class="footer-grid">
+        <div class="footer-brand">
+          <a class="brand" href="/" aria-label="MessageFoundry home">
+            <img class="brand-mark" src="/assets/img/logo.svg" alt="" width="28" height="28">
+            <span class="brand-name">Message<span class="brand-accent">Foundry</span><span class="brand-tm">™</span></span>
+          </a>
+          <p>Open-source healthcare integration engine — secure by default, built to recognized standards, connecting a wide range of protocols and message types.</p>
+          <div class="badge-row" style="margin-top:16px">
+            <span class="badge">Open source</span>
+            <span class="badge">No lock-in</span>
+            <span class="badge">Self-hosted</span>
+          </div>
+        </div>
+        <div class="footer-col">
+          <h4>Product</h4>
+          <a href="/overview.html">Overview</a>
+          <a href="/features.html">Features</a>
+          <a href="/tools.html">Tools</a>
+          <a href="/editor.html">Editor</a>
+          <a href="/console.html">Console</a>
+          <a href="/ai.html">AI assist</a>
+          <a href="/reliability.html">Reliability</a>
+          <a href="/security.html">Security &amp; PHI</a>
+          <a href="/comparison.html">Comparison</a>
+          <a href="/getting-started.html">Get started</a>
+        </div>
+        <div class="footer-col">
+          <h4>Docs</h4>
+          <a href="https://github.com/MEFORORG/MessageFoundry/blob/main/docs/ARCHITECTURE.md">Architecture</a>
+          <a href="https://github.com/MEFORORG/MessageFoundry/blob/main/docs/CONNECTIONS.md">Connections</a>
+          <a href="https://github.com/MEFORORG/MessageFoundry/blob/main/docs/SECURITY.md">Security</a>
+          <a href="https://github.com/MEFORORG/MessageFoundry/blob/main/docs/PHI.md">PHI / HIPAA</a>
+        </div>
+        <div class="footer-col">
+          <h4>Project</h4>
+          <a href="https://github.com/MEFORORG/MessageFoundry" target="_blank" rel="noopener">GitHub</a>
+          <a href="https://github.com/MEFORORG/MessageFoundry/issues" target="_blank" rel="noopener">Issues</a>
+          <a href="/contact.html">Contact</a>
+          <a href="/licensing.html">License</a>
+          <a href="/about.html">About</a>
+          <a href="/sponsor.html">Sponsor</a>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        <span>© 2026 MessageFoundry, a non-profit — this website and its content, all rights reserved. The MessageFoundry engine is separately open source, licensed under AGPL-3.0-or-later.</span>
+        <span>MessageFoundry and the MessageFoundry word mark are trademarks of the MessageFoundry Organization. Mirth Connect, Cloverleaf, Rhapsody, Corepoint, and Ensemble are trademarks of their respective owners; MessageFoundry is independent and unaffiliated.</span>
+      </div>
+    </div>
+  </footer>
+
+  <script src="/assets/js/nav.js" defer></script>
+</body>
+</html>
