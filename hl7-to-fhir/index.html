@@ -24,6 +24,7 @@
   {
     "@context": "https://schema.org",
     "@type": "HowTo",
+    "about": { "@id": "https://messagefoundry.org/#software" },
     "name": "Convert HL7 v2 to FHIR in Python",
     "description": "Use MessageFoundry to convert HL7 v2 messages to FHIR: install the engine, declare an HL7 inbound and a FHIR REST outbound, map HL7 fields to a FHIR resource in a code-first Python handler, and run the engine to deliver resources to your FHIR server.",
     "step": [
@@ -48,6 +49,7 @@
   </script>
 </head>
 <body>
+  <a class="skip-link" href="#main">Skip to content</a>
 
   <header class="site-header">
     <div class="container header-inner">
@@ -95,6 +97,7 @@
       </nav>
     </div>
   </header>
+  <main id="main">
 
   <section class="section section--dark section--tight">
     <div class="container center">
@@ -186,6 +189,21 @@ pip install <span class="s">"messagefoundry[fhir]"</span></pre>
 
     </div>
   </section>
+
+  <!-- faq -->
+  <section class="section">
+    <div class="container">
+      <div class="center" style="margin-bottom:28px"><span class="eyebrow">FAQ</span><h2>Frequently asked questions</h2></div>
+      <div class="faq">
+        <div class="faq-item"><h3>Can MessageFoundry convert HL7 v2 to FHIR?</h3><p>Yes. You receive HL7 v2 (for example over MLLP), map the fields you need into a FHIR resource in a Python handler, and deliver it to your FHIR server with a FHIR REST connection. The mapping is code-first — ordinary Python you can version-control and test.</p></div>
+        <div class="faq-item"><h3>Which FHIR version does MessageFoundry target?</h3><p>The FHIR REST connection defaults to R4B, with R5 and STU3 selectable. Resources are delivered as application/fhir+json to your FHIR server's base URL using the standard create (POST), update (PUT), or transaction/batch interactions.</p></div>
+        <div class="faq-item"><h3>Where does the HL7-to-FHIR mapping live?</h3><p>In your handler, as plain Python — never hidden inside a connector. You read HL7 fields by path (PID-5.1, OBR-25, …) and build the FHIR resource explicitly, so the mapping is reviewable, testable, and yours.</p></div>
+        <div class="faq-item"><h3>How does MessageFoundry avoid duplicate FHIR writes?</h3><p>FHIR delivery is at-least-once, so the server operation must be idempotent. The FHIR connection exposes the native levers: interaction='update' (PUT by id) or a conditional knob (if-none-exist, conditional-update, or if-match).</p></div>
+      </div>
+    </div>
+  </section>
+
+  </main>
 
   <footer class="site-footer">
     <div class="container">

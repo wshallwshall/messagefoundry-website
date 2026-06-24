@@ -34,6 +34,7 @@
   </script>
 </head>
 <body>
+  <a class="skip-link" href="#main">Skip to content</a>
 
   <header class="site-header">
     <div class="container header-inner">
@@ -81,6 +82,7 @@
       </nav>
     </div>
   </header>
+  <main id="main">
 
   <section class="section section--dark section--tight">
     <div class="container center">
@@ -147,6 +149,21 @@
       </div>
     </div>
   </section>
+
+  <!-- faq -->
+  <section class="section">
+    <div class="container">
+      <div class="center" style="margin-bottom:28px"><span class="eyebrow">FAQ</span><h2>Frequently asked questions</h2></div>
+      <div class="faq">
+        <div class="faq-item"><h3>Is MessageFoundry self-hosted?</h3><p>Yes. MessageFoundry runs entirely on your own servers — on-premises or in your private cloud. It installs from PyPI, starts zero-config on SQLite, and scales to PostgreSQL or SQL Server. There is no vendor cloud and nothing is sent to a managed service.</p></div>
+        <div class="faq-item"><h3>What does PHI-safe mean?</h3><p>Because MessageFoundry is self-hosted, PHI never leaves your infrastructure. There is no third-party processor and no telemetry of message contents — you hold the data, the encryption keys, and the network. Message bodies are encrypted at rest with AES-256-GCM.</p></div>
+        <div class="faq-item"><h3>Can I run MessageFoundry on-premises or in my own private cloud?</h3><p>Both. MessageFoundry runs headless wherever your data lives — a hospital data center, a VM, or your own private cloud account. It can run as a long-lived Windows service, and a single config repository can drive Test, Production, and more.</p></div>
+        <div class="faq-item"><h3>Does MessageFoundry support a HIPAA-compliant deployment?</h3><p>Yes — compliance is a property of your whole deployment, and MessageFoundry is built to support it: self-hosted PHI, TLS enabled by default, message bodies encrypted at rest, authenticated and audited access, and controls mapped to the HIPAA Security Rule (NIST 800-66). You stay in control of your environment.</p></div>
+      </div>
+    </div>
+  </section>
+
+  </main>
 
   <footer class="site-footer">
     <div class="container">

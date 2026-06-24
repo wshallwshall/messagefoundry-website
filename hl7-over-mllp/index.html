@@ -24,6 +24,7 @@
   {
     "@context": "https://schema.org",
     "@type": "HowTo",
+    "about": { "@id": "https://messagefoundry.org/#software" },
     "name": "Receive and send HL7 over MLLP in Python",
     "description": "Use MessageFoundry to receive and send HL7 v2 messages over MLLP in plain Python — install the engine, define inbound and outbound MLLP connections, route and transform messages, run the engine, and send a test message.",
     "step": [
@@ -48,6 +49,7 @@
   </script>
 </head>
 <body>
+  <a class="skip-link" href="#main">Skip to content</a>
 
   <header class="site-header">
     <div class="container header-inner">
@@ -95,6 +97,7 @@
       </nav>
     </div>
   </header>
+  <main id="main">
 
   <section class="section section--dark section--tight">
     <div class="container center">
@@ -184,6 +187,20 @@ pip install messagefoundry</pre>
 
     </div>
   </section>
+
+  <!-- faq -->
+  <section class="section">
+    <div class="container">
+      <div class="center" style="margin-bottom:28px"><span class="eyebrow">FAQ</span><h2>Frequently asked questions</h2></div>
+      <div class="faq">
+        <div class="faq-item"><h3>What is MLLP?</h3><p>MLLP (Minimal Lower Layer Protocol) is the standard framing used to send HL7 v2 messages over TCP. It wraps each message in start and end blocks so the receiver knows where one message ends and the next begins — it's how most HL7 v2 interfaces exchange messages.</p></div>
+        <div class="faq-item"><h3>Does MessageFoundry support MLLP over TLS?</h3><p>Yes. MessageFoundry supports MLLP-over-TLS, with TLS enabled by default for connections whose peer supports it. Where an older endpoint can't speak TLS, plaintext MLLP is supported within your organization's secure network perimeter, which remains HIPAA-compliant.</p></div>
+        <div class="faq-item"><h3>How do I receive HL7 over MLLP in Python?</h3><p>Declare an inbound MLLP connection in a Python config module — inbound('IB_Lab', MLLP(port=2575), router='oru_router') — then write a router and handler to process each message. MessageFoundry runs the listener and hands every message to your code.</p></div>
+      </div>
+    </div>
+  </section>
+
+  </main>
 
   <footer class="site-footer">
     <div class="container">
