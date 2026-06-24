@@ -38,6 +38,17 @@
     "publisher": { "@id": "https://messagefoundry.org/#org" }
   }
   </script>
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    "mainEntity": [
+      { "@type": "Question", "name": "Is message delivery reliable?", "acceptedAnswer": { "@type": "Answer", "text": "Yes. MessageFoundry persists every message to a durable store before it is acknowledged, then routes from that store — so messages survive engine restarts and failures rather than being lost in flight." } },
+      { "@type": "Question", "name": "How does MessageFoundry handle failover?", "acceptedAnswer": { "@type": "Answer", "text": "It runs active/passive: a standby instance takes over if the primary fails, coordinated by an application-level leader lease so only one instance is active at a time. Failover typically completes in about 30 seconds." } },
+      { "@type": "Question", "name": "Are my interfaces version-controlled and tested?", "acceptedAnswer": { "@type": "Answer", "text": "Yes. Your interfaces live in your own git repository as plain Python, reviewed and tested by CI against the real engine — so changes are diffable, reversible, and gated before they ship." } }
+    ]
+  }
+  </script>
 </head>
 <body>
   <a class="skip-link" href="#main">Skip to content</a>
@@ -231,6 +242,18 @@
           <a class="btn btn-primary" href="/getting-started.html">Get started</a>
           <a class="btn btn-ghost" href="/documents.html">Read the guides</a>
         </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- faq -->
+  <section class="section">
+    <div class="container">
+      <div class="center" style="margin-bottom:28px"><span class="eyebrow">FAQ</span><h2>Frequently asked questions</h2></div>
+      <div class="faq">
+        <div class="faq-item"><h3>Is message delivery reliable?</h3><p>Yes. MessageFoundry persists every message to a durable store before it is acknowledged, then routes from that store — so messages survive engine restarts and failures rather than being lost in flight.</p></div>
+        <div class="faq-item"><h3>How does MessageFoundry handle failover?</h3><p>It runs active/passive: a standby instance takes over if the primary fails, coordinated by an application-level leader lease so only one instance is active at a time. Failover typically completes in about 30 seconds.</p></div>
+        <div class="faq-item"><h3>Are my interfaces version-controlled and tested?</h3><p>Yes. Your interfaces live in your own git repository as plain Python, reviewed and tested by CI against the real engine — so changes are diffable, reversible, and gated before they ship.</p></div>
       </div>
     </div>
   </section>

@@ -27,6 +27,8 @@
     "about": { "@id": "https://messagefoundry.org/#software" },
     "name": "Migrate to MessageFoundry from a legacy integration engine",
     "description": "A vendor-neutral process for moving healthcare interfaces off a legacy integration engine to MessageFoundry: inventory the interfaces, re-express them as Python config, validate and shadow against live traffic, then cut over in stages with a rollback path.",
+    "tool": [{ "@type": "HowToTool", "name": "Python 3.11 or newer" }],
+    "supply": [{ "@type": "HowToSupply", "name": "messagefoundry (PyPI package)" }],
     "step": [
       { "@type": "HowToStep", "name": "Inventory your interfaces", "text": "Catalog every channel: its connections, transforms, filters, and volumes — so the scope is explicit before any work starts." },
       { "@type": "HowToStep", "name": "Re-express each interface as Python", "text": "Map each channel to MessageFoundry Connections, Routers, and Handlers. AI-assisted migration can draft the Python from your existing logic." },
@@ -42,7 +44,9 @@
     "mainEntity": [
       { "@type": "Question", "name": "Can I migrate to MessageFoundry from Mirth Connect, Corepoint, or Rhapsody?", "acceptedAnswer": { "@type": "Answer", "text": "Yes. MessageFoundry is a destination for moving healthcare interfaces off a legacy integration engine, whichever one you run today. You re-express each channel — its connections, routing, and transforms — as plain Python config, and migrate interface by interface rather than all at once." } },
       { "@type": "Question", "name": "Will I have to rewrite my interfaces?", "acceptedAnswer": { "@type": "Answer", "text": "Your interfaces are re-expressed as Python Connections, Routers, and Handlers — which makes them version-controlled, diffable, and unit-testable. AI-assisted migration can draft the Python from your existing channel logic to speed the work." } },
-      { "@type": "Question", "name": "How do I de-risk the cutover?", "acceptedAnswer": { "@type": "Answer", "text": "Validate the config with the commit gate, run the new interface in parallel (shadow) against live traffic to compare outputs, then cut over in stages behind go/no-go gates — keeping the legacy engine as a fallback until you're confident." } }
+      { "@type": "Question", "name": "How do I de-risk the cutover?", "acceptedAnswer": { "@type": "Answer", "text": "Validate the config with the commit gate, run the new interface in parallel (shadow) against live traffic to compare outputs, then cut over in stages behind go/no-go gates — keeping the legacy engine as a fallback until you're confident." } },
+      { "@type": "Question", "name": "Can I migrate from Infor Cloverleaf?", "acceptedAnswer": { "@type": "Answer", "text": "Yes. Cloverleaf interfaces are scripted in Tcl; with MessageFoundry you re-express them as plain Python — a far larger talent pool — and migrate interface by interface, validating each against live traffic before cutting over. There is no enterprise licensing or lock-in on the destination." } },
+      { "@type": "Question", "name": "Can I migrate from InterSystems Ensemble or Health Connect?", "acceptedAnswer": { "@type": "Answer", "text": "Yes. With Ensemble reaching end-of-maintenance around Q1 2027 you face a migration regardless — so move the integration function to an open, Python engine on standard databases rather than deeper into ObjectScript and a proprietary IRIS database. You migrate in stages with the legacy engine as a fallback." } }
     ]
   }
   </script>
@@ -159,6 +163,8 @@
         <div class="faq-item"><h3>Can I migrate to MessageFoundry from Mirth Connect, Corepoint, or Rhapsody?</h3><p>Yes. MessageFoundry is a destination for moving healthcare interfaces off a legacy integration engine, whichever one you run today. You re-express each channel — its connections, routing, and transforms — as plain Python config, and migrate interface by interface rather than all at once.</p></div>
         <div class="faq-item"><h3>Will I have to rewrite my interfaces?</h3><p>Your interfaces are re-expressed as Python Connections, Routers, and Handlers — which makes them version-controlled, diffable, and unit-testable. AI-assisted migration can draft the Python from your existing channel logic to speed the work.</p></div>
         <div class="faq-item"><h3>How do I de-risk the cutover?</h3><p>Validate the config with the commit gate, run the new interface in parallel (shadow) against live traffic to compare outputs, then cut over in stages behind go/no-go gates — keeping the legacy engine as a fallback until you're confident.</p></div>
+        <div class="faq-item"><h3>Can I migrate from Infor Cloverleaf?</h3><p>Yes. Cloverleaf interfaces are scripted in Tcl; with MessageFoundry you re-express them as plain Python — a far larger talent pool — and migrate interface by interface, validating each against live traffic before cutting over. There is no enterprise licensing or lock-in on the destination.</p></div>
+        <div class="faq-item"><h3>Can I migrate from InterSystems Ensemble or Health Connect?</h3><p>Yes. With Ensemble reaching end-of-maintenance around Q1 2027 you face a migration regardless — so move the integration function to an open, Python engine on standard databases rather than deeper into ObjectScript and a proprietary IRIS database. You migrate in stages with the legacy engine as a fallback.</p></div>
       </div>
     </div>
   </section>
