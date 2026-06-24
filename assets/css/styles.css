@@ -325,6 +325,8 @@ table.cmp.feat tbody th code, table.cmp.feat td code { white-space: nowrap; }
 .footer-grid { display: grid; grid-template-columns: 1.6fr 1fr 1fr 1fr; gap: 30px; }
 .footer-brand .brand { color: #fff; }
 .footer-brand p { margin-top: 14px; font-size: .92rem; max-width: 34ch; }
+.footer-brand .footer-tagline { margin-top: 12px; max-width: none; font-size: 1.05rem; color: #fff; font-weight: 600; letter-spacing: .005em; }
+.footer-brand .footer-tagline b { font-weight: 800; }
 .footer-col h4 { color: #fff; font-size: .82rem; letter-spacing: .1em; text-transform: uppercase; margin-bottom: 14px; }
 .footer-col a { display: block; color: var(--muted-dk); font-size: .94rem; margin-bottom: 9px; }
 .footer-col a:hover { color: #fff; text-decoration: none; }
