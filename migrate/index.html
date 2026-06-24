@@ -24,6 +24,7 @@
   {
     "@context": "https://schema.org",
     "@type": "HowTo",
+    "about": { "@id": "https://messagefoundry.org/#software" },
     "name": "Migrate to MessageFoundry from a legacy integration engine",
     "description": "A vendor-neutral process for moving healthcare interfaces off a legacy integration engine to MessageFoundry: inventory the interfaces, re-express them as Python config, validate and shadow against live traffic, then cut over in stages with a rollback path.",
     "step": [
@@ -47,6 +48,7 @@
   </script>
 </head>
 <body>
+  <a class="skip-link" href="#main">Skip to content</a>
 
   <header class="site-header">
     <div class="container header-inner">
@@ -94,6 +96,7 @@
       </nav>
     </div>
   </header>
+  <main id="main">
 
   <section class="section section--dark section--tight">
     <div class="container center">
@@ -137,6 +140,20 @@
 
     </div>
   </section>
+
+  <!-- faq -->
+  <section class="section">
+    <div class="container">
+      <div class="center" style="margin-bottom:28px"><span class="eyebrow">FAQ</span><h2>Frequently asked questions</h2></div>
+      <div class="faq">
+        <div class="faq-item"><h3>Can I migrate to MessageFoundry from Mirth Connect, Corepoint, or Rhapsody?</h3><p>Yes. MessageFoundry is a destination for moving healthcare interfaces off a legacy integration engine, whichever one you run today. You re-express each channel — its connections, routing, and transforms — as plain Python config, and migrate interface by interface rather than all at once.</p></div>
+        <div class="faq-item"><h3>Will I have to rewrite my interfaces?</h3><p>Your interfaces are re-expressed as Python Connections, Routers, and Handlers — which makes them version-controlled, diffable, and unit-testable. AI-assisted migration can draft the Python from your existing channel logic to speed the work.</p></div>
+        <div class="faq-item"><h3>How do I de-risk the cutover?</h3><p>Validate the config with the commit gate, run the new interface in parallel (shadow) against live traffic to compare outputs, then cut over in stages behind go/no-go gates — keeping the legacy engine as a fallback until you're confident.</p></div>
+      </div>
+    </div>
+  </section>
+
+  </main>
 
   <footer class="site-footer">
     <div class="container">

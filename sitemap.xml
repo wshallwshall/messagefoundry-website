@@ -2,132 +2,132 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
     <loc>https://messagefoundry.org/</loc>
-    <lastmod>2026-06-12</lastmod>
+    <lastmod>2026-06-24</lastmod>
     <priority>1.0</priority>
   </url>
   <url>
     <loc>https://messagefoundry.org/overview.html</loc>
-    <lastmod>2026-06-12</lastmod>
+    <lastmod>2026-06-24</lastmod>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://messagefoundry.org/security.html</loc>
-    <lastmod>2026-06-12</lastmod>
+    <lastmod>2026-06-24</lastmod>
     <priority>0.7</priority>
   </url>
   <url>
     <loc>https://messagefoundry.org/features.html</loc>
-    <lastmod>2026-06-12</lastmod>
+    <lastmod>2026-06-24</lastmod>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://messagefoundry.org/features-table.html</loc>
-    <lastmod>2026-06-17</lastmod>
+    <lastmod>2026-06-24</lastmod>
     <priority>0.6</priority>
   </url>
   <url>
     <loc>https://messagefoundry.org/ai.html</loc>
-    <lastmod>2026-06-12</lastmod>
+    <lastmod>2026-06-24</lastmod>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://messagefoundry.org/getting-started.html</loc>
-    <lastmod>2026-06-12</lastmod>
+    <lastmod>2026-06-24</lastmod>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://messagefoundry.org/documents.html</loc>
-    <lastmod>2026-06-23</lastmod>
+    <lastmod>2026-06-24</lastmod>
     <priority>0.7</priority>
   </url>
   <url>
     <loc>https://messagefoundry.org/hl7-over-mllp/</loc>
-    <lastmod>2026-06-23</lastmod>
+    <lastmod>2026-06-24</lastmod>
     <priority>0.7</priority>
   </url>
   <url>
     <loc>https://messagefoundry.org/hl7-to-fhir/</loc>
-    <lastmod>2026-06-23</lastmod>
+    <lastmod>2026-06-24</lastmod>
     <priority>0.7</priority>
   </url>
   <url>
     <loc>https://messagefoundry.org/hl7-integration-engine/</loc>
-    <lastmod>2026-06-23</lastmod>
+    <lastmod>2026-06-24</lastmod>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://messagefoundry.org/self-hosted/</loc>
-    <lastmod>2026-06-23</lastmod>
+    <lastmod>2026-06-24</lastmod>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://messagefoundry.org/build-an-hl7-interface/</loc>
-    <lastmod>2026-06-23</lastmod>
+    <lastmod>2026-06-24</lastmod>
     <priority>0.7</priority>
   </url>
   <url>
     <loc>https://messagefoundry.org/migrate/</loc>
-    <lastmod>2026-06-23</lastmod>
+    <lastmod>2026-06-24</lastmod>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://messagefoundry.org/pypi.html</loc>
-    <lastmod>2026-06-17</lastmod>
+    <lastmod>2026-06-24</lastmod>
     <priority>0.7</priority>
   </url>
   <url>
     <loc>https://messagefoundry.org/comparison.html</loc>
-    <lastmod>2026-06-12</lastmod>
+    <lastmod>2026-06-24</lastmod>
     <priority>0.7</priority>
   </url>
   <url>
     <loc>https://messagefoundry.org/architecture.html</loc>
-    <lastmod>2026-06-17</lastmod>
+    <lastmod>2026-06-24</lastmod>
     <priority>0.7</priority>
   </url>
   <url>
     <loc>https://messagefoundry.org/reliability.html</loc>
-    <lastmod>2026-06-22</lastmod>
+    <lastmod>2026-06-24</lastmod>
     <priority>0.7</priority>
   </url>
   <url>
     <loc>https://messagefoundry.org/dicom.html</loc>
-    <lastmod>2026-06-22</lastmod>
+    <lastmod>2026-06-24</lastmod>
     <priority>0.6</priority>
   </url>
   <url>
     <loc>https://messagefoundry.org/about.html</loc>
-    <lastmod>2026-06-12</lastmod>
+    <lastmod>2026-06-24</lastmod>
     <priority>0.6</priority>
   </url>
   <url>
     <loc>https://messagefoundry.org/contact.html</loc>
-    <lastmod>2026-06-12</lastmod>
+    <lastmod>2026-06-24</lastmod>
     <priority>0.5</priority>
   </url>
   <url>
     <loc>https://messagefoundry.org/licensing.html</loc>
-    <lastmod>2026-06-12</lastmod>
+    <lastmod>2026-06-24</lastmod>
     <priority>0.5</priority>
   </url>
   <url>
     <loc>https://messagefoundry.org/sponsor.html</loc>
-    <lastmod>2026-06-18</lastmod>
+    <lastmod>2026-06-24</lastmod>
     <priority>0.6</priority>
   </url>
   <url>
     <loc>https://messagefoundry.org/tools.html</loc>
-    <lastmod>2026-06-19</lastmod>
+    <lastmod>2026-06-24</lastmod>
     <priority>0.7</priority>
   </url>
   <url>
     <loc>https://messagefoundry.org/editor.html</loc>
-    <lastmod>2026-06-20</lastmod>
+    <lastmod>2026-06-24</lastmod>
     <priority>0.7</priority>
   </url>
   <url>
     <loc>https://messagefoundry.org/console.html</loc>
-    <lastmod>2026-06-21</lastmod>
+    <lastmod>2026-06-24</lastmod>
     <priority>0.7</priority>
   </url>
   <url>

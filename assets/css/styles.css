@@ -81,6 +81,8 @@ code, pre, kbd { font-family: var(--mono); }
 .section--dark .lead { color: var(--muted-dk); }
 .section--dark .lead a, .hero .lead a { color: var(--accent); }
 .center { text-align: center; margin-inline: auto; }
+.skip-link { position: absolute; left: 8px; top: -48px; z-index: 1000; background: var(--accent); color: var(--accent-ink); padding: 8px 14px; border-radius: 8px; font-weight: 700; text-decoration: none; }
+.skip-link:focus { top: 8px; }
 .faq { max-width: 760px; margin-inline: auto; }
 .faq-item { border-top: 1px solid var(--border); padding: 18px 2px; }
 .faq-item:last-child { border-bottom: 1px solid var(--border); }

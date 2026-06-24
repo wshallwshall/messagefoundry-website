@@ -24,6 +24,7 @@
   {
     "@context": "https://schema.org",
     "@type": "HowTo",
+    "about": { "@id": "https://messagefoundry.org/#software" },
     "name": "Build an HL7 interface in Python",
     "description": "Build an HL7 v2 interface with MessageFoundry: declare inbound and outbound Connections, write a Router and Handler, validate the config with the commit gate, and test it before production.",
     "step": [
@@ -48,6 +49,7 @@
   </script>
 </head>
 <body>
+  <a class="skip-link" href="#main">Skip to content</a>
 
   <header class="site-header">
     <div class="container header-inner">
@@ -95,6 +97,7 @@
       </nav>
     </div>
   </header>
+  <main id="main">
 
   <section class="section section--dark section--tight">
     <div class="container center">
@@ -176,6 +179,20 @@ python samples/send_mllp.py samples/messages/adt_a01.hl7</pre>
 
     </div>
   </section>
+
+  <!-- faq -->
+  <section class="section">
+    <div class="container">
+      <div class="center" style="margin-bottom:28px"><span class="eyebrow">FAQ</span><h2>Frequently asked questions</h2></div>
+      <div class="faq">
+        <div class="faq-item"><h3>How do I build an HL7 interface?</h3><p>In MessageFoundry you build an HL7 interface from four blocks: a Connection (inbound and outbound), a Router that decides where each message goes, and a Handler that transforms and sends it. You write them as plain Python in a config module, validate with the commit gate, then run the engine.</p></div>
+        <div class="faq-item"><h3>Do I have to write code, or can I use a GUI?</h3><p>Either. The VS Code extension and admin console offer guided wizards for Connections and routes, or you can write them directly in Python for full control. Both produce the same version-controlled config.</p></div>
+        <div class="faq-item"><h3>How do I test an HL7 interface before production?</h3><p>Validate the config with the commit gate (python -m messagefoundry check), then send sample messages and watch each message reach a recorded disposition — routed, filtered, or unrouted. Because interfaces are plain Python, you can also unit-test routers and handlers like any code.</p></div>
+      </div>
+    </div>
+  </section>
+
+  </main>
 
   <footer class="site-footer">
     <div class="container">
