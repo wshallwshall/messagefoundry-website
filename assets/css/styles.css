@@ -70,6 +70,10 @@ code, pre, kbd { font-family: var(--mono); }
 .section--dark { background: var(--ink); color: var(--text-dk); }
 .section--dark h1, .section--dark h2, .section--dark h3 { color: #fff; }
 .section--alt { background: var(--surface-alt); }
+.crumb { font-size: .82rem; margin-bottom: 14px; color: var(--muted-dk); }
+.crumb a { color: var(--muted-dk); }
+.crumb a:hover { color: #fff; }
+.crumb span[aria-hidden] { opacity: .55; margin: 0 .35em; }
 .eyebrow {
   display: inline-block; font-size: .8rem; font-weight: 700; letter-spacing: .14em;
   text-transform: uppercase; color: var(--accent-ink);
