@@ -27,6 +27,8 @@
   "about": { "@id": "https://messagefoundry.org/#software" },
   "name": "Get started with MessageFoundry",
   "description": "Install MessageFoundry from PyPI, run the engine, send a test HL7 message over MLLP, open the admin console, and author your first route in Python.",
+  "tool": [{ "@type": "HowToTool", "name": "Python 3.11 or newer" }],
+  "supply": [{ "@type": "HowToSupply", "name": "messagefoundry (PyPI package)" }],
   "step": [
     {
       "@type": "HowToStep",
@@ -55,6 +57,18 @@
     }
   ]
 }
+  </script>
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    "mainEntity": [
+      { "@type": "Question", "name": "What do I need to run MessageFoundry?", "acceptedAnswer": { "@type": "Answer", "text": "Python 3.11 or newer on Windows, Linux, or macOS. MessageFoundry installs from PyPI with pip and starts zero-config on a built-in SQLite store, so you can run it on a laptop; for production it also supports PostgreSQL and SQL Server." } },
+      { "@type": "Question", "name": "How do I install MessageFoundry?", "acceptedAnswer": { "@type": "Answer", "text": "Create a virtual environment and run pip install messagefoundry, then start the engine pointed at a config directory and a store database. The quickstart walks through receiving your first HL7 v2 message over MLLP." } },
+      { "@type": "Question", "name": "Do I have to write code to build an interface?", "acceptedAnswer": { "@type": "Answer", "text": "No. You can set interfaces up with guided wizards in the VS Code extension and drop into plain Python whenever you need full control — either way the result is readable configuration you version-control." } },
+      { "@type": "Question", "name": "Which databases does MessageFoundry support?", "acceptedAnswer": { "@type": "Answer", "text": "SQLite out of the box for zero-config local runs, and PostgreSQL or SQL Server for production scale-out and high availability." } }
+    ]
+  }
   </script>
 </head>
 <body>
@@ -212,6 +226,19 @@ python -m messagefoundry.console --url http://127.0.0.1:8765</pre>
           </div>
         </div>
 
+      </div>
+    </div>
+  </section>
+
+  <!-- faq -->
+  <section class="section">
+    <div class="container">
+      <div class="center" style="margin-bottom:28px"><span class="eyebrow">FAQ</span><h2>Frequently asked questions</h2></div>
+      <div class="faq">
+        <div class="faq-item"><h3>What do I need to run MessageFoundry?</h3><p>Python 3.11 or newer on Windows, Linux, or macOS. MessageFoundry installs from PyPI with pip and starts zero-config on a built-in SQLite store, so you can run it on a laptop; for production it also supports PostgreSQL and SQL Server.</p></div>
+        <div class="faq-item"><h3>How do I install MessageFoundry?</h3><p>Create a virtual environment and run pip install messagefoundry, then start the engine pointed at a config directory and a store database. The quickstart walks through receiving your first HL7 v2 message over MLLP.</p></div>
+        <div class="faq-item"><h3>Do I have to write code to build an interface?</h3><p>No. You can set interfaces up with guided wizards in the VS Code extension and drop into plain Python whenever you need full control — either way the result is readable configuration you version-control.</p></div>
+        <div class="faq-item"><h3>Which databases does MessageFoundry support?</h3><p>SQLite out of the box for zero-config local runs, and PostgreSQL or SQL Server for production scale-out and high availability.</p></div>
       </div>
     </div>
   </section>

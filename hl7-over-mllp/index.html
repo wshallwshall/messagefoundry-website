@@ -27,6 +27,8 @@
     "about": { "@id": "https://messagefoundry.org/#software" },
     "name": "Receive and send HL7 over MLLP in Python",
     "description": "Use MessageFoundry to receive and send HL7 v2 messages over MLLP in plain Python — install the engine, define inbound and outbound MLLP connections, route and transform messages, run the engine, and send a test message.",
+    "tool": [{ "@type": "HowToTool", "name": "Python 3.11 or newer" }],
+    "supply": [{ "@type": "HowToSupply", "name": "messagefoundry (PyPI package)" }],
     "step": [
       { "@type": "HowToStep", "name": "Install MessageFoundry", "text": "Create a virtual environment and install the engine from PyPI: pip install messagefoundry." },
       { "@type": "HowToStep", "name": "Define inbound and outbound MLLP connections", "text": "In a Python config module, declare an inbound MLLP listener and an outbound MLLP sender, naming a router for the inbound." },

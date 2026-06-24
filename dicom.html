@@ -38,6 +38,17 @@
     "publisher": { "@id": "https://messagefoundry.org/#org" }
   }
   </script>
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    "mainEntity": [
+      { "@type": "Question", "name": "Does MessageFoundry support DICOM?", "acceptedAnswer": { "@type": "Answer", "text": "Yes. MessageFoundry treats medical imaging as a first-class lane: it receives as a C-STORE SCP and sends as a C-STORE SCU over DIMSE, supports C-ECHO, and speaks DICOMweb STOW-RS over HTTP — alongside HL7 v2 and FHIR in the same engine." } },
+      { "@type": "Question", "name": "Can MessageFoundry route imaging alongside HL7?", "acceptedAnswer": { "@type": "Answer", "text": "Yes. The same Python config that routes HL7 v2 and FHIR also moves DICOM, so imaging and clinical messaging run on one self-hosted engine with the same reliability and PHI handling." } },
+      { "@type": "Question", "name": "How does MessageFoundry map imaging data to HL7 v2?", "acceptedAnswer": { "@type": "Answer", "text": "Structured-report (SR) to HL7 v2 mapping is written as versioned Python rather than configured in a GUI mapper, so it is diffable, testable, and reviewed like any other interface code." } }
+    ]
+  }
+  </script>
 </head>
 <body>
   <a class="skip-link" href="#main">Skip to content</a>
@@ -226,6 +237,18 @@
           <a class="btn btn-primary" href="/getting-started.html">Get started</a>
           <a class="btn btn-ghost" href="https://github.com/MEFORORG/MessageFoundry/blob/main/docs/CONNECTIONS.md" target="_blank" rel="noopener">Connector reference ↗</a>
         </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- faq -->
+  <section class="section">
+    <div class="container">
+      <div class="center" style="margin-bottom:28px"><span class="eyebrow">FAQ</span><h2>Frequently asked questions</h2></div>
+      <div class="faq">
+        <div class="faq-item"><h3>Does MessageFoundry support DICOM?</h3><p>Yes. MessageFoundry treats medical imaging as a first-class lane: it receives as a C-STORE SCP and sends as a C-STORE SCU over DIMSE, supports C-ECHO, and speaks DICOMweb STOW-RS over HTTP — alongside HL7 v2 and FHIR in the same engine.</p></div>
+        <div class="faq-item"><h3>Can MessageFoundry route imaging alongside HL7?</h3><p>Yes. The same Python config that routes HL7 v2 and FHIR also moves DICOM, so imaging and clinical messaging run on one self-hosted engine with the same reliability and PHI handling.</p></div>
+        <div class="faq-item"><h3>How does MessageFoundry map imaging data to HL7 v2?</h3><p>Structured-report (SR) to HL7 v2 mapping is written as versioned Python rather than configured in a GUI mapper, so it is diffable, testable, and reviewed like any other interface code.</p></div>
       </div>
     </div>
   </section>
