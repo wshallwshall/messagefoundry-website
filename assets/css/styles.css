@@ -324,7 +324,7 @@ table.cmp.feat tbody th code, table.cmp.feat td code { white-space: nowrap; }
 
 /* ------------------------------------------------------------------ footer */
 .site-footer { background: #070d18; color: var(--muted-dk); padding: 54px 0 30px; border-top: 1px solid var(--border-dk); }
-.footer-grid { display: grid; grid-template-columns: 1.6fr 1fr 1fr 1fr; gap: 30px; }
+.footer-grid { display: grid; grid-template-columns: 1.6fr 1fr 1fr 1fr 1fr; gap: 28px; }
 .footer-brand .brand { color: #fff; }
 .footer-brand p { margin-top: 14px; font-size: .92rem; max-width: 34ch; }
 .footer-brand .footer-tagline { margin-top: 12px; max-width: none; font-size: 1.05rem; color: #fff; font-weight: 600; letter-spacing: .005em; }
