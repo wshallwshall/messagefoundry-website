@@ -3,16 +3,16 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Ask a question — MessageFoundry</title>
-  <meta name="description" content="Questions about MessageFoundry — deployment, security and PHI, migrating off a legacy engine, or licensing? Send us a note and we'll get back to you.">
-  <link rel="canonical" href="https://messagefoundry.org/contact.html">
+  <title>Guides &amp; tutorials — MessageFoundry</title>
+  <meta name="description" content="MessageFoundry developer guides and tutorials: build an HL7 interface in Python, HL7 over MLLP, HL7 v2 to FHIR, migrating from a legacy integration engine, self-hosted/PHI-safe deployment, and more.">
+  <link rel="canonical" href="https://messagefoundry.org/guides/">
   <link rel="icon" href="/assets/img/favicon.svg" type="image/svg+xml">
   <meta name="theme-color" content="#0b1220">
   <meta property="og:type" content="website">
   <meta property="og:site_name" content="MessageFoundry">
-  <meta property="og:title" content="Ask a question — MessageFoundry">
-  <meta property="og:description" content="Questions about deployment, security, migration, or licensing? Send us a note.">
-  <meta property="og:url" content="https://messagefoundry.org/contact.html">
+  <meta property="og:title" content="Guides &amp; tutorials — MessageFoundry">
+  <meta property="og:description" content="Developer guides and tutorials: build an HL7 interface, HL7 over MLLP, HL7 v2 to FHIR, migration, and self-hosted deployment.">
+  <meta property="og:url" content="https://messagefoundry.org/guides/">
   <meta property="og:image" content="https://messagefoundry.org/assets/img/og.png">
   <meta property="og:image:width" content="1200">
   <meta property="og:image:height" content="630">
@@ -20,6 +20,21 @@
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:image" content="https://messagefoundry.org/assets/img/og.png">
   <link rel="stylesheet" href="/assets/css/styles.css">
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "ItemList",
+    "name": "MessageFoundry guides and tutorials",
+    "itemListElement": [
+      { "@type": "ListItem", "position": 1, "name": "Build an HL7 interface in Python", "url": "https://messagefoundry.org/build-an-hl7-interface/" },
+      { "@type": "ListItem", "position": 2, "name": "HL7 over MLLP in Python", "url": "https://messagefoundry.org/hl7-over-mllp/" },
+      { "@type": "ListItem", "position": 3, "name": "HL7 v2 to FHIR in Python", "url": "https://messagefoundry.org/hl7-to-fhir/" },
+      { "@type": "ListItem", "position": 4, "name": "Migrating from a legacy integration engine", "url": "https://messagefoundry.org/migrate/" },
+      { "@type": "ListItem", "position": 5, "name": "Self-hosted, PHI-safe integration engine", "url": "https://messagefoundry.org/self-hosted/" },
+      { "@type": "ListItem", "position": 6, "name": "More than just an HL7 integration engine", "url": "https://messagefoundry.org/hl7-integration-engine/" }
+    ]
+  }
+  </script>
 </head>
 <body>
 
@@ -51,7 +66,7 @@
           <button type="button" class="nav-group__btn" aria-expanded="false" aria-haspopup="true" aria-controls="nav-getstarted">Get started</button>
           <div class="nav-group__menu" id="nav-getstarted">
             <a href="/getting-started.html">Quickstart</a>
-            <a href="/guides/">Guides</a>
+            <a href="/guides/" class="active" aria-current="page">Guides</a>
             <a href="/documents.html">Documents</a>
           </div>
         </div>
@@ -60,7 +75,7 @@
           <div class="nav-group__menu" id="nav-company">
             <a href="/about.html">About</a>
             <a href="/licensing.html">Licensing</a>
-            <a href="/contact.html" class="active" aria-current="page">Contact</a>
+            <a href="/contact.html">Contact</a>
             <a href="/sponsor.html">Sponsor</a>
           </div>
         </div>
@@ -72,48 +87,53 @@
 
   <section class="section section--dark section--tight">
     <div class="container center">
-      <span class="eyebrow">Contact</span>
-      <h1 style="max-width:20ch;margin-inline:auto">Ask us a question</h1>
-      <p class="lead center">Evaluating MessageFoundry for your interfaces? Ask about deployment, security and PHI, migrating off a legacy engine, or licensing — we'll get back to you by email.</p>
+      <span class="eyebrow">Guides</span>
+      <h1 style="max-width:18ch;margin-inline:auto">Guides &amp; tutorials</h1>
+      <p class="lead">Practical, code-first guides for building healthcare interfaces with <b>MessageFoundry</b> — and the playbooks and concepts behind it. New here? Start with the <a href="/getting-started.html">quickstart</a>, or browse the downloadable <a href="/documents.html">documents</a>.</p>
     </div>
   </section>
 
   <section class="section">
-    <div class="container">
-      <!-- Web3Forms: submissions POST to api.web3forms.com and are emailed to questions@messagefoundry.org.
-           The destination address is NOT in this page — it's bound to the access_key below
-           (created at https://web3forms.com for questions@messagefoundry.org). -->
-      <form class="form" action="https://api.web3forms.com/submit" method="POST">
-        <input type="hidden" name="access_key" value="b2df9259-745d-4109-bd32-97166759e987">
-        <input type="hidden" name="subject" value="New question from messagefoundry.org">
-        <input type="hidden" name="from_name" value="MessageFoundry website">
-        <input type="hidden" name="redirect" value="https://messagefoundry.org/thanks.html">
-        <!-- honeypot: bots check this; humans never see it -->
-        <input type="checkbox" name="botcheck" class="hp" tabindex="-1" autocomplete="off" aria-hidden="true">
+    <div class="container" style="max-width:980px">
 
-        <div class="field">
-          <label for="name">Name <span class="req" aria-hidden="true">*</span></label>
-          <input id="name" type="text" name="name" required autocomplete="name">
-        </div>
-        <div class="field">
-          <label for="email">Email <span class="req" aria-hidden="true">*</span></label>
-          <input id="email" type="email" name="email" required autocomplete="email" placeholder="you@hospital.org">
-        </div>
-        <div class="field">
-          <label for="organization">Organization</label>
-          <input id="organization" type="text" name="organization" autocomplete="organization">
-        </div>
-        <div class="field">
-          <label for="message">Your question <span class="req" aria-hidden="true">*</span></label>
-          <textarea id="message" name="message" required placeholder="Ask about deployment, security &amp; PHI, migration off a legacy engine, licensing…"></textarea>
-        </div>
+      <p class="eyebrow" style="margin:0 0 14px">Developer guides</p>
+      <div class="grid grid-3">
+        <a class="card" href="/build-an-hl7-interface/" style="color:inherit">
+          <h3>Build an HL7 interface in Python</h3>
+          <p>The four building blocks — Connection, Router, Handler, Message — with a complete worked example, the commit gate, and testing.</p>
+        </a>
+        <a class="card" href="/hl7-over-mllp/" style="color:inherit">
+          <h3>HL7 over MLLP in Python</h3>
+          <p>Receive and send HL7 v2 over MLLP, route and transform in plain Python, and use MLLP-over-TLS.</p>
+        </a>
+        <a class="card" href="/hl7-to-fhir/" style="color:inherit">
+          <h3>HL7 v2 to FHIR in Python</h3>
+          <p>Map HL7 v2 fields to a FHIR resource in a code-first handler and deliver it to a FHIR REST server.</p>
+        </a>
+      </div>
 
-        <button type="submit" class="btn btn-primary">Send your question</button>
+      <p class="eyebrow" style="margin:34px 0 14px">Concepts &amp; playbooks</p>
+      <div class="grid grid-3">
+        <a class="card" href="/migrate/" style="color:inherit">
+          <h3>Migrating from a legacy engine</h3>
+          <p>A vendor-neutral playbook: inventory, re-express your interfaces as Python, validate and shadow, then cut over with rollback.</p>
+        </a>
+        <a class="card" href="/self-hosted/" style="color:inherit">
+          <h3>Self-hosted &amp; PHI-safe</h3>
+          <p>Why PHI never leaves your infrastructure, where the engine runs, and how it's secure by default.</p>
+        </a>
+        <a class="card" href="/hl7-integration-engine/" style="color:inherit">
+          <h3>More than just an HL7 integration engine</h3>
+          <p>A capable HL7 v2 engine — and a broad healthcare integration engine that also connects FHIR, X12/EDI, and DICOM.</p>
+        </a>
+      </div>
 
-        <div class="callout" style="margin-top:22px">
-          <p style="margin:0"><strong>Please don't include PHI or real patient data.</strong> This form is routed through a third-party form service and email — keep it to general questions. For anything sensitive, ask here and we'll arrange a secure channel.</p>
-        </div>
-      </form>
+      <div class="btn-row" style="margin-top:34px">
+        <a class="btn btn-primary" href="/getting-started.html">Quickstart</a>
+        <a class="btn btn-secondary" href="/documents.html">Browse the documents</a>
+        <a class="btn btn-ghost" href="https://github.com/MEFORORG/MessageFoundry" target="_blank" rel="noopener">View on GitHub ↗</a>
+      </div>
+
     </div>
   </section>
 
