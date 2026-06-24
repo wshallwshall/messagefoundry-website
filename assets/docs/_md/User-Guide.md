@@ -93,7 +93,7 @@ pip install -e .                             # core runtime + SQLite store
 For a **deployment**, pin the published wheel instead (and verify its provenance — see [INSTALL-GUIDE.md](https://github.com/MEFORORG/MessageFoundry/blob/main/docs/INSTALL-GUIDE.md)):
 
 ```powershell
-pip install "messagefoundry==0.2.0"
+pip install "messagefoundry==0.2.1"
 ```
 
 Add only the extras a host actually needs (each is opt-in and lazy-imported):
@@ -105,7 +105,7 @@ pip install -e ".[sqlserver]"    # SQL Server store backend — also needs the O
 pip install -e ".[sftp]"         # SFTP transport for the REMOTEFILE connector
 ```
 
-(For a deployment wheel, the same extras apply: `pip install "messagefoundry[console]==0.2.0"`, etc.) SQLite is the zero-dependency default — you need no extra to run the sample config.
+(For a deployment wheel, the same extras apply: `pip install "messagefoundry[console]==0.2.1"`, etc.) SQLite is the zero-dependency default — you need no extra to run the sample config.
 
 ### 3. Run the engine headless (dev)
 
