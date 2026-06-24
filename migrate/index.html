@@ -60,6 +60,16 @@
     "inLanguage": "en"
   }
   </script>
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    "itemListElement": [
+      { "@type": "ListItem", "position": 1, "name": "Home", "item": "https://messagefoundry.org/" },
+      { "@type": "ListItem", "position": 2, "name": "Migrate", "item": "https://messagefoundry.org/migrate/" }
+    ]
+  }
+  </script>
 </head>
 <body>
   <a class="skip-link" href="#main">Skip to content</a>
@@ -114,6 +124,7 @@
 
   <section class="section section--dark section--tight">
     <div class="container center">
+      <nav class="crumb" aria-label="Breadcrumb"><a href="/">Home</a> <span aria-hidden="true">›</span> <span>Migrate</span></nav>
       <span class="eyebrow">Migration</span>
       <h1 style="max-width:20ch;margin-inline:auto">Migrating from a legacy integration engine</h1>
       <p class="lead">Whatever you run today — <a href="/migrate/mirth/">Mirth Connect</a>, Corepoint, Rhapsody, or another engine — moving to <b>MessageFoundry</b> is a staged, reversible process, not a big-bang rewrite. You re-express your interfaces as plain Python, validate them against live traffic, and cut over one at a time with a rollback path the whole way.</p>
@@ -152,6 +163,18 @@
         <a class="btn btn-ghost" href="/contact.html">Talk through a migration</a>
       </div>
 
+    </div>
+  </section>
+
+  <!-- related guides -->
+  <section class="section section--alt">
+    <div class="container">
+      <div class="center" style="margin-bottom:24px"><span class="eyebrow">Keep reading</span><h2>Related guides</h2></div>
+      <div class="grid grid-3">
+        <a class="card" href="/migrate/mirth/" style="color:inherit"><h3>Switch from Mirth Connect</h3></a>
+        <a class="card" href="/self-hosted/" style="color:inherit"><h3>Self-hosted &amp; PHI-safe</h3></a>
+        <a class="card" href="/guides/" style="color:inherit"><h3>All guides &amp; tutorials</h3></a>
+      </div>
     </div>
   </section>
 
