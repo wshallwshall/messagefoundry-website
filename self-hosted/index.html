@@ -32,6 +32,17 @@
     ]
   }
   </script>
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    "itemListElement": [
+      { "@type": "ListItem", "position": 1, "name": "Home", "item": "https://messagefoundry.org/" },
+      { "@type": "ListItem", "position": 2, "name": "Guides", "item": "https://messagefoundry.org/guides/" },
+      { "@type": "ListItem", "position": 3, "name": "Self-hosted", "item": "https://messagefoundry.org/self-hosted/" }
+    ]
+  }
+  </script>
 </head>
 <body>
   <a class="skip-link" href="#main">Skip to content</a>
@@ -86,6 +97,7 @@
 
   <section class="section section--dark section--tight">
     <div class="container center">
+      <nav class="crumb" aria-label="Breadcrumb"><a href="/">Home</a> <span aria-hidden="true">›</span> <a href="/guides/">Guides</a> <span aria-hidden="true">›</span> <span>Self-hosted</span></nav>
       <span class="eyebrow">Self-hosted &amp; PHI-safe</span>
       <h1 style="max-width:18ch;margin-inline:auto">A self-hosted, PHI-safe integration engine</h1>
       <p class="lead"><b>MessageFoundry</b> runs entirely on your own infrastructure — on-premises or in your private cloud. PHI never leaves your environment: no vendor cloud, no third-party processor, and no telemetry of message contents. You hold the data, the keys, and the network.</p>
@@ -146,6 +158,18 @@
         <a class="btn btn-primary" href="/getting-started.html">Get started</a>
         <a class="btn btn-secondary" href="/hl7-integration-engine/">More than an HL7 engine</a>
         <a class="btn btn-ghost" href="https://github.com/MEFORORG/MessageFoundry" target="_blank" rel="noopener">View on GitHub ↗</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- related guides -->
+  <section class="section section--alt">
+    <div class="container">
+      <div class="center" style="margin-bottom:24px"><span class="eyebrow">Keep reading</span><h2>Related guides</h2></div>
+      <div class="grid grid-3">
+        <a class="card" href="/hl7-integration-engine/" style="color:inherit"><h3>More than an HL7 integration engine</h3></a>
+        <a class="card" href="/migrate/" style="color:inherit"><h3>Migrating off a legacy engine</h3></a>
+        <a class="card" href="/guides/" style="color:inherit"><h3>All guides &amp; tutorials</h3></a>
       </div>
     </div>
   </section>

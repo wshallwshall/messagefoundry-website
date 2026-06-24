@@ -59,6 +59,17 @@
     "inLanguage": "en"
   }
   </script>
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    "itemListElement": [
+      { "@type": "ListItem", "position": 1, "name": "Home", "item": "https://messagefoundry.org/" },
+      { "@type": "ListItem", "position": 2, "name": "Guides", "item": "https://messagefoundry.org/guides/" },
+      { "@type": "ListItem", "position": 3, "name": "Build an HL7 interface", "item": "https://messagefoundry.org/build-an-hl7-interface/" }
+    ]
+  }
+  </script>
 </head>
 <body>
   <a class="skip-link" href="#main">Skip to content</a>
@@ -113,6 +124,7 @@
 
   <section class="section section--dark section--tight">
     <div class="container center">
+      <nav class="crumb" aria-label="Breadcrumb"><a href="/">Home</a> <span aria-hidden="true">›</span> <a href="/guides/">Guides</a> <span aria-hidden="true">›</span> <span>Build an HL7 interface</span></nav>
       <span class="eyebrow">Developer guide</span>
       <h1 style="max-width:18ch;margin-inline:auto">Build an HL7 interface in Python</h1>
       <p class="lead">An interface in <b>MessageFoundry</b> is four small pieces of plain Python: a <b>Connection</b> in, a <b>Router</b> to decide where messages go, a <b>Handler</b> to transform and send them, and a <b>Connection</b> out. Here's the whole thing — build it, validate it, and test it before it goes live.</p>
@@ -189,6 +201,18 @@ python samples/send_mllp.py samples/messages/adt_a01.hl7</pre>
         <a class="btn btn-ghost" href="/getting-started.html">Full quickstart</a>
       </div>
 
+    </div>
+  </section>
+
+  <!-- related guides -->
+  <section class="section section--alt">
+    <div class="container">
+      <div class="center" style="margin-bottom:24px"><span class="eyebrow">Keep reading</span><h2>Related guides</h2></div>
+      <div class="grid grid-3">
+        <a class="card" href="/hl7-over-mllp/" style="color:inherit"><h3>HL7 over MLLP</h3></a>
+        <a class="card" href="/hl7-to-fhir/" style="color:inherit"><h3>HL7 v2 to FHIR</h3></a>
+        <a class="card" href="/guides/" style="color:inherit"><h3>All guides &amp; tutorials</h3></a>
+      </div>
     </div>
   </section>
 

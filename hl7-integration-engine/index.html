@@ -32,6 +32,17 @@
     ]
   }
   </script>
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    "itemListElement": [
+      { "@type": "ListItem", "position": 1, "name": "Home", "item": "https://messagefoundry.org/" },
+      { "@type": "ListItem", "position": 2, "name": "Guides", "item": "https://messagefoundry.org/guides/" },
+      { "@type": "ListItem", "position": 3, "name": "HL7 integration engine", "item": "https://messagefoundry.org/hl7-integration-engine/" }
+    ]
+  }
+  </script>
 </head>
 <body>
   <a class="skip-link" href="#main">Skip to content</a>
@@ -86,6 +97,7 @@
 
   <section class="section section--dark section--tight">
     <div class="container center">
+      <nav class="crumb" aria-label="Breadcrumb"><a href="/">Home</a> <span aria-hidden="true">›</span> <a href="/guides/">Guides</a> <span aria-hidden="true">›</span> <span>HL7 integration engine</span></nav>
       <span class="eyebrow">HL7 — and well beyond</span>
       <h1 style="max-width:20ch;margin-inline:auto">More than just an HL7 integration engine</h1>
       <p class="lead">Yes, <b>MessageFoundry</b> is a capable <b>HL7 integration engine</b> — with deep HL7 v2 parsing, validation, routing, and transformation. But it's a full <b>healthcare integration engine</b>: the same engine connects FHIR, X12/EDI, and DICOM across a wide range of transports — open-source, self-hosted, and written in Python.</p>
@@ -136,6 +148,18 @@
         <a class="btn btn-primary" href="/features.html">Explore the features</a>
         <a class="btn btn-secondary" href="/features-table.html">Full feature list</a>
         <a class="btn btn-ghost" href="https://github.com/MEFORORG/MessageFoundry" target="_blank" rel="noopener">View on GitHub ↗</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- related guides -->
+  <section class="section section--alt">
+    <div class="container">
+      <div class="center" style="margin-bottom:24px"><span class="eyebrow">Keep reading</span><h2>Related guides</h2></div>
+      <div class="grid grid-3">
+        <a class="card" href="/self-hosted/" style="color:inherit"><h3>Self-hosted &amp; PHI-safe</h3></a>
+        <a class="card" href="/hl7-over-mllp/" style="color:inherit"><h3>HL7 over MLLP</h3></a>
+        <a class="card" href="/guides/" style="color:inherit"><h3>All guides &amp; tutorials</h3></a>
       </div>
     </div>
   </section>
