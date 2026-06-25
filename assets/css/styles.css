@@ -249,11 +249,13 @@ pre.code .n { color: #c9a3ff; }                           /* number/const */
 .wg-tag   { fill: var(--accent);    font-size: 11px; letter-spacing: .08em; }
 .wg-name  { fill: var(--text-dk);   font-size: 14px; font-weight: 500; }
 .wg-sub   { fill: var(--muted-dk);  font-size: 12px; }
+.wg-sub--xf { fill: #fbbf24; }
 .wg-wire  { fill: #fbbf24;          font-size: 12px; }
 .wg-ct    { fill: #c6d2e2;          font-size: 12px; font-weight: 500; }
 .wg-cs    { fill: #7d8aa3;          font-size: 11px; }
 .wg-leg   { fill: var(--muted-dk);  font-size: 11px; }
 .wg-node  { fill: var(--ink-2);     stroke: #2c3e57; }
+.wg-node--xf { fill: #15233a; stroke: #7a5a1e; }
 .wg-chip  { fill: var(--code-bg);   stroke: #34465f; stroke-dasharray: 4 4; }
 .wg-edge  { stroke: var(--accent);  stroke-width: 2; fill: none; }
 .wg-branch{ stroke: #5b6b85;        stroke-width: 1.5; stroke-dasharray: 4 4; fill: none; }
