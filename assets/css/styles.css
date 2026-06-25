@@ -196,7 +196,7 @@ code, pre, kbd { font-family: var(--mono); }
     radial-gradient(60% 50% at 78% 0%, rgba(249,115,22,.22), transparent 60%),
     radial-gradient(50% 45% at 8% 12%, rgba(245,158,11,.14), transparent 60%);
 }
-.hero-inner { position: relative; display: grid; grid-template-columns: 1.05fr .95fr; gap: 52px; align-items: center; padding: 84px 0 92px; }
+.hero-inner { position: relative; display: grid; grid-template-columns: 1.05fr .95fr; gap: 52px; align-items: start; padding: 84px 0 92px; }
 .hero-inner > * { min-width: 0; }
 .hero h1 { color: #fff; text-wrap: balance; }
 .hero h1 .grad { background: var(--grad); -webkit-background-clip: text; background-clip: text; color: transparent; }
