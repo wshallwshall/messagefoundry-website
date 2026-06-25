@@ -1,12 +1,12 @@
 # MessageFoundry — A Mental Model
 
-*Open-source healthcare integration engine · Python · v0.2.2 (Early Access)*
+*Open-source healthcare interface engine · Python · v0.2.2 (Early Access)*
 
 This document is an orientation map, not a manual. It builds the **mental model** you need to reason about MessageFoundry: what it is, the four building blocks, how a message flows, the invariants you must not break, and where everything lives. Read it top to bottom once and the rest of the documentation — and the engine's behavior — will make sense.
 
 ## 1. What it is, in one breath
 
-MessageFoundry is an **open-source, Python** integration engine for healthcare — a modern alternative to legacy interface engines like Mirth and Corepoint. It receives, routes, transforms, and validates clinical/business messages between systems. It handles **HL7 v2.x by default** and is payload-agnostic for other formats (JSON, XML/SOAP, X12 EDI, DB records).
+MessageFoundry is an **open-source, Python** interface engine for healthcare — a modern alternative to legacy interface engines like Mirth and Corepoint. It receives, routes, transforms, and validates clinical/business messages between systems. It handles **HL7 v2.x by default** and is payload-agnostic for other formats (JSON, XML/SOAP, X12 EDI, DB records).
 
 What sets it apart: **you can set it up visually** — guided wizards scaffold connections and routes, validate your config as you save, and let you test against sample messages — **or write the routing and handling in plain Python** when you want full control. Either way the logic is ordinary Python you own and version-control — not a legacy engine’s embedded scripting language, and not a locked-in low/no-code GUI. Connection setup in particular can be pure data (a TOML file edited by hand or in a VS Code GUI). *Python is the power tool, not the price of entry.*
 
@@ -252,7 +252,7 @@ The engine's concurrency is built on **asyncio** — Python's built-in framework
 
 A word on what that means, since it shapes the rest of this section. **Concurrency** is the engine doing many things at once — receiving on dozens of connections, transforming, and delivering, all interleaved — without any one of them stalling the others. There are two common ways to get it. **Threads** ask the operating system to run several streams of work in true parallel; they work, but they share memory and must coordinate with locks, which makes subtle races and deadlocks easy to introduce. **asyncio** takes a different route: a single thread runs an **event loop** that juggles many lightweight tasks cooperatively. Each task runs until it has to wait on something slow — a network socket, a disk write — then hands control back to the loop, which advances another task; when the wait is over, the task picks up where it left off.
 
-That model is a near-perfect fit here, because an integration engine spends almost all its time waiting on **input/output (I/O)** — reading MLLP sockets, writing the store, sending to downstreams — rather than doing heavy computation. Picture one very efficient cook who starts many dishes and, the moment one is simmering, turns to move another along: never idle, and never two cooks colliding in a shared kitchen. One process can therefore look after hundreds of connections and messages cheaply, each “worker” a lightweight task rather than a heavyweight operating-system thread. The flip side — and the reason the rules below matter — is that because it is all one thread, a single task that **blocks** (stops to do something slow without yielding) freezes every other task at once.
+That model is a near-perfect fit here, because an interface engine spends almost all its time waiting on **input/output (I/O)** — reading MLLP sockets, writing the store, sending to downstreams — rather than doing heavy computation. Picture one very efficient cook who starts many dishes and, the moment one is simmering, turns to move another along: never idle, and never two cooks colliding in a shared kitchen. One process can therefore look after hundreds of connections and messages cheaply, each “worker” a lightweight task rather than a heavyweight operating-system thread. The flip side — and the reason the rules below matter — is that because it is all one thread, a single task that **blocks** (stops to do something slow without yielding) freezes every other task at once.
 
 - Never block the event loop — use aiosqlite and async connectors.
 

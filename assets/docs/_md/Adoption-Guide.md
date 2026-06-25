@@ -1,13 +1,13 @@
 # Adoption & Rollout Guide
 
-This guide is for teams adopting **MessageFoundry** — an open-source, Python healthcare integration
+This guide is for teams adopting **MessageFoundry** — an open-source, Python healthcare interface
 engine — and taking it from a first install to full production use. It is an **orchestration**
 document: it ties the reference docs together and adds the install-to-production **rollout plan** that
 nothing else covers. Where a topic has a dedicated reference, this guide links to it rather than
 repeating it.
 
 > **Read this section first.** MessageFoundry does a focused set of things well, and a staged rollout
-> is the safest way to put any new integration engine into production. The point of the staged rollout
+> is the safest way to put any new interface engine into production. The point of the staged rollout
 > in section 11 is to find issues where they are cheap (a lab, a shadow feed) instead of where they are
 > expensive (a production cut-over). If you adopt MessageFoundry, adopt the rollout discipline with it.
 
@@ -54,7 +54,7 @@ operate it over an HTTP API. See
 [ARCHITECTURE.md](https://github.com/MEFORORG/MessageFoundry/blob/main/docs/ARCHITECTURE.md) for the
 full model.
 
-**Who should adopt it.** Teams who want a Python-native, open-source healthcare integration engine and
+**Who should adopt it.** Teams who want a Python-native, open-source healthcare interface engine and
 who prefer to validate any new tool against their own traffic before trusting it. A single engine node
 on a trusted network is the simplest deployment; **native TLS** (API + MLLP) and an opt-in
 **active-passive failover** cluster on a shared server database (PostgreSQL or SQL Server) are both
@@ -742,7 +742,7 @@ separate broker and no node-to-node socket — coordination rides the shared `[s
 
 ### 14.2 Stand up the VIP / load balancer (required)
 
-Like other clustered integration engines, senders must reach "the engine" through a **floating VIP / L4
+Like other clustered interface engines, senders must reach "the engine" through a **floating VIP / L4
 load balancer**, never a fixed node — because **only the primary binds the inbound listener ports**, the
 VIP is what makes a failover transparent (modulo a reconnect). **MessageFoundry ships the bind behavior
 and the `/cluster/*` endpoints, but does not ship a load balancer** — you stand one up (keepalived +
