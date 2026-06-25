@@ -135,25 +135,92 @@
         </div>
       </div>
       <div>
-        <div class="code-card">
-          <div class="code-card__bar"><i></i><i></i><i></i><span class="code-card__name">IB_Test_ADT.py</span></div>
+        <div class="code-card hero-card">
+          <input type="radio" name="hero-view" id="hv-graph" class="hv-in" checked aria-label="Show the interface as a graph">
+          <input type="radio" name="hero-view" id="hv-code" class="hv-in" aria-label="Show the interface as Python code">
+          <div class="code-card__bar">
+            <i></i><i></i><i></i>
+            <span class="code-card__name">IB_Test_ADT</span>
+            <div class="hv-tabs">
+              <label class="hv-tab" for="hv-graph">Graph</label>
+              <label class="hv-tab" for="hv-code">Code</label>
+            </div>
+          </div>
+          <div class="hv-panels">
+            <div class="hv-panel hv-panel--graph">
+              <svg class="wire-graph" viewBox="0 0 440 474" role="img" xmlns="http://www.w3.org/2000/svg">
+                <title>The IB_Test_ADT interface as a wired graph</title>
+                <desc>An MLLP inbound named IB_Test_ADT is wired by the name adt_router to a router, then by the name archive to a handler, which sends to a file outbound named FILE_Test_ADT. Non-ADT messages branch off as UNROUTED and other event types as FILTERED — both tracked, never silently dropped.</desc>
+                <defs><marker id="wg-ar" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto"><path d="M2 1L8 5L2 9" fill="none" stroke="context-stroke" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></marker></defs>
+
+                <line class="wg-edge" x1="145" y1="92" x2="145" y2="139" marker-end="url(#wg-ar)"/>
+                <line class="wg-edge" x1="145" y1="204" x2="145" y2="251" marker-end="url(#wg-ar)"/>
+                <line class="wg-edge" x1="145" y1="316" x2="145" y2="363" marker-end="url(#wg-ar)"/>
+
+                <line class="wg-branch" x1="270" y1="172" x2="293" y2="172" marker-end="url(#wg-ar)"/>
+                <line class="wg-branch" x1="270" y1="284" x2="293" y2="284" marker-end="url(#wg-ar)"/>
+
+                <text class="wg-wire" x="158" y="120">router="adt_router"</text>
+                <text class="wg-wire" x="158" y="232">&#8594; ["archive"]</text>
+                <text class="wg-wire" x="158" y="344">Send("FILE_Test_ADT")</text>
+
+                <rect class="wg-node" x="20" y="18" width="250" height="74" rx="11"/>
+                <text class="wg-tag"  x="145" y="42" text-anchor="middle">INBOUND</text>
+                <text class="wg-name" x="145" y="64" text-anchor="middle">IB_Test_ADT</text>
+                <text class="wg-sub"  x="145" y="81" text-anchor="middle">MLLP &#183; :2575</text>
+
+                <rect class="wg-node" x="20" y="140" width="250" height="64" rx="11"/>
+                <text class="wg-tag"  x="145" y="159" text-anchor="middle">ROUTER</text>
+                <text class="wg-name" x="145" y="180" text-anchor="middle">adt_router</text>
+                <text class="wg-sub"  x="145" y="196" text-anchor="middle">route(msg)</text>
+
+                <rect class="wg-node" x="20" y="252" width="250" height="64" rx="11"/>
+                <text class="wg-tag"  x="145" y="271" text-anchor="middle">HANDLER</text>
+                <text class="wg-name" x="145" y="292" text-anchor="middle">archive</text>
+                <text class="wg-sub"  x="145" y="308" text-anchor="middle">archive(msg)</text>
+
+                <rect class="wg-node" x="20" y="364" width="250" height="74" rx="11"/>
+                <text class="wg-tag"  x="145" y="388" text-anchor="middle">OUTBOUND</text>
+                <text class="wg-name" x="145" y="410" text-anchor="middle">FILE_Test_ADT</text>
+                <text class="wg-sub"  x="145" y="427" text-anchor="middle">File &#183; out/adt</text>
+
+                <rect class="wg-chip" x="296" y="148" width="128" height="48" rx="8"/>
+                <text class="wg-ct" x="360" y="170" text-anchor="middle">UNROUTED</text>
+                <text class="wg-cs" x="360" y="186" text-anchor="middle">not ADT</text>
+
+                <rect class="wg-chip" x="296" y="260" width="128" height="48" rx="8"/>
+                <text class="wg-ct" x="360" y="282" text-anchor="middle">FILTERED</text>
+                <text class="wg-cs" x="360" y="298" text-anchor="middle">other events</text>
+
+                <line class="wg-edge" x1="20" y1="456" x2="44" y2="456"/>
+                <text class="wg-leg" x="52" y="460">delivered</text>
+                <line class="wg-branch" x1="150" y1="456" x2="174" y2="456"/>
+                <text class="wg-leg" x="182" y="460">tracked &#8212; never dropped</text>
+              </svg>
+            </div>
+            <div class="hv-panel hv-panel--code">
 <pre class="code"><span class="k">from</span> messagefoundry <span class="k">import</span> MLLP, File, Send, inbound, outbound, router, handler
 
 <span class="c"># Connections — named endpoints, wired together by name</span>
 <span class="f">inbound</span>(<span class="s">"IB_Test_ADT"</span>, <span class="f">MLLP</span>(port=<span class="n">2575</span>), router=<span class="s">"adt_router"</span>)
 <span class="f">outbound</span>(<span class="s">"FILE_Test_ADT"</span>, <span class="f">File</span>(directory=<span class="s">"./out/adt"</span>, filename=<span class="s">"{MSH-10}.hl7"</span>))
 
+<span class="c"># Router — routes each message to handlers by name</span>
 <span class="d">@router</span>(<span class="s">"adt_router"</span>)
 <span class="k">def</span> <span class="f">route</span>(msg):
     <span class="k">if</span> msg[<span class="s">"MSH-9.1"</span>] != <span class="s">"ADT"</span>:
         <span class="k">return</span> []          <span class="c"># not ADT → UNROUTED</span>
     <span class="k">return</span> [<span class="s">"archive"</span>]
 
+<span class="c"># Handler — filter, then send to an outbound by name</span>
 <span class="d">@handler</span>(<span class="s">"archive"</span>)
 <span class="k">def</span> <span class="f">archive</span>(msg):
     <span class="k">if</span> msg[<span class="s">"MSH-9.2"</span>] <span class="k">not in</span> (<span class="s">"A01"</span>, <span class="s">"A04"</span>, <span class="s">"A08"</span>):
         <span class="k">return</span> <span class="n">None</span>        <span class="c"># filtered out (FILTERED)</span>
     <span class="k">return</span> <span class="f">Send</span>(<span class="s">"FILE_Test_ADT"</span>, msg)</pre>
+            </div>
+          </div>
+          <p class="hero-card__note">One example route. Use the <b>Graph / Code</b> toggle above to switch between the explainer diagram and the plain code.</p>
         </div>
       </div>
     </div>

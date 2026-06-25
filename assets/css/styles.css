@@ -220,6 +220,44 @@ pre.code .s { color: #8fd49a; }                           /* string   */
 pre.code .d { color: #f0a868; }                           /* decorator*/
 pre.code .f { color: #79b8ff; }                           /* function */
 pre.code .n { color: #c9a3ff; }                           /* number/const */
+/* hero card — graph ⇄ code toggle (CSS-only, mirrors the .vs radio pattern; no JS) */
+.hero-card { position: relative; }
+.hero-card > .hv-in { position: absolute; width: 1px; height: 1px; opacity: 0; margin: 0; pointer-events: none; }
+.hv-tabs { margin-left: auto; display: flex; gap: 4px; }
+.hv-tab {
+  cursor: pointer; user-select: none; font-family: var(--mono); font-size: .74rem; letter-spacing: .04em;
+  color: var(--muted-dk); padding: 4px 11px; border-radius: 7px; border: 1px solid transparent;
+  transition: color .15s ease, background .15s ease, border-color .15s ease;
+}
+.hv-tab:hover { color: var(--text-dk); }
+#hv-graph:checked ~ .code-card__bar .hv-tab[for="hv-graph"],
+#hv-code:checked  ~ .code-card__bar .hv-tab[for="hv-code"] {
+  color: var(--accent); background: rgba(245,158,11,.08); border-color: rgba(245,158,11,.32);
+}
+#hv-graph:focus-visible ~ .code-card__bar .hv-tab[for="hv-graph"],
+#hv-code:focus-visible  ~ .code-card__bar .hv-tab[for="hv-code"] { outline: 3px solid var(--accent); outline-offset: 2px; }
+.hv-panel { display: none; }
+#hv-graph:checked ~ .hv-panels .hv-panel--graph,
+#hv-code:checked  ~ .hv-panels .hv-panel--code { display: block; }
+.hv-panel--graph { padding: 18px 16px; }
+.hero-card__note { margin: 0; padding: 11px 16px; border-top: 1px solid var(--border-dk); background: #0a1320; color: var(--muted-dk); font-size: .8rem; line-height: 1.45; }
+.hero-card__note b { color: var(--text-dk); font-weight: 650; }
+
+/* the wired-by-name graph (inline SVG; colours from tokens) */
+.wire-graph { display: block; width: 100%; height: auto; }
+.wire-graph text { font-family: var(--mono); }
+.wg-tag   { fill: var(--accent);    font-size: 11px; letter-spacing: .08em; }
+.wg-name  { fill: var(--text-dk);   font-size: 14px; font-weight: 500; }
+.wg-sub   { fill: var(--muted-dk);  font-size: 12px; }
+.wg-wire  { fill: #fbbf24;          font-size: 12px; }
+.wg-ct    { fill: #c6d2e2;          font-size: 12px; font-weight: 500; }
+.wg-cs    { fill: #7d8aa3;          font-size: 11px; }
+.wg-leg   { fill: var(--muted-dk);  font-size: 11px; }
+.wg-node  { fill: var(--ink-2);     stroke: #2c3e57; }
+.wg-chip  { fill: var(--code-bg);   stroke: #34465f; stroke-dasharray: 4 4; }
+.wg-edge  { stroke: var(--accent);  stroke-width: 2; fill: none; }
+.wg-branch{ stroke: #5b6b85;        stroke-width: 1.5; stroke-dasharray: 4 4; fill: none; }
+
 :not(pre) > code {
   background: var(--surface-2); border: 1px solid var(--border); border-radius: 6px;
   padding: .12em .4em; font-size: .88em; color: var(--accent-ink);
