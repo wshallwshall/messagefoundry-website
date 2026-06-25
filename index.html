@@ -205,12 +205,14 @@
 <span class="f">inbound</span>(<span class="s">"IB_Test_ADT"</span>, <span class="f">MLLP</span>(port=<span class="n">2575</span>), router=<span class="s">"adt_router"</span>)
 <span class="f">outbound</span>(<span class="s">"FILE_Test_ADT"</span>, <span class="f">File</span>(directory=<span class="s">"./out/adt"</span>, filename=<span class="s">"{MSH-10}.hl7"</span>))
 
+<span class="c"># Router — routes each message to handlers by name</span>
 <span class="d">@router</span>(<span class="s">"adt_router"</span>)
 <span class="k">def</span> <span class="f">route</span>(msg):
     <span class="k">if</span> msg[<span class="s">"MSH-9.1"</span>] != <span class="s">"ADT"</span>:
         <span class="k">return</span> []          <span class="c"># not ADT → UNROUTED</span>
     <span class="k">return</span> [<span class="s">"archive"</span>]
 
+<span class="c"># Handler — filter, then send to an outbound by name</span>
 <span class="d">@handler</span>(<span class="s">"archive"</span>)
 <span class="k">def</span> <span class="f">archive</span>(msg):
     <span class="k">if</span> msg[<span class="s">"MSH-9.2"</span>] <span class="k">not in</span> (<span class="s">"A01"</span>, <span class="s">"A04"</span>, <span class="s">"A08"</span>):
