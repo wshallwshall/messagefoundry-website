@@ -147,21 +147,21 @@
           </div>
           <div class="hv-panels">
             <div class="hv-panel hv-panel--graph">
-              <svg class="wire-graph" viewBox="0 0 440 474" role="img" xmlns="http://www.w3.org/2000/svg">
+              <svg class="wire-graph" viewBox="0 0 440 490" role="img" xmlns="http://www.w3.org/2000/svg">
                 <title>The IB_Test_ADT interface as a wired graph</title>
-                <desc>An MLLP inbound named IB_Test_ADT is wired by the name adt_router to a router, then by the name archive to a handler, which sends to a file outbound named FILE_Test_ADT. Non-ADT messages branch off as UNROUTED and other event types as FILTERED — both tracked, never silently dropped.</desc>
+                <desc>An MLLP inbound named IB_Test_ADT is wired by the name adt_router to a router, then by the name map_location to a handler that translates the patient location (PV1-3) from 4N-412B to ROOM412-B via a lookup table, then sends to a file outbound named FILE_Test_ADT. Non-ADT messages branch off as UNROUTED; unknown locations branch off as FILTERED — both tracked, never silently dropped.</desc>
                 <defs><marker id="wg-ar" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto"><path d="M2 1L8 5L2 9" fill="none" stroke="context-stroke" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></marker></defs>
 
                 <line class="wg-edge" x1="145" y1="92" x2="145" y2="139" marker-end="url(#wg-ar)"/>
                 <line class="wg-edge" x1="145" y1="204" x2="145" y2="251" marker-end="url(#wg-ar)"/>
-                <line class="wg-edge" x1="145" y1="316" x2="145" y2="363" marker-end="url(#wg-ar)"/>
+                <line class="wg-edge" x1="145" y1="332" x2="145" y2="379" marker-end="url(#wg-ar)"/>
 
                 <line class="wg-branch" x1="270" y1="172" x2="293" y2="172" marker-end="url(#wg-ar)"/>
-                <line class="wg-branch" x1="270" y1="284" x2="293" y2="284" marker-end="url(#wg-ar)"/>
+                <line class="wg-branch" x1="270" y1="292" x2="293" y2="292" marker-end="url(#wg-ar)"/>
 
                 <text class="wg-wire" x="158" y="120">router="adt_router"</text>
-                <text class="wg-wire" x="158" y="232">&#8594; ["archive"]</text>
-                <text class="wg-wire" x="158" y="344">Send("FILE_Test_ADT")</text>
+                <text class="wg-wire" x="158" y="232">&#8594; ["map_location"]</text>
+                <text class="wg-wire" x="158" y="360">Send("FILE_Test_ADT")</text>
 
                 <rect class="wg-node" x="20" y="18" width="250" height="74" rx="11"/>
                 <text class="wg-tag"  x="145" y="42" text-anchor="middle">INBOUND</text>
@@ -173,28 +173,29 @@
                 <text class="wg-name" x="145" y="180" text-anchor="middle">adt_router</text>
                 <text class="wg-sub"  x="145" y="196" text-anchor="middle">route(msg)</text>
 
-                <rect class="wg-node" x="20" y="252" width="250" height="64" rx="11"/>
-                <text class="wg-tag"  x="145" y="271" text-anchor="middle">HANDLER</text>
-                <text class="wg-name" x="145" y="292" text-anchor="middle">archive</text>
-                <text class="wg-sub"  x="145" y="308" text-anchor="middle">archive(msg)</text>
+                <rect class="wg-node wg-node--xf" x="20" y="252" width="250" height="80" rx="11"/>
+                <text class="wg-tag"  x="145" y="271" text-anchor="middle">HANDLER &#183; TRANSFORM</text>
+                <text class="wg-name" x="145" y="291" text-anchor="middle">map_location</text>
+                <text class="wg-sub"  x="145" y="308" text-anchor="middle">PV1-3 &#183; patient location</text>
+                <text class="wg-sub wg-sub--xf" x="145" y="325" text-anchor="middle">4N-412B &#8594; ROOM412-B</text>
 
-                <rect class="wg-node" x="20" y="364" width="250" height="74" rx="11"/>
-                <text class="wg-tag"  x="145" y="388" text-anchor="middle">OUTBOUND</text>
-                <text class="wg-name" x="145" y="410" text-anchor="middle">FILE_Test_ADT</text>
-                <text class="wg-sub"  x="145" y="427" text-anchor="middle">File &#183; out/adt</text>
+                <rect class="wg-node" x="20" y="380" width="250" height="74" rx="11"/>
+                <text class="wg-tag"  x="145" y="404" text-anchor="middle">OUTBOUND</text>
+                <text class="wg-name" x="145" y="426" text-anchor="middle">FILE_Test_ADT</text>
+                <text class="wg-sub"  x="145" y="443" text-anchor="middle">File &#183; out/adt</text>
 
                 <rect class="wg-chip" x="296" y="148" width="128" height="48" rx="8"/>
                 <text class="wg-ct" x="360" y="170" text-anchor="middle">UNROUTED</text>
                 <text class="wg-cs" x="360" y="186" text-anchor="middle">not ADT</text>
 
-                <rect class="wg-chip" x="296" y="260" width="128" height="48" rx="8"/>
-                <text class="wg-ct" x="360" y="282" text-anchor="middle">FILTERED</text>
-                <text class="wg-cs" x="360" y="298" text-anchor="middle">other events</text>
+                <rect class="wg-chip" x="296" y="268" width="128" height="48" rx="8"/>
+                <text class="wg-ct" x="360" y="290" text-anchor="middle">FILTERED</text>
+                <text class="wg-cs" x="360" y="306" text-anchor="middle">unknown location</text>
 
-                <line class="wg-edge" x1="20" y1="456" x2="44" y2="456"/>
-                <text class="wg-leg" x="52" y="460">delivered</text>
-                <line class="wg-branch" x1="150" y1="456" x2="174" y2="456"/>
-                <text class="wg-leg" x="182" y="460">tracked &#8212; never dropped</text>
+                <line class="wg-edge" x1="20" y1="472" x2="44" y2="472"/>
+                <text class="wg-leg" x="52" y="476">delivered</text>
+                <line class="wg-branch" x1="150" y1="472" x2="174" y2="472"/>
+                <text class="wg-leg" x="182" y="476">tracked &#8212; never dropped</text>
               </svg>
             </div>
             <div class="hv-panel hv-panel--code">
@@ -209,13 +210,18 @@
 <span class="k">def</span> <span class="f">route</span>(msg):
     <span class="k">if</span> msg[<span class="s">"MSH-9.1"</span>] != <span class="s">"ADT"</span>:
         <span class="k">return</span> []          <span class="c"># not ADT → UNROUTED</span>
-    <span class="k">return</span> [<span class="s">"archive"</span>]
+    <span class="k">return</span> [<span class="s">"map_location"</span>]
 
-<span class="c"># Handler — filter, then send to an outbound by name</span>
-<span class="d">@handler</span>(<span class="s">"archive"</span>)
-<span class="k">def</span> <span class="f">archive</span>(msg):
-    <span class="k">if</span> msg[<span class="s">"MSH-9.2"</span>] <span class="k">not in</span> (<span class="s">"A01"</span>, <span class="s">"A04"</span>, <span class="s">"A08"</span>):
-        <span class="k">return</span> <span class="n">None</span>        <span class="c"># filtered out (FILTERED)</span>
+<span class="c"># Bed locations translated to the receiver's code set</span>
+LOCATIONS = {<span class="s">"4N-412B"</span>: <span class="s">"ROOM412-B"</span>, <span class="s">"4N-410A"</span>: <span class="s">"ROOM410-A"</span>}
+
+<span class="c"># Handler — translate the patient location (PV1-3) for the receiver</span>
+<span class="d">@handler</span>(<span class="s">"map_location"</span>)
+<span class="k">def</span> <span class="f">map_location</span>(msg):
+    code = msg[<span class="s">"PV1-3"</span>]
+    <span class="k">if</span> code <span class="k">not in</span> LOCATIONS:
+        <span class="k">return</span> <span class="n">None</span>                  <span class="c"># unknown location → FILTERED</span>
+    msg[<span class="s">"PV1-3"</span>] = LOCATIONS[code]   <span class="c"># swap to the receiver's code set</span>
     <span class="k">return</span> <span class="f">Send</span>(<span class="s">"FILE_Test_ADT"</span>, msg)</pre>
             </div>
           </div>
