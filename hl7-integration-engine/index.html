@@ -4,14 +4,14 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Open-source HL7 interface engine — MessageFoundry</title>
-  <meta name="description" content="MessageFoundry is a capable HL7 integration engine — deep HL7 v2 parsing, validation, routing, and transformation — and a broader healthcare integration engine that also connects FHIR, X12/EDI, and DICOM. Open-source, self-hosted, Python-native.">
+  <meta name="description" content="MessageFoundry is a capable HL7 interface engine — deep HL7 v2 parsing, validation, routing, and transformation — and a broader healthcare interface engine that also connects FHIR, X12/EDI, and DICOM. Open-source, self-hosted, Python-native.">
   <link rel="canonical" href="https://messagefoundry.org/hl7-integration-engine/">
   <link rel="icon" href="/assets/img/favicon.svg" type="image/svg+xml">
   <meta name="theme-color" content="#0b1220">
   <meta property="og:type" content="website">
   <meta property="og:site_name" content="MessageFoundry">
-  <meta property="og:title" content="More than just an HL7 integration engine — MessageFoundry">
-  <meta property="og:description" content="A capable HL7 integration engine with deep HL7 v2 support — and a broader healthcare integration engine that also connects FHIR, X12/EDI, and DICOM.">
+  <meta property="og:title" content="More than just an HL7 interface engine — MessageFoundry">
+  <meta property="og:description" content="A capable HL7 interface engine with deep HL7 v2 support — and a broader healthcare interface engine that also connects FHIR, X12/EDI, and DICOM.">
   <meta property="og:url" content="https://messagefoundry.org/hl7-integration-engine/">
   <meta property="og:image" content="https://messagefoundry.org/assets/img/og.png">
   <meta property="og:image:width" content="1200">
@@ -25,9 +25,9 @@
     "@context": "https://schema.org",
     "@type": "FAQPage",
     "mainEntity": [
-      { "@type": "Question", "name": "Is MessageFoundry an HL7 integration engine?", "acceptedAnswer": { "@type": "Answer", "text": "Yes — and more. MessageFoundry has deep HL7 v2 support: parsing, tiered validation, routing, and transformation over MLLP. It is also a broader healthcare integration engine that connects FHIR, X12/EDI, and DICOM across many transports — so one engine handles HL7 and everything around it." } },
+      { "@type": "Question", "name": "Is MessageFoundry an HL7 interface engine?", "acceptedAnswer": { "@type": "Answer", "text": "Yes — and more. MessageFoundry has deep HL7 v2 support: parsing, tiered validation, routing, and transformation over MLLP. It is also a broader healthcare interface engine that connects FHIR, X12/EDI, and DICOM across many transports — so one engine handles HL7 and everything around it." } },
       { "@type": "Question", "name": "What does MessageFoundry support besides HL7 v2?", "acceptedAnswer": { "@type": "Answer", "text": "FHIR (REST), X12/EDI, and DICOM, plus JSON and XML payloads — over MLLP, TCP, HTTP/REST, SOAP, files, SFTP/FTP, and databases. It connects a wide range of healthcare protocols and message types from a single, self-hosted engine." } },
-      { "@type": "Question", "name": "Is MessageFoundry an HL7 interface engine or a healthcare integration engine?", "acceptedAnswer": { "@type": "Answer", "text": "Both terms fit. MessageFoundry handles classic HL7 v2 interfaces and the broader integration work — FHIR, X12, DICOM — in one open-source, self-hosted, Python-native engine, so you don't need a separate tool per standard." } },
+      { "@type": "Question", "name": "Is MessageFoundry an HL7 interface engine or a healthcare interface engine?", "acceptedAnswer": { "@type": "Answer", "text": "Both terms fit. MessageFoundry handles classic HL7 v2 interfaces and the broader integration work — FHIR, X12, DICOM — in one open-source, self-hosted, Python-native engine, so you don't need a separate tool per standard." } },
       { "@type": "Question", "name": "What is an HL7 interface engine?", "acceptedAnswer": { "@type": "Answer", "text": "An HL7 interface engine is software that connects clinical systems by receiving, routing, transforming, and validating HL7 v2 messages between them — for example moving an ADT or ORU message from the EHR to a lab or billing system. MessageFoundry is a self-hosted, Python-native HL7 interface engine that also handles FHIR, X12, and DICOM." } }
     ]
   }
@@ -39,7 +39,7 @@
     "itemListElement": [
       { "@type": "ListItem", "position": 1, "name": "Home", "item": "https://messagefoundry.org/" },
       { "@type": "ListItem", "position": 2, "name": "Guides", "item": "https://messagefoundry.org/guides/" },
-      { "@type": "ListItem", "position": 3, "name": "HL7 integration engine", "item": "https://messagefoundry.org/hl7-integration-engine/" }
+      { "@type": "ListItem", "position": 3, "name": "HL7 interface engine", "item": "https://messagefoundry.org/hl7-integration-engine/" }
     ]
   }
   </script>
@@ -97,10 +97,10 @@
 
   <section class="section section--dark section--tight">
     <div class="container center">
-      <nav class="crumb" aria-label="Breadcrumb"><a href="/">Home</a> <span aria-hidden="true">›</span> <a href="/guides/">Guides</a> <span aria-hidden="true">›</span> <span>HL7 integration engine</span></nav>
+      <nav class="crumb" aria-label="Breadcrumb"><a href="/">Home</a> <span aria-hidden="true">›</span> <a href="/guides/">Guides</a> <span aria-hidden="true">›</span> <span>HL7 interface engine</span></nav>
       <span class="eyebrow">HL7 — and well beyond</span>
-      <h1 style="max-width:20ch;margin-inline:auto">More than just an HL7 integration engine</h1>
-      <p class="lead">Yes, <b>MessageFoundry</b> is a capable <b>HL7 integration engine</b> — with deep HL7 v2 parsing, validation, routing, and transformation. But it's a full <b>healthcare integration engine</b>: the same engine connects FHIR, X12/EDI, and DICOM across a wide range of transports — open-source, self-hosted, and written in Python.</p>
+      <h1 style="max-width:20ch;margin-inline:auto">More than just an HL7 interface engine</h1>
+      <p class="lead">Yes, <b>MessageFoundry</b> is a capable <b>HL7 interface engine</b> — with deep HL7 v2 parsing, validation, routing, and transformation. But it's a full <b>healthcare interface engine</b>: the same engine connects FHIR, X12/EDI, and DICOM across a wide range of transports — open-source, self-hosted, and written in Python.</p>
       <div class="btn-row center" style="margin-top:24px">
         <a class="btn btn-primary" href="/features.html">See all the formats</a>
         <a class="btn btn-secondary" href="/getting-started.html">Get started →</a>
@@ -136,7 +136,7 @@
           <p style="margin-top:12px"><a href="/hl7-over-mllp/">HL7 over MLLP in Python →</a></p>
         </div>
         <div class="card">
-          <h3>…and a broad healthcare integration engine</h3>
+          <h3>…and a broad healthcare interface engine</h3>
           <p>The same engine, the same Python config, reaches well past HL7 v2:</p>
           <ul class="feature-list" style="margin-top:12px">
             <li><b>FHIR</b> — deliver resources and Bundles to a FHIR server over REST (R4B/R5/STU3).</li>
@@ -148,7 +148,7 @@
       </div>
 
       <div class="callout" style="margin-top:30px">
-        <p style="margin:0"><strong>One engine, every interface.</strong> The reason "HL7 integration engine" undersells it: healthcare integration rarely stops at HL7 v2. MessageFoundry connects <b>a wide range of protocols and message types</b> from a single open-source, self-hosted, Python-native engine — so HL7 and everything around it run side by side, version-controlled like any codebase. <a href="/comparison.html">See how that compares to legacy engines →</a></p>
+        <p style="margin:0"><strong>One engine, every interface.</strong> The reason "HL7 interface engine" undersells it: healthcare integration rarely stops at HL7 v2. MessageFoundry connects <b>a wide range of protocols and message types</b> from a single open-source, self-hosted, Python-native engine — so HL7 and everything around it run side by side, version-controlled like any codebase. <a href="/comparison.html">See how that compares to legacy engines →</a></p>
       </div>
 
       <div class="btn-row" style="margin-top:30px">
@@ -176,9 +176,9 @@
     <div class="container">
       <div class="center" style="margin-bottom:28px"><span class="eyebrow">FAQ</span><h2>Frequently asked questions</h2></div>
       <div class="faq">
-        <div class="faq-item"><h3>Is MessageFoundry an HL7 integration engine?</h3><p>Yes — and more. MessageFoundry has deep HL7 v2 support: parsing, tiered validation, routing, and transformation over MLLP. It is also a broader healthcare integration engine that connects FHIR, X12/EDI, and DICOM across many transports — so one engine handles HL7 and everything around it.</p></div>
+        <div class="faq-item"><h3>Is MessageFoundry an HL7 interface engine?</h3><p>Yes — and more. MessageFoundry has deep HL7 v2 support: parsing, tiered validation, routing, and transformation over MLLP. It is also a broader healthcare interface engine that connects FHIR, X12/EDI, and DICOM across many transports — so one engine handles HL7 and everything around it.</p></div>
         <div class="faq-item"><h3>What does MessageFoundry support besides HL7 v2?</h3><p>FHIR (REST), X12/EDI, and DICOM, plus JSON and XML payloads — over MLLP, TCP, HTTP/REST, SOAP, files, SFTP/FTP, and databases. It connects a wide range of healthcare protocols and message types from a single, self-hosted engine.</p></div>
-        <div class="faq-item"><h3>Is MessageFoundry an HL7 interface engine or a healthcare integration engine?</h3><p>Both terms fit. MessageFoundry handles classic HL7 v2 interfaces and the broader integration work — FHIR, X12, DICOM — in one open-source, self-hosted, Python-native engine, so you don't need a separate tool per standard.</p></div>
+        <div class="faq-item"><h3>Is MessageFoundry an HL7 interface engine or a healthcare interface engine?</h3><p>Both terms fit. MessageFoundry handles classic HL7 v2 interfaces and the broader integration work — FHIR, X12, DICOM — in one open-source, self-hosted, Python-native engine, so you don't need a separate tool per standard.</p></div>
         <div class="faq-item"><h3>What is an HL7 interface engine?</h3><p>An HL7 interface engine is software that connects clinical systems by receiving, routing, transforming, and validating HL7 v2 messages between them — for example moving an ADT or ORU message from the EHR to a lab or billing system. MessageFoundry is a self-hosted, Python-native HL7 interface engine that also handles FHIR, X12, and DICOM.</p></div>
       </div>
     </div>
@@ -194,8 +194,8 @@
             <img class="brand-mark" src="/assets/img/logo.svg" alt="" width="28" height="28">
             <span class="brand-name">Message<span class="brand-accent">Foundry</span><span class="brand-tm">™</span></span>
           </a>
-          <p class="footer-tagline"><b>More</b> Than an HL7 Integration Engine</p>
-          <p>Open-source healthcare integration engine — secure by default, built to recognized standards, connecting a wide range of protocols and message types.</p>
+          <p class="footer-tagline"><b>More</b> Than an HL7 Interface Engine</p>
+          <p>Open-source healthcare interface engine — secure by default, built to recognized standards, connecting a wide range of protocols and message types.</p>
           <div class="badge-row" style="margin-top:16px">
             <span class="badge">Open source</span>
             <span class="badge">No lock-in</span>

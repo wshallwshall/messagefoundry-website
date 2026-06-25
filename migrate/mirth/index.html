@@ -4,7 +4,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Switch from Mirth Connect — MessageFoundry</title>
-  <meta name="description" content="Moving off Mirth Connect? MessageFoundry is an open-source (AGPL), self-hosted HL7 integration engine in Python — channels become plain code in git, migration is AI-assisted, and there's no per-interface licensing.">
+  <meta name="description" content="Moving off Mirth Connect? MessageFoundry is an open-source (AGPL), self-hosted HL7 interface engine in Python — channels become plain code in git, migration is AI-assisted, and there's no per-interface licensing.">
   <link rel="canonical" href="https://messagefoundry.org/migrate/mirth/">
   <link rel="icon" href="/assets/img/favicon.svg" type="image/svg+xml">
   <meta name="theme-color" content="#0b1220">
@@ -62,7 +62,7 @@
     "@context": "https://schema.org",
     "@type": "FAQPage",
     "mainEntity": [
-      { "@type": "Question", "name": "Is MessageFoundry a Mirth Connect alternative?", "acceptedAnswer": { "@type": "Answer", "text": "Yes. MessageFoundry is an open-source, self-hosted HL7 integration engine — a modern alternative for teams moving off Mirth Connect. It is open source by license (AGPL), you write interfaces in Python instead of Rhino JavaScript, and your integration logic lives as plain code in your git repository rather than as XML inside a database. Mirth still has the larger community and a deeper pre-built-adapter ecosystem today." } },
+      { "@type": "Question", "name": "Is MessageFoundry a Mirth Connect alternative?", "acceptedAnswer": { "@type": "Answer", "text": "Yes. MessageFoundry is an open-source, self-hosted HL7 interface engine — a modern alternative for teams moving off Mirth Connect. It is open source by license (AGPL), you write interfaces in Python instead of Rhino JavaScript, and your integration logic lives as plain code in your git repository rather than as XML inside a database. Mirth still has the larger community and a deeper pre-built-adapter ecosystem today." } },
       { "@type": "Question", "name": "Is Mirth Connect still open source?", "acceptedAnswer": { "@type": "Answer", "text": "Mirth Connect's open-source line ended at version 4.5.2; version 4.6 and later are closed and paid, and the free line no longer receives security patches. Teams that adopted Mirth specifically because it was open source are the ones most often evaluating an open-source alternative like MessageFoundry, which is licensed under the AGPL." } },
       { "@type": "Question", "name": "Do I have to rewrite my Mirth JavaScript transformers by hand?", "acceptedAnswer": { "@type": "Answer", "text": "Not from scratch. MessageFoundry's AI assistant drafts Python equivalents of your existing channel logic, which your team reviews and refines. Because the result is ordinary, readable Python in your git repository, it is easier to diff, test, and maintain than transformer code embedded in a channel." } },
       { "@type": "Question", "name": "How long does migrating from Mirth Connect take?", "acceptedAnswer": { "@type": "Answer", "text": "It depends on how many channels you run and how complex they are, but because migration is AI-assisted and channels become plain Python, porting is typically far less work than re-platforming onto another proprietary engine. You migrate in waves and keep Mirth available to roll back to until each interface is proven in production." } }
@@ -207,7 +207,7 @@
     <div class="container">
       <div class="center" style="margin-bottom:28px"><span class="eyebrow">FAQ</span><h2>Switching from Mirth — FAQ</h2></div>
       <div class="faq">
-        <div class="faq-item"><h3>Is MessageFoundry a Mirth Connect alternative?</h3><p>Yes. MessageFoundry is an open-source, self-hosted HL7 integration engine — a modern alternative for teams moving off Mirth Connect. It is open source by license (AGPL), you write interfaces in Python instead of Rhino JavaScript, and your integration logic lives as plain code in your git repository rather than as XML inside a database. Mirth still has the larger community and a deeper pre-built-adapter ecosystem today.</p></div>
+        <div class="faq-item"><h3>Is MessageFoundry a Mirth Connect alternative?</h3><p>Yes. MessageFoundry is an open-source, self-hosted HL7 interface engine — a modern alternative for teams moving off Mirth Connect. It is open source by license (AGPL), you write interfaces in Python instead of Rhino JavaScript, and your integration logic lives as plain code in your git repository rather than as XML inside a database. Mirth still has the larger community and a deeper pre-built-adapter ecosystem today.</p></div>
         <div class="faq-item"><h3>Is Mirth Connect still open source?</h3><p>Mirth Connect's open-source line ended at version 4.5.2; version 4.6 and later are closed and paid, and the free line no longer receives security patches. Teams that adopted Mirth specifically because it was open source are the ones most often evaluating an open-source alternative like MessageFoundry, which is licensed under the AGPL.</p></div>
         <div class="faq-item"><h3>Do I have to rewrite my Mirth JavaScript transformers by hand?</h3><p>Not from scratch. MessageFoundry's AI assistant drafts Python equivalents of your existing channel logic, which your team reviews and refines. Because the result is ordinary, readable Python in your git repository, it is easier to diff, test, and maintain than transformer code embedded in a channel.</p></div>
         <div class="faq-item"><h3>How long does migrating from Mirth Connect take?</h3><p>It depends on how many channels you run and how complex they are, but because migration is AI-assisted and channels become plain Python, porting is typically far less work than re-platforming onto another proprietary engine. You migrate in waves and keep Mirth available to roll back to until each interface is proven in production.</p></div>
@@ -237,8 +237,8 @@
             <img class="brand-mark" src="/assets/img/logo.svg" alt="" width="28" height="28">
             <span class="brand-name">Message<span class="brand-accent">Foundry</span><span class="brand-tm">™</span></span>
           </a>
-          <p class="footer-tagline"><b>More</b> Than an HL7 Integration Engine</p>
-          <p>Open-source healthcare integration engine — secure by default, built to recognized standards, connecting a wide range of protocols and message types.</p>
+          <p class="footer-tagline"><b>More</b> Than an HL7 Interface Engine</p>
+          <p>Open-source healthcare interface engine — secure by default, built to recognized standards, connecting a wide range of protocols and message types.</p>
           <div class="badge-row" style="margin-top:16px">
             <span class="badge">Open source</span>
             <span class="badge">No lock-in</span>
