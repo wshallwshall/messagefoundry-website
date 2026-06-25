@@ -38,8 +38,10 @@ repo). It is **not** the engine. Served at https://messagefoundry.org via GitHub
     what's in v0.1; when unsure whether a capability is in scope, ask rather than inferring from the
     lagging engine docs.
   - **Protocol & message-type breadth (standing owner decision — do not re-litigate).** The site
-    positions MessageFoundry as a broad *healthcare integration engine* that connects "a wide range of
-    protocols and message types" — pre-approved aspirational framing; write it confidently. Specific
+    positions MessageFoundry as a broad *healthcare interface engine* that connects "a wide range of
+    protocols and message types" — pre-approved aspirational framing; write it confidently. (Per owner
+    2026-06-24, the site leads with **"interface engine"**, not "integration engine"; the latter now
+    survives only in competitor/award proper-names — e.g. Corepoint Integration Engine, the KLAS award.) Specific
     capability claims should still match the v0.1 target (don't claim something v0.1 won't do).
 - **Do not delete `CNAME`** — it binds the custom domain on every Pages deploy.
 

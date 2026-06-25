@@ -1,6 +1,6 @@
 # Security Overview
 
-MessageFoundry is a healthcare integration engine that carries PHI, so security is a
+MessageFoundry is a healthcare interface engine that carries PHI, so security is a
 first-class design constraint rather than an afterthought. This overview describes the
 controls that are built into the engine today: how it authenticates and authorizes every
 action, how it protects data at rest and in transit, how it produces a tamper-evident
@@ -306,6 +306,6 @@ availability is built and failover-validated on PostgreSQL and SQL Server.
 
 ---
 
-*MessageFoundry is independent and unaffiliated with the vendors of other integration
+*MessageFoundry is independent and unaffiliated with the vendors of other interface
 engines; their product names are trademarks of their respective owners. Any comparisons are
 factual and made in good faith.*
