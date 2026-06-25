@@ -3,14 +3,14 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Migrating from a legacy integration engine — MessageFoundry</title>
-  <meta name="description" content="A vendor-neutral playbook for migrating healthcare interfaces off a legacy integration engine (Mirth Connect, Corepoint, Rhapsody, and others) to MessageFoundry: inventory, re-express as Python, validate and shadow, then cut over with rollback.">
+  <title>Migrating from a legacy interface engine — MessageFoundry</title>
+  <meta name="description" content="A vendor-neutral playbook for migrating healthcare interfaces off a legacy interface engine (Mirth Connect, Corepoint, Rhapsody, and others) to MessageFoundry: inventory, re-express as Python, validate and shadow, then cut over with rollback.">
   <link rel="canonical" href="https://messagefoundry.org/migrate/">
   <link rel="icon" href="/assets/img/favicon.svg" type="image/svg+xml">
   <meta name="theme-color" content="#0b1220">
   <meta property="og:type" content="article">
   <meta property="og:site_name" content="MessageFoundry">
-  <meta property="og:title" content="Migrating from a legacy integration engine — MessageFoundry">
+  <meta property="og:title" content="Migrating from a legacy interface engine — MessageFoundry">
   <meta property="og:description" content="A vendor-neutral migration playbook: inventory, re-express your interfaces as Python, validate and shadow, then cut over with rollback.">
   <meta property="og:url" content="https://messagefoundry.org/migrate/">
   <meta property="og:image" content="https://messagefoundry.org/assets/img/og.png">
@@ -25,8 +25,8 @@
     "@context": "https://schema.org",
     "@type": "HowTo",
     "about": { "@id": "https://messagefoundry.org/#software" },
-    "name": "Migrate to MessageFoundry from a legacy integration engine",
-    "description": "A vendor-neutral process for moving healthcare interfaces off a legacy integration engine to MessageFoundry: inventory the interfaces, re-express them as Python config, validate and shadow against live traffic, then cut over in stages with a rollback path.",
+    "name": "Migrate to MessageFoundry from a legacy interface engine",
+    "description": "A vendor-neutral process for moving healthcare interfaces off a legacy interface engine to MessageFoundry: inventory the interfaces, re-express them as Python config, validate and shadow against live traffic, then cut over in stages with a rollback path.",
     "tool": [{ "@type": "HowToTool", "name": "Python 3.11 or newer" }],
     "supply": [{ "@type": "HowToSupply", "name": "messagefoundry (PyPI package)" }],
     "step": [
@@ -42,7 +42,7 @@
     "@context": "https://schema.org",
     "@type": "FAQPage",
     "mainEntity": [
-      { "@type": "Question", "name": "Can I migrate to MessageFoundry from Mirth Connect, Corepoint, or Rhapsody?", "acceptedAnswer": { "@type": "Answer", "text": "Yes. MessageFoundry is a destination for moving healthcare interfaces off a legacy integration engine, whichever one you run today. You re-express each channel — its connections, routing, and transforms — as plain Python config, and migrate interface by interface rather than all at once." } },
+      { "@type": "Question", "name": "Can I migrate to MessageFoundry from Mirth Connect, Corepoint, or Rhapsody?", "acceptedAnswer": { "@type": "Answer", "text": "Yes. MessageFoundry is a destination for moving healthcare interfaces off a legacy interface engine, whichever one you run today. You re-express each channel — its connections, routing, and transforms — as plain Python config, and migrate interface by interface rather than all at once." } },
       { "@type": "Question", "name": "Will I have to rewrite my interfaces?", "acceptedAnswer": { "@type": "Answer", "text": "Your interfaces are re-expressed as Python Connections, Routers, and Handlers — which makes them version-controlled, diffable, and unit-testable. AI-assisted migration can draft the Python from your existing channel logic to speed the work." } },
       { "@type": "Question", "name": "How do I de-risk the cutover?", "acceptedAnswer": { "@type": "Answer", "text": "Validate the config with the commit gate, run the new interface in parallel (shadow) against live traffic to compare outputs, then cut over in stages behind go/no-go gates — keeping the legacy engine as a fallback until you're confident." } },
       { "@type": "Question", "name": "Can I migrate from Infor Cloverleaf?", "acceptedAnswer": { "@type": "Answer", "text": "Yes. Cloverleaf interfaces are scripted in Tcl; with MessageFoundry you re-express them as plain Python — a far larger talent pool — and migrate interface by interface, validating each against live traffic before cutting over. There is no enterprise licensing or lock-in on the destination." } },
@@ -54,7 +54,7 @@
   {
     "@context": "https://schema.org",
     "@type": "TechArticle",
-    "headline": "Migrating from a legacy integration engine",
+    "headline": "Migrating from a legacy interface engine",
     "about": { "@id": "https://messagefoundry.org/#software" },
     "publisher": { "@id": "https://messagefoundry.org/#org" },
     "inLanguage": "en"
@@ -126,7 +126,7 @@
     <div class="container center">
       <nav class="crumb" aria-label="Breadcrumb"><a href="/">Home</a> <span aria-hidden="true">›</span> <span>Migrate</span></nav>
       <span class="eyebrow">Migration</span>
-      <h1 style="max-width:20ch;margin-inline:auto">Migrating from a legacy integration engine</h1>
+      <h1 style="max-width:20ch;margin-inline:auto">Migrating from a legacy interface engine</h1>
       <p class="lead">Whatever you run today — <a href="/migrate/mirth/">Mirth Connect</a>, Corepoint, Rhapsody, or another engine — moving to <b>MessageFoundry</b> is a staged, reversible process, not a big-bang rewrite. You re-express your interfaces as plain Python, validate them against live traffic, and cut over one at a time with a rollback path the whole way.</p>
       <div class="btn-row center" style="margin-top:24px">
         <a class="btn btn-primary" href="/assets/docs/MessageFoundry-Migration-Guide.pdf" target="_blank" rel="noopener">Migration guide (PDF)</a>
@@ -183,7 +183,7 @@
     <div class="container">
       <div class="center" style="margin-bottom:28px"><span class="eyebrow">FAQ</span><h2>Frequently asked questions</h2></div>
       <div class="faq">
-        <div class="faq-item"><h3>Can I migrate to MessageFoundry from Mirth Connect, Corepoint, or Rhapsody?</h3><p>Yes. MessageFoundry is a destination for moving healthcare interfaces off a legacy integration engine, whichever one you run today. You re-express each channel — its connections, routing, and transforms — as plain Python config, and migrate interface by interface rather than all at once.</p></div>
+        <div class="faq-item"><h3>Can I migrate to MessageFoundry from Mirth Connect, Corepoint, or Rhapsody?</h3><p>Yes. MessageFoundry is a destination for moving healthcare interfaces off a legacy interface engine, whichever one you run today. You re-express each channel — its connections, routing, and transforms — as plain Python config, and migrate interface by interface rather than all at once.</p></div>
         <div class="faq-item"><h3>Will I have to rewrite my interfaces?</h3><p>Your interfaces are re-expressed as Python Connections, Routers, and Handlers — which makes them version-controlled, diffable, and unit-testable. AI-assisted migration can draft the Python from your existing channel logic to speed the work.</p></div>
         <div class="faq-item"><h3>How do I de-risk the cutover?</h3><p>Validate the config with the commit gate, run the new interface in parallel (shadow) against live traffic to compare outputs, then cut over in stages behind go/no-go gates — keeping the legacy engine as a fallback until you're confident.</p></div>
         <div class="faq-item"><h3>Can I migrate from Infor Cloverleaf?</h3><p>Yes. Cloverleaf interfaces are scripted in Tcl; with MessageFoundry you re-express them as plain Python — a far larger talent pool — and migrate interface by interface, validating each against live traffic before cutting over. There is no enterprise licensing or lock-in on the destination.</p></div>
@@ -202,8 +202,8 @@
             <img class="brand-mark" src="/assets/img/logo.svg" alt="" width="28" height="28">
             <span class="brand-name">Message<span class="brand-accent">Foundry</span><span class="brand-tm">™</span></span>
           </a>
-          <p class="footer-tagline"><b>More</b> Than an HL7 Integration Engine</p>
-          <p>Open-source healthcare integration engine — secure by default, built to recognized standards, connecting a wide range of protocols and message types.</p>
+          <p class="footer-tagline"><b>More</b> Than an HL7 Interface Engine</p>
+          <p>Open-source healthcare interface engine — secure by default, built to recognized standards, connecting a wide range of protocols and message types.</p>
           <div class="badge-row" style="margin-top:16px">
             <span class="badge">Open source</span>
             <span class="badge">No lock-in</span>
