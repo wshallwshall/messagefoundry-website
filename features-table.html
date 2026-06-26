@@ -142,7 +142,8 @@
             <tr class="grp"><th colspan="2" scope="colgroup">Routing &amp; transformation</th></tr>
             <tr><th scope="row">One-to-many routing with filtering</th><td>Fan a message out to multiple destinations, or filter it out entirely; every decision is a recorded outcome.</td></tr>
             <tr><th scope="row">Transform, enrich, validate</th><td>Reshape and augment messages mid-flight, with validation where you want it.</td></tr>
-            <tr><th scope="row">Reference tables &amp; live lookups</th><td>Enrich from static reference / lookup tables, or query a live database during processing.</td></tr>
+            <tr><th scope="row">Translation tables (code sets)</th><td>Edit value-mapping tables in a spreadsheet-style grid in the VS&nbsp;Code extension, stored as plain version-controlled CSV in your config — validated on save (no duplicate keys) and looked up in a Handler with <code>code_set("…")</code>. Diffable in git, not locked in a black-box database.</td></tr>
+            <tr><th scope="row">Live database lookups</th><td>Query a live database during processing to enrich or validate a message.</td></tr>
             <tr><th scope="row">Guided wizards or pure functions</th><td>New Connection / New Route wizards generate the wiring, or write Routers and Handlers as plain functions registered by name — no proprietary DSL.</td></tr>
             <tr><th scope="row">Dry-run with before/after diff</th><td>Preview a route's effect on a real message before it ships.</td></tr>
 
@@ -159,7 +160,7 @@
 
             <tr class="grp"><th colspan="2" scope="colgroup">Tooling — console, editor &amp; CLI</th></tr>
             <tr><th scope="row">Admin console</th><td>Dashboards, message search and browse, an HL7 parse-tree viewer, delivery and audit trail, a dead-letter page, an alert-rules view, and one-click replay — a separate app reaching the engine only over the localhost API.</td></tr>
-            <tr><th scope="row">VS Code extension</th><td>Completion, live HL7-aware validate-on-save, a graph view of your integration (a boxes-and-arrows diagram), source-control integration, and Stage&nbsp;→&nbsp;Promote to a running engine.</td></tr>
+            <tr><th scope="row">VS Code extension</th><td>Completion, live HL7-aware validate-on-save, a graph view of your integration (a boxes-and-arrows diagram), a Translation Tables grid editor, source-control integration, and Stage&nbsp;→&nbsp;Promote to a running engine.</td></tr>
             <tr><th scope="row">CLI &amp; localhost API</th><td><code>messagefoundry serve</code> exposes connection control, message search/detail, replay, stats, and a live WebSocket feed; <code>check</code> gates commits and <code>generate</code> produces synthetic HL7.</td></tr>
             <tr><th scope="row">Alerting</th><td>Webhook and email alerts when a connection stalls or a message dead-letters.</td></tr>
             <tr><th scope="row">Metrics export</th><td>A Prometheus / OpenTelemetry-compatible <code>/metrics</code> endpoint (access-controlled) for scraping engine and connection metrics into your monitoring stack.</td></tr>
