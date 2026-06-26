@@ -149,7 +149,7 @@
             <div class="hv-panel hv-panel--graph">
               <svg class="wire-graph" viewBox="0 0 440 490" role="img" xmlns="http://www.w3.org/2000/svg">
                 <title>The IB_Test_ADT interface as a wired graph</title>
-                <desc>An MLLP inbound named IB_Test_ADT is wired by the name adt_router to a router, then by the name map_location to a handler that translates the patient location (PV1-3) from 4N-412B to ROOM412-B via a lookup table, then sends to a file outbound named FILE_Test_ADT. Non-ADT messages branch off as UNROUTED; unknown locations branch off as FILTERED — both tracked, never silently dropped.</desc>
+                <desc>An MLLP inbound named IB_Test_ADT is wired by the name adt_router to a router, then by the name map_location to a handler that translates the patient location (PV1-3) from 4N-412B to ROOM412-B via the bed_locations translation table, then sends to a file outbound named FILE_Test_ADT. Non-ADT messages branch off as UNROUTED; unmapped locations are dead-lettered (held for review) — both tracked, never silently dropped.</desc>
                 <defs><marker id="wg-ar" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto"><path d="M2 1L8 5L2 9" fill="none" stroke="context-stroke" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></marker></defs>
 
                 <line class="wg-edge" x1="145" y1="92" x2="145" y2="139" marker-end="url(#wg-ar)"/>
@@ -189,8 +189,8 @@
                 <text class="wg-cs" x="360" y="186" text-anchor="middle">not ADT</text>
 
                 <rect class="wg-chip" x="296" y="268" width="128" height="48" rx="8"/>
-                <text class="wg-ct" x="360" y="290" text-anchor="middle">FILTERED</text>
-                <text class="wg-cs" x="360" y="306" text-anchor="middle">unknown location</text>
+                <text class="wg-ct" x="360" y="290" text-anchor="middle">DEAD-LETTER</text>
+                <text class="wg-cs" x="360" y="306" text-anchor="middle">unmapped location</text>
 
                 <line class="wg-edge" x1="20" y1="472" x2="44" y2="472"/>
                 <text class="wg-leg" x="52" y="476">delivered</text>
@@ -199,7 +199,7 @@
               </svg>
             </div>
             <div class="hv-panel hv-panel--code">
-<pre class="code"><span class="k">from</span> messagefoundry <span class="k">import</span> MLLP, File, Send, inbound, outbound, router, handler
+<pre class="code"><span class="k">from</span> messagefoundry <span class="k">import</span> MLLP, File, Send, code_set, inbound, outbound, router, handler
 
 <span class="c"># Connections — named endpoints, wired together by name</span>
 <span class="f">inbound</span>(<span class="s">"IB_Test_ADT"</span>, <span class="f">MLLP</span>(port=<span class="n">2575</span>), router=<span class="s">"adt_router"</span>)
@@ -212,16 +212,13 @@
         <span class="k">return</span> []          <span class="c"># not ADT → UNROUTED</span>
     <span class="k">return</span> [<span class="s">"map_location"</span>]
 
-<span class="c"># Bed locations translated to the receiver's code set</span>
-LOCATIONS = {<span class="s">"4N-412B"</span>: <span class="s">"ROOM412-B"</span>, <span class="s">"4N-410A"</span>: <span class="s">"ROOM410-A"</span>}
+<span class="c"># Translation table — edited in a grid, stored as version-controlled CSV</span>
+ROOMS = <span class="f">code_set</span>(<span class="s">"bed_locations"</span>)
 
-<span class="c"># Handler — translate the patient location (PV1-3) for the receiver</span>
+<span class="c"># Handler — translate the patient location for the receiver</span>
 <span class="d">@handler</span>(<span class="s">"map_location"</span>)
 <span class="k">def</span> <span class="f">map_location</span>(msg):
-    code = msg[<span class="s">"PV1-3"</span>]
-    <span class="k">if</span> code <span class="k">not in</span> LOCATIONS:
-        <span class="k">return</span> <span class="n">None</span>                  <span class="c"># unknown location → FILTERED</span>
-    msg[<span class="s">"PV1-3"</span>] = LOCATIONS[code]   <span class="c"># swap to the receiver's code set</span>
+    msg[<span class="s">"PV1-3.1"</span>] = ROOMS[msg[<span class="s">"PV1-3.1"</span>]]   <span class="c"># unmapped → held for review</span>
     <span class="k">return</span> <span class="f">Send</span>(<span class="s">"FILE_Test_ADT"</span>, msg)</pre>
             </div>
           </div>
