@@ -236,10 +236,15 @@ pre.code .n { color: #c9a3ff; }                           /* number/const */
 }
 #hv-graph:focus-visible ~ .code-card__bar .hv-tab[for="hv-graph"],
 #hv-code:focus-visible  ~ .code-card__bar .hv-tab[for="hv-code"] { outline: 3px solid var(--accent); outline-offset: 2px; }
-.hv-panel { display: none; }
+/* both panels share one grid cell so the card height matches in either view (sizes to the
+   taller graph); the <pre> fills the code panel so its horizontal scrollbar sits at the bottom */
+.hv-panels { display: grid; grid-template-columns: minmax(0, 1fr); }
+.hv-panel { grid-area: 1 / 1; min-width: 0; visibility: hidden; }
 #hv-graph:checked ~ .hv-panels .hv-panel--graph,
-#hv-code:checked  ~ .hv-panels .hv-panel--code { display: block; }
+#hv-code:checked  ~ .hv-panels .hv-panel--code { visibility: visible; }
 .hv-panel--graph { padding: 18px 16px; }
+.hv-panel--code { display: grid; }
+.hv-panel--code > pre.code { min-width: 0; }
 .hero-card__note { margin: 0; padding: 11px 16px; border-top: 1px solid var(--border-dk); background: #0a1320; color: var(--muted-dk); font-size: .8rem; line-height: 1.45; }
 .hero-card__note b { color: var(--text-dk); font-weight: 650; }
 
