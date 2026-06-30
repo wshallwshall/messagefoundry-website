@@ -4,14 +4,14 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Feature list — MessageFoundry</title>
-  <meta name="description" content="Every MessageFoundry feature in one scannable table (Early Access): connections, message formats, reliability, routing & transformation, security & PHI, tooling, testing, CI/CD, the message store, and high availability — plus the 0.2+ roadmap.">
+  <meta name="description" content="Every MessageFoundry feature in one scannable table (v0.2.2 Early Access): connections, message formats, reliability, routing & transformation, security & PHI, tooling, testing, CI/CD, the message store, and high availability — plus the 0.2+ roadmap.">
   <link rel="canonical" href="https://messagefoundry.org/features-table.html">
   <link rel="icon" href="/assets/img/favicon.svg" type="image/svg+xml">
   <meta name="theme-color" content="#0b1220">
   <meta property="og:type" content="website">
   <meta property="og:site_name" content="MessageFoundry">
   <meta property="og:title" content="Feature list — MessageFoundry">
-  <meta property="og:description" content="The complete Early Access feature set in one scannable table — grouped by area, with the 0.2+ roadmap at the end.">
+  <meta property="og:description" content="The complete v0.2.2 Early Access feature set in one scannable table — grouped by area, with the 0.2+ roadmap at the end.">
   <meta property="og:url" content="https://messagefoundry.org/features-table.html">
   <meta property="og:image" content="https://messagefoundry.org/assets/img/og.png">
   <meta property="og:image:width" content="1200">
@@ -77,7 +77,7 @@
     <div class="container center">
       <span class="eyebrow">Feature list</span>
       <h1 style="max-width:24ch;margin-inline:auto">Every feature, in one table</h1>
-      <p class="lead">A complete, scannable index of what MessageFoundry does in <b>Early Access</b>, grouped by area. Want the story behind each capability? The detailed <a href="/features.html" style="color:var(--accent)">features page</a> walks through them. Possible future additions are in their own table at the end.</p>
+      <p class="lead">A complete, scannable index of what MessageFoundry does in <b>v0.2.2 Early Access</b>, grouped by area. Want the story behind each capability? The detailed <a href="/features.html" style="color:var(--accent)">features page</a> walks through them. Possible future additions are in their own table at the end.</p>
       <div class="btn-row">
         <a class="btn btn-primary" href="/getting-started.html">Get started</a>
         <a class="btn btn-ghost" href="/features.html">Full feature detail →</a>
@@ -101,7 +101,7 @@
             <tr class="grp"><th colspan="2" scope="colgroup">Open source &amp; no lock-in</th></tr>
             <tr><th scope="row">AGPL-3.0-or-later</th><td>Open license — read it, run it, fork it. A low-cost commercial edition is available when the AGPL doesn't fit.</td></tr>
             <tr><th scope="row">Configuration as code</th><td>Connections, Routers, and Handlers are diffable, reviewable modules — wizard-generated or hand-written. The database holds runtime state and messages only, never configuration.</td></tr>
-            <tr><th scope="row">Standard databases</th><td>Runs on <b>SQLite</b>, <b>PostgreSQL</b>, or <b>SQL&nbsp;Server</b> — no proprietary data platform required, and no proprietary scripting language to staff for.</td></tr>
+            <tr><th scope="row">Standard databases</th><td>No proprietary data platform required, and no proprietary scripting language to staff for.</td></tr>
             <tr><th scope="row">No runtime or contract lock-in</th><td>Self-hosted, on your infrastructure, on your terms.</td></tr>
 
             <tr class="grp"><th colspan="2" scope="colgroup">Reliability</th></tr>
@@ -142,8 +142,7 @@
             <tr class="grp"><th colspan="2" scope="colgroup">Routing &amp; transformation</th></tr>
             <tr><th scope="row">One-to-many routing with filtering</th><td>Fan a message out to multiple destinations, or filter it out entirely; every decision is a recorded outcome.</td></tr>
             <tr><th scope="row">Transform, enrich, validate</th><td>Reshape and augment messages mid-flight, with validation where you want it.</td></tr>
-            <tr><th scope="row">Translation tables (code sets)</th><td>Edit value-mapping tables in a spreadsheet-style grid in the VS&nbsp;Code extension, stored as plain version-controlled CSV in your config — validated on save (no duplicate keys) and looked up in a Handler with <code>code_set("…")</code>. Diffable in git, not locked in a black-box database.</td></tr>
-            <tr><th scope="row">Live database lookups</th><td>Query a live database during processing to enrich or validate a message.</td></tr>
+            <tr><th scope="row">Reference tables &amp; live lookups</th><td>Enrich from static reference / lookup tables, or query a live database during processing.</td></tr>
             <tr><th scope="row">Guided wizards or pure functions</th><td>New Connection / New Route wizards generate the wiring, or write Routers and Handlers as plain functions registered by name — no proprietary DSL.</td></tr>
             <tr><th scope="row">Dry-run with before/after diff</th><td>Preview a route's effect on a real message before it ships.</td></tr>
 
@@ -160,7 +159,7 @@
 
             <tr class="grp"><th colspan="2" scope="colgroup">Tooling — console, editor &amp; CLI</th></tr>
             <tr><th scope="row">Admin console</th><td>Dashboards, message search and browse, an HL7 parse-tree viewer, delivery and audit trail, a dead-letter page, an alert-rules view, and one-click replay — a separate app reaching the engine only over the localhost API.</td></tr>
-            <tr><th scope="row">VS Code extension</th><td>Completion, live HL7-aware validate-on-save, a graph view of your integration (a boxes-and-arrows diagram), a Translation Tables grid editor, source-control integration, and Stage&nbsp;→&nbsp;Promote to a running engine.</td></tr>
+            <tr><th scope="row">VS Code extension</th><td>Completion, live HL7-aware validate-on-save, a graph view of your integration (a boxes-and-arrows diagram), source-control integration, and Stage&nbsp;→&nbsp;Promote to a running engine.</td></tr>
             <tr><th scope="row">CLI &amp; localhost API</th><td><code>messagefoundry serve</code> exposes connection control, message search/detail, replay, stats, and a live WebSocket feed; <code>check</code> gates commits and <code>generate</code> produces synthetic HL7.</td></tr>
             <tr><th scope="row">Alerting</th><td>Webhook and email alerts when a connection stalls or a message dead-letters.</td></tr>
             <tr><th scope="row">Metrics export</th><td>A Prometheus / OpenTelemetry-compatible <code>/metrics</code> endpoint (access-controlled) for scraping engine and connection metrics into your monitoring stack.</td></tr>
@@ -209,12 +208,12 @@
             <tr><th scope="row">Windows 10 / 11</th><td>Supported for development, pilots, and as a console host.</td></tr>
             <tr><th scope="row">Linux (modern x86-64)</th><td>Engine supported (cross-platform Python); run it under systemd yourself — no bundled service installer.</td></tr>
             <tr><th scope="row">macOS</th><td>Development and console use only.</td></tr>
-            <tr><th scope="row">Python 3.14+</th><td>64-bit CPython 3.14; no C compiler needed for the default install.</td></tr>
+            <tr><th scope="row">Python 3.11+</th><td>64-bit CPython 3.11–3.14; no C compiler needed for the default install.</td></tr>
 
           </tbody>
         </table>
       </div>
-      <p style="color:var(--muted);font-size:.86rem;margin-top:16px">Everything in this table ships in <b>Early Access</b> and is described in present tense as what the engine does. Early Access has not yet had an external code review or penetration test. For the full narrative behind each item, see the <a href="/features.html">features page</a>.</p>
+      <p style="color:var(--muted);font-size:.86rem;margin-top:16px">Everything in this table ships in <b>v0.2.2 Early Access</b> and is described in present tense as what the engine does. Early Access has not yet had an external code review or penetration test. For the full narrative behind each item, see the <a href="/features.html">features page</a>.</p>
     </div>
   </section>
 
@@ -224,7 +223,7 @@
       <div class="center" style="margin-bottom:30px">
         <span class="eyebrow">Roadmap</span>
         <h2>Possible future additions</h2>
-        <p class="lead center">Not in Early Access. Listed here so the table above stays honest about today versus tomorrow.</p>
+        <p class="lead center">Not in v0.2.2 Early Access. Listed here so the table above stays honest about today versus tomorrow.</p>
       </div>
       <div class="table-wrap">
         <table class="cmp feat">

@@ -34,7 +34,7 @@ Three ownership tiers — keeping them separate is the whole design:
 
 ## 2. Prerequisites
 
-- **Python 3.14+** on each engine host (the engine targets 3.14+).
+- **Python 3.11+** on each engine host (the engine targets 3.11+).
 - **git**, plus a **private git host** — GitHub (private repo), GitLab, Azure DevOps, Bitbucket, or a
   self-hosted server. Nothing about MessageFoundry requires a public repo; your config repo is yours.
 - A source for the engine wheel: **public PyPI** is the distribution channel

@@ -30,6 +30,7 @@
   "applicationCategory": "Healthcare interface engine",
   "applicationSubCategory": "HL7 interface engine",
   "operatingSystem": "Windows, Linux, macOS",
+  "softwareVersion": "0.2.2",
   "url": "https://messagefoundry.org/",
   "downloadUrl": "https://pypi.org/project/messagefoundry/",
   "description": "MessageFoundry is an open-source, self-hosted healthcare interface engine written in Python. It routes, transforms, and validates messages across a wide range of protocols and message types, with deep HL7 v2 support — a modern alternative to legacy engines like Mirth Connect, Rhapsody, and Corepoint.",
@@ -159,6 +160,7 @@
         <li><b>Independent per destination</b> — a slow or down peer never holds up the others.</li>
         <li><b>One local API</b> — the console and the editor both attach to it; the deployment shape is a config choice.</li>
       </ul>
+      <div class="callout" style="grid-column:1/-1;margin-top:8px"><p><strong>Measured, with headroom.</strong> Per interface, MessageFoundry sustains a measured ~50 messages/second — roughly 180,000 messages an hour at that rate — with every message persisted to a durable store before it's acknowledged and delivered strictly in order: at-least-once, per-interface FIFO, nothing silently dropped. A typical hospital's full ADT feed uses only ~3-4% of that (roughly, and depending on the feed), so one interface is more than enough for a typical hospital's feed, and aggregate capacity grows as you add interfaces. Figures are measured on anonymized production telemetry; real throughput depends on your transforms, storage, and hardware.</p></div>
     </div>
   </section>
 
