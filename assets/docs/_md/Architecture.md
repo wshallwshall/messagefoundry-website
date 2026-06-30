@@ -154,7 +154,7 @@ The dependency direction is one-way: `pipeline` / `transports` / `parsing` / `st
 
 ## Dependencies
 
-Runtime and build dependencies are declared in `pyproject.toml` (the source of truth) as `>=` minimums, with a pinned, hashed resolution in committed lockfiles. MessageFoundry requires **Python 3.14+**.
+Runtime and build dependencies are declared in `pyproject.toml` (the source of truth) as `>=` minimums, with a pinned, hashed resolution in committed lockfiles. MessageFoundry requires **Python 3.11+**.
 
 **Runtime**
 

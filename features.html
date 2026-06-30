@@ -11,7 +11,7 @@
   <meta property="og:type" content="website">
   <meta property="og:site_name" content="MessageFoundry">
   <meta property="og:title" content="Features — MessageFoundry">
-  <meta property="og:description" content="The open-source healthcare interface engine (Early Access): many connections and message formats, durable delivery, active-passive high availability, RBAC + encryption, an admin console and VS Code tooling — guided wizards or Python, on SQLite, PostgreSQL, or SQL Server.">
+  <meta property="og:description" content="The open-source healthcare interface engine (v0.2.2 Early Access): many connections and message formats, durable delivery, active-passive high availability, RBAC + encryption, an admin console and VS Code tooling — guided wizards or Python, on SQLite, PostgreSQL, or SQL Server.">
   <meta property="og:url" content="https://messagefoundry.org/features.html">
   <meta property="og:image" content="https://messagefoundry.org/assets/img/og.png">
   <meta property="og:image:width" content="1200">
@@ -30,6 +30,7 @@
   "applicationCategory": "Healthcare interface engine",
   "applicationSubCategory": "HL7 interface engine",
   "operatingSystem": "Windows, Linux, macOS",
+  "softwareVersion": "0.2.2",
   "url": "https://messagefoundry.org/",
   "downloadUrl": "https://pypi.org/project/messagefoundry/",
   "description": "MessageFoundry is an open-source, self-hosted healthcare interface engine written in Python. It routes, transforms, and validates messages across a wide range of protocols and message types, with deep HL7 v2 support — a modern alternative to legacy engines like Mirth Connect, Rhapsody, and Corepoint.",
@@ -99,7 +100,7 @@
     <div class="container center">
       <span class="eyebrow">Features</span>
       <h1 style="max-width:26ch;margin-inline:auto">Open-source integration for many standards and connections — with the tooling to match</h1>
-      <p class="lead">A focused healthcare interface engine that connects a wide range of systems and message standards. Set up connections and routes with guided wizards, or extend them in Python — your choice. Durable delivery; deep HL7 v2 support; active-passive high availability; PHI-aware security; and an admin console plus VS Code tooling. Everything here ships in <b>Early Access</b>; what's coming next is at the bottom of the page.</p>
+      <p class="lead">A focused healthcare interface engine that connects a wide range of systems and message standards. Set up connections and routes with guided wizards, or extend them in Python — your choice. Durable delivery; deep HL7 v2 support; active-passive high availability; PHI-aware security; and an admin console plus VS Code tooling. Everything here ships in <b>v0.2.2 Early Access</b>; what's coming next is at the bottom of the page.</p>
       <div class="btn-row">
         <a class="btn btn-primary" href="/getting-started.html">Get started</a>
         <a class="btn btn-ghost" href="/features-table.html">All features at a glance →</a>
@@ -151,7 +152,7 @@
       <div>
         <span class="eyebrow">Message formats</span>
         <h2>Deep HL7 v2 — and the formats around it</h2>
-        <p class="lead">HL7 v2 is the format MessageFoundry parses and validates in depth. JSON, XML/SOAP, X12/EDI, database records, and other payloads are routed, transformed, and delivered alongside it — moved through your interfaces flexibly, without assuming a rigid schema. MessageFoundry is <a href="/hl7-integration-engine/">more than an HL7 interface engine</a>.</p>
+        <p class="lead">HL7 v2 is the format MessageFoundry parses and validates in depth. JSON, XML/SOAP, X12/EDI, database records, and other payloads are routed, transformed, and delivered alongside it — moved through your interfaces flexibly, without assuming a rigid schema. MessageFoundry is <a href="/hl7-integration-engine/">more than just an HL7 interface engine</a>.</p>
       </div>
       <ul class="feature-list">
         <li><b>HL7 v2, deeply parsed</b> — full parsing and validation: fast and tolerant on the hot path, strict and version-aware where you opt in. Real-world HL7 is frequently non-conformant, and the engine is built to expect that.</li>
@@ -388,7 +389,7 @@
       <div class="center" style="margin-bottom:30px">
         <span class="eyebrow">Roadmap</span>
         <h2>Possible future additions</h2>
-        <p class="lead center">Everything above ships in Early Access. Here's where MessageFoundry is headed next.</p>
+        <p class="lead center">Everything above ships in v0.2.2 Early Access. Here's where MessageFoundry is headed next.</p>
       </div>
       <div class="grid grid-3">
         <div class="card">
@@ -416,6 +417,7 @@
         <div class="faq-item"><h3>What systems and protocols can MessageFoundry connect?</h3><p>It connects the systems you already run over MLLP (with TLS), TCP, HTTP/REST, SOAP, FHIR REST, files, SFTP/FTP, databases, and DICOM — so a wide range of protocols and message types flow through one engine.</p></div>
         <div class="faq-item"><h3>Do I write interfaces in code or with a GUI?</h3><p>Both. You can set up Connections, Routers, and Handlers with guided wizards in the VS Code extension and admin console, or write them in plain Python for full control — version-controlled like any codebase.</p></div>
         <div class="faq-item"><h3>Is MessageFoundry built for PHI and security?</h3><p>Yes. PHI is a first-class concern: it stays self-hosted, traffic is encrypted with TLS, message bodies at rest with AES-256-GCM, every operator is authenticated, and access is audited. It's built to NIST SSDF / 800-66 and self-assessed against OWASP ASVS Level 3.</p></div>
+        <div class="faq-item"><h3>How does MessageFoundry scale?</h3><p>MessageFoundry scales horizontally by adding interfaces. The unit of capacity is one inbound interface, which sustains roughly 50 messages per second in our measurements — on the order of a million messages a day — with strict in-order, durable, at-least-once processing, so messages aren't silently dropped. That is well beyond what a single hospital's routine ADT feed needs, with comfortable headroom for bursts. When you need more, you split feeds at the source across more interfaces and aggregate throughput is the sum across them, plus an optional multi-node tier. These figures are measured on anonymized, representative message traffic; real throughput depends on your transforms, storage, and hardware.</p></div>
       </div>
     </div>
   </section>
@@ -455,6 +457,14 @@
       "acceptedAnswer": {
         "@type": "Answer",
         "text": "Yes. PHI is a first-class concern: it stays self-hosted, traffic is encrypted with TLS, message bodies at rest with AES-256-GCM, every operator is authenticated, and access is audited. It's built to NIST SSDF / 800-66 and self-assessed against OWASP ASVS Level 3."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "How does MessageFoundry scale?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "MessageFoundry scales horizontally by adding interfaces. The unit of capacity is one inbound interface, which sustains roughly 50 messages per second in our measurements — on the order of a million messages a day — with strict in-order, durable, at-least-once processing, so messages aren't silently dropped. That is well beyond what a single hospital's routine ADT feed needs, with comfortable headroom for bursts. When you need more, you split feeds at the source across more interfaces and aggregate throughput is the sum across them, plus an optional multi-node tier. These figures are measured on anonymized, representative message traffic; real throughput depends on your transforms, storage, and hardware."
       }
     }
   ]
