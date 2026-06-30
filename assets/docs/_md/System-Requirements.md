@@ -31,7 +31,7 @@ These are the minimum and recommended requirements for running the MessageFoundr
 
 | Component | Requirement |
 |---|---|
-| **Python** | **3.11 or later**, 64-bit (3.11, 3.12, 3.13, 3.14 supported; 3.11 and 3.14 are CI-validated) |
+| **Python** | **3.14 or later**, 64-bit (3.14 supported and CI-validated) |
 | Service manager (Windows) | A Windows service wrapper, auto-provisioned and SHA-256-pinned by the installer, or pre-staged. Requires administrator / elevation to register the service. |
 | C compiler | Not required for the default install (runtime dependencies ship as wheels) |
 
