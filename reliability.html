@@ -215,6 +215,9 @@
           <p>Promotion is "merge to <code>main</code>, deploy that commit everywhere." Environments stay in lock-step because they run the same reviewed code.</p>
         </div>
       </div>
+      <div class="callout" style="margin-top:34px;max-width:900px;margin-inline:auto">
+        <p style="margin-bottom:0"><strong style="color:var(--accent)">Dependable under load, too.</strong> Reliability isn't only review and rollback — it's holding up at peak. On anonymized production telemetry a single interface sustains about 50 messages/second with headroom — roughly 180,000 in a peak hour, and more on faster storage — every message committed to the durable store and delivered strict per-interface, first-in first-out. A busy hospital's full ADT feed is a few percent of that, so traffic doesn't back up; when you need more, you add interfaces. Measured figures, not promises: real throughput depends on your transforms, storage, and hardware.</p>
+      </div>
     </div>
   </section>
 

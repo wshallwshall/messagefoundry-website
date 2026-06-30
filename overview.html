@@ -160,6 +160,7 @@
         <li><b>One local API</b> — the console and the editor both attach to it; the deployment shape is a config choice.</li>
       </ul>
       <div class="callout" style="grid-column:1/-1;margin-top:8px"><p><strong>Measured, with headroom.</strong> Per interface, MessageFoundry sustains a measured ~50 messages/second — roughly 180,000 messages an hour at that rate — with every message persisted to a durable store before it's acknowledged and delivered strictly in order: at-least-once, per-interface FIFO, nothing silently dropped. A typical hospital's full ADT feed uses only ~3-4% of that (roughly, and depending on the feed), so one interface is more than enough for a typical hospital's feed, and aggregate capacity grows as you add interfaces. Figures are measured on anonymized production telemetry; real throughput depends on your transforms, storage, and hardware.</p></div>
+      <div class="badge-row" style="grid-column:1/-1;margin-top:4px"><span class="badge">Measured</span><span class="badge">With headroom</span><span class="badge">Durable &middot; FIFO</span><span class="badge">Scales out</span></div>
     </div>
   </section>
 
