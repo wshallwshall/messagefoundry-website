@@ -37,7 +37,7 @@
     "Deep HL7 v2 parsing, validation, routing, and transformation",
     "FHIR, X12/EDI, and DICOM connectivity over MLLP, HTTP/REST, SOAP, files, SFTP, and databases",
     "Durable, at-least-once message delivery with strict per-interface FIFO ordering",
-    "Sustains a measured ~50 messages/second per interface, scaling horizontally by adding interfaces",
+    "Measured ~50 messages/second per ordered interface in reference testing; scales horizontally by adding interfaces",
     "Active-passive high availability on SQLite, PostgreSQL, or SQL Server"
   ],
   "license": "https://www.gnu.org/licenses/agpl-3.0.html",
@@ -423,7 +423,7 @@
         <div class="faq-item"><h3>What systems and protocols can MessageFoundry connect?</h3><p>It connects the systems you already run over MLLP (with TLS), TCP, HTTP/REST, SOAP, FHIR REST, files, SFTP/FTP, databases, and DICOM — so a wide range of protocols and message types flow through one engine.</p></div>
         <div class="faq-item"><h3>Do I write interfaces in code or with a GUI?</h3><p>Both. You can set up Connections, Routers, and Handlers with guided wizards in the VS Code extension and admin console, or write them in plain Python for full control — version-controlled like any codebase.</p></div>
         <div class="faq-item"><h3>Is MessageFoundry built for PHI and security?</h3><p>Yes. PHI is a first-class concern: it stays self-hosted, traffic is encrypted with TLS, message bodies at rest with AES-256-GCM, every operator is authenticated, and access is audited. It's built to NIST SSDF / 800-66 and self-assessed against OWASP ASVS Level 3.</p></div>
-        <div class="faq-item"><h3>How does MessageFoundry scale?</h3><p>MessageFoundry scales horizontally by adding interfaces. The unit of capacity is one inbound interface, which sustains roughly 50 messages per second in our measurements — on the order of a million messages a day — with strict in-order, durable, at-least-once processing, so messages aren't silently dropped. That is well beyond what a single hospital's routine ADT feed needs, with comfortable headroom for bursts. When you need more, you split feeds at the source across more interfaces and aggregate throughput is the sum across them, plus an optional multi-node tier. These figures are measured on anonymized, representative message traffic; real throughput depends on your transforms, storage, and hardware.</p></div>
+        <div class="faq-item"><h3>How does MessageFoundry scale?</h3><p>MessageFoundry scales horizontally by adding interfaces. The unit of capacity is one inbound interface, which sustains roughly 50 messages per second in our measurements — on the order of a million messages a day — with strict in-order, durable, at-least-once processing, so messages aren't silently dropped. That is well beyond what a single hospital's routine ADT feed needs, with comfortable headroom for bursts. When you need more, you split feeds at the source across more interfaces and aggregate throughput is the sum across them, plus an optional multi-node tier. These figures are measured on anonymized, representative message traffic; real throughput depends on your transforms, storage, and hardware.</p><p style="margin-top:10px"><a href="/throughput/">How throughput really works →</a></p></div>
       </div>
     </div>
   </section>
