@@ -59,7 +59,7 @@
           "Deep HL7 v2 parsing, validation, routing, and transformation",
           "FHIR, X12/EDI, and DICOM connectivity over MLLP, HTTP/REST, SOAP, files, SFTP, and databases",
           "Durable, at-least-once message delivery with strict per-interface FIFO ordering",
-          "Sustains a measured ~50 messages/second per interface, scaling horizontally by adding interfaces",
+          "Measured ~50 messages/second per ordered interface in reference testing; scales horizontally by adding interfaces",
           "Active-passive high availability on SQLite, PostgreSQL, or SQL Server"
         ],
         "license": "https://www.gnu.org/licenses/agpl-3.0.html",
@@ -366,7 +366,7 @@ ROOMS = <span class="f">code_set</span>(<span class="s">"bed_locations"</span>)
         <div class="faq-item"><h3>What protocols and message types does MessageFoundry support?</h3><p>It connects a wide range of protocols and message types, with deep HL7 v2 support — plus FHIR, X12/EDI, and DICOM — over transports including MLLP (with TLS), HTTP/REST, SOAP, files, SFTP, and databases.</p></div>
         <div class="faq-item"><h3>Is MessageFoundry an alternative to legacy interface engines?</h3><p>Yes. MessageFoundry is a modern, open-source alternative to legacy healthcare interface engines such as Mirth Connect, Rhapsody, and Corepoint. It is self-hosted and Python-native — interfaces are plain Python under version control — with no per-interface licensing.</p></div>
         <div class="faq-item"><h3>Where does my data live?</h3><p>On your own servers. MessageFoundry is self-hosted on-premises or in your private cloud, so PHI never leaves your infrastructure. It starts zero-config on SQLite and scales to PostgreSQL or SQL Server.</p></div>
-        <div class="faq-item"><h3>How much message volume can MessageFoundry handle?</h3><p>Comfortably more than a single hospital's interface needs, with headroom to scale. On anonymized production telemetry, one inbound interface sustains a measured ~50 messages per second on commodity hardware — which works out to roughly 180,000 in a peak hour. A hospital's full ADT feed peaks at only around 1-2 messages per second, so a single interface carries that workload with room to spare, and interfaces scale out horizontally for higher volumes. Real-world throughput depends on your transforms, storage, and hardware. Whatever the rate, every message is persisted before it's acknowledged and delivered in order per interface, at-least-once — so messages aren't silently dropped.</p></div>
+        <div class="faq-item"><h3>How much message volume can MessageFoundry handle?</h3><p>Comfortably more than a single hospital's interface needs, with headroom to scale. On anonymized production telemetry, one inbound interface sustains a measured ~50 messages per second on commodity hardware — which works out to roughly 180,000 in a peak hour. A hospital's full ADT feed peaks at only around 1-2 messages per second, so a single interface carries that workload with room to spare, and interfaces scale out horizontally for higher volumes. Real-world throughput depends on your transforms, storage, and hardware. Whatever the rate, every message is persisted before it's acknowledged and delivered in order per interface, at-least-once — so messages aren't silently dropped.</p><p style="margin-top:10px"><a href="/throughput/">How throughput really works →</a></p></div>
       </div>
     </div>
   </section>
