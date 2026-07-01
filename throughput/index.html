@@ -215,7 +215,7 @@
       <h2>Why guaranteed order makes an interface serial</h2>
       <p class="lead">MessageFoundry delivers every message in the exact order it was received — strict per-interface FIFO. That guarantee is precisely what makes a single interface serial: only one message can be in flight to a destination at a time, because the next can't go until the previous is confirmed.</p>
       <p>This isn't unique to MessageFoundry — it's a property of <em>any</em> system that guarantees order over a single stream. The bounded per-interface rate is simply the cost of never delivering a message out of order, which for clinical feeds — where a later message can correct an earlier one — is exactly what you want.</p>
-      <p>So you don't buy throughput by giving up ordering. You buy it by adding parallelism where order still holds: where a feed can be split into independent streams — by hospital, facility, service line, or patient — run it across <b>multiple connections</b> and <b>multiple interfaces</b>, each its own ordered lane. Aggregate throughput is the sum of the lanes (see <a href="#sizing">§7</a>).</p>
+      <p>So you don't buy throughput by giving up ordering. You buy it by adding parallelism where order still holds: where a feed can be split into independent streams — by hospital, facility, or service line — run it across <b>multiple connections</b> and <b>multiple interfaces</b>, each its own ordered lane. Aggregate throughput is the sum of the lanes (see <a href="#sizing">§7</a>).</p>
     </div>
   </section>
 
