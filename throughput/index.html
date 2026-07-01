@@ -1,0 +1,447 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Understanding MessageFoundry throughput — messages per second, honestly</title>
+  <meta name="description" content="A plain-language guide to what really determines MessageFoundry throughput: intake vs delivery, your partner systems' round-trip time, ordering, the message store, and why 'messages per day' is a misleading unit. Size for the peak hour, not a headline number.">
+  <link rel="canonical" href="https://messagefoundry.org/throughput/">
+  <link rel="icon" href="/assets/img/favicon.svg" type="image/svg+xml">
+  <meta name="theme-color" content="#0b1220">
+  <meta property="og:type" content="article">
+  <meta property="og:site_name" content="MessageFoundry">
+  <meta property="og:title" content="Understanding MessageFoundry throughput — honestly">
+  <meta property="og:description" content="What actually determines throughput: your partner systems' round-trip time, ordering, and the message store — and why 'messages per day' tells you almost nothing. Size to the peak hour.">
+  <meta property="og:url" content="https://messagefoundry.org/throughput/">
+  <meta property="og:image" content="https://messagefoundry.org/assets/img/og.png">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta property="og:image:type" content="image/png">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:image" content="https://messagefoundry.org/assets/img/og.png">
+  <link rel="stylesheet" href="/assets/css/styles.css">
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    "mainEntity": [
+      { "@type": "Question", "name": "How many messages per second can MessageFoundry handle?", "acceptedAnswer": { "@type": "Answer", "text": "It depends on your environment far more than on the engine. In our reference lab a single strictly-ordered interface delivers about 60 messages/second end-to-end with an instant-acknowledging partner, and accepts about 450 messages/second at the point of receipt. Real numbers are usually lower and are set by how fast your partner systems acknowledge each message — the engine itself adds only about 16 milliseconds per message. Unordered feeds and multiple interfaces both go much faster." } },
+      { "@type": "Question", "name": "Why is a messages-per-day number misleading?", "acceptedAnswer": { "@type": "Answer", "text": "Healthcare traffic is bursty, not a flat around-the-clock stream. In the production ADT feeds we've profiled, the busiest hour runs about 2.7 times the all-day average, so you have to size for the peak hour, not the daily average. Two feeds with the same daily total but different burst profiles need very different capacity. Always ask for the peak-hour rate, the message size, and the ordering guarantee behind any 'X million per day' figure." } },
+      { "@type": "Question", "name": "What actually limits MessageFoundry's throughput?", "acceptedAnswer": { "@type": "Answer", "text": "For strictly-ordered delivery, the dominant factor is usually your partner system's round-trip time: the engine sends a message, waits for the partner to accept and acknowledge it, and only then sends the next one. A partner that takes 50 ms to acknowledge caps a single ordered stream near 15 messages/second, no matter how fast the engine or database is. The message store, message size, validation, and transformation complexity also contribute, but the partner round-trip is usually the biggest term." } },
+      { "@type": "Question", "name": "How do I size a MessageFoundry deployment?", "acceptedAnswer": { "@type": "Answer", "text": "Start from the per-interface ordered ceiling (about 60 messages/second with an instant partner), reduce it by your partner's real acknowledgement time, divide by your traffic's burst factor (about 2.7 for ADT-shaped traffic), then fan out to enough interfaces to cover your aggregate peak — splitting feeds at the source by hospital, facility, or service line. One node's message store easily absorbs the combined load of dozens of interfaces." } },
+      { "@type": "Question", "name": "How does MessageFoundry scale to very high volumes?", "acceptedAnswer": { "@type": "Answer", "text": "By fanning out, not by forcing everything through one pipe. A strictly-ordered interface is a single serial lane with a bounded rate — that's the physics of guaranteed ordering, not a product limitation. You split feeds at the source across many interfaces and the aggregate is the sum of them; a single node's shared message store sustains tens of thousands of commits per second, far more than any one ordered interface can generate." } }
+    ]
+  }
+  </script>
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    "itemListElement": [
+      { "@type": "ListItem", "position": 1, "name": "Home", "item": "https://messagefoundry.org/" },
+      { "@type": "ListItem", "position": 2, "name": "Guides", "item": "https://messagefoundry.org/guides/" },
+      { "@type": "ListItem", "position": 3, "name": "Throughput", "item": "https://messagefoundry.org/throughput/" }
+    ]
+  }
+  </script>
+</head>
+<body>
+  <a class="skip-link" href="#main">Skip to content</a>
+
+  <header class="site-header">
+    <div class="container header-inner">
+      <a class="brand" href="/" aria-label="MessageFoundry home">
+        <img class="brand-mark" src="/assets/img/logo.svg" alt="" width="28" height="28">
+        <span class="brand-name">Message<span class="brand-accent">Foundry</span><span class="brand-tm">™</span></span>
+      </a>
+      <button class="nav-toggle" aria-expanded="false" aria-controls="site-nav" aria-label="Toggle navigation"><span></span><span></span><span></span></button>
+      <nav class="site-nav" id="site-nav">
+        <div class="nav-group">
+          <button type="button" class="nav-group__btn" aria-expanded="false" aria-haspopup="true" aria-controls="nav-product">Product</button>
+          <div class="nav-group__menu" id="nav-product">
+            <a href="/overview.html">Overview</a>
+            <a href="/features.html">Features</a>
+            <a href="/features-table.html">Feature list</a>
+            <a href="/architecture.html">Architecture</a>
+            <a href="/reliability.html">Reliability (CI)</a>
+            <a href="/tools.html">Tools</a>
+            <a href="/editor.html">Editor</a>
+            <a href="/console.html">Console</a>
+            <a href="/ai.html">AI assist</a>
+          </div>
+        </div>
+        <a href="/security.html">Security</a>
+        <a href="/comparison.html">Comparison</a>
+        <div class="nav-group">
+          <button type="button" class="nav-group__btn" aria-expanded="false" aria-haspopup="true" aria-controls="nav-getstarted">Get started</button>
+          <div class="nav-group__menu" id="nav-getstarted">
+            <a href="/getting-started.html">Quickstart</a>
+            <a href="/guides/">Guides</a>
+            <a href="/documents.html">Documents</a>
+          </div>
+        </div>
+        <div class="nav-group">
+          <button type="button" class="nav-group__btn" aria-expanded="false" aria-haspopup="true" aria-controls="nav-company">About Us</button>
+          <div class="nav-group__menu" id="nav-company">
+            <a href="/about.html">About</a>
+            <a href="/licensing.html">Licensing</a>
+            <a href="/contact.html">Contact</a>
+            <a href="/sponsor.html">Sponsor</a>
+          </div>
+        </div>
+        <a class="btn btn-ghost" href="/pypi.html">PyPI<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3l8 4.5l0 9l-8 4.5l-8 -4.5l0 -9l8 -4.5"/><path d="M12 12l8 -4.5"/><path d="M12 12l0 9"/><path d="M12 12l-8 -4.5"/><path d="M16 5.25l-8 4.5"/></svg></a>
+        <a class="btn btn-ghost" href="https://github.com/MEFORORG/MessageFoundry" target="_blank" rel="noopener">GitHub ↗</a>
+      </nav>
+    </div>
+  </header>
+  <main id="main">
+
+  <!-- hero -->
+  <section class="section section--dark section--tight">
+    <div class="container center">
+      <nav class="crumb" aria-label="Breadcrumb"><a href="/">Home</a> <span aria-hidden="true">›</span> <a href="/guides/">Guides</a> <span aria-hidden="true">›</span> <span>Throughput</span></nav>
+      <span class="eyebrow">Understanding throughput</span>
+      <h1 style="max-width:22ch;margin-inline:auto">Fast enough for whatever your health system throws at it</h1>
+      <p class="lead">MessageFoundry moves messages faster than almost any real deployment needs. But the giant throughput numbers everyone likes to quote — <b>ours included</b> — can mislead. This is a plain-language guide to what actually sets the rate, and how to size for <em>your</em> environment in real terms.</p>
+      <div class="btn-row center" style="margin-top:24px">
+        <a class="btn btn-primary" href="#sizing">How to size it</a>
+        <a class="btn btn-secondary" href="#lab">See the lab numbers ↓</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- read this first -->
+  <section class="section">
+    <div class="container" style="max-width:860px">
+      <div class="callout">
+        <p style="margin:0"><strong>Read this first.</strong> Every throughput figure here is a <b>theoretical maximum</b>, measured in a controlled lab under ideal conditions with synthetic data. Your real-world throughput will almost always be <b>lower</b>, and it's usually set by <b>how fast your partner systems accept and acknowledge each message</b> — not by the engine. MessageFoundry adds only a few milliseconds of its own overhead per message; the rest of the time is spent waiting on round-trips to your database and your downstream systems. Size against <em>your</em> systems, not against a headline number.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- executive summary -->
+  <section class="section section--alt">
+    <div class="container" style="max-width:960px">
+      <div class="center" style="margin-bottom:30px"><span class="eyebrow">The short version</span><h2>Five things that actually matter</h2></div>
+      <div class="grid grid-2" style="align-items:start">
+        <div class="card">
+          <h3>The engine is nearly transparent</h3>
+          <p>In our reference lab, MessageFoundry adds on the order of <b>~16 milliseconds</b> of its own processing per message — roughly <b>60 messages/second</b> end-to-end on a strictly-ordered feed, and <b>~450/second</b> at the point of receipt. Ceilings under ideal conditions, not promises for your environment.</p>
+        </div>
+        <div class="card">
+          <h3>Your partner systems dominate</h3>
+          <p>For ordered delivery the engine sends a message, <b>waits</b> for the partner to accept and acknowledge it, then sends the next. That round-trip lands directly in the critical path: a partner that takes 50&nbsp;ms to ACK caps a single ordered stream near <b>15 messages/second</b> — no matter how fast the engine or database is.</p>
+        </div>
+        <div class="card">
+          <h3>"Messages per day" is a weak unit</h3>
+          <p>Healthcare traffic is <b>bursty</b>. In the production ADT feeds we've profiled, the busiest hour runs about <b>2.7×</b> the all-day average. You size for the <em>peak hour</em>, not the daily average — so a raw "X million/day" figure, on its own, tells you very little.</p>
+        </div>
+        <div class="card">
+          <h3>Scale by fanning out</h3>
+          <p>A strictly-ordered interface is a single serial lane with a bounded rate — that's the physics of guaranteed ordering, not a product limit. Real capacity comes from running <b>many interfaces</b> (split feeds at the source). One node's message store easily absorbs the combined load of dozens of them.</p>
+        </div>
+      </div>
+      <div class="callout" style="margin-top:24px">
+        <p style="margin:0"><strong>Four questions to ask of <em>any</em> throughput claim</strong> — ours or a competitor's: <b>(1)</b> How big are the messages? <b>(2)</b> Is delivery strictly ordered or parallel? <b>(3)</b> How fast does the receiving system acknowledge? <b>(4)</b> What's the <em>peak-hour</em> rate behind that daily average? Without those four, a msg/s or msg/day number is marketing, not engineering.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- 1. two speeds -->
+  <section class="section">
+    <div class="container" style="max-width:900px">
+      <span class="eyebrow">1 · Two speeds</span>
+      <h2>How a message flows — and why there are two different rates</h2>
+      <p class="lead">A message moves through MessageFoundry in stages, each written durably to the message store before the next begins — that's what guarantees nothing is lost.</p>
+      <div class="callout">
+        <p style="margin:0"><strong>Two acknowledgements, two speeds.</strong> A message flows <b>sender → receive &amp; persist → route → transform → deliver → partner</b>. The engine acknowledges the <em>sender</em> the moment it has safely stored the message — that's the fast <b>intake</b> path. The <em>partner</em>'s acknowledgement comes later, once the message is delivered, and it's paced by the partner — that's the slower <b>delivery</b> path.</p>
+      </div>
+      <p>That gives you <b>two distinct throughput numbers</b>, and they are often very far apart:</p>
+      <div class="table-wrap">
+        <table class="cmp">
+          <thead><tr><th scope="col">Rate</th><th scope="col">What it measures</th><th scope="col">Typical relationship</th></tr></thead>
+          <tbody>
+            <tr><th scope="row">Intake rate<br>(ACK-on-receipt)</th><td>How fast the engine accepts a message, stores it durably, and acknowledges the <em>sender</em>. The sender never waits for downstream delivery.</td><td><b>Higher</b> — ~450/s in our lab. Protects upstream senders from downstream slowness.</td></tr>
+            <tr><th scope="row">Delivery rate<br>(end-to-end)</th><td>How fast the engine gets a message all the way to the <em>partner</em> and confirms it landed.</td><td><b>Lower</b> — ~60/s in our lab. Paced by everything downstream, especially the partner.</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <p>The gap between them isn't waste — it's the buffer. MessageFoundry accepts and safely stores messages faster than it delivers them, so a momentary slowdown at a partner doesn't push back on the sender; the backlog drains as the partner catches up. <b>When someone quotes a throughput number, ask which rate they mean</b> — intake numbers look impressive but say nothing about how fast messages actually reach their destination.</p>
+    </div>
+  </section>
+
+  <!-- 2. partner systems -->
+  <section class="section section--alt">
+    <div class="container" style="max-width:900px">
+      <span class="eyebrow">2 · The biggest factor</span>
+      <h2>Your partner systems and their round-trip times</h2>
+      <p class="lead">This is the point most capacity conversations miss. <b>Ordered delivery is inherently serial:</b> when messages must arrive in the exact order received (the default, and a hard requirement for most clinical feeds), the engine holds <b>one message in flight per destination</b>:</p>
+      <ol>
+        <li>Send message <em>N</em> to the partner.</li>
+        <li><b>Wait</b> for the partner to receive it, process it (often persist it to its own database), and acknowledge.</li>
+        <li>Only then send message <em>N+1</em>.</li>
+      </ol>
+      <p>That waiting time isn't the engine's — it belongs to the <b>network round-trip and the partner's own processing</b> — and because the stream is serial, it lands squarely in the critical path. For an ordered stream, throughput is approximately:</p>
+      <div class="callout"><p style="margin:0;text-align:center"><b>messages/second ≈ 1000 ÷ ( engine overhead + partner round-trip )</b>, in milliseconds</p></div>
+      <p>The engine overhead is small and roughly fixed (~16&nbsp;ms in our lab). The <b>partner round-trip is yours</b>, and it dominates as soon as it's more than a few milliseconds:</p>
+      <div class="table-wrap">
+        <table class="cmp">
+          <thead><tr><th scope="col">Partner acknowledges in…</th><th scope="col">Approx. ordered throughput</th><th scope="col">"Uniform" msgs/day*</th><th scope="col">Realistic msgs/day†</th></tr></thead>
+          <tbody>
+            <tr><th scope="row">~0 ms (lab ideal)</th><td>~60 /s</td><td>~5.2 M</td><td>~1.9 M</td></tr>
+            <tr><th scope="row">10 ms</th><td>~38 /s</td><td>~3.3 M</td><td>~1.2 M</td></tr>
+            <tr><th scope="row">25 ms</th><td>~24 /s</td><td>~2.1 M</td><td>~0.8 M</td></tr>
+            <tr><th scope="row">50 ms</th><td>~15 /s</td><td>~1.3 M</td><td>~0.5 M</td></tr>
+            <tr><th scope="row">100 ms</th><td>~9 /s</td><td>~0.8 M</td><td>~0.3 M</td></tr>
+            <tr><th scope="row">250 ms</th><td>~4 /s</td><td>~0.35 M</td><td>~0.13 M</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <p style="color:var(--muted);font-size:.86rem"><b>*</b> "Uniform" assumes traffic is perfectly flat around the clock — it never is. <b>†</b> "Realistic" divides by a 2.7× burst factor, the realistic planning number. Illustrative first-order model anchored to the measured ~16&nbsp;ms engine floor; your numbers depend on your systems.</p>
+      <p>The lesson is stark: a partner that takes a quarter-second to acknowledge each message holds a single ordered stream to a few messages per second, and <b>no amount of engine or database speed changes that</b> — the bottleneck has moved outside MessageFoundry entirely.</p>
+      <h3 style="margin-top:26px">What you can do about a slow partner</h3>
+      <ul class="feature-list">
+        <li><b>Relax ordering where it's safe</b> — unordered mode keeps many messages in flight at once, hiding the partner's round-trip behind concurrency (see §3).</li>
+        <li><b>Open multiple connections to the partner</b> — each destination connection is its own ordered lane, so <em>N</em> connections give you <em>N</em> parallel lanes (if the partner accepts them).</li>
+        <li><b>Fan out at the source</b> — split one hot feed into several interfaces (see §7) so the aggregate isn't gated by a single serial lane.</li>
+        <li><b>Ask your partner about their acknowledgement latency</b> — it's often the cheapest thing to improve, and the term that matters most.</li>
+      </ul>
+    </div>
+  </section>
+
+  <!-- 3. ordering -->
+  <section class="section">
+    <div class="container" style="max-width:900px">
+      <span class="eyebrow">3 · The trade-off</span>
+      <h2>Ordering vs. throughput</h2>
+      <p class="lead">Ordering guarantees and raw throughput pull in opposite directions. MessageFoundry lets you choose per feed:</p>
+      <div class="table-wrap">
+        <table class="cmp">
+          <thead><tr><th scope="col">Mode</th><th scope="col">Guarantee</th><th scope="col">Throughput</th><th scope="col">Use when</th></tr></thead>
+          <tbody>
+            <tr><th scope="row">Strict FIFO<br><span style="font-weight:400;color:var(--muted)">(default)</span></th><td>Delivered in exactly the order received.</td><td>Bounded — one message in flight per destination (serial).</td><td>Order matters: ADT streams, anything where a later message corrects an earlier one.</td></tr>
+            <tr><th scope="row">Unordered</th><td>No ordering guarantee.</td><td>Higher — many messages in flight at once; the partner round-trip is hidden by concurrency.</td><td>Order doesn't matter: independent results, logging, feeds keyed only by their own content.</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <p>Strict ordering being serial isn't unique to MessageFoundry — it's a property of <em>any</em> system that guarantees order over a single stream. That's exactly why interface engines let you opt out of ordering when a feed can tolerate it: it's the most direct throughput lever available for a single interface.</p>
+    </div>
+  </section>
+
+  <!-- 4. store -->
+  <section class="section section--alt">
+    <div class="container" style="max-width:900px">
+      <span class="eyebrow">4 · The message store</span>
+      <h2>Durability has a cost, and location matters</h2>
+      <p class="lead">Every stage handoff is committed durably to the store before the next stage runs — that's what makes delivery at-least-once and crash-safe. So the store's commit latency is part of every message's journey.</p>
+      <div class="table-wrap">
+        <table class="cmp">
+          <thead><tr><th scope="col">Choice</th><th scope="col">Effect on throughput</th></tr></thead>
+          <tbody>
+            <tr><th scope="row">SQLite<br><span style="font-weight:400;color:var(--muted)">(embedded, default)</span></th><td>Runs <em>in-process</em> with no network hop — the fastest per-commit path. Its ceiling is single-writer serialization, not a problem for most single-node deployments.</td></tr>
+            <tr><th scope="row">PostgreSQL / SQL Server<br><span style="font-weight:400;color:var(--muted)">(server database)</span></th><td>Chosen for concurrency, high availability, and enterprise operations — <b>not</b> for raw single-stream speed. Every commit is now a <b>network round-trip</b> to the database server, which adds latency to each handoff.</td></tr>
+            <tr><th scope="row">Store location</th><td>Matters more than the database brand. A commit to a co-located local disk is dramatically quicker than one that crosses the network. In our testing a local NVMe store committed on the order of <b>~65× faster</b> than a round-trip to a database on another box.</td></tr>
+            <tr><th scope="row">Disk speed</th><td>The store forces data to disk on commit for durability; faster storage (NVMe vs. shared SAN) lowers that per-commit cost.</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="callout" style="margin-top:20px">
+        <p style="margin:0"><strong>One store serves many interfaces.</strong> A single node's store has enormous headroom — in our lab a local store sustained on the order of <b>tens of thousands of commits per second</b>, far more than any one ordered interface can generate. That's <em>why</em> the scaling story is "add interfaces," not "make one interface faster": the shared store is nowhere near the wall.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- 5. message & transform factors -->
+  <section class="section">
+    <div class="container" style="max-width:900px">
+      <span class="eyebrow">5 · Message &amp; transform factors</span>
+      <h2>What else moves the number</h2>
+      <ul class="feature-list">
+        <li><b>Message size</b> — a small ADT message and one carrying an embedded document aren't the same unit of work. Bigger messages cost more to parse, store, encrypt, and transmit.</li>
+        <li><b>Parsing &amp; validation</b> — fast, tolerant field inspection on the routing path is cheap; full strict validation is deliberately opt-in per feed because it's the slow path. Turn it on where you need conformance, not everywhere.</li>
+        <li><b>Transformation complexity</b> — how much work your handler does per message directly affects the rate. Heavy transformation is one of the largest hardware-independent reducers of throughput.</li>
+        <li><b>Live enrichment lookups</b> — a handler may do a sanctioned read-only lookup (e.g. a provider or eligibility check). Each lookup is another round-trip that adds to a message's time in the pipeline — powerful, but use it deliberately.</li>
+        <li><b>Fan-out</b> — if one inbound message is delivered to <em>N</em> destinations, that's <em>N</em> deliveries to commit and <em>N</em> partners to wait on. Each destination is its own independent lane.</li>
+      </ul>
+    </div>
+  </section>
+
+  <!-- 6. messages per day -->
+  <section class="section section--alt">
+    <div class="container" style="max-width:900px">
+      <span class="eyebrow">6 · The misleading unit</span>
+      <h2>Why "messages per day" tells you almost nothing</h2>
+      <p class="lead">Healthcare message traffic is <b>bursty</b> — nothing like a flat, around-the-clock stream. It follows the operational rhythm of the facilities behind it, and that shape matters far more than the daily total.</p>
+      <ul class="feature-list">
+        <li><b>Within a day</b> — light overnight, ramping sharply in the morning with registration, admissions, rounds, lab draws, and shift changes, peaking during the busy clinical hours, tapering in the evening. ED and registration surges add short, sharp spikes.</li>
+        <li><b>Across a week</b> — weekdays run several times heavier than weekends (elective admissions, scheduled procedures, clinics).</li>
+        <li><b>Across a year</b> — seasonal load (e.g. respiratory-illness season) shifts the baseline further.</li>
+      </ul>
+      <p>A system doesn't experience the daily <em>average</em> — it experiences the <b>busiest hour</b>. Size for the average and you'll be underwater exactly when volume is highest: queues back up and latency climbs right when timeliness matters most. <b>In the production ADT feeds we've profiled, the busiest hour runs about 2.7× the all-day average rate</b> — so a feed with a tidy daily figure is really asking for nearly three times that average rate at its peak, and <em>that</em> is the rate your interface has to sustain.</p>
+      <div class="table-wrap">
+        <table class="cmp">
+          <thead><tr><th scope="col">One ordered interface at 60 msg/s</th><th scope="col">Naive (assumes flat traffic)</th><th scope="col">Realistic (peak = 2.7× average)</th></tr></thead>
+          <tbody>
+            <tr><th scope="row">Daily capacity</th><td>~5.2 M messages/day</td><td class="us"><b>~1.9 M messages/day</b></td></tr>
+          </tbody>
+        </table>
+      </div>
+      <p>Nothing about the engine changed between those columns — only the assumption about traffic shape, and the naive number is off by nearly 3×. <b>That's why a bare "handles X million messages/day" claim is close to meaningless.</b> Always ask for the <b>peak-hour rate</b>, the <b>message size</b>, and the <b>ordering guarantee</b> behind any daily figure — those, not the daily total, tell you whether it fits your environment.</p>
+    </div>
+  </section>
+
+  <!-- 7. sizing -->
+  <section class="section" id="sizing">
+    <div class="container" style="max-width:900px">
+      <span class="eyebrow">7 · Putting it together</span>
+      <h2>How to size a deployment</h2>
+      <p class="lead">There's no single throughput number — there's a short calculation using <em>your</em> inputs:</p>
+      <ol>
+        <li><b>Start from the per-interface ceiling</b> for your ordering mode (our lab reference: ~60 msg/s ordered, with an instant partner).</li>
+        <li><b>Apply your partner's real acknowledgement time</b> (§2). Usually the biggest reduction.</li>
+        <li><b>Apply your traffic's burst factor</b> (§6) — divide by ~2.7 for ADT-shaped traffic, or measure your own feed's peak-hour ÷ daily-average ratio.</li>
+        <li><b>Fan out to enough interfaces</b> to cover your aggregate peak, splitting feeds at the source.</li>
+      </ol>
+      <div class="callout">
+        <p><strong>A worked (illustrative) example.</strong> A partner acknowledges in ~25&nbsp;ms and you have ADT-shaped traffic:</p>
+        <p style="margin:8px 0 0">• Ordered throughput per interface ≈ 1000 ÷ (16 + 25) ≈ <b>~24 msg/s</b>.<br>
+        • Peak-aware daily capacity ≈ 24 × 86,400 ÷ 2.7 ≈ <b>~0.8 M messages/day</b> per interface.<br>
+        • To carry a 5-million-message/day aggregate, fan out to roughly <b>6–7 interfaces</b> — each comfortably within one node's shared-store headroom.</p>
+      </div>
+      <p>Your inputs will differ; the point is the <em>method</em>. Plug in your partner latency and your peak factor, then count interfaces. A mega health system can't push all of its ADT through one interface, and it doesn't need to — it splits the feed at the source by hospital, facility, region, or service line across <b>multiple interfaces</b>. Aggregate capacity is the sum of the interfaces; the shared store on a single node has ample headroom for the combined load.</p>
+    </div>
+  </section>
+
+  <!-- 8. lab -->
+  <section class="section section--alt" id="lab">
+    <div class="container" style="max-width:900px">
+      <span class="eyebrow">8 · Reference lab measurements</span>
+      <h2>The numbers — with their conditions</h2>
+      <p class="lead">These are the figures referenced above, stated with full conditions so you can judge how they map to your environment. They are <b>theoretical maxima under controlled conditions using synthetic data — not guarantees, and not measured against any live clinical system.</b></p>
+      <p>A note on the numbers: elsewhere on the site you'll see a measured <b>~50 messages/second</b> per interface — that figure comes from anonymized <em>production</em> telemetry. The <b>~60 messages/second</b> used in this guide is a <em>lab</em> reference ceiling with an instant-acknowledging partner. Both describe the same well-behaved ordered interface; the ~50 is the number to plan around, and everything in §2 about partner round-trips applies on top of it.</p>
+      <div class="table-wrap">
+        <table class="cmp">
+          <thead><tr><th scope="col">Measurement</th><th scope="col">Value</th><th scope="col">Conditions</th></tr></thead>
+          <tbody>
+            <tr><th scope="row">End-to-end delivery, one ordered interface</th><td><b>~60 msg/s</b></td><td>Single strictly-ordered MLLP interface, synthetic ADT, pass-through (no heavy transform), server database over a LAN, default settings, <b>instant-acknowledging partner</b>.</td></tr>
+            <tr><th scope="row">Intake (ACK-on-receipt)</th><td><b>~450 msg/s</b></td><td>Same setup; measures accept-and-persist, not end-to-end delivery.</td></tr>
+            <tr><th scope="row">Single-node store commit ceiling</th><td><b>~tens of thousands /s</b></td><td>Local NVMe store; the shared store is far from the bottleneck for realistic interface counts.</td></tr>
+            <tr><th scope="row">Engine's own per-message overhead</th><td><b>~16 ms</b></td><td>Derived from the ordered end-to-end rate with an instant partner; the portion MessageFoundry contributes.</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <h3 style="margin-top:24px">Why these are conservative, and why your mileage will vary</h3>
+      <ul class="feature-list">
+        <li><b>Ordered, single interface.</b> The default strict-FIFO mode is serial by design. Unordered feeds and multiple interfaces both go faster.</li>
+        <li><b>Instant partner.</b> The lab partner acknowledges immediately. <b>Real partners don't</b> — and their round-trip time is usually the dominant factor. This is the single largest reason your end-to-end number will differ from the lab number.</li>
+        <li><b>No independent industry benchmark exists.</b> There's no trustworthy public per-node throughput number for the major interface engines either — every published msg/s figure is hardware- and workload-dependent. Treat <em>all</em> such numbers (including these) as starting points for your own measurement, not guarantees.</li>
+      </ul>
+    </div>
+  </section>
+
+  <!-- takeaways -->
+  <section class="section section--dark">
+    <div class="container" style="max-width:900px">
+      <div class="center" style="margin-bottom:28px"><span class="eyebrow">In a nutshell</span><h2>Six takeaways</h2></div>
+      <ol style="max-width:760px;margin-inline:auto;line-height:1.7">
+        <li>MessageFoundry adds only a few milliseconds per message; <b>your partner systems and round-trip times set the real throughput.</b></li>
+        <li>There are <b>two</b> rates — fast intake and slower end-to-end delivery. Know which one a number refers to.</li>
+        <li><b>Strict ordering is serial</b> and therefore bounded; relax ordering, add connections, or fan out when you need more.</li>
+        <li>Traffic is <b>bursty</b> — size to the <b>peak hour (≈ 2.7× the average)</b>, not the daily total.</li>
+        <li><b>Scale by fanning out</b> to multiple interfaces; one node's store has ample headroom.</li>
+        <li>Interrogate every throughput claim with four questions: <b>message size, ordering, partner acknowledgement time, and peak-hour rate.</b></li>
+      </ol>
+      <div class="btn-row center" style="margin-top:30px">
+        <a class="btn btn-primary" href="/getting-started.html">Get started</a>
+        <a class="btn btn-secondary" href="/architecture.html">How the engine works →</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- related guides -->
+  <section class="section section--alt">
+    <div class="container">
+      <div class="center" style="margin-bottom:24px"><span class="eyebrow">Keep reading</span><h2>Related guides</h2></div>
+      <div class="grid grid-3">
+        <a class="card" href="/architecture.html" style="color:inherit"><h3>Architecture &amp; the durable staged queue</h3></a>
+        <a class="card" href="/reliability.html" style="color:inherit"><h3>Reliability you can prove</h3></a>
+        <a class="card" href="/guides/" style="color:inherit"><h3>All guides &amp; tutorials</h3></a>
+      </div>
+    </div>
+  </section>
+
+  <!-- faq -->
+  <section class="section">
+    <div class="container">
+      <div class="center" style="margin-bottom:28px"><span class="eyebrow">FAQ</span><h2>Frequently asked questions</h2></div>
+      <div class="faq">
+        <div class="faq-item"><h3>How many messages per second can MessageFoundry handle?</h3><p>It depends on your environment far more than on the engine. In our reference lab a single strictly-ordered interface delivers about 60 messages/second end-to-end with an instant-acknowledging partner, and accepts about 450 messages/second at the point of receipt. Real numbers are usually lower and are set by how fast your partner systems acknowledge each message — the engine itself adds only about 16 milliseconds per message. Unordered feeds and multiple interfaces both go much faster.</p></div>
+        <div class="faq-item"><h3>Why is a messages-per-day number misleading?</h3><p>Healthcare traffic is bursty, not a flat around-the-clock stream. In the production ADT feeds we've profiled, the busiest hour runs about 2.7 times the all-day average, so you have to size for the peak hour, not the daily average. Two feeds with the same daily total but different burst profiles need very different capacity. Always ask for the peak-hour rate, the message size, and the ordering guarantee behind any 'X million per day' figure.</p></div>
+        <div class="faq-item"><h3>What actually limits MessageFoundry's throughput?</h3><p>For strictly-ordered delivery, the dominant factor is usually your partner system's round-trip time: the engine sends a message, waits for the partner to accept and acknowledge it, and only then sends the next one. A partner that takes 50 ms to acknowledge caps a single ordered stream near 15 messages/second, no matter how fast the engine or database is. The message store, message size, validation, and transformation complexity also contribute, but the partner round-trip is usually the biggest term.</p></div>
+        <div class="faq-item"><h3>How do I size a MessageFoundry deployment?</h3><p>Start from the per-interface ordered ceiling (about 60 messages/second with an instant partner), reduce it by your partner's real acknowledgement time, divide by your traffic's burst factor (about 2.7 for ADT-shaped traffic), then fan out to enough interfaces to cover your aggregate peak — splitting feeds at the source by hospital, facility, or service line. One node's message store easily absorbs the combined load of dozens of interfaces.</p></div>
+        <div class="faq-item"><h3>How does MessageFoundry scale to very high volumes?</h3><p>By fanning out, not by forcing everything through one pipe. A strictly-ordered interface is a single serial lane with a bounded rate — that's the physics of guaranteed ordering, not a product limitation. You split feeds at the source across many interfaces and the aggregate is the sum of them; a single node's shared message store sustains tens of thousands of commits per second, far more than any one ordered interface can generate.</p></div>
+      </div>
+    </div>
+  </section>
+
+  </main>
+
+  <footer class="site-footer">
+    <div class="container">
+      <div class="footer-grid">
+        <div class="footer-brand">
+          <a class="brand" href="/" aria-label="MessageFoundry home">
+            <img class="brand-mark" src="/assets/img/logo.svg" alt="" width="28" height="28">
+            <span class="brand-name">Message<span class="brand-accent">Foundry</span><span class="brand-tm">™</span></span>
+          </a>
+          <p class="footer-tagline"><b>More</b> Than an HL7 Interface Engine</p>
+          <p>Open-source healthcare interface engine — secure by default, built to recognized standards, connecting a wide range of protocols and message types.</p>
+          <div class="badge-row" style="margin-top:16px">
+            <span class="badge">Open source</span>
+            <span class="badge">No lock-in</span>
+            <span class="badge">Self-hosted</span>
+          </div>
+        </div>
+        <div class="footer-col">
+          <h4>Product</h4>
+          <a href="/overview.html">Overview</a>
+          <a href="/features.html">Features</a>
+          <a href="/architecture.html">Architecture</a>
+          <a href="/reliability.html">Reliability</a>
+          <a href="/dicom.html">DICOM</a>
+          <a href="/security.html">Security &amp; PHI</a>
+          <a href="/documents.html">Documents</a>
+        </div>
+        <div class="footer-col">
+          <h4>Tools</h4>
+          <a href="/tools.html">Tools</a>
+          <a href="/editor.html">Editor</a>
+          <a href="/console.html">Console</a>
+          <a href="/ai.html">AI assist</a>
+        </div>
+        <div class="footer-col">
+          <h4>Get started</h4>
+          <a href="/getting-started.html">Quickstart</a>
+          <a href="/guides/">Guides</a>
+          <a href="/comparison.html">Comparison</a>
+        </div>
+        <div class="footer-col">
+          <h4>Project</h4>
+          <a href="https://github.com/MEFORORG/MessageFoundry" target="_blank" rel="noopener">GitHub</a>
+          <a href="https://github.com/MEFORORG/MessageFoundry/issues" target="_blank" rel="noopener">Issues</a>
+          <a href="/contact.html">Contact</a>
+          <a href="/licensing.html">License</a>
+          <a href="/about.html">About</a>
+          <a href="/sponsor.html">Sponsor</a>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        <span>© 2026 MEFOR-ORG, a non-profit — this website and its content, all rights reserved. The MessageFoundry engine is separately open source, licensed under AGPL-3.0-or-later.</span>
+        <span>MessageFoundry and the MessageFoundry word mark are trademarks of MEFOR-ORG. Mirth Connect, Cloverleaf, Rhapsody, Corepoint, and Ensemble are trademarks of their respective owners; MessageFoundry is independent and unaffiliated.</span>
+      </div>
+    </div>
+  </footer>
+
+  <script src="/assets/js/nav.js" defer></script>
+</body>
+</html>

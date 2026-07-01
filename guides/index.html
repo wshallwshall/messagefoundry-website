@@ -31,7 +31,8 @@
       { "@type": "ListItem", "position": 3, "name": "HL7 v2 to FHIR in Python", "url": "https://messagefoundry.org/hl7-to-fhir/" },
       { "@type": "ListItem", "position": 4, "name": "Migrating from a legacy interface engine", "url": "https://messagefoundry.org/migrate/" },
       { "@type": "ListItem", "position": 5, "name": "Self-hosted, PHI-safe interface engine", "url": "https://messagefoundry.org/self-hosted/" },
-      { "@type": "ListItem", "position": 6, "name": "More than just an HL7 interface engine", "url": "https://messagefoundry.org/hl7-integration-engine/" }
+      { "@type": "ListItem", "position": 6, "name": "More than just an HL7 interface engine", "url": "https://messagefoundry.org/hl7-integration-engine/" },
+      { "@type": "ListItem", "position": 7, "name": "Understanding throughput", "url": "https://messagefoundry.org/throughput/" }
     ]
   }
   </script>
@@ -115,7 +116,7 @@
       </div>
 
       <p class="eyebrow" style="margin:34px 0 14px">Concepts &amp; playbooks</p>
-      <div class="grid grid-3">
+      <div class="grid" style="grid-template-columns:repeat(auto-fit,minmax(220px,1fr))">
         <a class="card" href="/migrate/" style="color:inherit">
           <h3>Migrating from a legacy engine</h3>
           <p>A vendor-neutral playbook: inventory, re-express your interfaces as Python, validate and shadow, then cut over with rollback.</p>
@@ -127,6 +128,10 @@
         <a class="card" href="/hl7-integration-engine/" style="color:inherit">
           <h3>More than just an HL7 interface engine</h3>
           <p>A capable HL7 v2 engine — and a broad healthcare interface engine that also connects FHIR, X12/EDI, and DICOM.</p>
+        </a>
+        <a class="card" href="/throughput/" style="color:inherit">
+          <h3>Understanding throughput</h3>
+          <p>What really sets the message rate — partner round-trips, ordering, and why a raw messages-per-day number misleads.</p>
         </a>
       </div>
 
