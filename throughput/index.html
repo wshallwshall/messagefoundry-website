@@ -25,7 +25,7 @@
     "@context": "https://schema.org",
     "@type": "FAQPage",
     "mainEntity": [
-      { "@type": "Question", "name": "How many messages per second can MessageFoundry handle?", "acceptedAnswer": { "@type": "Answer", "text": "It depends on your environment far more than on the engine. In our reference lab a single strictly-ordered interface delivers about 60 messages/second end-to-end with an instant-acknowledging partner, and accepts about 450 messages/second at the point of receipt. Real numbers are usually lower and are set by how fast your partner systems acknowledge each message — the engine itself adds only about 16 milliseconds per message. Multiple connections and multiple interfaces both go much faster." } },
+      { "@type": "Question", "name": "How many messages per second can MessageFoundry handle?", "acceptedAnswer": { "@type": "Answer", "text": "It depends on your environment far more than on the engine. In our reference lab a single strictly-ordered HL7 v2 / MLLP interface delivers about 60 messages/second end-to-end with an instant-acknowledging partner, and accepts about 450 messages/second at the point of receipt. Real numbers are usually lower and are set by how fast your partner systems acknowledge each message — the engine itself adds only about 16 milliseconds per message. That serial cap is specific to MLLP; request/response transports like REST and FHIR run concurrently, and fanning out across interfaces scales further." } },
       { "@type": "Question", "name": "Why is a messages-per-day number misleading?", "acceptedAnswer": { "@type": "Answer", "text": "Healthcare traffic is bursty, not a flat around-the-clock stream. In the production ADT feeds we've profiled, the busiest hour runs about 2.7 times the all-day average, so you have to size for the peak hour, not the daily average. Two feeds with the same daily total but different burst profiles need very different capacity. Always ask for the peak-hour rate, the message size, and the ordering guarantee behind any 'X million per day' figure." } },
       { "@type": "Question", "name": "What actually limits MessageFoundry's throughput?", "acceptedAnswer": { "@type": "Answer", "text": "Because delivery is strictly ordered, the dominant factor is usually your partner system's round-trip time: the engine sends a message, waits for the partner to accept and acknowledge it, and only then sends the next one. A partner that takes 50 ms to acknowledge caps a single ordered stream near 15 messages/second, no matter how fast the engine or database is. The message store, message size, validation, and transformation complexity also contribute, but the partner round-trip is usually the biggest term." } },
       { "@type": "Question", "name": "How do I size a MessageFoundry deployment?", "acceptedAnswer": { "@type": "Answer", "text": "Start from the per-interface ordered ceiling (about 60 messages/second with an instant partner), reduce it by your partner's real acknowledgement time, divide by your traffic's burst factor (about 2.7 for ADT-shaped traffic), then fan out to enough interfaces to cover your aggregate peak — splitting feeds at the source by hospital, facility, or service line. One node's message store easily absorbs the combined load of dozens of interfaces." } },
@@ -126,11 +126,11 @@
       <div class="grid grid-2" style="align-items:start">
         <div class="card">
           <h3>The engine is nearly transparent</h3>
-          <p>In our reference lab, MessageFoundry adds on the order of <b>~16 milliseconds</b> of its own processing per message — roughly <b>60 messages/second</b> end-to-end on a strictly-ordered feed, and <b>~450/second</b> at the point of receipt. Ceilings under ideal conditions, not promises for your environment.</p>
+          <p>In our reference lab, MessageFoundry adds on the order of <b>~16 milliseconds</b> of its own processing per message — roughly <b>60 messages/second</b> end-to-end on a strictly-ordered MLLP feed, and <b>~450/second</b> at the point of receipt. Ceilings under ideal conditions, not promises for your environment.</p>
         </div>
         <div class="card">
           <h3>Your partner systems dominate</h3>
-          <p>For ordered delivery the engine sends a message, <b>waits</b> for the partner to accept and acknowledge it, then sends the next. That round-trip lands directly in the critical path: a partner that takes 50&nbsp;ms to ACK caps a single ordered stream near <b>15 messages/second</b> — no matter how fast the engine or database is.</p>
+          <p>On an ordered <b>HL7 v2 / MLLP</b> feed the engine sends a message, <b>waits</b> for the partner to acknowledge it, then sends the next — so a partner that takes 50&nbsp;ms to ACK caps a single MLLP stream near <b>15 messages/second</b>, no matter how fast the engine is. Request/response transports (REST, SOAP, FHIR) run concurrently, so this cap is chiefly an MLLP concern.</p>
         </div>
         <div class="card">
           <h3>"Messages per day" is a weak unit</h3>
@@ -175,13 +175,13 @@
     <div class="container" style="max-width:900px">
       <span class="eyebrow">2 · The biggest factor</span>
       <h2>Your partner systems and their round-trip times</h2>
-      <p class="lead">This is the point most capacity conversations miss. <b>Ordered delivery is inherently serial.</b> MessageFoundry delivers messages in the exact order received — a hard requirement for most clinical feeds — so the engine holds <b>one message in flight per destination</b> at a time:</p>
+      <p class="lead">This is the point most capacity conversations miss — for <b>HL7 v2 over MLLP</b>, an acknowledged serial stream. MessageFoundry delivers each MLLP message in the exact order received — a hard requirement for clinical feeds — so it holds <b>one message in flight per destination</b> at a time:</p>
       <ol>
         <li>Send message <em>N</em> to the partner.</li>
         <li><b>Wait</b> for the partner to receive it, process it (often persist it to its own database), and acknowledge.</li>
         <li>Only then send message <em>N+1</em>.</li>
       </ol>
-      <p>That waiting time isn't the engine's — it belongs to the <b>network round-trip and the partner's own processing</b> — and because the stream is serial, it lands squarely in the critical path. For an ordered stream, throughput is approximately:</p>
+      <p>That waiting time isn't the engine's — it belongs to the <b>network round-trip and the partner's own processing</b> — and because the MLLP stream is serial, it lands squarely in the critical path. For an ordered MLLP stream, throughput is approximately:</p>
       <div class="callout"><p style="margin:0;text-align:center"><b>messages/second ≈ 1000 ÷ ( engine overhead + partner round-trip )</b>, in milliseconds</p></div>
       <p>The engine overhead is small and roughly fixed (~16&nbsp;ms in our lab). The <b>partner round-trip is yours</b>, and it dominates as soon as it's more than a few milliseconds:</p>
       <div class="table-wrap">
@@ -211,11 +211,12 @@
   <!-- 3. ordering -->
   <section class="section">
     <div class="container" style="max-width:900px">
-      <span class="eyebrow">3 · Ordering</span>
-      <h2>Why guaranteed order makes an interface serial</h2>
-      <p class="lead">MessageFoundry delivers every message in the exact order it was received — strict per-interface FIFO. That guarantee is precisely what makes a single interface serial: only one message can be in flight to a destination at a time, because the next can't go until the previous is confirmed.</p>
-      <p>This isn't unique to MessageFoundry — it's a property of <em>any</em> system that guarantees order over a single stream. The bounded per-interface rate is simply the cost of never delivering a message out of order, which for clinical feeds — where a later message can correct an earlier one — is exactly what you want.</p>
-      <p>So you don't buy throughput by giving up ordering. You buy it by adding parallelism where order still holds: where a feed can be split into independent streams — by hospital, facility, or service line — run it across <b>multiple connections</b> and <b>multiple interfaces</b>, each its own ordered lane. Aggregate throughput is the sum of the lanes (see <a href="#sizing">§7</a>).</p>
+      <span class="eyebrow">3 · Ordering &amp; transports</span>
+      <h2>Where the serial cap applies: HL7 v2 over MLLP</h2>
+      <p class="lead">The one-in-flight, wait-for-the-ACK model in §2 is about <b>HL7 v2 over MLLP</b> — an acknowledged serial stream, and the workhorse of clinical interfacing. MessageFoundry delivers every MLLP message in the exact order received, so only one is in flight to a destination at a time: the next can't go until the previous is confirmed. That in-order guarantee is what bounds a single MLLP interface's rate.</p>
+      <p>The bound isn't a MessageFoundry quirk — it's a property of <em>any</em> system that guarantees order over a single stream. And for HL7 ADT, where a later message can correct an earlier one, never delivering out of order is exactly what you want.</p>
+      <p><b>Request/response transports behave differently.</b> Outbound REST, SOAP, and FHIR aren't a single serial stream — the engine can keep several requests in flight to a partner at once, so the partner round-trip is hidden by concurrency and throughput is higher. The serial cap above is chiefly an MLLP concern.</p>
+      <p>And for higher MLLP volumes you don't give up ordering — you add lanes: split the feed at the source (by hospital, facility, or service line) across more interfaces, each its own ordered lane. Aggregate throughput is the sum (see <a href="#sizing">§7</a>).</p>
     </div>
   </section>
 
@@ -323,7 +324,7 @@
       </div>
       <h3 style="margin-top:24px">Why these are conservative, and why your mileage will vary</h3>
       <ul class="feature-list">
-        <li><b>Ordered, single interface.</b> Strict FIFO is serial by design; splitting a feed across multiple connections and interfaces goes faster.</li>
+        <li><b>Ordered MLLP, single interface.</b> The lab figure is a strictly-ordered MLLP stream — serial by design. Request/response transports (REST/SOAP/FHIR) run concurrently, and splitting a feed across more interfaces adds lanes; both go faster.</li>
         <li><b>Instant partner.</b> The lab partner acknowledges immediately. <b>Real partners don't</b> — and their round-trip time is usually the dominant factor. This is the single largest reason your end-to-end number will differ from the lab number.</li>
         <li><b>No independent industry benchmark exists.</b> There's no trustworthy public per-node throughput number for the major interface engines either — every published msg/s figure is hardware- and workload-dependent. Treat <em>all</em> such numbers (including these) as starting points for your own measurement, not guarantees.</li>
       </ul>
@@ -366,7 +367,7 @@
     <div class="container">
       <div class="center" style="margin-bottom:28px"><span class="eyebrow">FAQ</span><h2>Frequently asked questions</h2></div>
       <div class="faq">
-        <div class="faq-item"><h3>How many messages per second can MessageFoundry handle?</h3><p>It depends on your environment far more than on the engine. In our reference lab a single strictly-ordered interface delivers about 60 messages/second end-to-end with an instant-acknowledging partner, and accepts about 450 messages/second at the point of receipt. Real numbers are usually lower and are set by how fast your partner systems acknowledge each message — the engine itself adds only about 16 milliseconds per message. Multiple connections and multiple interfaces both go much faster.</p></div>
+        <div class="faq-item"><h3>How many messages per second can MessageFoundry handle?</h3><p>It depends on your environment far more than on the engine. In our reference lab a single strictly-ordered HL7 v2 / MLLP interface delivers about 60 messages/second end-to-end with an instant-acknowledging partner, and accepts about 450 messages/second at the point of receipt. Real numbers are usually lower and are set by how fast your partner systems acknowledge each message — the engine itself adds only about 16 milliseconds per message. That serial cap is specific to MLLP; request/response transports like REST and FHIR run concurrently, and fanning out across interfaces scales further.</p></div>
         <div class="faq-item"><h3>Why is a messages-per-day number misleading?</h3><p>Healthcare traffic is bursty, not a flat around-the-clock stream. In the production ADT feeds we've profiled, the busiest hour runs about 2.7 times the all-day average, so you have to size for the peak hour, not the daily average. Two feeds with the same daily total but different burst profiles need very different capacity. Always ask for the peak-hour rate, the message size, and the ordering guarantee behind any 'X million per day' figure.</p></div>
         <div class="faq-item"><h3>What actually limits MessageFoundry's throughput?</h3><p>Because delivery is strictly ordered, the dominant factor is usually your partner system's round-trip time: the engine sends a message, waits for the partner to accept and acknowledge it, and only then sends the next one. A partner that takes 50 ms to acknowledge caps a single ordered stream near 15 messages/second, no matter how fast the engine or database is. The message store, message size, validation, and transformation complexity also contribute, but the partner round-trip is usually the biggest term.</p></div>
         <div class="faq-item"><h3>How do I size a MessageFoundry deployment?</h3><p>Start from the per-interface ordered ceiling (about 60 messages/second with an instant partner), reduce it by your partner's real acknowledgement time, divide by your traffic's burst factor (about 2.7 for ADT-shaped traffic), then fan out to enough interfaces to cover your aggregate peak — splitting feeds at the source by hospital, facility, or service line. One node's message store easily absorbs the combined load of dozens of interfaces.</p></div>
