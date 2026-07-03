@@ -331,10 +331,47 @@
     </div>
   </section>
 
+  <!-- 9. at scale -->
+  <section class="section" id="at-scale">
+    <div class="container" style="max-width:900px">
+      <span class="eyebrow">9 · At enterprise scale</span>
+      <h2>1,500 interfaces on one engine — held loss-free</h2>
+      <p class="lead">A single MLLP interface is a serial lane (§3). At a health system's scale the more useful question is the inverse: <b>how many interfaces can one engine hold at once without dropping a message?</b> In a deliberately extreme test — <b>1,500 concurrent inbound MLLP interfaces</b> on one MessageFoundry engine and one SQL Server 2022 database — we held all 1,500 open with <b>zero message loss</b> and durable, at-least-once persistence on every message.</p>
+      <p>That fan-out is where naive designs fall over. A one-worker-per-interface engine degrades sharply at this scale; <b>MessageFoundry's pooled claim scheduler — the configuration used in this test — holds steady</b> with low idle overhead. It's an architectural property, not a tuning trick.</p>
+      <p>The two boxes, on the same local network:</p>
+      <div class="table-wrap">
+        <table class="cmp">
+          <thead><tr><th scope="col">AWS EC2</th><th scope="col">Engine box</th><th scope="col">Database box</th></tr></thead>
+          <tbody>
+            <tr><th scope="row">Instance</th><td>m7i.2xlarge</td><td>i4i.2xlarge</td></tr>
+            <tr><th scope="row">CPU / RAM</th><td>8 vCPU / 32 GiB</td><td>8 vCPU / 64 GiB</td></tr>
+            <tr><th scope="row">Storage</th><td>100 GiB EBS</td><td>Local NVMe SSD (+ 100 GiB EBS)</td></tr>
+            <tr><th scope="row">Runs</th><td>MessageFoundry engine (Windows)</td><td>SQL Server 2022 (Windows)</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <p>On that config, aggregate end-to-end throughput at 1,500 interfaces was <b>~97 messages/second sustained</b> (measured peak ~107) — the rate a single database durably commits across all 1,500 interfaces, not a per-interface figure. Every message is parsed, routed, transformed, durably committed to the database, and delivered:</p>
+      <div class="table-wrap">
+        <table class="cmp">
+          <thead><tr><th scope="col">Measurement</th><th scope="col">Rate</th><th scope="col">Per hour</th><th scope="col">Per day, flat-out*</th></tr></thead>
+          <tbody>
+            <tr><th scope="row">Sustained, zero-loss</th><td>~97 msg/s</td><td>~350,000</td><td>~8.4 million</td></tr>
+            <tr><th scope="row">Peak (burst)</th><td>~107 msg/s</td><td>~385,000</td><td>~9.3 million</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <p style="color:var(--muted);font-size:.86rem"><b>*</b> A flat-out <em>ceiling</em> for the <b>i4i.2xlarge SQL Server 2022 database above</b>, not a realistic daily load — real traffic is bursty (§6), so a live deployment on this config would carry less. Change the database and the number changes with it.</p>
+      <p>At 1,500 interfaces the ceiling was the <b>database write tier, not the engine</b>: engine CPU sat near two cores, and tripling the database connection pool didn't move it — the commit round-trip to the server database is the limit (§4). So the lever for more is a faster or sharded database (more IOPS, a larger instance, or multiple stores), or more engine+database pairs — not tuning the engine host.</p>
+      <div class="callout">
+        <p style="margin:0"><strong>Scope.</strong> One two-box configuration — a single engine, a single SQL Server 2022 store on local NVMe, a lightweight transform, and synthetic HL7 (no patient data). A capacity-planning reference point, not a hard limit: headroom scales with the database tier and by adding engine+database pairs. <a href="/getting-started.html">Talk to us for sizing →</a></p>
+      </div>
+    </div>
+  </section>
+
   <!-- takeaways -->
   <section class="section section--dark">
     <div class="container" style="max-width:900px">
-      <div class="center" style="margin-bottom:28px"><span class="eyebrow">In a nutshell</span><h2>Six takeaways</h2></div>
+      <div class="center" style="margin-bottom:28px"><span class="eyebrow">In a nutshell</span><h2>Seven takeaways</h2></div>
       <ol style="max-width:760px;margin-inline:auto;line-height:1.7">
         <li>MessageFoundry adds only a few milliseconds per message; <b>your partner systems and round-trip times set the real throughput.</b></li>
         <li>There are <b>two</b> rates — fast intake and slower end-to-end delivery. Know which one a number refers to.</li>
@@ -342,6 +379,7 @@
         <li>Traffic is <b>bursty</b> — size to the <b>peak hour (≈ 2.7× the average)</b>, not the daily total.</li>
         <li><b>Scale by fanning out</b> to multiple interfaces; one node's store has ample headroom.</li>
         <li>Interrogate every throughput claim with four questions: <b>message size, ordering, partner acknowledgement time, and peak-hour rate.</b></li>
+        <li>In testing, one engine + one database held <b>1,500 concurrent MLLP interfaces loss-free</b> — at that fan-out the database's write tier is the ceiling, not the engine (<a href="#at-scale">§9</a>).</li>
       </ol>
       <div class="btn-row center" style="margin-top:30px">
         <a class="btn btn-primary" href="/getting-started.html">Get started</a>
