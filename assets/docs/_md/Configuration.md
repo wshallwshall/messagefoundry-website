@@ -168,12 +168,12 @@ system value, a facility code → a downstream mnemonic. Rather than a hand-main
 
   DIET = code_set("epic_diets")          # frozen, read-only mapping; captured at import
 
-  @handler("to_cbord")
+  @handler("to_dietary")
   def handle(msg):
       msg["ODS-3"] = DIET.get(msg["ODS-3"], "")     # .get(key, default) — blank on a miss
       fac = code_set("facility_mnemonics").get(msg["MSH-4"])  # call-time lookup also works
       ...
-      return Send("OB_CBORD_DIET", msg)
+      return Send("OB_DIETARY", msg)
   ```
   A `CodeSet` is a read-only `Mapping`: `cs[key]` (raises `KeyError` naming the set on a miss),
   `cs.get(key, default)`, `key in cs`, `len(cs)`, iteration. It is **frozen** — one instance is shared
