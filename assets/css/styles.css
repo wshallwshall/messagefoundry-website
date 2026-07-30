@@ -21,6 +21,7 @@
   --accent:     #f59e0b;   /* molten amber — the "foundry" accent  */
   --accent-2:   #f97316;   /* molten orange                        */
   --accent-ink: #7c2d12;   /* deep accent for text on light        */
+  --accent-ink-2:#6b2410;  /* darker still — text ON the amber fill */
   --code-bg:    #0d1726;   /* code card background (dark always)   */
   --code-text:  #d7e0ee;
 
@@ -70,6 +71,11 @@ code, pre, kbd { font-family: var(--mono); }
 :focus-visible { outline: 3px solid var(--accent-ink); outline-offset: 2px; border-radius: 4px; }
 .section--dark :focus-visible, .hero :focus-visible, .site-header :focus-visible,
 .cta-band :focus-visible, .site-footer :focus-visible { outline-color: var(--accent); }
+/* …but light surfaces nested inside those dark scopes take the dark ring back —
+   amber on a white card is ~2.1:1, under the 3:1 non-text minimum. */
+.section--dark .card :focus-visible, .section--dark .callout :focus-visible,
+.hero .card :focus-visible, .hero .callout :focus-visible,
+.site-header .nav-group__menu :focus-visible { outline-color: var(--accent-ink); }
 
 /* ------------------------------------------------------------------ layout */
 .container { width: 100%; max-width: var(--maxw); margin-inline: auto; padding-inline: 22px; }
@@ -97,7 +103,7 @@ code, pre, kbd { font-family: var(--mono); }
 .section--dark .card a, .section--dark .callout a,
 .hero .card a, .hero .callout a { color: var(--accent-ink); }
 .center { text-align: center; margin-inline: auto; }
-.skip-link { position: absolute; left: 8px; top: -48px; z-index: 1000; background: var(--accent); color: #6b2410; padding: 8px 14px; border-radius: 8px; font-weight: 700; text-decoration: none; }
+.skip-link { position: absolute; left: 8px; top: -48px; z-index: 1000; background: var(--accent); color: var(--accent-ink-2); padding: 8px 14px; border-radius: 8px; font-weight: 700; text-decoration: none; }
 .skip-link:focus { top: 8px; }
 .faq { max-width: 760px; margin-inline: auto; }
 .faq-item { border-top: 1px solid var(--border); padding: 18px 2px; }
@@ -304,6 +310,12 @@ pre.code .n { color: #c9a3ff; }                           /* number/const */
   background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius);
   padding: 26px; box-shadow: var(--shadow); height: 100%;
 }
+/* Cards stretch to equal height by default. Where the content lengths are lopsided that
+   strands a lot of dead space in the short cards, so a row can opt out with .grid--top.
+   The card's own height:100% has to be released too — it resolves against the grid area,
+   which is still the tall row, so `align-items:start` alone is a silent no-op. */
+.grid--top { align-items: start; }
+.grid--top > .card { height: auto; }
 .section--alt .card { background: #fff; }
 .card h3 { margin-bottom: .4em; }
 .card p { color: var(--muted); margin-bottom: 0; font-size: .98rem; }
