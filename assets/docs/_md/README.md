@@ -13,6 +13,11 @@ editable.
 Two files own this: **`_pdf-template.html`** (the branded print template) and
 **`render_pdf.py`** (the renderer). Both live here, beside the sources they render.
 
+**This is the canonical renderer for every PDF in the set** — all 19 are generated from it.
+Don't render these by another route: a second toolchain drifts in styling, and the whole
+reason the template now lives in the repo is that it previously existed only as a
+description, leaving the PDFs unreproducible and stale behind their sources.
+
 ```bash
 pip install markdown pypdf                     # one-time; needs Chrome or Edge too
 
