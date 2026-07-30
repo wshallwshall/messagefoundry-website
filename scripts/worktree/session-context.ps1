@@ -24,16 +24,26 @@ $lines = @()
 try {
     . "$PSScriptRoot\..\coord\lib.ps1"
 
-    $worktrees = Get-CoordWorktrees
-    $roster = @(Get-CoordRoster)
-    $peers = @($roster | Where-Object { $_.Live -and -not $_.IsSelf })
+    # The payload's session_id is the registry id, and passing it is what stops this banner listing
+    # THIS session among the peers. Guarded: reading stdin when nothing is piped would hang a hook.
+    $selfId = $null
+    if ([Console]::IsInputRedirected) {
+        try { $selfId = [string]([Console]::In.ReadToEnd() | ConvertFrom-Json).session_id } catch { }
+    }
 
-    # Nothing to coordinate with: one checkout and nobody else here.
-    if ($worktrees.Count -le 1 -and $peers.Count -eq 0) { exit 0 }
+    $worktrees = Get-CoordWorktrees
+    $roster = @(Get-CoordRoster -SelfSessionId $selfId)
+    $peers = @($roster | Where-Object { $_.Live -and -not $_.IsSelf })
 
     $root = (& git rev-parse --show-toplevel 2>$null)
     $branch = (& git branch --show-current 2>$null)
     $isPrimary = ((& git rev-parse --git-dir 2>$null) -notmatch 'worktrees')
+
+    # Say nothing unless there is something to say. Peers are always worth reporting; with none, the
+    # only remaining message is "you are sitting in the shared checkout", and that is worth it only
+    # when siblings exist to collide with. A banner that shows up empty is one that gets skimmed past
+    # on the day it matters.
+    if ($peers.Count -eq 0 -and -not ($isPrimary -and $worktrees.Count -gt 1)) { exit 0 }
 
     $lines += "[PARALLEL SESSIONS - messagefoundry-website]"
     $lines += "This chat: $root  (branch: $branch)"
@@ -63,7 +73,7 @@ try {
 
         # What they are building, not just where they are. The roster stops you editing the same FILE;
         # this is the only thing that stops you building the same THING in a different file.
-        $busy = @(Get-CoordOverlap | Where-Object { @($_.Files).Count -gt 0 })
+        $busy = @(Get-CoordOverlap -SelfSessionId $selfId | Where-Object { @($_.Files).Count -gt 0 })
         if ($busy.Count -gt 0) {
             $lines += ""
             $lines += "WHAT THEY ARE CHANGING -- check before you start, so you don't build it twice:"
@@ -77,9 +87,10 @@ try {
         $lines += ""
         $lines += "Coordination rules (see CLAUDE.md, 'Parallel sessions'):"
         $lines += "  - Keep changes on this worktree's branch; never edit files in a sibling worktree."
-        $lines += "  - Before overlapping work, read the peer's transcript with ccd_session_mgmt"
-        $lines += "    (list_sessions -> list_events). Its list_sessions MISSES non-desktop sessions;"
-        $lines += "    this banner is the authoritative roster."
+        $lines += "  - Before overlapping work, read the peer's transcript with ccd_session_mgmt."
+        $lines += "    Match it by the WORKTREE NAME above against list_sessions' cwd -- the id shown"
+        $lines += "    here is the registry id and is a DIFFERENT uuid from the one that tool uses."
+        $lines += "  - list_sessions MISSES non-desktop sessions; this banner is the authoritative roster."
         $lines += "  - Watch the shared surfaces: assets/css/styles.css, sitemap.xml, CLAUDE.md, and the"
         $lines += "    header/footer duplicated into every page."
         $lines += "  - The AI memory directory is shared across sessions. Read freely; only write when"

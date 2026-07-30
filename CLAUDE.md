@@ -52,21 +52,33 @@ Several Claude sessions usually work this repo at once, in sibling worktrees und
 
 - **Hooks (deterministic).** A `SessionStart` banner lists who is live and what files they are
   changing; a `PreToolUse` gate **denies** an edit to a file another live session is already
-  changing. Both are wired at user level and resolve `scripts/worktree/session-context.ps1` and
-  `scripts/hooks/collision_gate.ps1` from this repo — **those two paths are load-bearing; renaming
-  them silently disables coordination.** The gate fails open on any error.
+  changing; a `UserPromptSubmit` hook tells a new session to announce itself. All three are wired at
+  user level and resolve `scripts/worktree/session-context.ps1`, `scripts/hooks/collision_gate.ps1`
+  and `scripts/hooks/announce.ps1` from this repo — **those paths are load-bearing; renaming one
+  silently disables that piece.** The gate fails open on any error.
 - **`ccd_session_mgmt` (yours).** Hooks are shell commands and **cannot call MCP tools**, so
-  anything needing a peer's *conversation* is on you.
+  anything needing a peer's *conversation* — reading it, or writing to it — is on you.
 
-**When the gate blocks you, do not just retry or route around it.** Call `list_sessions`, find the
-peer by `cwd`/`branch`, then `list_events` to read what it actually concluded — it may already be
-doing what you were about to start. Then either `send_message` to hand off, pick different work, or
-ask the user to arbitrate.
+**Announce yourself on your first substantive prompt.** The rest of the system is pull-based: you
+discover your peers, but they do not discover you until one of them trips the gate, which is after
+someone has already built the wrong thing. So when the hook says there are peers, `send_message` each
+one **in this repo only** — your worktree, your branch, one line on what you were asked to do — then
+get on with it. Don't wait for replies. Skip it only when the prompt is trivial and you won't be
+changing files.
 
+**When the gate blocks you, do not just retry or route around it.** Find the peer, `list_events` to
+read what it actually concluded — it may already be doing what you were about to start — then either
+`send_message` to hand off, pick different work, or ask the user to arbitrate.
+
+- **Match peers by `cwd`, never by the session id you were shown.** The registry id in the banner and
+  the `ccd_session_mgmt` id for the *same* session are different UUIDs — verified 2026-07-30, registry
+  `933195b8-…` and MCP `local_938641cd-…` were one session. Both begin `93`, so a matching prefix
+  proves nothing. Call `list_sessions` and match on the worktree path.
 - **`list_sessions` is incomplete — the banner is the authoritative roster.** It enumerates only
   desktop-spawned sessions; a VS Code session in this repo is absent from it entirely (verified
   2026-07-30: 4 listed vs 6 in the on-disk registry). Never conclude "nobody else is here" from it.
-  Non-desktop sessions also cannot receive `send_message` — coordinate via the PR or the user.
+  A peer in the banner with no matching `cwd` in `list_sessions` is on such a surface: it cannot be
+  messaged, so coordinate via the PR or the user, and say that's what you did.
 - **`send_message` lands as a user turn** in the other session, so it interrupts a person's work.
   Use it to hand off context or flag a collision, not to orchestrate background jobs.
 - **Never call `archive_session` speculatively** — only when the user has asked to archive that
@@ -95,7 +107,10 @@ Deployment + DNS details: [`docs/DEPLOYMENT.md`](docs/DEPLOYMENT.md).
 ## Don't
 
 - Don't add a bundler, SSG, Tailwind, or npm — this site is intentionally dependency-free. That rule
-  is about what gets **served**; `scripts/` is local dev tooling, ships nothing, and is not a
-  violation of it. Don't prune it as one.
+  is about what the site **loads**; `scripts/` is local dev tooling, adds no dependency or build step,
+  and is not a violation of it. Don't prune it as one.
+- **Assume every file in this repo is public.** Pages serves the whole root, so `README.md`,
+  `CLAUDE.md`, `docs/` and `scripts/` all answer at `messagefoundry.org/…` (verified `200`). Don't put
+  anything in this repo you wouldn't publish.
 - Don't hardcode colors; use the CSS variables.
 - Don't copy PHI or real message data into examples — sample HL7 is synthetic only.

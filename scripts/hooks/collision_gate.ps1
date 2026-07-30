@@ -31,7 +31,9 @@
 param(
     # Skip stdin and decide on this path instead. Lets a test drive the REAL gate against a fixture
     # rather than re-implementing its rule -- a test asserting a copy of the rule proves nothing.
-    [string]$PathOverride
+    [string]$PathOverride,
+    # Registry to read, for the same reason. Production passes nothing and gets the real config roots.
+    [string[]]$ConfigRoot
 )
 
 # No "Stop": this gate fails OPEN, and a throw would be a deny-by-crash.
@@ -52,6 +54,7 @@ function Deny([string]$Reason) {
 }
 
 $target = $PathOverride
+$selfId = $null
 if (-not $target) {
     if (-not [Console]::IsInputRedirected) { exit 0 }
     try { $hook = [Console]::In.ReadToEnd() | ConvertFrom-Json } catch { exit 0 }
@@ -59,13 +62,17 @@ if (-not $target) {
     $target = [string]$hook.tool_input.file_path
     # NotebookEdit names it differently; absence just means there is nothing to check.
     if (-not $target) { $target = [string]$hook.tool_input.notebook_path }
+    # The payload id IS the registry id. Passing it is what stops this gate blocking its own session.
+    $selfId = [string]$hook.session_id
 }
 if (-not $target) { exit 0 }
 
 try { . "$PSScriptRoot\..\coord\lib.ps1" } catch { exit 0 }
 
 $rows = @()
-try { $rows = @(Get-CoordOverlap -File $target | Where-Object { -not $_.InMyTree }) } catch { exit 0 }
+# InMyTree is a second net behind the id match: a row in our own worktree can only be us, or someone
+# sharing our tree whose changed files are indistinguishable from ours. Either way, never block on it.
+try { $rows = @(Get-CoordOverlap -File $target -SelfSessionId $selfId -ConfigRoot $ConfigRoot | Where-Object { $_.Confirmed -and -not $_.InMyTree }) } catch { exit 0 }
 if ($rows.Count -eq 0) { exit 0 }
 
 $leaf = Split-Path $target -Leaf
@@ -77,7 +84,8 @@ foreach ($r in $rows) {
 }
 $lines += ""
 $lines += "That session may already be doing what you are about to do. Before overriding:"
-$lines += "  - read what it concluded : ccd_session_mgmt list_sessions, then list_events on its id"
+$lines += "  - read what it concluded : ccd_session_mgmt list_sessions, match the WORKTREE NAME above"
+$lines += "                             against cwd (the id here is a different uuid), then list_events"
 $lines += "  - hand off instead       : ccd_session_mgmt send_message to that session"
 $lines += "  - see everything in flight: pwsh -NoProfile -File scripts\coord\sessions.ps1"
 $lines += "Then coordinate, work on a different file, or ask the user to arbitrate."

@@ -32,7 +32,7 @@ $ErrorActionPreference = "Stop"
 . "$PSScriptRoot\lib.ps1"
 
 if ($File) {
-    $rows = Get-CoordOverlap -File $File -NoCache
+    $rows = Get-CoordOverlap -File $File
     if ($Json) { ($rows | ConvertTo-Json -Depth 5 -AsArray) | Write-Output; exit 0 }
     if ($rows.Count -eq 0) { Write-Host "No other live session is changing $File." -ForegroundColor DarkGray; exit 0 }
     Write-Host ""
@@ -65,7 +65,7 @@ foreach ($r in $roster) {
 
 # What they are building. The roster above prevents you editing the same file; this is the only thing
 # that prevents you building the same thing twice in different files.
-$busy = @(Get-CoordOverlap -NoCache | Where-Object { @($_.Files).Count -gt 0 })
+$busy = @(Get-CoordOverlap | Where-Object { @($_.Files).Count -gt 0 })
 if ($busy.Count -gt 0) {
     Write-Host ""
     Write-Host "What they are changing -- check before you start, so you don't build it twice:"

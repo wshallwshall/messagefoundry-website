@@ -22,18 +22,27 @@
     against the recorded session start: a process that started AFTER its session registered is a
     recycled pid, not that session.
 
-    SELF IS RESOLVED BY CWD, NOT BY PID. A hook runs as a child (often grandchild) of the session
-    process, so its own $PID never appears in the registry; walking the parent chain needs a CIM query
-    of the whole process table, which is the most expensive thing a per-edit gate could do. The hook
-    inherits the session's working directory instead, so the session whose worktree contains $PWD is
-    us. The one case that breaks -- two sessions sharing one worktree -- is handled by claiming self
-    only when the match is unambiguous, so a second session in our own worktree surfaces as the loud
-    peer it is rather than being silently swallowed as "self".
+    SELF IS IDENTIFIED BY THE HOOK PAYLOAD'S session_id, AND THAT IS NOT A DETAIL. Getting it wrong
+    is the single most damaging failure this code has: a session that does not recognise itself becomes
+    its own peer, and the gate then blocks it from every file it has already touched -- a total wedge,
+    with a deny message naming the victim as the culprit. That happened, measured 2026-07-30.
+
+    The hook payload's `session_id` is the SAME uuid as the registry's `sessionId` (confirmed from a
+    live PreToolUse payload: a8e31b0a-... in both). It is exact, needs no inference, and stays correct
+    even when two sessions share a worktree. Callers holding a payload MUST pass it.
+
+    Without one we fall back to matching this process's working directory against the worktree list,
+    claimed only when unambiguous. That is a guess, which is why the cache below no longer exists.
+
+    NO CACHING, DELIBERATELY. An earlier version cached the overlap map in TEMP. It was wrong twice
+    over. The key used String.GetHashCode(), which .NET Core randomises PER PROCESS, so every hook run
+    wrote a fresh orphan file (~170 in 25 minutes) and never once read one. And the cached rows carried
+    self-ness computed in a DIFFERENT process, which is precisely what wedged the session above.
+    Recomputing costs ~307ms against a ~175ms process spawn that is unavoidable anyway. Correctness is
+    worth 300ms; a cache that can silently invert the gate's verdict is not.
 
     READ-ONLY. Nothing here writes to the registry, deletes a record, or contacts another session.
 #>
-
-$script:CoordCacheTtlSeconds = 15
 
 # --- Registry -----------------------------------------------------------------------------------
 
@@ -145,7 +154,7 @@ function Get-CoordSurface([string]$Entrypoint) {
 #>
 function Get-CoordRoster {
     [CmdletBinding()]
-    param([string[]]$ConfigRoot, [int]$StartSkewMinutes = 15)
+    param([string[]]$ConfigRoot, [int]$StartSkewMinutes = 15, [string]$SelfSessionId)
 
     $worktrees = Get-CoordWorktrees
     if ($worktrees.Count -eq 0) { return @() }
@@ -153,7 +162,21 @@ function Get-CoordRoster {
     $index = @{}
     foreach ($w in $worktrees) { $index[(ConvertTo-CoordNorm $w.Path)] = $w }
     $primaryNorm = ConvertTo-CoordNorm $worktrees[0].Path
+
+    # WHICH worktree are WE in -- by the SAME longest-match rule used for peers below. Asking instead
+    # "is my cwd inside the peer's worktree" is a different question with the same shape, and it is
+    # wrong here: this repo's worktrees live UNDER the primary (.claude/worktrees/<name>), so from any
+    # worktree that test is true for the PRIMARY. Consequences, both confirmed: a session working in
+    # the shared primary -- the most collision-prone place there is -- got dropped by the gate and
+    # never appeared in the banner; and with two rows flagged, the unambiguity check below failed, so
+    # self was never claimed and the session listed ITSELF as a peer.
+    $hereKey = $null
     $hereNorm = ConvertTo-CoordNorm $PWD.Path
+    foreach ($k in $index.Keys) {
+        if ($hereNorm -eq $k -or $hereNorm.StartsWith("$k/")) {
+            if (-not $hereKey -or $k.Length -gt $hereKey.Length) { $hereKey = $k }
+        }
+    }
 
     $rows = @()
     foreach ($rec in (Get-CoordSessionRecords -ConfigRoot $ConfigRoot)) {
@@ -177,6 +200,13 @@ function Get-CoordRoster {
             State      = $live.State
             Detail     = $live.Detail
             Live       = ($live.State -eq "LIVE" -or $live.State -eq "UNVERIFIED")
+            # A POSITIVE fence, for the one caller that takes an irreversible action on it. Reporting a
+            # maybe-live session in a banner costs a line of text; BLOCKING on one costs the session its
+            # edits, indefinitely -- an unreadable StartTime (a recycled pid now owned by a process in
+            # another security context) is UNVERIFIED forever, and nothing would ever clear it. So the
+            # gate requires LIVE and the banner does not, per this file's own rule that only the
+            # positive answer is safe to act on.
+            Confirmed  = ($live.State -eq "LIVE")
             Surface    = Get-CoordSurface $rec.entrypoint
             SessionId  = $sid
             Short      = if ($sid) { $sid.Substring(0, [Math]::Min(8, $sid.Length)) } else { "?" }
@@ -185,15 +215,24 @@ function Get-CoordRoster {
             Label      = if ($matchKey -eq $primaryNorm) { "the SHARED PRIMARY" } else { Split-Path $match.Path -Leaf }
             IsPrimary  = ($matchKey -eq $primaryNorm)
             Branch     = $match.Branch
-            InMyTree   = ($hereNorm -eq $matchKey -or $hereNorm.StartsWith("$matchKey/"))
+            InMyTree   = ($null -ne $hereKey -and $hereKey -eq $matchKey)
             IsSelf     = $false
         }
     }
 
-    # Self by cwd, claimed only when unambiguous. If two live sessions share our worktree, neither is
-    # marked self -- they are colliding on the same bytes and both deserve to be seen.
-    $mine = @($rows | Where-Object { $_.InMyTree -and $_.Live })
-    if ($mine.Count -eq 1) { $mine[0].IsSelf = $true }
+    # Exact identification first: the payload id IS the registry id, so this is not a heuristic.
+    $claimed = $false
+    if ($SelfSessionId) {
+        foreach ($r in $rows) {
+            if ($r.SessionId -and $r.SessionId -ieq $SelfSessionId) { $r.IsSelf = $true; $claimed = $true }
+        }
+    }
+    # Fallback only when no payload was available (a CLI run, a test). Claimed only when unambiguous:
+    # if two live sessions share our worktree neither is self, and both deserve to be seen.
+    if (-not $claimed) {
+        $mine = @($rows | Where-Object { $_.InMyTree -and $_.Live })
+        if ($mine.Count -eq 1) { $mine[0].IsSelf = $true }
+    }
 
     $order = @{ "LIVE" = 0; "UNVERIFIED" = 1; "STALE" = 2; "DEAD" = 3 }
     return @($rows | Sort-Object @{ E = { $order[$_.State] } }, @{ E = { $_.Label } })
@@ -201,8 +240,9 @@ function Get-CoordRoster {
 
 function Get-CoordPeers {
     [CmdletBinding()]
-    param([string[]]$ConfigRoot)
-    return @(Get-CoordRoster -ConfigRoot $ConfigRoot | Where-Object { $_.Live -and -not $_.IsSelf })
+    param([string[]]$ConfigRoot, [string]$SelfSessionId)
+    return @(Get-CoordRoster -ConfigRoot $ConfigRoot -SelfSessionId $SelfSessionId |
+        Where-Object { $_.Live -and -not $_.IsSelf })
 }
 
 # --- What each peer is changing -----------------------------------------------------------------
@@ -251,13 +291,19 @@ function Get-CoordChangedFiles([string]$WorktreePath) {
             }
         }
     }
-    $dirty = & git -C $WorktreePath status --porcelain 2>$null
+    # -uall: without it git collapses a wholly-untracked directory into a single "?? dir/" entry, and
+    # every file inside a peer's brand-new directory is then invisible to the gate -- which is exactly
+    # the case where a peer is building something from scratch and most needs protecting.
+    $dirty = & git -C $WorktreePath status --porcelain -uall 2>$null
     if ($LASTEXITCODE -eq 0 -and $dirty) {
         foreach ($line in $dirty) {
             if ($line.Length -le 3) { continue }
-            $p = $line.Substring(3).Trim('"')
-            # Renames arrive as "old -> new"; the destination is the file being written.
+            $p = $line.Substring(3)
+            # Renames arrive as "old -> new"; the destination is the file being written. Split BEFORE
+            # unquoting: git quotes each side separately, so trimming first leaves a stray quote on a
+            # quoted destination and the path then matches nothing.
             if ($p -match '\s->\s(.+)$') { $p = $Matches[1] }
+            $p = $p.Trim().Trim('"')
             $files += $p
         }
     }
@@ -268,61 +314,64 @@ function Get-CoordChangedFiles([string]$WorktreePath) {
 }
 
 <#
-    The overlap map: every live peer paired with the files it is changing.
-
-    Cached briefly. This runs on EVERY Edit/Write, and the uncached path is two git invocations per
-    peer worktree -- fine once, a tax you would notice across a long editing run. A short TTL keeps it
-    honest: the collisions worth catching are minutes old, not seconds.
+    The overlap map: every live peer paired with the files it is changing. Computed fresh on every
+    call -- see the header for why there is no cache.
 
     Pass -File to filter to peers touching one path; that is the gate's whole question.
 #>
 function Get-CoordOverlap {
     [CmdletBinding()]
-    param([string]$File, [switch]$NoCache)
+    param([string]$File, [string]$SelfSessionId, [string[]]$ConfigRoot)
 
-    $rows = $null
-    $repoKey = ConvertTo-CoordNorm ((& git rev-parse --path-format=absolute --git-common-dir 2>$null) | Select-Object -First 1)
-    $cachePath = Join-Path ([System.IO.Path]::GetTempPath()) ("mefor-web-coord-" + [Math]::Abs($repoKey.GetHashCode()) + ".json")
-
-    if (-not $NoCache -and (Test-Path -LiteralPath $cachePath)) {
-        try {
-            $age = ((Get-Date) - (Get-Item -LiteralPath $cachePath).LastWriteTime).TotalSeconds
-            if ($age -lt $script:CoordCacheTtlSeconds) {
-                $rows = @(Get-Content -LiteralPath $cachePath -Raw | ConvertFrom-Json)
-            }
-        } catch { $rows = $null }
-    }
-
-    if ($null -eq $rows) {
-        $rows = @()
-        foreach ($p in (Get-CoordPeers)) {
-            $rows += [pscustomobject]@{
-                Short    = $p.Short
-                Surface  = $p.Surface
-                Worktree = $p.Worktree
-                Label    = $p.Label
-                Branch   = $p.Branch
-                State    = $p.State
-                # Carried so the gate can drop peers sharing our own worktree: their changed files are
-                # OUR changed files, and blocking on those would wedge every edit we make.
-                InMyTree = $p.InMyTree
-                Files    = @(Get-CoordChangedFiles $p.Worktree)
-            }
+    $rows = @()
+    foreach ($p in (Get-CoordPeers -SelfSessionId $SelfSessionId -ConfigRoot $ConfigRoot)) {
+        $rows += [pscustomobject]@{
+            Short    = $p.Short
+            Surface  = $p.Surface
+            Worktree = $p.Worktree
+            Label    = $p.Label
+            Branch   = $p.Branch
+            State    = $p.State
+            # Only a positively-fenced session is safe to block on -- see Confirmed in Get-CoordRoster.
+            Confirmed = $p.Confirmed
+            # Carried so a caller can drop peers sharing our own worktree as a second net behind the
+            # session_id match: their changed files are OUR changed files.
+            InMyTree = $p.InMyTree
+            Files    = @(Get-CoordChangedFiles $p.Worktree)
         }
-        try { ($rows | ConvertTo-Json -Depth 5 -AsArray) | Set-Content -LiteralPath $cachePath -Encoding UTF8 } catch { }
     }
 
     if (-not $File) { return @($rows) }
 
-    # Match on the repo-relative tail, so an absolute path from a hook payload compares against the
-    # relative paths git reports. Anchored on a segment boundary: "css/styles.css" must not match
-    # "vendor/css/styles.css".
+    # RESOLVE THE TARGET TO A PATH RELATIVE TO THIS REPO, THEN COMPARE EXACTLY.
+    #
+    # The obvious shortcut -- does the absolute target END WITH a path git reported -- is wrong in a
+    # way that reaches outside this repo entirely. git reports repo-relative paths, so for anything at
+    # the repo root the comparison degenerates to a bare filename, and the gate then denies edits to
+    # any same-named file anywhere on the machine: another project's README.md, a scratch index.html,
+    # a file in no repo at all. A gate that blocks unrelated work gets uninstalled.
     $needle = ConvertTo-CoordNorm $File
+    $rel = $null
+    foreach ($w in (Get-CoordWorktrees)) {
+        $k = ConvertTo-CoordNorm $w.Path
+        if ($needle.StartsWith("$k/")) {
+            $cand = $needle.Substring($k.Length + 1)
+            # Longest worktree root wins, i.e. the shortest relative path: worktrees nest under the
+            # primary here, so the naive first match would resolve against the wrong root.
+            if (-not $rel -or $cand.Length -lt $rel.Length) { $rel = $cand }
+        }
+    }
+    if (-not $rel) {
+        # Absolute and inside none of our worktrees: not our business, say nothing.
+        if ([System.IO.Path]::IsPathRooted($File)) { return @() }
+        # Relative: a CLI or test invocation, already repo-relative.
+        $rel = $needle
+    }
+
     return @($rows | Where-Object {
         $hit = $false
         foreach ($f in @($_.Files)) {
-            $cand = ConvertTo-CoordNorm $f
-            if ($needle -eq $cand -or $needle.EndsWith("/$cand")) { $hit = $true; break }
+            if ($rel -eq (ConvertTo-CoordNorm $f)) { $hit = $true; break }
         }
         $hit
     })
