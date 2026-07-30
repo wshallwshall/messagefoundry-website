@@ -112,12 +112,37 @@ Check "FENCE: a recycled pid reads STALE" (
     (Test-CoordLiveness -Record ([pscustomobject]@{ pid = $PID; startedAt = 1 })).State -eq "STALE")
 Check "FENCE: exact procStart reads LIVE" (
     (Test-CoordLiveness -Record ([pscustomobject]@{ pid = $PID; procStart = "$myStart"; startedAt = $started })).State -eq "LIVE")
-Check "FENCE: mismatched procStart reads STALE" (
-    (Test-CoordLiveness -Record ([pscustomobject]@{ pid = $PID; procStart = "$($myStart - 100000000000)"; startedAt = $started })).State -eq "STALE")
+# A REUSED pid, modelled honestly: the old session recorded its own process start AND registered at
+# that same old moment, and the pid now belongs to a process that started later. Shifting procStart
+# alone would instead model a mis-encoded field, which must degrade rather than read STALE (below).
+$oldTicks = $myStart - 100000000000
+$oldStarted = ([DateTimeOffset]::new([datetime]::new($oldTicks), [TimeZoneInfo]::Local.GetUtcOffset([datetime]::new($oldTicks)))).ToUnixTimeMilliseconds()
+Check "FENCE: reused pid reads STALE" (
+    (Test-CoordLiveness -Record ([pscustomobject]@{ pid = $PID; procStart = "$oldTicks"; startedAt = $oldStarted })).State -eq "STALE")
 Check "FENCE: unparseable procStart falls back, not throws" (
     (Test-CoordLiveness -Record ([pscustomobject]@{ pid = $PID; procStart = "junk"; startedAt = $started })).State -eq "LIVE")
 Check "FENCE: absent procStart falls back to startedAt" (
     (Test-CoordLiveness -Record ([pscustomobject]@{ pid = $PID; startedAt = $started })).State -eq "LIVE")
+# A differently-ENCODED procStart parses fine, so the catch{} never fires. Without a plausibility
+# guard it returns a confident STALE for every session, which clears Live AND Confirmed: gate off,
+# banner blank, roster empty — all identical to genuinely working alone.
+Check "FENCE: UTC-ticks procStart degrades, not STALE" (
+    (Test-CoordLiveness -Record ([pscustomobject]@{ pid = $PID; procStart = "$((Get-Process -Id $PID).StartTime.ToUniversalTime().Ticks)"; startedAt = $started })).State -eq "LIVE")
+Check "FENCE: unix-ms procStart degrades, not STALE" (
+    (Test-CoordLiveness -Record ([pscustomobject]@{ pid = $PID; procStart = "$started"; startedAt = $started })).State -eq "LIVE")
+# One out-of-spec record must not throw out of the enumeration and disable the whole mechanism.
+Check "ROBUST: overflowing pid is DEAD, not a throw" (
+    (Test-CoordLiveness -Record ([pscustomobject]@{ pid = "99999999999999"; startedAt = $started })).State -eq "DEAD")
+Check "ROBUST: microsecond startedAt does not throw" (
+    @("LIVE", "UNVERIFIED", "STALE") -contains (Test-CoordLiveness -Record ([pscustomobject]@{ pid = $PID; startedAt = 1785434153709000 })).State)
+Check "ROBUST: non-numeric pid is DEAD, not a throw" (
+    (Test-CoordLiveness -Record ([pscustomobject]@{ pid = "abc"; startedAt = $started })).State -eq "DEAD")
+# The gate must not write to a peer's tree. --no-optional-locks is what stops `status` rewriting the
+# index of every worktree it inspects, on every single edit.
+Check "READ-ONLY: git calls pass --no-optional-locks" (
+    (Select-String -Path $lib -Pattern 'no-optional-locks' -AllMatches).Matches.Count -ge 3)
+Check "READ-ONLY: git calls disable quotepath" (
+    (Select-String -Path $lib -Pattern 'core\.quotepath=false' -AllMatches).Matches.Count -ge 3)
 
 Write-Host "`ngate"
 $temporary = $null
@@ -139,6 +164,16 @@ try {
     if ($mineFiles.Count -gt 0) {
         Check "SELF: own in-flight file is allowed"  ((GateSays (Join-Path $here $mineFiles[0])) -eq "ALLOW") "file: $($mineFiles[0])"
     }
+
+    # CANONICALISATION: the same file spelled with '..', '.' or a doubled separator must still DENY.
+    # A raw string prefix-strip lets all of these through -- a silent allow on a contested file.
+    # Note the shape: "<dir>/../<dir>/<leaf>" resolves to "<dir-parent>/<dir>/<leaf>", a DIFFERENT
+    # file, so it is not the regression. Route through a sibling directory instead, which resolves
+    # back to the same path the peer is changing.
+    $viaDotDot = Join-Path $here "scripts/../$victim"
+    Check "SCOPING: '..' spelling still denies"      ((GateSays $viaDotDot) -eq "DENY") "path: $viaDotDot"
+    Check "SCOPING: './' spelling still denies"      ((GateSays (Join-Path $here "./$victim")) -eq "DENY")
+    Check "SCOPING: doubled separator still denies"  ((GateSays ((Join-Path $here $victim) -replace '\\', '\\\\')) -eq "DENY")
 } finally {
     if ($temporary) { Remove-Item -LiteralPath $temporary -Force -EA SilentlyContinue }
 }

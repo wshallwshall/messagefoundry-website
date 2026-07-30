@@ -90,7 +90,13 @@ function Test-CoordLiveness {
         [int]$StartSkewMinutes = 15
     )
     if (-not $Record) { return @{ State = "DEAD"; Detail = "no record" } }
-    $procId = [int]$Record.pid
+    # Every cast in here is defensive. These records are written by another program and one of them
+    # being out of spec -- a pid that overflows Int32, a startedAt in microseconds -- must not throw:
+    # the exception would escape Get-CoordRoster, abort the whole enumeration, and be swallowed by the
+    # callers' fail-open catches. One malformed record would then silently disable the gate AND blank
+    # the banner for every session in the repo, which is indistinguishable from working alone.
+    $procId = 0
+    try { $procId = [int]$Record.pid } catch { return @{ State = "DEAD"; Detail = "unreadable pid in record" } }
     if (-not $procId) { return @{ State = "DEAD"; Detail = "no pid in record" } }
 
     $proc = Get-Process -Id $procId -EA SilentlyContinue
@@ -108,18 +114,44 @@ function Test-CoordLiveness {
     # a rounding tick. So identity is decidable outright, and a reused pid cannot slip through a
     # tolerance window. (A comment in a sibling project asserts this field serialises as absent; that
     # was true of some earlier build and is not true here. Verify before trusting either claim.)
+    $registered = $null
+    if ($null -ne $Record.startedAt) {
+        try { $registered = [DateTimeOffset]::FromUnixTimeMilliseconds([int64]$Record.startedAt).LocalDateTime } catch { }
+    }
+
     if ($Record.procStart) {
         try {
             $recorded = [datetime]::new([int64]$Record.procStart)
-            if ([Math]::Abs(($procStart - $recorded).TotalSeconds) -lt 1) { return @{ State = "LIVE"; Detail = "" } }
-            return @{ State = "STALE"; Detail = "pid $procId reused (process start differs from the recorded one)" }
+            # PLAUSIBILITY GUARD, and it is the important half. Only an UNPARSEABLE procStart used to
+            # fall through to the coarse check; a numerically-valid but differently-ENCODED one (UTC
+            # ticks instead of local, unix ms, unix seconds) parsed fine, missed the window, and
+            # returned a confident STALE. Uniformly wrong encoding -- or simply changing the machine's
+            # timezone -- would then mark EVERY session stale, and stale clears both Live and
+            # Confirmed: the gate blocks nobody, the banner prints nothing, and the roster says "no
+            # live sessions". All three are byte-identical to genuinely working alone, which is the
+            # one conclusion that stops a session coordinating. Two harness builds already coexist in
+            # this registry, so the encoding is not a fixed constant to bet the mechanism on.
+            #
+            # The window has to be TIGHTER THAN A TIMEZONE OFFSET, which is the whole point. A first
+            # attempt allowed 24 hours and was useless: every real offset is 1-14 hours, so UTC-vs-local
+            # ticks sailed through as "plausible" and still returned STALE. Caught by the test below,
+            # not by reading it.
+            #
+            # The real constraint is tight and directional: a process starts, THEN registers its
+            # session, milliseconds later. So the decode is credible only if it lands just before
+            # startedAt -- never meaningfully after it, and never long before.
+            $gap = if ($null -ne $registered) { ($registered - $recorded).TotalMinutes } else { 0 }
+            $plausible = ($null -eq $registered) -or ($gap -ge -1 -and $gap -le $StartSkewMinutes)
+            if ($plausible) {
+                if ([Math]::Abs(($procStart - $recorded).TotalSeconds) -lt 1) { return @{ State = "LIVE"; Detail = "" } }
+                return @{ State = "STALE"; Detail = "pid $procId reused (process start differs from the recorded one)" }
+            }
         } catch { }   # unparseable: fall through to the coarse check rather than guess
     }
 
-    # Fallback for records without procStart: compare against session registration, which FOLLOWS
-    # process start, so only a generous window is defensible.
-    if ($null -eq $Record.startedAt) { return @{ State = "UNVERIFIED"; Detail = "pid $procId alive; record has no startedAt" } }
-    $registered = [DateTimeOffset]::FromUnixTimeMilliseconds([int64]$Record.startedAt).LocalDateTime
+    # Fallback: compare against session registration, which FOLLOWS process start, so only a generous
+    # window is defensible.
+    if ($null -eq $registered) { return @{ State = "UNVERIFIED"; Detail = "pid $procId alive; record has no usable startedAt" } }
     $delta = ($procStart - $registered).TotalMinutes
     if ($delta -gt 1) { return @{ State = "STALE"; Detail = "pid $procId reused (process started $([int]$delta)m after the session)" } }
     if ($delta -lt (-1 * $StartSkewMinutes)) { return @{ State = "STALE"; Detail = "pid $procId start precedes the session by $([int](-$delta))m" } }
@@ -295,9 +327,10 @@ function Get-CoordChangedFiles([string]$WorktreePath) {
     $files = @()
     $base = Get-CoordBase $WorktreePath
     if ($base) {
-        $authored = @(& git -C $WorktreePath diff --name-only "$base...HEAD" 2>$null)
+        # Same flags, same reasons: a diff also refreshes the peer's index, and quotes non-ASCII paths.
+        $authored = @(& git -C $WorktreePath --no-optional-locks -c core.quotepath=false diff --name-only "$base...HEAD" 2>$null)
         if ($LASTEXITCODE -eq 0 -and $authored.Count -gt 0) {
-            $differs = @(& git -C $WorktreePath diff --name-only $base HEAD 2>$null)
+            $differs = @(& git -C $WorktreePath --no-optional-locks -c core.quotepath=false diff --name-only $base HEAD 2>$null)
             if ($LASTEXITCODE -eq 0) {
                 $stillDiffers = @{}
                 foreach ($d in $differs) { $stillDiffers[(ConvertTo-CoordNorm $d)] = $true }
@@ -307,10 +340,19 @@ function Get-CoordChangedFiles([string]$WorktreePath) {
             }
         }
     }
-    # -uall: without it git collapses a wholly-untracked directory into a single "?? dir/" entry, and
-    # every file inside a peer's brand-new directory is then invisible to the gate -- which is exactly
-    # the case where a peer is building something from scratch and most needs protecting.
-    $dirty = & git -C $WorktreePath status --porcelain -uall 2>$null
+    # Three flags, each load-bearing:
+    #   --no-optional-locks   a plain `status` REFRESHES AND REWRITES the index of the worktree it
+    #                         inspects. This function runs inside every peer's worktree on every
+    #                         single Edit, so without this the gate is writing to trees it has no
+    #                         business touching -- breaking this file's own read-only contract, and
+    #                         opening a window where the peer's own git command fails on index.lock.
+    #   core.quotepath=false  otherwise git escapes any non-ASCII path as C-style octal
+    #                         ("ren\303\251med.html"), which no comparison against a real filename
+    #                         can ever match -- a silent allow on exactly the file a peer just added.
+    #   -uall                 otherwise a wholly-untracked directory collapses to one "?? dir/" entry
+    #                         and every file inside a peer's brand-new directory is invisible, which
+    #                         is precisely when they are building something from scratch.
+    $dirty = & git -C $WorktreePath --no-optional-locks -c core.quotepath=false status --porcelain -uall 2>$null
     if ($LASTEXITCODE -eq 0 -and $dirty) {
         foreach ($line in $dirty) {
             if ($line.Length -le 3) { continue }
@@ -366,7 +408,15 @@ function Get-CoordOverlap {
     # the repo root the comparison degenerates to a bare filename, and the gate then denies edits to
     # any same-named file anywhere on the machine: another project's README.md, a scratch index.html,
     # a file in no repo at all. A gate that blocks unrelated work gets uninstalled.
-    $needle = ConvertTo-CoordNorm $File
+    # CANONICALISE FIRST. The prefix strip below is a string operation, so a target that is merely
+    # SPELLED differently slips past it: "<worktree>/scripts/../assets/img/logo.svg" starts with the
+    # worktree root, survives the strip as "scripts/../assets/img/logo.svg", and then cannot equal the
+    # "assets/img/logo.svg" git reports. That is a silent ALLOW on a file a peer is actively changing
+    # -- the precise failure this gate exists to prevent, reachable by any '..', '.', './' or doubled
+    # separator in a path the model happened to construct.
+    $full = $File
+    try { $full = [System.IO.Path]::GetFullPath($File) } catch { }
+    $needle = ConvertTo-CoordNorm $full
     $rel = $null
     foreach ($w in (Get-CoordWorktrees)) {
         $k = ConvertTo-CoordNorm $w.Path
@@ -380,8 +430,10 @@ function Get-CoordOverlap {
     if (-not $rel) {
         # Absolute and inside none of our worktrees: not our business, say nothing.
         if ([System.IO.Path]::IsPathRooted($File)) { return @() }
-        # Relative: a CLI or test invocation, already repo-relative.
-        $rel = $needle
+        # Relative, and canonicalising against the cwd landed outside every worktree: a CLI or test
+        # invocation from elsewhere, where the caller already means a repo-relative path. Use the
+        # ORIGINAL, not $needle -- $needle is now absolute.
+        $rel = ConvertTo-CoordNorm $File
     }
 
     return @($rows | Where-Object {
