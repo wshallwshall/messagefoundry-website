@@ -6,11 +6,11 @@
 > Clustering is the **active-passive** (leader/standby failover) HA model — the supported HA mode.
 > The horizontal **active-active** scale-out path (the graph running concurrently on every node) was
 > **dropped (2026-06-18) and its code removed**; it is not a planned milestone.
-> Design records: the cluster ADRs [0005](https://github.com/MEFORORG/MessageFoundry/blob/main/docs/adr/0005-transform-accessible-state.md) /
-> [0006](https://github.com/MEFORORG/MessageFoundry/blob/main/docs/adr/0006-external-data-lookups.md) (the converged data) and
-> [ADR 0008](https://github.com/MEFORORG/MessageFoundry/blob/main/docs/adr/0008-cluster-observability-api.md) (the observability API below). Code:
-> [`pipeline/cluster.py`](https://github.com/MEFORORG/MessageFoundry/blob/main/messagefoundry/pipeline/cluster.py) (PostgreSQL) +
-> [`pipeline/cluster_sqlserver.py`](https://github.com/MEFORORG/MessageFoundry/blob/main/messagefoundry/pipeline/cluster_sqlserver.py) (SQL Server).
+> Design records: the cluster ADRs [0005](adr/0005-transform-accessible-state.md) /
+> [0006](adr/0006-external-data-lookups.md) (the converged data) and
+> [ADR 0008](adr/0008-cluster-observability-api.md) (the observability API below). Code:
+> [`pipeline/cluster.py`](../messagefoundry/pipeline/cluster.py) (PostgreSQL) +
+> [`pipeline/cluster_sqlserver.py`](../messagefoundry/pipeline/cluster_sqlserver.py) (SQL Server).
 
 MessageFoundry provides HA by running **N identical engine processes against ONE shared server database**
 (PostgreSQL or SQL Server) in an **active-passive** (one leader, the rest warm standbys) model. There is
@@ -42,7 +42,7 @@ backend   = "postgres"   # or "sqlserver"
 server    = "db.internal"
 database  = "messagefoundry"
 username  = "mefor"
-pool_size = 5          # >= 2
+pool_size = 40         # default (ADR 0062); >= 2 under [cluster]
 
 [cluster]
 enabled = true
@@ -59,7 +59,24 @@ reclaim_interval_seconds = 30.0
 #   heartbeat_seconds < leader_fence_timeout_seconds < leader_lease_ttl_seconds
 leader_lease_ttl_seconds      = 30.0  # a standby acquires leadership only once the lease has expired
 leader_fence_timeout_seconds  = 20.0  # a leader that can't renew within this self-fences (split-brain guard)
+# --- Leader preference (ADR 0096) — per-node; default (0.0, true) = unweighted first-lease-wins ------
+# acquire_delay_seconds: seconds this node waits PAST the lease-expiry time before it may take over an
+#   EXPIRED lease (handicap). A preferred site keeps 0.0; a warm remote-DR node sets a positive value so
+#   a preferred node wins the routine take-over race. NEVER delays a renewal by the current leader, and
+#   only ever makes a node claim LATER — so it can't open a two-leader window. Governs take-over of an
+#   EXPIRED lease only; the very first election on an empty table is a plain race.
+acquire_delay_seconds = 0.0
+# promotable: false = this node may NEVER become leader (never inserts/takes-over/renews the lease); a
+#   node that somehow already leads steps down cleanly on its next tick. Use it for a warm, passive DR
+#   engine. At least ONE promotable node MUST exist, or no node ever acquires the lease and the graph
+#   never drains (an all-non-promotable cluster is a misconfiguration).
+promotable = true
 ```
+
+> **Warm DR:** run a remote DR-site engine as a **non-promotable cluster member**
+> (`promotable = false`) — NOT as a `[dr].activate` box. Combining `[dr].activate` with `[cluster]` is
+> refused at config load (the DR run-profile gates which connections start, not lease acquisition, so a
+> lease-contending DR box could win leadership and drive the primary store cross-WAN).
 
 Start the same `serve` command on each host/process — e.g.:
 
@@ -101,6 +118,23 @@ cluster coordinates the parts that must not double-run or interleave:
   `leader_fence_timeout_seconds` (< the TTL) **self-fences** — it stops acting as leader before the lease
   can expire and a standby acquire it, so a network-partitioned old leader never double-processes
   (the split-brain guard). On a clean stop the leader expires its lease so a standby takes over at once.
+- **Store-checked leader epoch (fencing token).** The self-fence above is *temporal* — it relies on a
+  paused/partitioned old leader noticing it has fallen behind and demoting itself before the lease TTL
+  elapses. As a **second, durable** backstop the `leader_lease` row also carries a monotonic
+  `leader_epoch` that is **bumped only on a fresh acquire** (a standby taking over) — never on a renew —
+  so a node that took over holds a strictly *greater* epoch than the leader it superseded. On promotion
+  the engine reads the held epoch from the coordinator and pushes it into the store
+  (`Store.set_leader_epoch`); every FIFO claim then validates, **inside the single claim transaction**,
+  that the held epoch is still current (`held >= leader_lease.leader_epoch`). A superseded ex-leader that
+  resumes after an unusually long pause — past even the temporal fence — therefore claims **0 rows**: its
+  held epoch is now older than the live leader's, so the claim's `UPDATE` matches nothing and it delivers
+  nothing. The current leader's held epoch equals the lease epoch, so it claims normally; per-lane FIFO is
+  unaffected (the guard only ever *rejects* a stale claim, never reorders a valid one). This is a
+  **server-DB-only** safeguard (Postgres / SQL Server); SQLite is a single active node, so its
+  `set_leader_epoch` is a no-op and the claim is byte-identical. The migration that adds the column is
+  additive (`ADD COLUMN IF NOT EXISTS` / a guarded `ALTER`, run under the DDL lock), so an in-place
+  upgrade of a live cluster is safe; the column back-fills to `0` and the first fresh acquire after the
+  upgrade bumps it to `1`.
 - **Leader-gated WRITE singletons.** Retention purges and the lease-reclaim sweep run **only on the
   leader**, so they never double-execute.
 - **Leader-gated poll-source intake.** Only the leader polls a **shared** external resource (a watched
@@ -158,9 +192,11 @@ Two-node cluster:
 {
   "nodes": [
     { "node_id": "node-a:4812:1f9c2a7b", "host": "node-a", "pid": 4812,
-      "status": "active", "started_at": 1750000000.0, "last_seen": 1750000123.4, "is_leader": true },
+      "status": "active", "started_at": 1750000000.0, "last_seen": 1750000123.4, "is_leader": true,
+      "acquire_delay_seconds": 0.0, "promotable": true },
     { "node_id": "node-b:5210:7c3e9d10", "host": "node-b", "pid": 5210,
-      "status": "active", "started_at": 1750000005.0, "last_seen": 1750000124.1, "is_leader": false }
+      "status": "active", "started_at": 1750000005.0, "last_seen": 1750000124.1, "is_leader": false,
+      "acquire_delay_seconds": 15.0, "promotable": false }
   ],
   "leader_node_id": "node-a:4812:1f9c2a7b",
   "lease_owner": "node-a:4812:1f9c2a7b",
@@ -172,14 +208,18 @@ Two-node cluster:
 `leader_lease` row: who holds the self-fencing lease and the DB-clock epoch at which it expires (the
 instant a standby could acquire if the leader stops renewing). `lease_owner` normally equals
 `leader_node_id` (the heartbeat-flag-derived leader); a brief divergence during failover is expected —
-the lease is the source of truth for who may process. Single node (synthetic self-entry — no heartbeat
+the lease is the source of truth for who may process. Each node also reports its **leader-preference
+config** (ADR 0096): `acquire_delay_seconds` (its take-over-of-expired handicap; `0.0` = none) and
+`promotable` (`false` = a non-promotable standby that can never become leader) — so an operator can SEE
+which nodes are handicapped or passive across the cluster. Single node (synthetic self-entry — no heartbeat
 history, so `started_at`/`last_seen` are `null`; permanently leader, so `lease_expires_at` is `null`):
 
 ```json
 {
   "nodes": [
     { "node_id": "host:1234:ab12cd34", "host": "host", "pid": 1234,
-      "status": "active", "started_at": null, "last_seen": null, "is_leader": true }
+      "status": "active", "started_at": null, "last_seen": null, "is_leader": true,
+      "acquire_delay_seconds": 0.0, "promotable": true }
   ],
   "leader_node_id": "host:1234:ab12cd34",
   "lease_owner": "host:1234:ab12cd34",
@@ -230,6 +270,13 @@ does not replicate the store itself.
 Like Rhapsody/Corepoint, clients reach "the engine" through a **floating VIP or load balancer**, not a
 fixed node — so a failover is transparent to senders (modulo a reconnect):
 
+> **Planned alternative — engine-managed VIP (Windows-only).** [ADR 0056](adr/0056-engine-managed-vip-failover.md)
+> proposes an **opt-in** mode where the **engine itself** owns the VIP (no external LB/VRRP/WSFC), moving it
+> in lockstep with the leadership lease. It is **Windows-only** and **not yet built**. Until it ships — and
+> on **Linux/containerized** deployments, which it does **not** cover — use the external floating VIP / LB
+> described here, which stays the **cross-platform** default and the recommended posture for the strictest
+> split-brain guarantee.
+
 - **MLLP / TCP inbound (per listener).** Use a VIP per inbound port whose health check is a **TCP
   connect to that port**. Because only the **primary** binds the port (the active-passive graph gating),
   the check passes only on the primary, so the VIP routes inbound traffic to it automatically; on
@@ -277,6 +324,6 @@ affect who may hold leadership; the **row** leases, however, use node wall-clock
 
 ## Related
 
-- [ADR 0008](https://github.com/MEFORORG/MessageFoundry/blob/main/docs/adr/0008-cluster-observability-api.md) — the observability API design.
-- [docs/adr/](https://github.com/MEFORORG/MessageFoundry/blob/main/docs/adr/) — the cluster ADRs and the staged-pipeline / store architecture they build on.
-- [docs/CONFIGURATION.md](https://github.com/MEFORORG/MessageFoundry/blob/main/docs/CONFIGURATION.md) — the full `[store]` / `[cluster]` settings catalog.
+- [ADR 0008](adr/0008-cluster-observability-api.md) — the observability API design.
+- [docs/adr/](adr/) — the cluster ADRs and the staged-pipeline / store architecture they build on.
+- [docs/CONFIGURATION.md](CONFIGURATION.md) — the full `[store]` / `[cluster]` settings catalog.
