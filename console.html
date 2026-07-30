@@ -79,6 +79,7 @@
           <button type="button" class="nav-group__btn" aria-expanded="false" aria-haspopup="true" aria-controls="nav-company">About Us</button>
           <div class="nav-group__menu" id="nav-company">
             <a href="/about.html">About</a>
+            <a href="/status.html">Project status</a>
             <a href="/licensing.html">Licensing</a>
             <a href="/contact.html">Contact</a>
             <a href="/sponsor.html">Sponsor</a>
@@ -103,7 +104,7 @@
       </div>
       <figure style="margin:44px auto 0;max-width:1080px">
         <img src="/assets/img/console.png" width="2220" height="1080" alt="The MessageFoundry monitoring console showing the live Connections dashboard: a left sidebar (Connections, Alerts, Dead Letters, Log Search, Engine Status, Users) and a table of interfaces with a status badge each — RUNNING, DEGRADED, FAILED, STOPPED — plus direction, method, per-connection logs, idle time, and counts for errored, read and written messages, queue depth, and backlog. The header shows the signed-in admin and a 2-second auto-refresh." style="width:100%;height:auto;display:block;border:1px solid var(--border-dk);border-radius:12px;box-shadow:var(--shadow-lg)">
-        <figcaption style="margin-top:14px;color:var(--muted-dk);font-size:.92rem;text-align:center;max-width:760px;margin-inline:auto">Every counter here is live from the engine — messages read, written, and errored per connection, plus queue depth and backlog — refreshed every couple of seconds, so what the dashboard shows is what the engine is actually doing. Nothing is counted that wasn't durably stored first: messages are persisted before they're acknowledged, then delivered at-least-once, so nothing is silently dropped. <a href="/throughput/">How throughput really works →</a></figcaption>
+        <figcaption style="margin-top:14px;color:var(--muted-dk);font-size:.92rem;text-align:center;max-width:760px;margin-inline:auto">Every counter here is live from the engine — messages read, written, and errored per connection, plus queue depth and backlog — refreshed every couple of seconds, so what the dashboard shows is what the engine is actually doing. Nothing is counted that wasn't durably stored first: messages are persisted before they're acknowledged, then delivered at-least-once, so a failed delivery surfaces as a dead letter rather than a silent drop. <a href="/throughput/">How throughput really works →</a></figcaption>
       </figure>
     </div>
   </section>
@@ -166,7 +167,7 @@
       </div>
       <div class="card" style="height:auto;align-self:start">
         <h3>A pure API client</h3>
-        <p>The console drives and observes the engine <em>only</em> through the one localhost API — it never imports the engine or touches the database directly. So authentication, RBAC, and the audit log sit at a single choke point nothing slips past.</p>
+        <p>The console drives and observes the engine <em>only</em> through the one localhost API — it never imports the engine or touches the database directly. So authentication, RBAC, and the audit log sit at a single choke point rather than spread across every tool.</p>
         <p style="margin-top:12px;color:var(--muted);font-size:.95rem">Monitoring is read-only; actions like start/stop and replay are permission-gated. The same API powers the CLI and the VS&nbsp;Code editor — see how it <a href="/architecture.html" style="color:var(--accent-ink)">fits together</a>.</p>
       </div>
     </div>
@@ -229,6 +230,7 @@
         </div>
         <div class="footer-col">
           <h4>Project</h4>
+          <a href="/status.html">Project status</a>
           <a href="https://github.com/MEFORORG/MessageFoundry" target="_blank" rel="noopener">GitHub</a>
           <a href="https://github.com/MEFORORG/MessageFoundry/issues" target="_blank" rel="noopener">Issues</a>
           <a href="/contact.html">Contact</a>

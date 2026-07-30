@@ -65,7 +65,7 @@
       { "@type": "Question", "name": "Is MessageFoundry a Mirth Connect alternative?", "acceptedAnswer": { "@type": "Answer", "text": "Yes. MessageFoundry is an open-source, self-hosted HL7 interface engine — a modern alternative for teams moving off Mirth Connect. It is open source by license (AGPL), you write interfaces in Python instead of Rhino JavaScript, and your integration logic lives as plain code in your git repository rather than as XML inside a database. Mirth still has the larger community and a deeper pre-built-adapter ecosystem today." } },
       { "@type": "Question", "name": "Is Mirth Connect still open source?", "acceptedAnswer": { "@type": "Answer", "text": "Mirth Connect's open-source line ended at version 4.5.2; version 4.6 and later are closed and paid, and the free line no longer receives security patches. Teams that adopted Mirth specifically because it was open source are the ones most often evaluating an open-source alternative like MessageFoundry, which is licensed under the AGPL." } },
       { "@type": "Question", "name": "Do I have to rewrite my Mirth JavaScript transformers by hand?", "acceptedAnswer": { "@type": "Answer", "text": "Not from scratch. MessageFoundry's AI assistant drafts Python equivalents of your existing channel logic, which your team reviews and refines. Because the result is ordinary, readable Python in your git repository, it is easier to diff, test, and maintain than transformer code embedded in a channel." } },
-      { "@type": "Question", "name": "How long does migrating from Mirth Connect take?", "acceptedAnswer": { "@type": "Answer", "text": "It depends on how many channels you run and how complex they are, but because migration is AI-assisted and channels become plain Python, porting is typically far less work than re-platforming onto another proprietary engine. You migrate in waves and keep Mirth available to roll back to until each interface is proven in production." } }
+      { "@type": "Question", "name": "How long does migrating from Mirth Connect take?", "acceptedAnswer": { "@type": "Answer", "text": "It depends on how many channels you run and how complex they are, but because migration is AI-assisted and channels become plain Python, porting your channels can be far less work than re-platforming onto another proprietary engine. You migrate in waves and keep Mirth available to roll back to until each interface is proven in production." } }
     ]
   }
   </script>
@@ -110,6 +110,7 @@
           <button type="button" class="nav-group__btn" aria-expanded="false" aria-haspopup="true" aria-controls="nav-company">About Us</button>
           <div class="nav-group__menu" id="nav-company">
             <a href="/about.html">About</a>
+            <a href="/status.html">Project status</a>
             <a href="/licensing.html">Licensing</a>
             <a href="/contact.html">Contact</a>
             <a href="/sponsor.html">Sponsor</a>
@@ -154,7 +155,7 @@
         </div>
         <div class="card">
           <h3>AI-assisted migration</h3>
-          <p>The <a href="/ai.html">AI assistant</a> drafts Python equivalents of your existing channel logic, so porting is measured in weeks, not the multi-year slog of re-platforming onto another engine.</p>
+          <p>The <a href="/ai.html">AI assistant</a> drafts Python equivalents of your existing channel logic, so a port starts from working drafts instead of a blank page.</p>
         </div>
       </div>
     </div>
@@ -210,7 +211,7 @@
         <div class="faq-item"><h3>Is MessageFoundry a Mirth Connect alternative?</h3><p>Yes. MessageFoundry is an open-source, self-hosted HL7 interface engine — a modern alternative for teams moving off Mirth Connect. It is open source by license (AGPL), you write interfaces in Python instead of Rhino JavaScript, and your integration logic lives as plain code in your git repository rather than as XML inside a database. Mirth still has the larger community and a deeper pre-built-adapter ecosystem today.</p></div>
         <div class="faq-item"><h3>Is Mirth Connect still open source?</h3><p>Mirth Connect's open-source line ended at version 4.5.2; version 4.6 and later are closed and paid, and the free line no longer receives security patches. Teams that adopted Mirth specifically because it was open source are the ones most often evaluating an open-source alternative like MessageFoundry, which is licensed under the AGPL.</p></div>
         <div class="faq-item"><h3>Do I have to rewrite my Mirth JavaScript transformers by hand?</h3><p>Not from scratch. MessageFoundry's AI assistant drafts Python equivalents of your existing channel logic, which your team reviews and refines. Because the result is ordinary, readable Python in your git repository, it is easier to diff, test, and maintain than transformer code embedded in a channel.</p></div>
-        <div class="faq-item"><h3>How long does migrating from Mirth Connect take?</h3><p>It depends on how many channels you run and how complex they are, but because migration is AI-assisted and channels become plain Python, porting is typically far less work than re-platforming onto another proprietary engine. You migrate in waves and keep Mirth available to roll back to until each interface is proven in production.</p></div>
+        <div class="faq-item"><h3>How long does migrating from Mirth Connect take?</h3><p>It depends on how many channels you run and how complex they are, but because migration is AI-assisted and channels become plain Python, porting your channels can be far less work than re-platforming onto another proprietary engine. You migrate in waves and keep Mirth available to roll back to until each interface is proven in production.</p></div>
       </div>
     </div>
   </section>
@@ -270,6 +271,7 @@
         </div>
         <div class="footer-col">
           <h4>Project</h4>
+          <a href="/status.html">Project status</a>
           <a href="https://github.com/MEFORORG/MessageFoundry" target="_blank" rel="noopener">GitHub</a>
           <a href="https://github.com/MEFORORG/MessageFoundry/issues" target="_blank" rel="noopener">Issues</a>
           <a href="/contact.html">Contact</a>

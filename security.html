@@ -60,6 +60,7 @@
           <button type="button" class="nav-group__btn" aria-expanded="false" aria-haspopup="true" aria-controls="nav-company">About Us</button>
           <div class="nav-group__menu" id="nav-company">
             <a href="/about.html">About</a>
+            <a href="/status.html">Project status</a>
             <a href="/licensing.html">Licensing</a>
             <a href="/contact.html">Contact</a>
             <a href="/sponsor.html">Sponsor</a>
@@ -96,7 +97,7 @@
       <div class="grid grid-2">
         <div class="card">
           <h3>NIST SSDF — built securely</h3>
-          <p>The secure software development lifecycle follows <b>NIST SP 800-218 (SSDF)</b> across all four practice groups — prepare, protect, produce, and respond — with threat modeling per interface, peer review, and secure-by-default design.</p>
+          <p>The secure software development lifecycle follows <b>NIST SP 800-218 (SSDF)</b> across all four practice groups — prepare, protect, produce, and respond — with threat modeling per interface, automated review, and secure-by-default design.</p>
         </div>
         <div class="card">
           <h3>NIST 800-115 — tested in CI</h3>
@@ -108,7 +109,7 @@
         </div>
         <div class="card">
           <h3>OWASP ASVS 5.0 Level 3 — self-assessed</h3>
-          <p>Scoped chapter-by-chapter against <b>OWASP ASVS 5.0 Level 3</b> — the highest assurance level, for applications that handle the most sensitive data — with every exclusion documented and justified. Across all <b>345</b> Level 3 requirements: <b>212 met, 0 failed, 0 partial, 133 not applicable</b>.</p>
+          <p>Scoped chapter-by-chapter against <b>OWASP ASVS 5.0 Level 3</b> — the highest assurance level, for applications that handle the most sensitive data — with every exclusion documented and justified. All <b>345</b> Level 3 requirements are assessed. Where a requirement is still only partially met we record it as a partial and ship a control to close it, rather than writing a justification that reclassifies it as passed or not-applicable.</p>
         </div>
       </div>
       <div class="callout" style="margin-top:26px">
@@ -253,7 +254,7 @@
         <li><b>Token-less publishing</b> — releases are published to PyPI through OIDC-based <b>Trusted Publishing</b>, with no long-lived token to steal.</li>
         <li><b>Reproducible installs</b> — pin a fully hash-locked dependency set and install with <code>--require-hashes</code>.</li>
         <li><b>CI security gates</b> — SAST, software-composition analysis, and secret scanning run on every change; builds fail on new high / critical findings.</li>
-        <li><b>Reviewed, protected code</b> — branch protection, required peer review, signed commits, and no direct commits to main; a published <a href="https://github.com/MEFORORG/MessageFoundry/security/policy" target="_blank" rel="noopener"><code>SECURITY.md</code></a> with a <a href="#report">private reporting channel</a> feeds tracked, coordinated disclosure.</li>
+        <li><b>Reviewed, protected code</b> — branch protection, blocking automated review, signed commits, and no direct commits to main; a published <a href="https://github.com/MEFORORG/MessageFoundry/security/policy" target="_blank" rel="noopener"><code>SECURITY.md</code></a> with a <a href="#report">private reporting channel</a> feeds tracked, coordinated disclosure.</li>
         <li><b>No real PHI in development</b> — synthetic or de-identified data only, on disk-encrypted developer machines.</li>
       </ul>
     </div>
@@ -265,7 +266,7 @@
       <div class="center" style="margin-bottom:34px">
         <span class="eyebrow">Coordinated disclosure</span>
         <h2>Found a vulnerability? Report it privately.</h2>
-        <p class="lead center">A security flaw shouldn't have to be posted in public to reach us. MessageFoundry runs a private reporting channel with published response targets — report it confidentially, and we'll fix it before any detail is public.</p>
+        <p class="lead center">A security flaw shouldn't have to be posted in public to reach us. MessageFoundry runs a private reporting channel with published response targets — report it confidentially, and we aim to have a fix out before any detail is public.</p>
       </div>
       <div class="grid grid-2" style="align-items:start">
         <div class="card">
@@ -295,8 +296,8 @@
         <a class="btn btn-primary" href="https://github.com/MEFORORG/MessageFoundry/security/advisories/new" target="_blank" rel="noopener">Report a vulnerability ↗</a>
         <a class="btn btn-ghost" href="https://github.com/MEFORORG/MessageFoundry/security/policy" target="_blank" rel="noopener">Read the policy ↗</a>
       </div>
-      <div class="callout" style="margin-top:28px;background:rgba(245,158,11,.07);border-color:rgba(245,158,11,.28);color:var(--muted-dk)">
-        <p><strong style="color:var(--accent)">Not a vulnerability?</strong> Ordinary bugs, questions, and feature requests are the opposite — they belong in the open, in <a href="https://github.com/MEFORORG/MessageFoundry/issues" target="_blank" rel="noopener" style="color:var(--accent)">GitHub Issues</a> or via the <a href="/contact.html" style="color:var(--accent)">contact form</a>. Keeping the private channel for genuine security flaws is what lets us hit the windows above.</p>
+      <div class="callout" style="margin-top:28px;background:rgba(245,158,11,.07);border-color:rgba(245,158,11,.28)">
+        <p><strong>Not a vulnerability?</strong> Ordinary bugs, questions, and feature requests are the opposite — they belong in the open, in <a href="https://github.com/MEFORORG/MessageFoundry/issues" target="_blank" rel="noopener">GitHub Issues</a> or via the <a href="/contact.html">contact form</a>. Keeping the private channel for genuine security flaws is what lets us hit the windows above.</p>
       </div>
     </div>
   </section>
@@ -316,7 +317,7 @@
       </div>
       <div>
         <ul class="feature-list">
-          <li><b>Self-attested</b> SSDF-aligned, security-tested per 800-115, self-assessed against ASVS 5.0 Level 3 (212 met · 0 failed · 0 partial · 133 N/A across 345 requirements), and controls mapped to the HIPAA Security Rule (800-66) — published with each release.</li>
+          <li><b>Self-attested</b> SSDF-aligned, security-tested per 800-115, self-assessed against ASVS 5.0 Level 3 across all 345 requirements, and controls mapped to the HIPAA Security Rule (800-66) — published with each release.</li>
           <li><b>Independent external code review and penetration test</b> — planned after Early Access; Early Access has not yet been externally audited.</li>
           <li><b>A claims register</b> records each published claim, its wording, and the evidence behind it.</li>
           <li><b>Not a NIST certificate</b> — displayable certifications (SOC 2, ISO 27001, HITRUST) are a separate, organization-level track.</li>
@@ -364,7 +365,7 @@
         <div class="faq-item"><h3>Is MessageFoundry PHI-safe — where does patient data live?</h3><p>Yes. MessageFoundry is self-hosted, so PHI never leaves your infrastructure. There is no vendor cloud, no third-party processor, and no telemetry of message contents — you run the engine on your own servers, on-premises or in your own private cloud.</p></div>
         <div class="faq-item"><h3>Is MessageFoundry self-hosted and on-premises?</h3><p>Yes. MessageFoundry runs entirely on your own servers, on-premises or in your private cloud. It installs from PyPI, starts zero-config on SQLite, and scales to PostgreSQL or SQL Server. Nothing is sent to a vendor service.</p></div>
         <div class="faq-item"><h3>How does MessageFoundry encrypt data?</h3><p>TLS is enabled by default — network connections use TLS 1.2+ (TLS 1.3 preferred), including MLLP-over-TLS. Some older ancillary systems can't speak TLS; MessageFoundry also supports plaintext transport for those, which can still support a HIPAA-compliant deployment inside your organization's secure network perimeter. At rest, message bodies are encrypted with AES-256-GCM.</p></div>
-        <div class="faq-item"><h3>Has MessageFoundry been independently security audited?</h3><p>MessageFoundry publishes a self-assessment against OWASP ASVS 5.0 Level 3 (212 met, 0 failed, 0 partial, 133 N/A of 345) plus its Secure Development Standards. It has not yet had an independent external code review or penetration test — both are planned after Early Access.</p></div>
+        <div class="faq-item"><h3>Has MessageFoundry been independently security audited?</h3><p>MessageFoundry publishes a self-assessment against OWASP ASVS 5.0 Level 3, covering all 345 requirements, plus its Secure Development Standards. Requirements that are still only partially met are recorded as partials and closed by shipping controls, not reclassified away. It has not yet had an independent external code review or penetration test — both are planned after Early Access.</p></div>
         <div class="faq-item"><h3>How do I report a security vulnerability?</h3><p>Report it privately — please don't open a public issue. The preferred channel is a <a href="https://github.com/MEFORORG/MessageFoundry/security/advisories/new" target="_blank" rel="noopener">GitHub private security advisory</a> on the MessageFoundry repository, which stays visible only to maintainers until a fix is released. Include the affected component, the impact, and reproduction steps, using synthetic HL7 rather than real PHI. We aim to acknowledge within a few business days, and we target 7 days to remediate a critical issue.</p></div>
       </div>
     </div>
@@ -412,7 +413,7 @@
       "name": "Has MessageFoundry been independently security audited?",
       "acceptedAnswer": {
         "@type": "Answer",
-        "text": "MessageFoundry publishes a self-assessment against OWASP ASVS 5.0 Level 3 (212 met, 0 failed, 0 partial, 133 N/A of 345) plus its Secure Development Standards. It has not yet had an independent external code review or penetration test — both are planned after Early Access."
+        "text": "MessageFoundry publishes a self-assessment against OWASP ASVS 5.0 Level 3, covering all 345 requirements, plus its Secure Development Standards. Requirements that are still only partially met are recorded as partials and closed by shipping controls, not reclassified away. It has not yet had an independent external code review or penetration test — both are planned after Early Access."
       }
     },
     {
@@ -484,6 +485,7 @@
         </div>
         <div class="footer-col">
           <h4>Project</h4>
+          <a href="/status.html">Project status</a>
           <a href="https://github.com/MEFORORG/MessageFoundry" target="_blank" rel="noopener">GitHub</a>
           <a href="https://github.com/MEFORORG/MessageFoundry/issues" target="_blank" rel="noopener">Issues</a>
           <a href="/contact.html">Contact</a>

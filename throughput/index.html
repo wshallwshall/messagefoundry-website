@@ -26,7 +26,7 @@
     "@type": "FAQPage",
     "mainEntity": [
       { "@type": "Question", "name": "How many messages per second can MessageFoundry handle?", "acceptedAnswer": { "@type": "Answer", "text": "It depends on your environment far more than on the engine. In our reference lab a single strictly-ordered HL7 v2 / MLLP interface delivers about 60 messages/second end-to-end with an instant-acknowledging partner, and accepts about 450 messages/second at the point of receipt. Real numbers are usually lower and are set by how fast your partner systems acknowledge each message — the engine itself adds only about 16 milliseconds per message. That serial cap is specific to MLLP; request/response transports like REST and FHIR run concurrently, and fanning out across interfaces scales further." } },
-      { "@type": "Question", "name": "Why is a messages-per-day number misleading?", "acceptedAnswer": { "@type": "Answer", "text": "Healthcare traffic is bursty, not a flat around-the-clock stream. In the production ADT feeds we've profiled, the busiest hour runs about 2.7 times the all-day average, so you have to size for the peak hour, not the daily average. Two feeds with the same daily total but different burst profiles need very different capacity. Always ask for the peak-hour rate, the message size, and the ordering guarantee behind any 'X million per day' figure." } },
+      { "@type": "Question", "name": "Why is a messages-per-day number misleading?", "acceptedAnswer": { "@type": "Answer", "text": "Healthcare traffic is bursty, not a flat around-the-clock stream. In the anonymized, representative ADT traffic we've profiled, the busiest hour runs about 2.7 times the all-day average, so you have to size for the peak hour, not the daily average. Two feeds with the same daily total but different burst profiles need very different capacity. Always ask for the peak-hour rate, the message size, and the ordering guarantee behind any 'X million per day' figure." } },
       { "@type": "Question", "name": "What actually limits MessageFoundry's throughput?", "acceptedAnswer": { "@type": "Answer", "text": "For HL7 v2 over MLLP, where delivery is strictly ordered, the dominant factor is usually your partner system's round-trip time: the engine sends a message, waits for the partner to accept and acknowledge it, and only then sends the next one. A partner that takes 50 ms to acknowledge caps a single ordered stream near 15 messages/second, no matter how fast the engine or database is. The message store, message size, validation, and transformation complexity also contribute, but the partner round-trip is usually the biggest term. Request/response transports like REST, SOAP, and FHIR run several requests concurrently, so this serial cap doesn't apply to them." } },
       { "@type": "Question", "name": "How do I size a MessageFoundry deployment?", "acceptedAnswer": { "@type": "Answer", "text": "Start from the per-interface ordered ceiling (about 60 messages/second with an instant partner), reduce it by your partner's real acknowledgement time, divide by your traffic's burst factor (about 2.7 for ADT-shaped traffic), then fan out to enough interfaces to cover your aggregate peak — splitting feeds at the source by hospital, facility, or service line. One node's message store easily absorbs the combined load of dozens of interfaces." } },
       { "@type": "Question", "name": "How does MessageFoundry scale to very high volumes?", "acceptedAnswer": { "@type": "Answer", "text": "By fanning out, not by forcing everything through one pipe. A strictly-ordered interface is a single serial lane with a bounded rate — that's the physics of guaranteed ordering, not a product limitation. You split feeds at the source across many interfaces and the aggregate is the sum of them; a single node's shared message store sustains tens of thousands of commits per second, far more than any one ordered interface can generate." } },
@@ -85,6 +85,7 @@
           <button type="button" class="nav-group__btn" aria-expanded="false" aria-haspopup="true" aria-controls="nav-company">About Us</button>
           <div class="nav-group__menu" id="nav-company">
             <a href="/about.html">About</a>
+            <a href="/status.html">Project status</a>
             <a href="/licensing.html">Licensing</a>
             <a href="/contact.html">Contact</a>
             <a href="/sponsor.html">Sponsor</a>
@@ -102,8 +103,8 @@
     <div class="container center">
       <nav class="crumb" aria-label="Breadcrumb"><a href="/">Home</a> <span aria-hidden="true">›</span> <a href="/guides/">Guides</a> <span aria-hidden="true">›</span> <span>Throughput</span></nav>
       <span class="eyebrow">Understanding throughput</span>
-      <h1 style="max-width:22ch;margin-inline:auto">Fast enough for whatever your health system throws at it</h1>
-      <p class="lead">MessageFoundry moves messages faster than almost any real deployment needs. But the giant throughput numbers everyone likes to quote — <b>ours included</b> — can mislead. This is a plain-language guide to what actually sets the rate, and how to size for <em>your</em> environment in real terms.</p>
+      <h1 style="max-width:30ch;margin-inline:auto">Fast enough for real clinical traffic — here's how to size it for yours</h1>
+      <p class="lead">In our testing the engine is rarely the bottleneck — your partner systems usually are. But the giant throughput numbers everyone likes to quote — <b>ours included</b> — can mislead. This is a plain-language guide to what actually sets the rate, and how to size for <em>your</em> environment in real terms.</p>
       <div class="btn-row center" style="margin-top:24px">
         <a class="btn btn-primary" href="#sizing">How to size it</a>
         <a class="btn btn-secondary" href="#lab">See the lab numbers ↓</a>
@@ -135,7 +136,7 @@
         </div>
         <div class="card">
           <h3>"Messages per day" is a weak unit</h3>
-          <p>Healthcare traffic is <b>bursty</b>. In the production ADT feeds we've profiled, the busiest hour runs about <b>2.7×</b> the all-day average. You size for the <em>peak hour</em>, not the daily average — so a raw "X million/day" figure, on its own, tells you very little.</p>
+          <p>Healthcare traffic is <b>bursty</b>. In the anonymized, representative ADT traffic we've profiled, the busiest hour runs about <b>2.7×</b> the all-day average. You size for the <em>peak hour</em>, not the daily average — so a raw "X million/day" figure, on its own, tells you very little.</p>
         </div>
         <div class="card">
           <h3>Scale by fanning out</h3>
@@ -270,7 +271,7 @@
         <li><b>Across a week</b> — weekdays run several times heavier than weekends (elective admissions, scheduled procedures, clinics).</li>
         <li><b>Across a year</b> — seasonal load (e.g. respiratory-illness season) shifts the baseline further.</li>
       </ul>
-      <p>A system doesn't experience the daily <em>average</em> — it experiences the <b>busiest hour</b>. Size for the average and you'll be underwater exactly when volume is highest: queues back up and latency climbs right when timeliness matters most. <b>In the production ADT feeds we've profiled, the busiest hour runs about 2.7× the all-day average rate</b> — so a feed with a tidy daily figure is really asking for nearly three times that average rate at its peak, and <em>that</em> is the rate your interface has to sustain.</p>
+      <p>A system doesn't experience the daily <em>average</em> — it experiences the <b>busiest hour</b>. Size for the average and you'll be underwater exactly when volume is highest: queues back up and latency climbs right when timeliness matters most. <b>In the anonymized, representative ADT traffic we've profiled, the busiest hour runs about 2.7× the all-day average rate</b> — so a feed with a tidy daily figure is really asking for nearly three times that average rate at its peak, and <em>that</em> is the rate your interface has to sustain.</p>
       <div class="table-wrap">
         <table class="cmp">
           <thead><tr><th scope="col">One ordered interface at 60 msg/s</th><th scope="col">Naive (assumes flat traffic)</th><th scope="col">Realistic (peak = 2.7× average)</th></tr></thead>
@@ -311,7 +312,7 @@
       <span class="eyebrow">8 · Reference lab measurements</span>
       <h2>The numbers — with their conditions</h2>
       <p class="lead">These are the figures referenced above, stated with full conditions so you can judge how they map to your environment. They are <b>theoretical maxima under controlled conditions using synthetic data — not guarantees, and not measured against any live clinical system.</b></p>
-      <p>A note on the numbers: elsewhere on the site you'll see a measured <b>~50 messages/second</b> per interface — that figure comes from anonymized <em>production</em> telemetry. The <b>~60 messages/second</b> used in this guide is a <em>lab</em> reference ceiling with an instant-acknowledging partner. Both describe the same well-behaved ordered interface; the ~50 is the number to plan around, and everything in §2 about partner round-trips applies on top of it.</p>
+      <p>A note on the numbers: elsewhere on the site you'll see a measured <b>~50 messages/second</b> per interface — that figure comes from anonymized, representative message traffic. The <b>~60 messages/second</b> used in this guide is a <em>lab</em> reference ceiling with an instant-acknowledging partner. Both describe the same well-behaved ordered interface; the ~50 is the number to plan around, and everything in §2 about partner round-trips applies on top of it.</p>
       <div class="table-wrap">
         <table class="cmp">
           <thead><tr><th scope="col">Measurement</th><th scope="col">Value</th><th scope="col">Conditions</th></tr></thead>
@@ -407,7 +408,7 @@
       <div class="center" style="margin-bottom:28px"><span class="eyebrow">FAQ</span><h2>Frequently asked questions</h2></div>
       <div class="faq">
         <div class="faq-item"><h3>How many messages per second can MessageFoundry handle?</h3><p>It depends on your environment far more than on the engine. In our reference lab a single strictly-ordered HL7 v2 / MLLP interface delivers about 60 messages/second end-to-end with an instant-acknowledging partner, and accepts about 450 messages/second at the point of receipt. Real numbers are usually lower and are set by how fast your partner systems acknowledge each message — the engine itself adds only about 16 milliseconds per message. That serial cap is specific to MLLP; request/response transports like REST and FHIR run concurrently, and fanning out across interfaces scales further.</p></div>
-        <div class="faq-item"><h3>Why is a messages-per-day number misleading?</h3><p>Healthcare traffic is bursty, not a flat around-the-clock stream. In the production ADT feeds we've profiled, the busiest hour runs about 2.7 times the all-day average, so you have to size for the peak hour, not the daily average. Two feeds with the same daily total but different burst profiles need very different capacity. Always ask for the peak-hour rate, the message size, and the ordering guarantee behind any 'X million per day' figure.</p></div>
+        <div class="faq-item"><h3>Why is a messages-per-day number misleading?</h3><p>Healthcare traffic is bursty, not a flat around-the-clock stream. In the anonymized, representative ADT traffic we've profiled, the busiest hour runs about 2.7 times the all-day average, so you have to size for the peak hour, not the daily average. Two feeds with the same daily total but different burst profiles need very different capacity. Always ask for the peak-hour rate, the message size, and the ordering guarantee behind any 'X million per day' figure.</p></div>
         <div class="faq-item"><h3>What actually limits MessageFoundry's throughput?</h3><p>For HL7 v2 over MLLP, where delivery is strictly ordered, the dominant factor is usually your partner system's round-trip time: the engine sends a message, waits for the partner to accept and acknowledge it, and only then sends the next one. A partner that takes 50 ms to acknowledge caps a single ordered stream near 15 messages/second, no matter how fast the engine or database is. The message store, message size, validation, and transformation complexity also contribute, but the partner round-trip is usually the biggest term. Request/response transports like REST, SOAP, and FHIR run several requests concurrently, so this serial cap doesn't apply to them.</p></div>
         <div class="faq-item"><h3>How do I size a MessageFoundry deployment?</h3><p>Start from the per-interface ordered ceiling (about 60 messages/second with an instant partner), reduce it by your partner's real acknowledgement time, divide by your traffic's burst factor (about 2.7 for ADT-shaped traffic), then fan out to enough interfaces to cover your aggregate peak — splitting feeds at the source by hospital, facility, or service line. One node's message store easily absorbs the combined load of dozens of interfaces.</p></div>
         <div class="faq-item"><h3>How does MessageFoundry scale to very high volumes?</h3><p>By fanning out, not by forcing everything through one pipe. A strictly-ordered interface is a single serial lane with a bounded rate — that's the physics of guaranteed ordering, not a product limitation. You split feeds at the source across many interfaces and the aggregate is the sum of them; a single node's shared message store sustains tens of thousands of commits per second, far more than any one ordered interface can generate.</p></div>
@@ -459,6 +460,7 @@
         </div>
         <div class="footer-col">
           <h4>Project</h4>
+          <a href="/status.html">Project status</a>
           <a href="https://github.com/MEFORORG/MessageFoundry" target="_blank" rel="noopener">GitHub</a>
           <a href="https://github.com/MEFORORG/MessageFoundry/issues" target="_blank" rel="noopener">Issues</a>
           <a href="/contact.html">Contact</a>

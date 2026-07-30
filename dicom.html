@@ -88,6 +88,7 @@
           <button type="button" class="nav-group__btn" aria-expanded="false" aria-haspopup="true" aria-controls="nav-company">About Us</button>
           <div class="nav-group__menu" id="nav-company">
             <a href="/about.html">About</a>
+            <a href="/status.html">Project status</a>
             <a href="/licensing.html">Licensing</a>
             <a href="/contact.html">Contact</a>
             <a href="/sponsor.html">Sponsor</a>
@@ -125,11 +126,11 @@
       <div class="grid grid-3">
         <div class="card">
           <h3>C-STORE SCP — receive</h3>
-          <p>A <code>pynetdicom</code> Application Entity accepts stored objects inbound. It returns C-STORE <b>Success only after</b> the object is durably committed (the DIMSE analog of commit-before-ACK) — nothing is accepted-and-dropped.</p>
+          <p>A <code>pynetdicom</code> Application Entity accepts stored objects inbound. It returns C-STORE <b>Success only after</b> the object is durably committed (the DIMSE analog of commit-before-ACK) — by design, nothing is accepted-and-dropped.</p>
         </div>
         <div class="card">
           <h3>C-STORE SCU — send</h3>
-          <p>Forward an object to a downstream PACS over a C-STORE association — full Mirth-sender parity. The blocking association runs off the event loop, so a slow peer never stalls the engine.</p>
+          <p>Forward an object to a downstream PACS over a C-STORE association — the same sender scope Mirth covers. The blocking association runs off the event loop, so a slow peer doesn't stall the engine.</p>
         </div>
         <div class="card">
           <h3>C-ECHO — verify</h3>
@@ -184,7 +185,7 @@
         </div>
         <div class="card">
           <h3>Smart retry classification</h3>
-          <p>Out-of-resources or a transport failure is <b>transient</b> (retried with backoff); a hard refusal — rejected context, unencodable dataset, not-authorized — is <b>permanent</b> and dead-letters, so a bad object never head-blocks the lane.</p>
+          <p>Out-of-resources or a transport failure is <b>transient</b> (retried with backoff); a hard refusal — rejected context, unencodable dataset, not-authorized — is <b>permanent</b> and dead-letters, so a bad object doesn't head-block the lane.</p>
         </div>
         <div class="card">
           <h3>PHI-safe by construction</h3>
@@ -203,7 +204,7 @@
       <div class="center" style="margin-bottom:30px">
         <span class="eyebrow">How it compares</span>
         <h2>DICOM vs. Mirth &amp; Corepoint</h2>
-        <p class="lead center">Full parity with Mirth's DICOM transport scope, a code-first replacement for Corepoint's GUI-mapped transform, and a modern DICOMweb send lane neither incumbent ships.</p>
+        <p class="lead center">The same DICOM transport scope Mirth covers, a code-first replacement for Corepoint's GUI-mapped transform, and a modern DICOMweb send lane neither incumbent ships.</p>
       </div>
       <div class="table-wrap">
         <table class="cmp">
@@ -295,6 +296,7 @@
         </div>
         <div class="footer-col">
           <h4>Project</h4>
+          <a href="/status.html">Project status</a>
           <a href="https://github.com/MEFORORG/MessageFoundry" target="_blank" rel="noopener">GitHub</a>
           <a href="https://github.com/MEFORORG/MessageFoundry/issues" target="_blank" rel="noopener">Issues</a>
           <a href="/contact.html">Contact</a>

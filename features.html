@@ -89,6 +89,7 @@
           <button type="button" class="nav-group__btn" aria-expanded="false" aria-haspopup="true" aria-controls="nav-company">About Us</button>
           <div class="nav-group__menu" id="nav-company">
             <a href="/about.html">About</a>
+            <a href="/status.html">Project status</a>
             <a href="/licensing.html">Licensing</a>
             <a href="/contact.html">Contact</a>
             <a href="/sponsor.html">Sponsor</a>
@@ -182,7 +183,7 @@
       <div class="grid grid-3">
         <div class="card">
           <h3>Network</h3>
-          <p><b>MLLP</b> — correct <code>0x0B … 0x1C 0x0D</code> framing, inbound and outbound, with ACK/NAK generation (AA / AE / AR) and a per-connection ack mode. <b>TCP</b> for raw stream endpoints. <b>X12 / EDI</b> over TCP — ISA/IEA-framed interchanges, inbound and outbound. <b>DICOM</b> imaging — C-STORE SCP/SCU and C-ECHO over DIMSE, plus DICOMweb STOW-RS (<a href="/dicom.html" style="color:var(--accent)">DICOM imaging →</a>).</p>
+          <p><b>MLLP</b> — correct <code>0x0B … 0x1C 0x0D</code> framing, inbound and outbound, with ACK/NAK generation (AA / AE / AR) and a per-connection ack mode. <b>TCP</b> for raw stream endpoints. <b>X12 / EDI</b> over TCP — ISA/IEA-framed interchanges, inbound and outbound. <b>DICOM</b> imaging — C-STORE SCP/SCU and C-ECHO over DIMSE, plus DICOMweb STOW-RS (<a href="/dicom.html" style="color:var(--accent-ink)">DICOM imaging →</a>).</p>
         </div>
         <div class="card">
           <h3>Web services</h3>
@@ -362,7 +363,7 @@
       <div>
         <span class="eyebrow">High availability</span>
         <h2>Stay up through failures</h2>
-        <p class="lead">Run a primary with a hot standby: if the primary fails, the standby takes over with no message loss. The data tier rides your database's own HA — PostgreSQL replication or SQL&nbsp;Server Always On.</p>
+        <p class="lead">Run a primary with a hot standby: if the primary fails, the standby takes over without losing in-flight messages. The data tier rides your database's own HA — PostgreSQL replication or SQL&nbsp;Server Always On.</p>
       </div>
       <ul class="feature-list">
         <li><b>Active-passive failover</b> — a standby promotes on primary failure; in-flight work resumes from the durable store.</li>
@@ -529,6 +530,7 @@
         </div>
         <div class="footer-col">
           <h4>Project</h4>
+          <a href="/status.html">Project status</a>
           <a href="https://github.com/MEFORORG/MessageFoundry" target="_blank" rel="noopener">GitHub</a>
           <a href="https://github.com/MEFORORG/MessageFoundry/issues" target="_blank" rel="noopener">Issues</a>
           <a href="/contact.html">Contact</a>

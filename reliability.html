@@ -45,7 +45,7 @@
       { "@type": "Question", "name": "Is message delivery reliable?", "acceptedAnswer": { "@type": "Answer", "text": "Yes. MessageFoundry persists every message to a durable store before it is acknowledged, then routes from that store — so messages survive engine restarts and failures rather than being lost in flight." } },
       { "@type": "Question", "name": "How does MessageFoundry handle failover?", "acceptedAnswer": { "@type": "Answer", "text": "It runs active/passive: a standby instance takes over if the primary fails, coordinated by an application-level leader lease so only one instance is active at a time. Failover typically completes in about 30 seconds." } },
       { "@type": "Question", "name": "Are my interfaces version-controlled and tested?", "acceptedAnswer": { "@type": "Answer", "text": "Yes. Your interfaces live in your own git repository as plain Python, reviewed and tested by CI against the real engine — so changes are diffable, reversible, and gated before they ship." } },
-      { "@type": "Question", "name": "Is a Python engine fast enough for production HL7?", "acceptedAnswer": { "@type": "Answer", "text": "Yes. Each interface sustains a measured ~50 messages per second on commodity hardware — roughly 180,000 in a peak hour — which is well above a hospital's real HL7 load, where a typical ADT feed runs on the order of a couple of messages per second. Real throughput depends on your transforms, storage, and hardware, and these figures are measured on anonymized production telemetry. Speed never comes at the cost of safety: every message is committed to a durable store before it's acknowledged and delivered in order, at-least-once, so a busy interface keeps up with headroom and messages aren't silently dropped." } }
+      { "@type": "Question", "name": "Is a Python engine fast enough for production HL7?", "acceptedAnswer": { "@type": "Answer", "text": "Yes. Each interface sustains a measured ~50 messages per second on commodity hardware — roughly 180,000 in a peak hour — which is well above a hospital's real HL7 load, where a typical ADT feed runs on the order of a couple of messages per second. Real throughput depends on your transforms, storage, and hardware, and these figures are measured on anonymized, representative message traffic. Speed never comes at the cost of safety: every message is committed to a durable store before it's acknowledged and delivered in order, at-least-once, so a busy interface keeps up with headroom and messages aren't silently dropped." } }
     ]
   }
   </script>
@@ -89,6 +89,7 @@
           <button type="button" class="nav-group__btn" aria-expanded="false" aria-haspopup="true" aria-controls="nav-company">About Us</button>
           <div class="nav-group__menu" id="nav-company">
             <a href="/about.html">About</a>
+            <a href="/status.html">Project status</a>
             <a href="/licensing.html">Licensing</a>
             <a href="/contact.html">Contact</a>
             <a href="/sponsor.html">Sponsor</a>
@@ -216,7 +217,7 @@
         </div>
       </div>
       <div class="callout" style="margin-top:34px;max-width:900px;margin-inline:auto">
-        <p style="margin-bottom:0"><strong style="color:var(--accent)">Dependable under load, too.</strong> Reliability isn't only review and rollback — it's holding up at peak. On anonymized production telemetry a single interface sustains about 50 messages/second with headroom — roughly 180,000 in a peak hour — every message committed to the durable store and delivered strict per-interface, first-in first-out. A busy hospital's full ADT feed is a few percent of that, so traffic doesn't back up; when you need more, you add interfaces. Measured figures, not promises: real throughput depends on your transforms, storage, and hardware. <a href="/throughput/">How throughput really works →</a></p>
+        <p style="margin-bottom:0"><strong>Dependable under load, too.</strong> Reliability isn't only review and rollback — it's holding up at peak. On anonymized, representative message traffic a single interface sustains about 50 messages/second with headroom — roughly 180,000 in a peak hour — every message committed to the durable store and delivered strict per-interface, first-in first-out. A busy hospital's full ADT feed is a few percent of that, so traffic doesn't back up; when you need more, you add interfaces. Measured figures, not promises: real throughput depends on your transforms, storage, and hardware. <a href="/throughput/">How throughput really works →</a></p>
       </div>
     </div>
   </section>
@@ -257,7 +258,7 @@
         <div class="faq-item"><h3>Is message delivery reliable?</h3><p>Yes. MessageFoundry persists every message to a durable store before it is acknowledged, then routes from that store — so messages survive engine restarts and failures rather than being lost in flight.</p></div>
         <div class="faq-item"><h3>How does MessageFoundry handle failover?</h3><p>It runs active/passive: a standby instance takes over if the primary fails, coordinated by an application-level leader lease so only one instance is active at a time. Failover typically completes in about 30 seconds.</p></div>
         <div class="faq-item"><h3>Are my interfaces version-controlled and tested?</h3><p>Yes. Your interfaces live in your own git repository as plain Python, reviewed and tested by CI against the real engine — so changes are diffable, reversible, and gated before they ship.</p></div>
-        <div class="faq-item"><h3>Is a Python engine fast enough for production HL7?</h3><p>Yes. Each interface sustains a measured ~50 messages per second on commodity hardware — roughly 180,000 in a peak hour — which is well above a hospital's real HL7 load, where a typical ADT feed runs on the order of a couple of messages per second. Real throughput depends on your transforms, storage, and hardware, and these figures are measured on anonymized production telemetry. Speed never comes at the cost of safety: every message is committed to a durable store before it's acknowledged and delivered in order, at-least-once, so a busy interface keeps up with headroom and messages aren't silently dropped.</p><p style="margin-top:10px"><a href="/throughput/">How throughput really works →</a></p></div>
+        <div class="faq-item"><h3>Is a Python engine fast enough for production HL7?</h3><p>Yes. Each interface sustains a measured ~50 messages per second on commodity hardware — roughly 180,000 in a peak hour — which is well above a hospital's real HL7 load, where a typical ADT feed runs on the order of a couple of messages per second. Real throughput depends on your transforms, storage, and hardware, and these figures are measured on anonymized, representative message traffic. Speed never comes at the cost of safety: every message is committed to a durable store before it's acknowledged and delivered in order, at-least-once, so a busy interface keeps up with headroom and messages aren't silently dropped.</p><p style="margin-top:10px"><a href="/throughput/">How throughput really works →</a></p></div>
       </div>
     </div>
   </section>
@@ -305,6 +306,7 @@
         </div>
         <div class="footer-col">
           <h4>Project</h4>
+          <a href="/status.html">Project status</a>
           <a href="https://github.com/MEFORORG/MessageFoundry" target="_blank" rel="noopener">GitHub</a>
           <a href="https://github.com/MEFORORG/MessageFoundry/issues" target="_blank" rel="noopener">Issues</a>
           <a href="/contact.html">Contact</a>
