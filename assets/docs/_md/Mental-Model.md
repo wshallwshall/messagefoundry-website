@@ -502,7 +502,7 @@ Dependencies are declared in two tiers. pyproject.toml states loose \>= minimums
 
 - **Stay current automatically.** Dependabot opens version-bump PRs; you review the changelog and the lockfile delta — not the library’s code — and CI re-audits and re-tests before merge.
 
-- **CI enforces it (DEP-1).** requirements.lock must stay in sync with pyproject.toml, and pip-audit blocks the build on a known CVE in any pinned version; a weekly security cron, an SBOM job, and bandit/semgrep static analysis back it up.
+- **CI enforces it (DEP-1).** requirements.lock must stay in sync with pyproject.toml, and pip-audit blocks the build on a known CVE in any pinned version; a daily security cron, an SBOM job, and bandit/semgrep static analysis back it up. The cron runs daily rather than weekly on purpose — a CVE disclosed against a pinned dependency that nobody happens to touch is then caught within about 24 hours instead of up to seven days.
 
 > **Managed as SOUP:** the discipline (borrowed from the medical-device standard IEC 62304 and adopted voluntarily, by analogy — MessageFoundry isn’t a medical device and this isn’t a compliance claim — because adopters may run it inside regulated clinical workflows) concentrates human effort at just two moments: adopting a dependency (minutes of provenance due-diligence) and bumping it (reading the changelog). Everything else — pinning, hashing, CVE-watching, the SBOM — is machinery that runs until it pings. The one exception is vendored code: the standalone tee relay (§4) copies a tiny MLLP/HL7 codec into its own tree, so that code is owned, not SOUP, and is held to the engine’s own gates (tests, SAST, “mirrors X” headers).
 >
