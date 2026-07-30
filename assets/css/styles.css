@@ -143,6 +143,12 @@ code, pre, kbd { font-family: var(--mono); }
 }
 .site-nav .btn { padding: 0 15px; height: 38px; border-color: rgba(205,213,226,.28); background: rgba(255,255,255,.045); }
 .site-nav .btn:hover { border-color: rgba(205,213,226,.55); background: rgba(255,255,255,.10); }
+/* Button-style nav items (PyPI, GitHub) are inline-flex, so the gradient underline
+   would become a zero-width flex item — it paints nothing but eats a gap. Suppress
+   it and mark the current page with the button's own border/background instead. */
+.site-nav a.btn.active::after { display: none; }
+.site-nav a.btn.active { border-color: rgba(245,158,11,.55); background: rgba(245,158,11,.10); }
+.site-nav a.btn.active:hover { border-color: rgba(245,158,11,.75); background: rgba(245,158,11,.16); }
 .site-nav .nav-group + .btn { margin-left: 18px; }
 .site-nav .btn + .btn { margin-left: -16px; }
 .site-nav a[href="/pypi.html"] svg { stroke: #5b9eff; width: 18px; height: 18px; }
