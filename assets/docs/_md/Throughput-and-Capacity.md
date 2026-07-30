@@ -7,8 +7,8 @@ your own deployment.**
 
 ## Summary
 
-MessageFoundry sustains **40 million message events per day**, and we hold back **more than
-20% of measured capacity as reserve** when we say so.
+MessageFoundry sustains **40 million message events per day**. That figure deliberately holds
+back **more than 20% of measured capacity as reserve**, rather than quoting the ceiling itself.
 
 That figure is not a projection. It comes from a measured sustainable ceiling of approximately
 **603 message events per second** — about 52 million events per day — from which we publish
@@ -67,7 +67,9 @@ one.
 The most useful property of this result is that it **did not change with fan-out**. Feeds that
 deliver to one destination and feeds that deliver to four converged on the same total-event
 ceiling, within measurement noise. Capacity is therefore governed by total event volume, not
-by how many destinations a feed serves — which makes sizing considerably simpler.
+by how many destinations a feed serves — which makes sizing considerably simpler. One caveat we would
+rather state: the two fan-out cases also differed in destination count and offered rate, so this is an
+observed equality on the configurations tested rather than a clean single-variable isolation.
 
 ### From ceiling to published figure
 
@@ -93,7 +95,7 @@ We checked specifically what ran out first at peak load. **Nothing did.**
 |---|---|---|
 | Database CPU | ~69% average, measured while deliberately overloaded 25% past the ceiling | No |
 | Engine host CPU | Roughly half idle | No |
-| Database commit capacity | ~27,000 commits/second available against ~600 demanded | No — about 36× headroom |
+| Database commit capacity | ~23,600–27,200 commits/second available against ~600 demanded | No — roughly 40× headroom |
 | Connection pool | Never fully in use; waits to acquire a connection averaged ~0.015 ms | No |
 | Worker thread pool | Queue essentially empty — zero for 84% of samples | No |
 | Outbound delivery lanes | Around 90% idle | No |
@@ -187,7 +189,7 @@ We would rather you know what these numbers do and do not cover.
   large embedded documents cost more per message.
 - **Pass-through processing.** Heavy transformation, strict validation, and live enrichment
   lookups all reduce throughput, and are the largest hardware-independent factors.
-- **Database state.** The certification ran against a store already holding several million
+- **Database state.** The measurement ran against a store already holding several million
   rows, which is representative of a system in service rather than a freshly initialised one.
 - **Not externally audited.** These are our own measurements, reported with their conditions so
   you can judge how they map onto your environment.

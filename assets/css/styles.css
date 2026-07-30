@@ -22,6 +22,8 @@
   --accent-2:   #f97316;   /* molten orange                        */
   --accent-ink: #7c2d12;   /* deep accent for text on light        */
   --accent-ink-2:#6b2410;  /* darker still — text ON the amber fill */
+  --accent-tint:rgba(245,158,11,.07);  /* faint amber wash behind a callout */
+  --accent-tint-bd:rgba(245,158,11,.28); /* its border                       */
   --code-bg:    #0d1726;   /* code card background (dark always)   */
   --code-text:  #d7e0ee;
 
@@ -73,9 +75,23 @@ code, pre, kbd { font-family: var(--mono); }
 .cta-band :focus-visible, .site-footer :focus-visible { outline-color: var(--accent); }
 /* …but light surfaces nested inside those dark scopes take the dark ring back —
    amber on a white card is ~2.1:1, under the 3:1 non-text minimum. */
-.section--dark .card :focus-visible, .section--dark .callout :focus-visible,
-.hero .card :focus-visible, .hero .callout :focus-visible,
-.site-header .nav-group__menu :focus-visible { outline-color: var(--accent-ink); }
+/* Scope by painted surface, not by ancestor: a white card, a cream callout or a white
+   secondary button is a LIGHT island wherever it sits, including inside a dark section, and
+   an amber ring on it measures ~2.0-2.2:1. Same specificity as the rule above, so source
+   order decides and these win. */
+.card :focus-visible, .callout :focus-visible,
+.btn-secondary:focus-visible,
+.nav-group__menu a.active:focus-visible { outline-color: var(--accent-ink); }
+.callout--tint { background: var(--accent-tint); border-color: var(--accent-tint-bd); }
+/* …except a callout that is deliberately tinted onto a dark section: its translucent amber
+   fill composites down to near-black, so it needs the amber ring back. */
+.callout--on-dark :focus-visible { outline-color: var(--accent); }
+/* The header dropdown is a white panel only at desktop width. Below 1040px the nav collapses
+   into the dark header (see the max-width:1040px block) and the panel is dark, where a dark
+   ring reads 2.0:1 — so this exception is scoped to the width at which the panel is light. */
+@media (min-width: 1041px) {
+  .site-header .nav-group__menu :focus-visible { outline-color: var(--accent-ink); }
+}
 
 /* ------------------------------------------------------------------ layout */
 .container { width: 100%; max-width: var(--maxw); margin-inline: auto; padding-inline: 22px; }

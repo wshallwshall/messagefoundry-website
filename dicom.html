@@ -52,7 +52,7 @@
 <body>
   <a class="skip-link" href="#main">Skip to content</a>
 
-  <div class="eabar">
+  <div class="eabar" role="region" aria-label="Project status">
     <div class="container">
       <p><strong>Early Access &middot; beta.</strong> We're building toward 1.0 &mdash; and we want people involved now, while it can still be shaped. <a href="/status.html">Where the project stands &rarr;</a></p>
     </div>
@@ -227,7 +227,7 @@
           </tbody>
         </table>
       </div>
-      <div class="callout" style="margin-top:26px;background:rgba(245,158,11,.07);border-color:rgba(245,158,11,.28);color:var(--muted-dk)">
+      <div class="callout callout--on-dark" style="margin-top:26px;background:rgba(245,158,11,.07);border-color:rgba(245,158,11,.28);color:var(--muted-dk)">
         <p style="margin-bottom:0"><strong style="color:var(--accent)">Honest validation note.</strong> The connectors are verified against the DICOM protocol with real <code>pynetdicom</code> loopback tests (and the DICOMweb framing with mocked HTTP) — <b>not yet against a specific vendor PACS</b>. A real-feed validation against your partner's SOP classes, transfer syntaxes, and AE titles is the step before cutover.</p>
       </div>
     </div>
