@@ -150,18 +150,18 @@ version**, the same way you pin any other production dependency. Create a venv a
 ```powershell
 python -m venv .venv
 .\.venv\Scripts\Activate.ps1
-pip install "messagefoundry==0.1.0"        # pin the exact engine version (core runtime only)
+pip install "messagefoundry==0.3.2"        # pin the exact engine version (core runtime only)
 ```
 
-`messagefoundry==0.1.0` pulls only the **core runtime** — what a headless engine needs. Add extras
+`messagefoundry==0.3.2` pulls only the **core runtime** — what a headless engine needs. Add extras
 (§4.2) for the PySide6 test harness, a server-DB backend, or SFTP; the browser web console installs
 as its own `messagefoundry-webconsole` wheel.
 
-> ⚠️ **Early access.** `0.1.0` is an **Early Access** release on public PyPI — feature-complete and
+> ⚠️ **Early access.** MessageFoundry is in **Early Access** on public PyPI — feature-complete and
 > test-validated, but the independent external review and penetration test that ASVS
-> recommends at Level 3 have not yet been performed. The exact-pin command above (`==0.1.0`) resolves today; the earlier `0.1.0rc1` pre-release also
-> remains installable. You can equally install from your
-> organization's **private index**.
+> recommends at Level 3 have not yet been performed. Pin the version you have qualified;
+> check [PyPI](https://pypi.org/project/messagefoundry/) for the current release. You can
+> equally install from your organization's **private index**.
 
 **Verify the release before you install.** MessageFoundry ships one signed wheel to many PHI-bearing
 instances, so verify the artifact's provenance *before* installing — pinning a version (or a hash) proves
@@ -170,7 +170,7 @@ provenance** and a **Sigstore signature**; check both with the **GitHub CLI** (`
 optionally `sigstore` (`pip install sigstore`). Install **only** the file that passes:
 
 ```powershell
-$V = "0.1.0"   # the exact version you intend to install
+$V = "0.3.2"   # the version you intend to install — see PyPI for the current release
 
 # Download the wheel + its Sigstore bundle from that release's assets
 gh release download "v$V" --repo MEFORORG/MessageFoundry `
@@ -192,7 +192,7 @@ The same attestation also covers the **public PyPI** copy (it is byte-identical)
 `pip download "messagefoundry==$V" --no-deps -d .\verify`, `gh attestation verify` the
 downloaded wheel, then `pip install --no-index --find-links .\verify "messagefoundry==$V"`. A
 registry/mirror substitution or a relabelled file **fails** the check. (The `--cert-identity` ref must
-match the tag you install — e.g. `refs/tags/v0.1.0-rc1` for a pre-release.)
+match the tag you install — e.g. `refs/tags/v0.3.2` for that release.)
 
 For a **reproducible pinned** deploy, generate a hash-locked requirements file scoped to the extras you
 actually run and install it with `--require-hashes`. The scaffolded config repo (`messagefoundry init`,

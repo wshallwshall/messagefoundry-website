@@ -12,7 +12,7 @@ editable.
 
 1. Render the markdown with **python-markdown** (extensions: `tables`, `fenced_code`,
    `sane_lists`, `toc`) wrapped in the shared branded print-CSS template — amber top rule,
-   `Message`**`Foundry`** wordmark header, `v0.2rc1 · <month year>` meta, AGPL footer — into a
+   `Message`**`Foundry`** wordmark header, `v0.3.2 · <month year>` meta, AGPL footer — into a
    temporary HTML file under `assets/docs/`.
 2. Print that HTML to PDF with headless Chrome, then delete the temp HTML:
 
@@ -30,10 +30,11 @@ editable.
 
 - **Engine-sourced** (`Mental-Model`, `User-Guide`, `Install-Guide`) — adapted from the
   engine repo's `docs/`: relative repo links rewritten to absolute
-  `github.com/MEFORORG/MessageFoundry` URLs, version pins aligned to the `0.2.2` set, AD
+  `github.com/MEFORORG/MessageFoundry` URLs, version pins aligned to the current `0.3.2` release, AD
   auth scoped to LDAP, and contributor-only framing (CLAUDE.md / ADR-internal notes) removed.
 - The remaining docs were authored directly for the site.
 
-All reflect the **v0.2rc1** target. Before treating version pins (`0.2.2`) or DICOM status as
-final, resolve the open content flags (exact version string, DICOM shipped-vs-roadmap,
-throughput numbers, HIPAA penalty year).
+Version pins track the current PyPI release (`0.3.2`) — check
+[PyPI](https://pypi.org/project/messagefoundry/) before treating any pin as final, and
+resolve the open content flags (DICOM shipped-vs-roadmap, throughput numbers, HIPAA
+penalty year).
