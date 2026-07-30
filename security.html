@@ -131,7 +131,7 @@
         <li><b>Logic can't be injected through the data layer</b> — Routers and Handlers are version-controlled code, never stored in the database. A data-layer breach (SQL injection, stolen DB credentials) reaches data that's already encrypted, RBAC-gated, and audited — but it can't change what the engine does.</li>
         <li><b>One audited door</b> — the console and every other client reach the engine and its PHI only through the authenticated, RBAC-gated API; nothing holds a privileged in-process backdoor to the store.</li>
         <li><b>Deny-by-default RBAC</b> — role-based, least-privilege access enforced on every action, with per-channel data-scope confinement.</li>
-        <li><b>Tamper-resistant audit</b> — a timestamped, user-attributed audit log; <b>no PHI or secrets in logs</b>, ever.</li>
+        <li><b>Tamper-evident audit</b> — a timestamped, user-attributed audit log; <b>no PHI or secrets in logs</b>, ever.</li>
         <li><b>Fail-closed</b> — errors fail safe; faults never leak stack traces or sensitive data.</li>
         <li><b>Secrets stay out of code</b> — sourced from an environment / secret store, enforced by pre-commit and CI secret scanning; the git history is kept clean.</li>
       </ul>
@@ -227,7 +227,7 @@
           </thead>
           <tbody>
             <tr><th scope="row">Access control — unique ID, authn, auto-logoff</th><td>Authenticated, role-based, least-privilege access with session controls and timeouts</td></tr>
-            <tr><th scope="row">Audit controls</th><td>Tamper-resistant, timestamped audit log; no sensitive data in logs</td></tr>
+            <tr><th scope="row">Audit controls</th><td>Tamper-evident, timestamped audit log; no sensitive data in logs</td></tr>
             <tr><th scope="row">Integrity</th><td>Input validation; durable, ordered processing of messages</td></tr>
             <tr><th scope="row">Transmission security</th><td>TLS by default for network transport (including MLLP-over-TLS)</td></tr>
             <tr><th scope="row">Encryption (at rest &amp; in transit)</th><td>Encryption at rest on by default, and TLS in transit</td></tr>
