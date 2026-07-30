@@ -105,6 +105,14 @@ code, pre, kbd { font-family: var(--mono); }
 .center { text-align: center; margin-inline: auto; }
 .skip-link { position: absolute; left: 8px; top: -48px; z-index: 1000; background: var(--accent); color: var(--accent-ink-2); padding: 8px 14px; border-radius: 8px; font-weight: 700; text-decoration: none; }
 .skip-link:focus { top: 8px; }
+/* Early Access notice — site-wide chrome, sits above the header on every page.
+   Amber fill with the darker on-amber ink, the same pairing the skip link uses. */
+.eabar { background: var(--accent); color: var(--accent-ink-2); font-size: .88rem; line-height: 1.45; }
+.eabar .container { padding-block: 9px; text-align: center; }
+.eabar p { margin: 0; }
+.eabar a { color: inherit; font-weight: 700; text-decoration: underline; text-underline-offset: 2px; white-space: nowrap; }
+.eabar a:hover { text-decoration-thickness: 2px; }
+@media (max-width: 620px) { .eabar { font-size: .82rem; } }
 .faq { max-width: 760px; margin-inline: auto; }
 .faq-item { border-top: 1px solid var(--border); padding: 18px 2px; }
 .faq-item:last-child { border-bottom: 1px solid var(--border); }
