@@ -5,6 +5,7 @@
 :root {
   --ink:        #0b1220;   /* deep slate — dark sections          */
   --ink-2:      #111c2e;   /* slightly lifted dark surface         */
+  --ink-3:      #1a2740;   /* lifted dark — top of the "us" head   */
   --surface:    #ffffff;   /* light content background             */
   --surface-2:  #f6f8fb;   /* subtle light panel (chips, table heads)*/
   --surface-alt:#eef2f7;   /* alternating section band — a touch deeper than surface-2 so the stripe reads */
@@ -15,12 +16,17 @@
   --muted:      #51607a;   /* secondary text on light              */
   --text-dk:    #e8edf5;   /* primary text on dark                 */
   --muted-dk:   #93a1b8;   /* secondary text on dark               */
+  --muted-hd:   #aab6c8;   /* secondary text on the dark table head*/
 
   --accent:     #f59e0b;   /* molten amber — the "foundry" accent  */
   --accent-2:   #f97316;   /* molten orange                        */
   --accent-ink: #7c2d12;   /* deep accent for text on light        */
   --code-bg:    #0d1726;   /* code card background (dark always)   */
   --code-text:  #d7e0ee;
+
+  --status-ok:  #15803d;   /* RUNNING                              */
+  --status-warn:#b45309;   /* DEGRADED                             */
+  --status-bad: #b91c1c;   /* FAILED / STOPPED                     */
 
   --radius:     14px;
   --radius-sm:  9px;
@@ -143,6 +149,12 @@ code, pre, kbd { font-family: var(--mono); }
 }
 .site-nav .btn { padding: 0 15px; height: 38px; border-color: rgba(205,213,226,.28); background: rgba(255,255,255,.045); }
 .site-nav .btn:hover { border-color: rgba(205,213,226,.55); background: rgba(255,255,255,.10); }
+/* Button-style nav items (PyPI, GitHub) are inline-flex, so the gradient underline
+   would become a zero-width flex item — it paints nothing but eats a gap. Suppress
+   it and mark the current page with the button's own border/background instead. */
+.site-nav a.btn.active::after { display: none; }
+.site-nav a.btn.active { border-color: rgba(245,158,11,.55); background: rgba(245,158,11,.10); }
+.site-nav a.btn.active:hover { border-color: rgba(245,158,11,.75); background: rgba(245,158,11,.16); }
 .site-nav .nav-group + .btn { margin-left: 18px; }
 .site-nav .btn + .btn { margin-left: -16px; }
 .site-nav a[href="/pypi.html"] svg { stroke: #5b9eff; width: 18px; height: 18px; }
@@ -277,6 +289,8 @@ pre.code .n { color: #c9a3ff; }                           /* number/const */
 .grid > * { min-width: 0; }
 .grid-2 { grid-template-columns: repeat(2, 1fr); }
 .grid-3 { grid-template-columns: repeat(3, 1fr); }
+/* 4-up group: steps 4 → 2 → 1 so a four-card set never leaves an orphan cell */
+.grid-4 { grid-template-columns: repeat(4, 1fr); }
 /* "PDF" chip for downloadable-document cards */
 .pdf-tag { display: inline-block; margin-left: .5em; padding: 2px 6px; font-size: .6em; font-weight: 800; letter-spacing: .06em; vertical-align: middle; color: var(--accent-ink); background: rgba(245,158,11,.12); border: 1px solid rgba(245,158,11,.38); border-radius: 5px; }
 .card {
@@ -338,7 +352,8 @@ pre.code .n { color: #c9a3ff; }                           /* number/const */
 table.cmp { width: 100%; border-collapse: collapse; min-width: 720px; background: #fff; }
 table.cmp th, table.cmp td { text-align: left; padding: 15px 18px; border-bottom: 1px solid var(--border); vertical-align: top; font-size: .96rem; }
 table.cmp thead th { background: var(--ink); color: #fff; font-weight: 700; letter-spacing: -.01em; }
-table.cmp thead th.us { background: linear-gradient(180deg, #1a2740, #0b1220); }
+table.cmp thead th.us { background: linear-gradient(180deg, var(--ink-3), var(--ink)); }
+table.cmp thead th small { display: block; font-weight: 600; color: var(--muted-hd); }
 table.cmp thead th.us small { display: block; color: var(--accent); font-weight: 700; font-size: .72rem; letter-spacing: .1em; text-transform: uppercase; }
 table.cmp tbody th { font-weight: 700; color: var(--text); background: var(--surface-2); white-space: nowrap; }
 table.cmp td.us { background: #fffaf1; font-weight: 600; color: var(--text); }
@@ -455,7 +470,12 @@ table.cmp.feat tbody th code, table.cmp.feat td code { white-space: nowrap; }
 .vs-lbl--wedge { color: var(--accent-2); }
 .vs-lbl--win   { color: #2f6f4f; }
 .vs-row--wedge { border-left: 3px solid var(--accent); background: #fffaf1; }
-.vs-row--win   { background: #f6f8fb; }
+.vs-row--win   { background: var(--surface-2); }
+
+/* ------------------------------------------------------------ status text */
+.st-ok   { color: var(--status-ok);   font-weight: 600; }
+.st-warn { color: var(--status-warn); font-weight: 600; }
+.st-bad  { color: var(--status-bad);  font-weight: 600; }
 
 /* ------------------------------------------------------------------ sources / disclosure */
 .sources { margin-top: 18px; border: 1px solid var(--border); border-radius: var(--radius-sm); background: #fff; }
@@ -489,7 +509,7 @@ table.cmp.feat tbody th code, table.cmp.feat td code { white-space: nowrap; }
 /* ------------------------------------------------------------------ responsive */
 @media (max-width: 920px) {
   .hero-inner { grid-template-columns: 1fr; gap: 36px; padding: 60px 0 64px; }
-  .grid-3 { grid-template-columns: repeat(2, 1fr); }
+  .grid-3, .grid-4 { grid-template-columns: repeat(2, 1fr); }
   .footer-grid { grid-template-columns: 1fr 1fr; }
 }
 @media (max-width: 1040px) {
@@ -517,7 +537,7 @@ table.cmp.feat tbody th code, table.cmp.feat td code { white-space: nowrap; }
 }
 @media (max-width: 760px) {
   body { font-size: 16px; }
-  .grid-2, .grid-3 { grid-template-columns: 1fr; }
+  .grid-2, .grid-3, .grid-4 { grid-template-columns: 1fr; }
   .pipe-arrow { transform: rotate(90deg); padding: 4px 0; width: 100%; }
   .pipe-node { flex-basis: 100%; }
   .cta-band { padding: 34px 22px; }

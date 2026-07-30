@@ -44,7 +44,7 @@
     "@type": "FAQPage",
     "mainEntity": [
       { "@type": "Question", "name": "What is MLLP?", "acceptedAnswer": { "@type": "Answer", "text": "MLLP (Minimal Lower Layer Protocol) is the standard framing used to send HL7 v2 messages over TCP. It wraps each message in start and end blocks so the receiver knows where one message ends and the next begins — it's how most HL7 v2 interfaces exchange messages." } },
-      { "@type": "Question", "name": "Does MessageFoundry support MLLP over TLS?", "acceptedAnswer": { "@type": "Answer", "text": "Yes. MessageFoundry supports MLLP-over-TLS, with TLS enabled by default for connections whose peer supports it. Where an older endpoint can't speak TLS, plaintext MLLP is supported within your organization's secure network perimeter, which remains HIPAA-compliant." } },
+      { "@type": "Question", "name": "Does MessageFoundry support MLLP over TLS?", "acceptedAnswer": { "@type": "Answer", "text": "Yes. MessageFoundry supports MLLP-over-TLS, with TLS enabled by default for connections whose peer supports it. Where an older endpoint can't speak TLS, plaintext MLLP is supported within your organization's secure network perimeter, which can still support a HIPAA-compliant deployment." } },
       { "@type": "Question", "name": "How do I receive HL7 over MLLP in Python?", "acceptedAnswer": { "@type": "Answer", "text": "Declare an inbound MLLP connection in a Python config module — inbound('IB_Lab', MLLP(port=2575), router='oru_router') — then write a router and handler to process each message. MessageFoundry runs the listener and hands every message to your code." } }
     ]
   }
@@ -196,7 +196,7 @@ pip install messagefoundry</pre>
       </div>
 
       <h2>MLLP over TLS</h2>
-      <p>MessageFoundry supports <b>MLLP-over-TLS</b>, and <b>TLS is enabled by default</b> for connections whose peer supports it — so HL7 traffic is encrypted in transit without extra work. Many older ancillary systems still can't speak TLS; for those, MessageFoundry also supports <b>plaintext MLLP</b>, which remains HIPAA-compliant when it stays inside your organization's <b>secure network perimeter</b>. You choose per connection. The exact certificate and TLS settings live in the <a href="/assets/docs/MessageFoundry-Configuration.pdf" target="_blank" rel="noopener">Configuration reference</a> and the <a href="/assets/docs/MessageFoundry-Deployment-Guide.pdf" target="_blank" rel="noopener">Deployment &amp; network-exposure guide</a>.</p>
+      <p>MessageFoundry supports <b>MLLP-over-TLS</b>, and <b>TLS is enabled by default</b> for connections whose peer supports it — so HL7 traffic is encrypted in transit without extra work. Many older ancillary systems still can't speak TLS; for those, MessageFoundry also supports <b>plaintext MLLP</b>, which can still support a HIPAA-compliant deployment when it stays inside your organization's <b>secure network perimeter</b>. You choose per connection. The exact certificate and TLS settings live in the <a href="/assets/docs/MessageFoundry-Configuration.pdf" target="_blank" rel="noopener">Configuration reference</a> and the <a href="/assets/docs/MessageFoundry-Deployment-Guide.pdf" target="_blank" rel="noopener">Deployment &amp; network-exposure guide</a>.</p>
 
       <div class="callout" style="margin-top:30px">
         <p style="margin:0"><strong>Why route HL7 in code?</strong> Because your interfaces become ordinary Python — diffable, reviewable, unit-testable, and driven by one config repo across Test and Production. <a href="/comparison.html">See how that compares to channel-based engines →</a></p>
@@ -230,7 +230,7 @@ pip install messagefoundry</pre>
       <div class="center" style="margin-bottom:28px"><span class="eyebrow">FAQ</span><h2>Frequently asked questions</h2></div>
       <div class="faq">
         <div class="faq-item"><h3>What is MLLP?</h3><p>MLLP (Minimal Lower Layer Protocol) is the standard framing used to send HL7 v2 messages over TCP. It wraps each message in start and end blocks so the receiver knows where one message ends and the next begins — it's how most HL7 v2 interfaces exchange messages.</p></div>
-        <div class="faq-item"><h3>Does MessageFoundry support MLLP over TLS?</h3><p>Yes. MessageFoundry supports MLLP-over-TLS, with TLS enabled by default for connections whose peer supports it. Where an older endpoint can't speak TLS, plaintext MLLP is supported within your organization's secure network perimeter, which remains HIPAA-compliant.</p></div>
+        <div class="faq-item"><h3>Does MessageFoundry support MLLP over TLS?</h3><p>Yes. MessageFoundry supports MLLP-over-TLS, with TLS enabled by default for connections whose peer supports it. Where an older endpoint can't speak TLS, plaintext MLLP is supported within your organization's secure network perimeter, which can still support a HIPAA-compliant deployment.</p></div>
         <div class="faq-item"><h3>How do I receive HL7 over MLLP in Python?</h3><p>Declare an inbound MLLP connection in a Python config module — inbound('IB_Lab', MLLP(port=2575), router='oru_router') — then write a router and handler to process each message. MessageFoundry runs the listener and hands every message to your code.</p></div>
       </div>
     </div>

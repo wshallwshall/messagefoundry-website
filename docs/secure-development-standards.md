@@ -101,7 +101,7 @@ SSDF organizes secure development into four practice groups: **Prepare the Organ
   - **File-handler interfaces** — confine reads/writes to configured directories and canonicalize paths (reject `../` traversal and symlink escapes); validate file type and size by content, not extension; use atomic write-then-rename so partial files are never processed; least-privilege storage, never an executable or web-served path; never execute file contents; scan inbound files for malware where feasible; encrypt sensitive files at rest and securely delete after processing per retention.
   - **Cryptography** — TLS for all network communication; encryption at rest for sensitive data; approved algorithms and libraries; use FIPS-validated crypto where a deployment requires it.
   - **Secrets** — never in code, prompts, or commit history; sourced from environment/secret store; enforced by pre-commit and CI secret scanning.
-  - **Error handling and logging** — fail closed; never log secrets or sensitive data; produce a tamper-resistant, timestamped audit log.
+  - **Error handling and logging** — fail closed; never log secrets or sensitive data; produce a tamper-evident, timestamped audit log.
 - **Secure build configuration (PW.6).** Reproducible builds; security-relevant build/interpreter and dependency settings fixed in the pipeline.
 - **Code review and analysis (PW.7).** Every change is peer-reviewed; static analysis (SAST) and software composition analysis (SCA) run in CI (§6.2). Review also confirms the change conforms to its spec's acceptance criteria — see **§5** (analyze, cross-artifact coverage); recommended.
 - **Test executable code (PW.8).** A maintained automated test suite runs on every change; security test cases are included. Tests SHOULD trace to the spec's acceptance criteria (**§5**, executable acceptance criteria) so coverage is mechanical, not prose. Test *quality* — not just presence — is judged per the [Code Quality & Anti-Slop Standards](Code_Quality_Standards.md): behavior-verifying assertions over mock choreography, with mutation testing as *guidance*. Heed its **anti-metric rule** — **never gate quality on line-coverage % alone** (a gameable slop-hiding place); measure structure and behavior, not a single scoreboard.
@@ -228,7 +228,7 @@ These control areas summarize the software's security posture. Each is verified 
 |---|---|---|
 | **Access control** | Least-privilege, role-based access; deny by default | V8 Authorization |
 | **Authentication** | Authenticated access enforced on every action; strong credential handling; interface mechanisms per §7.4 | V6 Authentication (V9/V10 when tokens/OAuth are introduced) |
-| **Audit & accountability** | Tamper-resistant, timestamped audit logging; no sensitive data in logs | V16 Security Logging and Error Handling |
+| **Audit & accountability** | Tamper-evident, timestamped audit logging; no sensitive data in logs | V16 Security Logging and Error Handling |
 | **Communications & data protection** | TLS in transit; encryption at rest; trust-boundary enforcement | V11 Cryptography; V12 Secure Communication; V14 Data Protection |
 | **System & information integrity** | Input validation; flaw remediation (RV); message/data integrity and durability | V1/V2 Validation; V15 Secure Coding and Architecture |
 | **Configuration management** | Version control, reviewed changes, secure-default configuration, SBOM | V13 Configuration |
@@ -243,7 +243,7 @@ These control areas summarize the software's security posture. Each is verified 
 | **Administrative** | Security management, risk analysis, workforce/access management | This standard; least-privilege access; *deployer's risk analysis* | V8, V15 |
 | **Physical** | Facility and device controls | *Deployer's environment* | (Deployer) |
 | **Technical — Access Control** | Unique user ID, authentication, automatic logoff | Authenticated, role-based access; session controls | V6, V7, V8 |
-| **Technical — Audit Controls** | Record and examine activity | Tamper-resistant, timestamped audit log | V16 |
+| **Technical — Audit Controls** | Record and examine activity | Tamper-evident, timestamped audit log | V16 |
 | **Technical — Integrity** | Protect data from improper alteration/destruction | Input validation; durable, ordered processing | V1, V2 |
 | **Technical — Transmission Security** | Protect data in transit | TLS for all sensitive transport | V12 |
 | **(Addressable) Encryption** | Encrypt sensitive data at rest and in transit | Encryption at rest and in transit | V11, V14 |
@@ -317,7 +317,7 @@ The project maintains a current evidence set so any claim is backed:
 
 ### A.1 Project summary
 
-MessageFoundry (MEFOR) is an open-source **HL7 v2.x integration engine** — a candidate alternative to commercial engines (Corepoint, Mirth Connect, Rhapsody, Cloverleaf). It routes and transforms clinical messages between systems.
+MessageFoundry (MEFOR) is an open-source **HL7 v2.x interface engine** — a candidate alternative to commercial engines (Corepoint, Mirth Connect, Rhapsody, Cloverleaf). It routes and transforms clinical messages between systems.
 
 **Technology stack:** Python 3.14+, FastAPI/uvicorn, aiosqlite/SQLite (WAL), `python-hl7`/`hl7apy`, PySide6 (desktop UI), Windows/PowerShell deployment; MLLP transport with native MLLP-over-TLS (opt-in via cert config — ADR 0002); application-layer AES-256-GCM encryption at rest (database-native where the backend provides it). Durable message store with FIFO/per-key ordering and dead-letter handling.
 
@@ -349,7 +349,7 @@ MessageFoundry (MEFOR) is an open-source **HL7 v2.x integration engine** — a c
 | V13 | Configuration | Yes | Secure-by-default; secrets management; SBOM |
 | V14 | Data Protection | Yes | PHI minimization, encryption, no PHI in logs |
 | V15 | Secure Coding and Architecture | Yes | Threat modeling, secure design, vetted components |
-| V16 | Security Logging and Error Handling | Yes | Tamper-resistant audit log; fail-closed errors; no PHI/secrets in logs |
+| V16 | Security Logging and Error Handling | Yes | Tamper-evident audit log; fail-closed errors; no PHI/secrets in logs |
 | V17 | WebRTC | **No** | Not applicable — no WebRTC; documented exclusion |
 
 *In scope: 12 chapters active today (V1, V2, V4–V8, V11–V16). V10 (OAuth/OIDC) is now **partly active** — outbound OAuth 2.0 client-credentials / SMART on FHIR are built (ADR 0024); inbound OAuth/OIDC remains N/A. V9 (JWT) is in scope when JWT is introduced — currently N/A. Documented exclusions: V3, V17.*

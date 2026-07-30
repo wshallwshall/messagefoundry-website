@@ -103,7 +103,7 @@
       </div>
       <figure style="margin:44px auto 0;max-width:1080px">
         <img src="/assets/img/console.png" width="2220" height="1080" alt="The MessageFoundry monitoring console showing the live Connections dashboard: a left sidebar (Connections, Alerts, Dead Letters, Log Search, Engine Status, Users) and a table of interfaces with a status badge each — RUNNING, DEGRADED, FAILED, STOPPED — plus direction, method, per-connection logs, idle time, and counts for errored, read and written messages, queue depth, and backlog. The header shows the signed-in admin and a 2-second auto-refresh." style="width:100%;height:auto;display:block;border:1px solid var(--border-dk);border-radius:12px;box-shadow:var(--shadow-lg)">
-        <figcaption style="margin-top:14px;color:var(--muted);font-size:.92rem;text-align:center;max-width:760px;margin-inline:auto">The throughput column here is live from the engine — the same per-interface rate we quote elsewhere (a measured ~50 messages/second on commodity hardware). What the dashboard shows is what the engine is actually doing, refreshed every couple of seconds. <a href="/throughput/">How throughput really works →</a></figcaption>
+        <figcaption style="margin-top:14px;color:var(--muted-dk);font-size:.92rem;text-align:center;max-width:760px;margin-inline:auto">Every counter here is live from the engine — messages read, written, and errored per connection, plus queue depth and backlog — refreshed every couple of seconds, so what the dashboard shows is what the engine is actually doing. Nothing is counted that wasn't durably stored first: messages are persisted before they're acknowledged, then delivered at-least-once, so nothing is silently dropped. <a href="/throughput/">How throughput really works →</a></figcaption>
       </figure>
     </div>
   </section>
@@ -118,7 +118,7 @@
         <p>Click into any connection's logs, or select one and start, stop, or run an action — the controls are right there, gated by your role.</p>
       </div>
       <ul class="feature-list">
-        <li><b>Status at a glance</b> — <span style="color:#15803d;font-weight:600">RUNNING</span>, <span style="color:#b45309;font-weight:600">DEGRADED</span>, <span style="color:#b91c1c;font-weight:600">FAILED</span>, or <span style="color:#b91c1c;font-weight:600">STOPPED</span> — and a <code>SIM</code> tag when a destination is running in simulation.</li>
+        <li><b>Status at a glance</b> — <span class="st-ok">RUNNING</span>, <span class="st-warn">DEGRADED</span>, <span class="st-bad">FAILED</span>, or <span class="st-bad">STOPPED</span> — and a <code>SIM</code> tag when a destination is running in simulation.</li>
         <li><b>Throughput, per connection</b> — messages read, written, and errored, so a climbing error count is obvious immediately.</li>
         <li><b>Queue depth &amp; backlog</b> — see exactly where messages are piling up, and how far behind a slow peer has fallen.</li>
         <li><b>Per-connection logs</b> — jump straight from a row to that interface's log stream.</li>
