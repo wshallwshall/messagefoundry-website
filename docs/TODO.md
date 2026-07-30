@@ -31,30 +31,24 @@ Living list of follow-ups for the marketing site. Keep it short; delete items wh
 
 `security.html` links the **Secure Development Standards** PDF
 (`assets/MessageFoundry-Secure-Development-Standards.pdf`). Source of truth is the markdown at
-`docs/secure-development-standards.md` (mirrored from the engine owner's
-`Secure_Development_Standards.md`; the website copy has the status set to **Draft (v0.7)**, distinct from the engine source's "Draft for
-review"). Regenerate after edits — render the markdown to a branded HTML page, then print it to PDF:
+`docs/secure-development-standards.md`, mirrored from the engine owner's
+`Secure_Development_Standards.md`.
 
-1. `python` + `markdown` (extensions: `tables`, `fenced_code`, `sane_lists`) wrapped in the branded
-   print-CSS template → a temp `docs/_standards-src.html`.
-2. Print that to PDF, then delete the temp HTML:
+**Regenerate it the same way as every other doc PDF — there is only one route now:**
 
-       chrome --headless=new --disable-gpu --no-pdf-header-footer \
-         --user-data-dir="$(mktemp -d)" \
-         --print-to-pdf="C:/ABSOLUTE/PATH/assets/MessageFoundry-Secure-Development-Standards.pdf" \
-         "file:///C:/ABSOLUTE/PATH/docs/_standards-src.html"
+```bash
+cd assets/docs/_md
+python render_pdf.py Secure-Development-Standards      # or --all for the whole set
+```
 
-   **Gotcha (cost an hour once):** `--print-to-pdf` must be an **absolute** path. Chrome resolves a
-   *relative* output path against its own working directory (not the shell's) and silently writes
-   nothing while exiting 0 — so the old PDF stays and any content-based check passes falsely. Use an
-   absolute output path (or write to a temp file and move it into `assets/`), and pass
-   `--user-data-dir` to a throwaway dir so an already-running Chrome doesn't swallow the headless call.
-   To highlight scores, wrap them in `<mark class="asvs-clean">` (green) in the rendered HTML and keep
-   `print-color-adjust: exact` so it prints. The branded print-CSS template can be recovered from the
-   retired `docs/security-posture-summary.html` in git history.
+`assets/docs/_md/render_pdf.py` + `_pdf-template.html` are the **canonical** renderer and branded
+template; see `assets/docs/_md/README.md`. Don't hand-roll a chrome invocation — the script already
+handles the absolute-`--print-to-pdf` trap, UTF-8 decoding, and the blank-line-before-tables quirk, and
+it verifies each render before accepting it.
 
 (The earlier sanitized **posture-summary** PDF and its `docs/security-posture-summary.html` source were
-retired when the standards-led page shipped.)
+retired when the standards-led page shipped. The old manual recipe that used to live here — including
+"recover the print-CSS template from git history" — is obsolete: the template is now committed.)
 
 Open: decide whether to promote the security page from the footer into the top nav.
 
