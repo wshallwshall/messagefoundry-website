@@ -218,14 +218,38 @@ function Get-CoordBase([string]$WorktreePath) {
     return $null
 }
 
-# Repo-relative, normalised paths a worktree has touched: committed on its branch plus anything
-# uncommitted. Uncommitted matters most -- it is the work in flight right now.
+<#
+    Repo-relative paths a worktree is changing: committed on its branch plus anything uncommitted.
+    Uncommitted matters most -- it is the work in flight right now.
+
+    THE COMMITTED HALF IS AN INTERSECTION OF TWO DIFFS, AND IT HAS TO BE. Neither alone is right:
+
+      three-dot (base...HEAD)  what this branch AUTHORED. Survives a squash merge -- the squashed
+                               commit is not an ancestor of the branch, so the merge-base never moves
+                               and the branch is credited with its files forever. Caught in testing
+                               2026-07-30: a session whose PR had just merged still blocked 31 files.
+      two-dot   (base HEAD)    what still DIFFERS from main. Zero after a squash merge, correctly --
+                               but a branch merely behind main also "differs" on every file main
+                               advanced, which would blame it for other people's work.
+
+    Authored AND still differing is the honest definition of in-flight, and it self-clears the moment
+    the work lands however it lands -- squash, rebase or merge commit.
+#>
 function Get-CoordChangedFiles([string]$WorktreePath) {
     $files = @()
     $base = Get-CoordBase $WorktreePath
     if ($base) {
-        $committed = & git -C $WorktreePath diff --name-only "$base...HEAD" 2>$null
-        if ($LASTEXITCODE -eq 0 -and $committed) { $files += $committed }
+        $authored = @(& git -C $WorktreePath diff --name-only "$base...HEAD" 2>$null)
+        if ($LASTEXITCODE -eq 0 -and $authored.Count -gt 0) {
+            $differs = @(& git -C $WorktreePath diff --name-only $base HEAD 2>$null)
+            if ($LASTEXITCODE -eq 0) {
+                $stillDiffers = @{}
+                foreach ($d in $differs) { $stillDiffers[(ConvertTo-CoordNorm $d)] = $true }
+                $files += @($authored | Where-Object { $stillDiffers[(ConvertTo-CoordNorm $_)] })
+            } else {
+                $files += $authored
+            }
+        }
     }
     $dirty = & git -C $WorktreePath status --porcelain 2>$null
     if ($LASTEXITCODE -eq 0 -and $dirty) {
