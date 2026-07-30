@@ -45,6 +45,44 @@ repo). It is **not** the engine. Served at https://messagefoundry.org via GitHub
     capability claims should still match the v0.1 target (don't claim something v0.1 won't do).
 - **Do not delete `CNAME`** — it binds the custom domain on every Pages deploy.
 
+## Parallel sessions
+
+Several Claude sessions usually work this repo at once, in sibling worktrees under
+`.claude/worktrees/`. Two things enforce coordination, and they cover different halves:
+
+- **Hooks (deterministic).** A `SessionStart` banner lists who is live and what files they are
+  changing; a `PreToolUse` gate **denies** an edit to a file another live session is already
+  changing. Both are wired at user level and resolve `scripts/worktree/session-context.ps1` and
+  `scripts/hooks/collision_gate.ps1` from this repo — **those two paths are load-bearing; renaming
+  them silently disables coordination.** The gate fails open on any error.
+- **`ccd_session_mgmt` (yours).** Hooks are shell commands and **cannot call MCP tools**, so
+  anything needing a peer's *conversation* is on you.
+
+**When the gate blocks you, do not just retry or route around it.** Call `list_sessions`, find the
+peer by `cwd`/`branch`, then `list_events` to read what it actually concluded — it may already be
+doing what you were about to start. Then either `send_message` to hand off, pick different work, or
+ask the user to arbitrate.
+
+- **`list_sessions` is incomplete — the banner is the authoritative roster.** It enumerates only
+  desktop-spawned sessions; a VS Code session in this repo is absent from it entirely (verified
+  2026-07-30: 4 listed vs 6 in the on-disk registry). Never conclude "nobody else is here" from it.
+  Non-desktop sessions also cannot receive `send_message` — coordinate via the PR or the user.
+- **`send_message` lands as a user turn** in the other session, so it interrupts a person's work.
+  Use it to hand off context or flag a collision, not to orchestrate background jobs.
+- **Never call `archive_session` speculatively** — only when the user has asked to archive that
+  specific session.
+- **Never edit files in a sibling worktree**, and keep all changes on this worktree's branch.
+- **The AI memory directory is shared across every session** (last write wins). Read freely; only
+  write when the user has said this session owns memory updates.
+- Watch the shared surfaces — `assets/css/styles.css`, `sitemap.xml`, this file, and the header and
+  footer duplicated into every page. Site-wide sweeps are where parallel sessions collide.
+
+Roster and overlap on demand:
+
+```bash
+pwsh -NoProfile -File scripts/coord/sessions.ps1
+```
+
 ## Preview & deploy
 
 ```bash
@@ -56,6 +94,8 @@ Deployment + DNS details: [`docs/DEPLOYMENT.md`](docs/DEPLOYMENT.md).
 
 ## Don't
 
-- Don't add a bundler, SSG, Tailwind, or npm — this site is intentionally dependency-free.
+- Don't add a bundler, SSG, Tailwind, or npm — this site is intentionally dependency-free. That rule
+  is about what gets **served**; `scripts/` is local dev tooling, ships nothing, and is not a
+  violation of it. Don't prune it as one.
 - Don't hardcode colors; use the CSS variables.
 - Don't copy PHI or real message data into examples — sample HL7 is synthetic only.
