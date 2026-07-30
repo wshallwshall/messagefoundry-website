@@ -253,9 +253,51 @@
         <li><b>Token-less publishing</b> — releases are published to PyPI through OIDC-based <b>Trusted Publishing</b>, with no long-lived token to steal.</li>
         <li><b>Reproducible installs</b> — pin a fully hash-locked dependency set and install with <code>--require-hashes</code>.</li>
         <li><b>CI security gates</b> — SAST, software-composition analysis, and secret scanning run on every change; builds fail on new high / critical findings.</li>
-        <li><b>Reviewed, protected code</b> — branch protection, required peer review, signed commits, and no direct commits to main; a published <code>SECURITY.md</code> with a private reporting channel feeds tracked, coordinated disclosure.</li>
+        <li><b>Reviewed, protected code</b> — branch protection, required peer review, signed commits, and no direct commits to main; a published <a href="https://github.com/MEFORORG/MessageFoundry/security/policy" target="_blank" rel="noopener"><code>SECURITY.md</code></a> with a <a href="#report">private reporting channel</a> feeds tracked, coordinated disclosure.</li>
         <li><b>No real PHI in development</b> — synthetic or de-identified data only, on disk-encrypted developer machines.</li>
       </ul>
+    </div>
+  </section>
+
+  <!-- coordinated disclosure / report a vulnerability -->
+  <section class="section section--alt" id="report">
+    <div class="container">
+      <div class="center" style="margin-bottom:34px">
+        <span class="eyebrow">Coordinated disclosure</span>
+        <h2>Found a vulnerability? Report it privately.</h2>
+        <p class="lead center">A security flaw shouldn't have to be posted in public to reach us. MessageFoundry runs a private reporting channel with published response targets — report it confidentially, and we'll fix it before any detail is public.</p>
+      </div>
+      <div class="grid grid-2" style="align-items:start">
+        <div class="card">
+          <h3>How to report</h3>
+          <p><b>Please don't open a public issue for a vulnerability.</b> Use the private channel below — a report there stays visible only to maintainers until a fix ships.</p>
+          <ul class="feature-list" style="margin-top:18px">
+            <li><b>What to include</b> — the affected component (MLLP or file transport, store, API and auth, console), the impact, and reproduction steps or a proof of concept.</li>
+            <li><b>No real PHI, ever</b> — use synthetic HL7; the <code>messagefoundry generate</code> corpus is ideal.</li>
+            <li><b>Check it against current <code>main</code></b> — the project is pre-1.0 and moving quickly, so the latest <code>main</code> is what we support and fix against.</li>
+            <li><b>No GitHub account?</b> Email <a href="mailto:security@messagefoundry.org">security@messagefoundry.org</a>. Plain email isn't encrypted end-to-end — send a short notice and we'll open a private channel for the detail.</li>
+          </ul>
+        </div>
+        <div class="card">
+          <h3>What happens next</h3>
+          <p>We aim to acknowledge within a few business days, then triage by severity. These are our targets to remediate, measured from triage — and fixes are verified before a report is closed.</p>
+          <ul class="feature-list" style="margin-top:18px">
+            <li><b>Critical</b> — remediated within 7 days.</li>
+            <li><b>High</b> — within 30 days.</li>
+            <li><b>Medium</b> — within 90 days.</li>
+            <li><b>Low</b> — best-effort.</li>
+          </ul>
+          <p style="margin-top:18px">Vulnerabilities in <b>third-party dependencies</b> run on their own clock — measured from when an upstream fix exists — and are prioritized by real exploitation pressure (CISA KEV first, then EPSS) rather than CVSS alone.</p>
+          <p style="margin-top:18px"><b>Then we disclose together.</b> We ask for a reasonable window to ship a fix before any public detail, and we agree the timing with you. Details are published once a fix is available — with credit to you by name, if you want it.</p>
+        </div>
+      </div>
+      <div class="btn-row" style="margin-top:30px;justify-content:center">
+        <a class="btn btn-primary" href="https://github.com/MEFORORG/MessageFoundry/security/advisories/new" target="_blank" rel="noopener">Report a vulnerability ↗</a>
+        <a class="btn btn-ghost" href="https://github.com/MEFORORG/MessageFoundry/security/policy" target="_blank" rel="noopener">Read the policy ↗</a>
+      </div>
+      <div class="callout" style="margin-top:28px;background:rgba(245,158,11,.07);border-color:rgba(245,158,11,.28);color:var(--muted-dk)">
+        <p><strong style="color:var(--accent)">Not a vulnerability?</strong> Ordinary bugs, questions, and feature requests are the opposite — they belong in the open, in <a href="https://github.com/MEFORORG/MessageFoundry/issues" target="_blank" rel="noopener" style="color:var(--accent)">GitHub Issues</a> or via the <a href="/contact.html" style="color:var(--accent)">contact form</a>. Keeping the private channel for genuine security flaws is what lets us hit the windows above.</p>
+      </div>
     </div>
   </section>
 
@@ -323,6 +365,7 @@
         <div class="faq-item"><h3>Is MessageFoundry self-hosted and on-premises?</h3><p>Yes. MessageFoundry runs entirely on your own servers, on-premises or in your private cloud. It installs from PyPI, starts zero-config on SQLite, and scales to PostgreSQL or SQL Server. Nothing is sent to a vendor service.</p></div>
         <div class="faq-item"><h3>How does MessageFoundry encrypt data?</h3><p>TLS is enabled by default — network connections use TLS 1.2+ (TLS 1.3 preferred), including MLLP-over-TLS. Some older ancillary systems can't speak TLS; MessageFoundry also supports plaintext transport for those, which can still support a HIPAA-compliant deployment inside your organization's secure network perimeter. At rest, message bodies are encrypted with AES-256-GCM.</p></div>
         <div class="faq-item"><h3>Has MessageFoundry been independently security audited?</h3><p>MessageFoundry publishes a self-assessment against OWASP ASVS 5.0 Level 3 (212 met, 0 failed, 0 partial, 133 N/A of 345) plus its Secure Development Standards. It has not yet had an independent external code review or penetration test — both are planned after Early Access.</p></div>
+        <div class="faq-item"><h3>How do I report a security vulnerability?</h3><p>Report it privately — please don't open a public issue. The preferred channel is a <a href="https://github.com/MEFORORG/MessageFoundry/security/advisories/new" target="_blank" rel="noopener">GitHub private security advisory</a> on the MessageFoundry repository, which stays visible only to maintainers until a fix is released. Include the affected component, the impact, and reproduction steps, using synthetic HL7 rather than real PHI. We aim to acknowledge within a few business days, and we target 7 days to remediate a critical issue.</p></div>
       </div>
     </div>
   </section>
@@ -370,6 +413,14 @@
       "acceptedAnswer": {
         "@type": "Answer",
         "text": "MessageFoundry publishes a self-assessment against OWASP ASVS 5.0 Level 3 (212 met, 0 failed, 0 partial, 133 N/A of 345) plus its Secure Development Standards. It has not yet had an independent external code review or penetration test — both are planned after Early Access."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "How do I report a security vulnerability?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Report it privately — please don't open a public issue. The preferred channel is a GitHub private security advisory on the MessageFoundry repository, which stays visible only to maintainers until a fix is released. Include the affected component, the impact, and reproduction steps, using synthetic HL7 rather than real PHI. We aim to acknowledge within a few business days, and we target 7 days to remediate a critical issue."
       }
     }
   ]
