@@ -1,0 +1,215 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>{{TITLE}} — MessageFoundry</title>
+<style>
+/* ===================================================================
+   MessageFoundry — branded print template for the documentation PDFs.
+
+   Rendered by render_pdf.py:  <Name>.md  ->  MessageFoundry-<Name>.pdf
+   Placeholders: {{TITLE}} {{VERSION}} {{DATE}} {{YEAR}} {{CONTENT}}
+
+   Brand rules encoded here (see the website's assets/css/styles.css):
+     - Colour tokens mirror :root in styles.css. Don't hardcode new ones.
+     - The "Foundry" wordmark accent (amber) is for the MASTHEAD ONLY.
+       Never accent the brand name in body copy.
+     - The trademark mark belongs to the logo lockup only.
+     - MEFOR-ORG is the legal entity; MessageFoundry is the product.
+   =================================================================== */
+
+:root {
+  --ink:        #0b1220;
+  --ink-2:      #111c2e;
+  --surface:    #ffffff;
+  --surface-2:  #f6f8fb;
+  --border:     #e3e8ef;
+  --text:       #0f172a;
+  --muted:      #51607a;
+  --accent:     #f59e0b;
+  --accent-ink: #7c2d12;
+  --tint-amber: #fff8ee;
+  --tint-amber-b:#fde6c2;
+  --font: "Segoe UI", -apple-system, BlinkMacSystemFont, Roboto, Helvetica, Arial,
+          "Segoe UI Emoji", sans-serif;
+  --mono: Consolas, "Cascadia Mono", "SFMono-Regular", "Liberation Mono", Menlo, monospace;
+}
+
+@page { size: Letter; margin: 16mm 15mm 18mm; }
+
+*, *::before, *::after { box-sizing: border-box; }
+
+html { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+
+body {
+  margin: 0;
+  font-family: var(--font);
+  font-size: 10.5pt;
+  line-height: 1.55;
+  color: var(--text);
+  background: var(--surface);
+  orphans: 3;
+  widows: 3;
+}
+
+/* ------------------------------------------------------------ masthead
+   Page-1 title block. NOT a running header — it appears once. */
+.masthead { margin: 0 0 22pt; }
+.masthead__lockup { display: flex; align-items: center; gap: 9pt; }
+.masthead__mark { width: 26pt; height: 26pt; flex: 0 0 auto; }
+.masthead__name {
+  font-size: 15pt; font-weight: 800; letter-spacing: -.02em; color: var(--ink);
+  line-height: 1;
+}
+/* MASTHEAD ONLY — never apply this in body copy. */
+.masthead__name .wordmark-accent { color: var(--accent); }
+.masthead__tm { font-size: .62em; vertical-align: super; font-weight: 600; color: var(--muted); }
+.masthead__kicker {
+  margin-left: auto; font-size: 7.5pt; font-weight: 700; letter-spacing: .13em;
+  text-transform: uppercase; color: var(--muted);
+}
+.masthead__rule {
+  height: 2.5pt; margin: 10pt 0 0; border-radius: 2pt;
+  background: linear-gradient(90deg, var(--accent) 0%, #f97316 100%);
+}
+.masthead__title {
+  margin: 16pt 0 4pt; font-size: 23pt; line-height: 1.12; font-weight: 800;
+  letter-spacing: -.022em; color: var(--ink);
+}
+.masthead__meta { font-size: 8.6pt; color: var(--muted); margin: 0; }
+.masthead__meta b { color: var(--accent-ink); font-weight: 700; }
+
+/* ------------------------------------------------------------ headings */
+h1, h2, h3, h4 { color: var(--ink); letter-spacing: -.015em; line-height: 1.2;
+                 break-after: avoid; page-break-after: avoid; }
+h1 { font-size: 17pt; font-weight: 800; margin: 20pt 0 8pt; }
+h2 {
+  font-size: 13.5pt; font-weight: 800; margin: 18pt 0 7pt;
+  padding-bottom: 4pt; border-bottom: 1pt solid var(--border);
+}
+h2::after {
+  content: ""; display: block; width: 34pt; height: 2pt; margin-top: 4pt;
+  margin-bottom: -6pt; background: var(--accent); border-radius: 2pt;
+}
+h3 { font-size: 11.4pt; font-weight: 700; margin: 14pt 0 5pt; }
+h4 { font-size: 10.5pt; font-weight: 700; margin: 12pt 0 4pt; color: var(--muted); }
+
+p { margin: 0 0 8pt; }
+strong, b { font-weight: 700; color: var(--ink); }
+em { font-style: italic; }
+a { color: var(--accent-ink); text-decoration: none; word-break: break-word; }
+
+ul, ol { margin: 0 0 9pt; padding-left: 16pt; }
+li { margin: 0 0 3pt; }
+li > ul, li > ol { margin-top: 3pt; }
+
+hr { border: 0; border-top: 1pt solid var(--border); margin: 16pt 0; }
+
+/* ------------------------------------------------------------ code */
+/* No border on inline code: long identifiers wrap mid-phrase in these docs, and a
+   boxed fragment on each line reads as visual noise. Tint alone is enough. */
+code {
+  font-family: var(--mono); font-size: .885em;
+  background: var(--surface-2); border-radius: 3pt;
+  padding: .8pt 2.5pt; color: var(--accent-ink);
+  overflow-wrap: break-word;
+}
+pre {
+  font-family: var(--mono); font-size: 8.6pt; line-height: 1.42;
+  background: var(--surface-2); border: .75pt solid var(--border);
+  border-left: 2.5pt solid var(--accent);
+  border-radius: 5pt; padding: 8pt 10pt; margin: 0 0 10pt;
+  white-space: pre-wrap; word-break: break-word; overflow-wrap: anywhere;
+}
+pre code { background: none; border: 0; padding: 0; font-size: inherit; }
+
+/* ------------------------------------------------------------ tables
+   These docs are table-heavy; keep rows intact and let long cells wrap. */
+table {
+  width: 100%; border-collapse: collapse; margin: 0 0 11pt;
+  font-size: 9pt; table-layout: auto;
+}
+thead { display: table-header-group; }      /* repeat header across pages */
+tr { break-inside: avoid; page-break-inside: avoid; }
+th, td {
+  border: .75pt solid var(--border); padding: 4.5pt 6pt;
+  text-align: left; vertical-align: top;
+  /* `overflow-wrap: break-word` breaks a word only when it cannot fit, and does NOT
+     shrink the column's min-content width. `word-break: break-word` / `anywhere` do,
+     which lets a settings-key column collapse to one character per line. */
+  overflow-wrap: break-word;
+}
+thead th {
+  background: var(--ink); color: #fff; font-weight: 700;
+  border-color: var(--ink);
+}
+tbody tr:nth-child(even) { background: var(--surface-2); }
+td code, th code { font-size: .84em; }
+
+/* ------------------------------------------------------------ callouts
+   Markdown blockquotes render as branded callouts. */
+blockquote {
+  margin: 0 0 11pt; padding: 8pt 11pt;
+  background: var(--tint-amber);
+  border: .75pt solid var(--tint-amber-b);
+  border-left: 3pt solid var(--accent);
+  border-radius: 5pt;
+  break-inside: avoid; page-break-inside: avoid;
+}
+blockquote > :last-child { margin-bottom: 0; }
+
+/* ------------------------------------------------------------ toc */
+.toc {
+  background: var(--surface-2); border: .75pt solid var(--border);
+  border-radius: 6pt; padding: 9pt 12pt; margin: 0 0 16pt; font-size: 9.3pt;
+}
+.toc > ul { margin: 0; padding-left: 13pt; }
+.toc ul ul { margin-top: 2pt; }
+.toc li { margin: 0 0 2pt; }
+.toc a { color: var(--text); }
+
+img, svg { max-width: 100%; }
+
+/* ------------------------------------------------------------ colophon
+   End-of-document block. NOT a running footer. */
+.colophon {
+  margin-top: 26pt; padding-top: 10pt;
+  border-top: 1.5pt solid var(--accent);
+  font-size: 8pt; line-height: 1.5; color: var(--muted);
+  break-inside: avoid; page-break-inside: avoid;
+}
+.colophon__line { margin: 0 0 4pt; }
+.colophon__line b { color: var(--ink); font-weight: 700; }
+.colophon__note { margin: 0; }
+</style>
+</head>
+<body>
+
+  <header class="masthead">
+    <div class="masthead__lockup">
+      <svg class="masthead__mark" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-label="MessageFoundry">
+        <rect x="2" y="2" width="60" height="60" rx="14" fill="#111c2e" stroke="#243349"/>
+        <svg x="13" y="21" width="38" height="22" viewBox="40.3 130.9 425.5 243.7" preserveAspectRatio="xMidYMid meet" fill="#f59e0b">
+          <path d="M0 0 C1.70479284 -0.0083016 1.70479284 -0.0083016 3.44402593 -0.0167709 C7.26665043 -0.03042492 11.08862739 -0.0153817 14.91123962 -0.00050354 C17.64585476 -0.00207774 20.38044607 -0.00963057 23.11505127 -0.01687622 C29.77981955 -0.03082113 36.44439858 -0.02324359 43.10915787 -0.00820064 C50.86662951 0.00864354 58.62405381 0.00545126 66.38153809 0.00170528 C80.21992742 -0.00417549 94.05822581 0.01000727 107.89659119 0.03465271 C121.33249826 0.05857878 134.76828383 0.06565545 148.20420837 0.05516052 C162.8276474 0.04375851 177.45103021 0.041812 192.07446855 0.05625862 C193.63289193 0.0577845 195.19131531 0.05930485 196.74973869 0.06081963 C197.51655926 0.06157744 198.28337983 0.06233525 199.07343738 0.06311603 C204.48423958 0.06786405 209.89501673 0.0660038 215.30581856 0.06175423 C221.89658112 0.05683427 228.48722867 0.06278195 235.07796485 0.08264852 C238.4424289 0.09253931 241.80657063 0.09600492 245.17106628 0.08975601 C248.81337154 0.08383759 252.45515409 0.09624252 256.09741211 0.11352539 C257.16762873 0.10751535 258.23784536 0.1015053 259.34049278 0.09531313 C260.79832827 0.10797304 260.79832827 0.10797304 262.28561497 0.12088871 C263.12680553 0.12191784 263.96799609 0.12294697 264.83467728 0.12400728 C267.50601051 0.59255165 268.35687364 1.36598105 269.98521423 3.50120544 C271.75673747 8.81577515 271.21081713 14.55868157 271.22544861 20.1247406 C271.23514952 22.36128498 271.26618195 24.59690806 271.29771423 26.83323669 C271.30424539 28.26161668 271.30949542 29.6900032 271.31333923 31.11839294 C271.32268494 32.41373962 271.33203064 33.7090863 271.34165955 35.04368591 C270.96244009 38.72211459 270.21081382 40.58511139 267.98521423 43.50120544 C263.8702737 45.84835564 259.23731782 46.13336148 254.61021423 46.75120544 C228.59007977 50.60809959 202.00351155 58.68088795 178.98521423 71.50120544 C177.93720642 72.06323669 176.88919861 72.62526794 175.80943298 73.20433044 C156.78148365 83.76718688 139.43734772 99.03249939 132.98521423 120.50120544 C129.8202608 134.58872865 130.28413997 150.08384159 137.98521423 162.50120544 C146.96629342 176.45220645 163.81809986 186.82197842 179.98521423 190.50120544 C183.27868639 190.95176519 186.5625946 191.36571786 189.87193298 191.68089294 C193.83270128 192.72450818 196.72570069 194.05144234 198.98521423 197.50120544 C199.78659609 201.1932188 199.68802065 204.74000897 199.54771423 208.50120544 C199.54578064 209.48604919 199.54384705 210.47089294 199.54185486 211.48558044 C199.37426256 220.67212123 199.37426256 220.67212123 195.98521423 224.50120544 C192.56247763 226.70578594 189.66413107 226.76977144 185.6436615 226.80760193 C183.71629906 226.83158302 183.71629906 226.83158302 181.75 226.85604858 C180.3505442 226.86242481 178.95108363 226.8678177 177.55162048 226.87229919 C176.11199857 226.88126947 174.6723776 226.89039139 173.23275757 226.8996582 C170.21752154 226.91613154 167.20239634 226.92384548 164.18711853 226.92674255 C160.32878733 226.93213015 156.47150122 226.96983077 152.61346531 227.01548672 C149.64083066 227.04526744 146.66844766 227.05246628 143.6956768 227.0534687 C142.27351523 227.05766774 140.85135269 227.07008967 139.42933846 227.09098625 C137.43845906 227.11791821 135.44720088 227.10996542 133.4561615 227.10057068 C132.32461136 227.10564133 131.19306122 227.11071198 130.02722168 227.11593628 C126.03903165 226.31000026 124.59300008 224.5419647 121.98521423 221.50120544 C112.29909541 211.68265922 100.23919896 205.70521745 86.33677673 205.23558044 C84.76127421 205.22636986 83.18562511 205.23187723 81.61021423 205.25120544 C80.35760803 205.2657074 80.35760803 205.2657074 79.07969666 205.28050232 C65.63056256 205.54187894 52.42723256 208.61281366 42.25474548 218.02854919 C40.90835485 219.58094495 39.60452516 221.17243399 38.36802673 222.81370544 C37.91169861 223.37058044 37.45537048 223.92745544 36.98521423 224.50120544 C36.32521423 224.50120544 35.66521423 224.50120544 34.98521423 224.50120544 C34.98521423 225.16120544 34.98521423 225.82120544 34.98521423 226.50120544 C26.33596591 226.61714852 17.6869858 226.70594488 9.0371294 226.7602663 C5.02043995 226.78634051 1.00428285 226.82169723 -3.01210022 226.87840271 C-6.88952158 226.93280253 -10.76643152 226.96264236 -14.64420509 226.97559166 C-16.1222215 226.98481746 -17.60021048 227.00283402 -19.07800865 227.02985573 C-21.15153951 227.06625632 -23.2229683 227.07114684 -25.29676819 227.0688324 C-26.47591293 227.07993546 -27.65505768 227.09103851 -28.86993408 227.10247803 C-32.95922231 226.3206361 -34.43912215 224.69896634 -37.01478577 221.50120544 C-37.66175842 218.80979919 -37.66175842 218.80979919 -37.67884827 215.93870544 C-37.68529358 214.89456482 -37.69173889 213.85042419 -37.69837952 212.77464294 C-37.67904358 211.69440857 -37.65970764 210.61417419 -37.63978577 209.50120544 C-37.6591217 208.42097107 -37.67845764 207.34073669 -37.69837952 206.22776794 C-37.66829247 201.35366607 -37.63497822 198.41523229 -34.85462952 194.31761169 C-31.68725704 192.29171321 -29.67803579 191.76649758 -25.95228577 191.43870544 C-8.43393333 189.27108028 9.25022428 180.58547393 20.36021423 166.56370544 C28.64459145 154.54417549 31.78310495 142.25287296 29.55552673 127.69261169 C26.63517805 116.42583437 19.47046382 107.3954071 9.85240173 101.10667419 C4.5141676 98.11183436 -0.94308524 96.68432498 -6.86244202 95.35667419 C-7.64816589 95.17632629 -8.43388977 94.99597839 -9.24342346 94.81016541 C-11.16621557 94.36947987 -13.09036786 93.93473622 -15.01478577 93.50120544 C-15.10741534 81.96619854 -15.17851509 70.43127993 -15.22203445 58.89597702 C-15.24292031 53.53980637 -15.2712564 48.18388993 -15.31654358 42.8278656 C-15.35996537 37.66018928 -15.38391535 32.49275768 -15.39429474 27.32491302 C-15.40169268 25.35209042 -15.41613896 23.37928139 -15.43770599 21.40656281 C-15.4666912 18.64582241 -15.47074382 15.88609664 -15.46888733 13.12522888 C-15.49045898 11.89847694 -15.49045898 11.89847694 -15.51246643 10.64694214 C-15.48919038 7.45371034 -15.34984818 5.05311119 -13.67314625 2.29129314 C-9.39363588 -0.59044503 -5.04343171 -0.04535846 0 0 Z " transform="translate(186.01478576660156,139.49879455566406)"/>
+          <path d="M0 0 C1.03446259 -0.00058411 2.06892517 -0.00116821 3.13473511 -0.00177002 C6.55468273 0.00101715 9.97375928 0.03214019 13.39355469 0.06347656 C15.76437911 0.07093667 18.13520969 0.07663069 20.50604248 0.08062744 C26.74675514 0.09590173 32.98709557 0.13519958 39.22766113 0.17944336 C46.71492826 0.2275501 54.20231983 0.24592147 61.68969727 0.26925659 C73.06520031 0.30804888 84.43988658 0.38469147 95.81542969 0.45410156 C95.81542969 21.24410156 95.81542969 42.03410156 95.81542969 63.45410156 C88.36213025 62.21188499 81.07637226 60.96235573 73.75292969 59.20410156 C72.860979 58.99011719 71.96902832 58.77613281 71.05004883 58.55566406 C40.20981261 50.976953 8.68209835 38.35487894 -13.18457031 14.45410156 C-14.74928264 11.32467691 -14.88158989 7.84327933 -14.18457031 4.45410156 C-10.63440807 -0.91174849 -5.81560183 -0.08562143 0 0 Z " transform="translate(63.1845703125,167.5458984375)"/>
+        </svg>
+      </svg>
+      <span class="masthead__name">Message<span class="wordmark-accent">Foundry</span><span class="masthead__tm">&trade;</span></span>
+      <span class="masthead__kicker">Documentation</span>
+    </div>
+    <div class="masthead__rule"></div>
+    <h1 class="masthead__title">{{TITLE}}</h1>
+    <p class="masthead__meta"><b>Early Access</b> &middot; MessageFoundry {{VERSION}} &middot; {{DATE}}</p>
+  </header>
+
+  <main>
+{{CONTENT}}
+  </main>
+
+  <footer class="colophon">
+    <p class="colophon__line">&copy; {{YEAR}} <b>MEFOR-ORG</b>, a non-profit &middot; MessageFoundry is licensed under <b>AGPL-3.0-or-later</b> &middot; Document generated {{DATE}} for MessageFoundry {{VERSION}}.</p>
+    <p class="colophon__note">MessageFoundry and the MessageFoundry word mark are trademarks of MEFOR-ORG. This document describes an <b>Early Access</b> release; check <a href="https://pypi.org/project/messagefoundry/">pypi.org/project/messagefoundry</a> for the current version. Verify specifics against your own deployment and the engine's reference documentation.</p>
+  </footer>
+
+</body>
+</html>
