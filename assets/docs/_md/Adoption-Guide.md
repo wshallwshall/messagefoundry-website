@@ -1,14 +1,14 @@
 # MessageFoundry — Early-Adopter Installation & Rollout Guide
 
 This guide is for teams piloting **MessageFoundry (MEFOR)** — an open-source, Python healthcare
-integration engine — and taking it from a first install to full production use. It is an
+interface engine — and taking it from a first install to full production use. It is an
 **orchestration** document: it ties the existing docs together and adds the install-to-production
 **rollout plan** that nothing else covers. Where a topic has a dedicated reference, this guide
 links to it rather than repeating it.
 
 > **Read this section first.** MessageFoundry is **pre-1.0** software. It does a small set of
 > things well and production-grade today (see §2), and it has clearly-bounded areas that are
-> **experimental or not yet built**. Any new integration engine — this one included — *will* have
+> **experimental or not yet built**. Any new interface engine — this one included — *will* have
 > bugs you have not hit yet. The whole point of the staged rollout in §11 is to find them where
 > they are cheap (a lab, a shadow feed) instead of where they are expensive (a production cut-over).
 > If you adopt MEFOR, adopt the rollout discipline with it.
@@ -158,9 +158,9 @@ pip install "messagefoundry==0.1.0"        # pin the exact engine version (core 
 as its own `messagefoundry-webconsole` wheel.
 
 > ⚠️ **Early access.** `0.1.0` is an **Early Access** release on public PyPI — feature-complete and
-> test-validated, but the external review + pen test that gate a security-certified **v1.0** land after
-> launch. The exact-pin command above (`==0.1.0`) resolves today; the earlier `0.1.0rc1` pre-release also
-> remains installable. You can equally install from the engine's **GitHub Release assets** or your
+> test-validated, but the independent external review and penetration test that ASVS
+> recommends at Level 3 have not yet been performed. The exact-pin command above (`==0.1.0`) resolves today; the earlier `0.1.0rc1` pre-release also
+> remains installable. You can equally install from your
 > organization's **private index**.
 
 **Verify the release before you install.** MessageFoundry ships one signed wheel to many PHI-bearing

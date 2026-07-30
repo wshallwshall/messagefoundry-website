@@ -56,10 +56,9 @@ pip install "messagefoundry==0.1.0"          # pin the exact version (core runti
 ```
 
 > ⚠️ **Early access.** `0.1.0` is an **Early Access** release on public PyPI — feature-complete and
-> test-validated, but the external review + pen test that gate a security-certified **v1.0** land after
-> launch. The exact-pin command above (`==0.1.0`) resolves today; the earlier `0.1.0rc1` pre-release also
-> remains installable (`pip install messagefoundry==0.1.0rc1`). You can equally install from the engine's
-> **GitHub Release assets** or your organization's **private index**.
+> test-validated, but the independent external review and penetration test that ASVS
+> recommends at Level 3 have not yet been performed. The exact-pin command above (`==0.1.0`) resolves today; the earlier `0.1.0rc1` pre-release also
+> remains installable (`pip install messagefoundry==0.1.0rc1`). You can equally install from your organization's **private index**.
 
 Add extras only for what a host actually runs — `messagefoundry[postgres]` (PostgreSQL store),
 `messagefoundry[sqlserver]` (SQL Server store + the DATABASE connectors, needs OS-level ODBC Driver 18),
