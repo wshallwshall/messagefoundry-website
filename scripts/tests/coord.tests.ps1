@@ -105,10 +105,19 @@ Check "surface reported verbatim"             ($prim.Surface -eq "vscode")
 Check "exactly one peer, and it is not us"    (@(Get-CoordPeers -ConfigRoot $fixtureRoot -SelfSessionId $selfId).Count -eq 1)
 
 Write-Host "`nfence"
+$myStart = (Get-Process -Id $PID).StartTime.Ticks
 Check "FENCE: a dead pid is neither Live nor Confirmed" (
     (Test-CoordLiveness -Record ([pscustomobject]@{ pid = 999999; startedAt = $started })).State -eq "DEAD")
 Check "FENCE: a recycled pid reads STALE" (
     (Test-CoordLiveness -Record ([pscustomobject]@{ pid = $PID; startedAt = 1 })).State -eq "STALE")
+Check "FENCE: exact procStart reads LIVE" (
+    (Test-CoordLiveness -Record ([pscustomobject]@{ pid = $PID; procStart = "$myStart"; startedAt = $started })).State -eq "LIVE")
+Check "FENCE: mismatched procStart reads STALE" (
+    (Test-CoordLiveness -Record ([pscustomobject]@{ pid = $PID; procStart = "$($myStart - 100000000000)"; startedAt = $started })).State -eq "STALE")
+Check "FENCE: unparseable procStart falls back, not throws" (
+    (Test-CoordLiveness -Record ([pscustomobject]@{ pid = $PID; procStart = "junk"; startedAt = $started })).State -eq "LIVE")
+Check "FENCE: absent procStart falls back to startedAt" (
+    (Test-CoordLiveness -Record ([pscustomobject]@{ pid = $PID; startedAt = $started })).State -eq "LIVE")
 
 Write-Host "`ngate"
 $temporary = $null

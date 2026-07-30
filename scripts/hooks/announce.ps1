@@ -85,6 +85,8 @@ try {
     $lines += "  local_938641cd-... were one session; note both begin '93', so they misread as equal)."
     $lines += "  Call list_sessions and match on the cwd printed above. NEVER pass a registry id to"
     $lines += "  send_message, and never assume a matching prefix means a matching session."
+    $lines += "  Sanity check before you send: a usable id starts with 'local_'. A bare uuid is"
+    $lines += "  well-formed but wrong, and fails SILENTLY -- which reads as the peer ignoring you."
     $lines += ""
     $lines += "  A peer whose cwd does not appear in list_sessions is on a surface the MCP cannot see"
     $lines += "  (e.g. VS Code). It cannot be messaged -- skip it and say so rather than guessing."

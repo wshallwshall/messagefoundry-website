@@ -101,8 +101,24 @@ function Test-CoordLiveness {
     # Access can be denied for a process in another context. Report the uncertainty rather than
     # upgrading it to LIVE: an unverifiable fence is not a passed fence.
     if (-not $procStart) { return @{ State = "UNVERIFIED"; Detail = "pid $procId alive; start time unreadable" } }
-    if ($null -eq $Record.startedAt) { return @{ State = "UNVERIFIED"; Detail = "pid $procId alive; record has no startedAt" } }
 
+    # EXACT MATCH FIRST. The registry records `procStart` -- .NET ticks, local time -- for precisely
+    # this check. Measured on Claude Code 2.1.219: recorded 639210057454830080 decodes to
+    # 2026-07-30T10:55:45.4830080 against an actual StartTime of ...45.4830084, i.e. equal to within
+    # a rounding tick. So identity is decidable outright, and a reused pid cannot slip through a
+    # tolerance window. (A comment in a sibling project asserts this field serialises as absent; that
+    # was true of some earlier build and is not true here. Verify before trusting either claim.)
+    if ($Record.procStart) {
+        try {
+            $recorded = [datetime]::new([int64]$Record.procStart)
+            if ([Math]::Abs(($procStart - $recorded).TotalSeconds) -lt 1) { return @{ State = "LIVE"; Detail = "" } }
+            return @{ State = "STALE"; Detail = "pid $procId reused (process start differs from the recorded one)" }
+        } catch { }   # unparseable: fall through to the coarse check rather than guess
+    }
+
+    # Fallback for records without procStart: compare against session registration, which FOLLOWS
+    # process start, so only a generous window is defensible.
+    if ($null -eq $Record.startedAt) { return @{ State = "UNVERIFIED"; Detail = "pid $procId alive; record has no startedAt" } }
     $registered = [DateTimeOffset]::FromUnixTimeMilliseconds([int64]$Record.startedAt).LocalDateTime
     $delta = ($procStart - $registered).TotalMinutes
     if ($delta -gt 1) { return @{ State = "STALE"; Detail = "pid $procId reused (process started $([int]$delta)m after the session)" } }

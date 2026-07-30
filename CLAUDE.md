@@ -71,9 +71,13 @@ read what it actually concluded — it may already be doing what you were about 
 `send_message` to hand off, pick different work, or ask the user to arbitrate.
 
 - **Match peers by `cwd`, never by the session id you were shown.** The registry id in the banner and
-  the `ccd_session_mgmt` id for the *same* session are different UUIDs — verified 2026-07-30, registry
-  `933195b8-…` and MCP `local_938641cd-…` were one session. Both begin `93`, so a matching prefix
-  proves nothing. Call `list_sessions` and match on the worktree path.
+  the `ccd_session_mgmt` id for the *same* session are different UUIDs — verified 2026-07-30 on two
+  independent pairs (registry `933195b8-…` = MCP `local_938641cd-…`; registry `63c779cf-…` = MCP
+  `local_56f7852e-…`). The first pair both begin `93`, so a matching prefix proves nothing. Call
+  `list_sessions` and match on the worktree path.
+  - **Refuse to pass an id without the `local_` prefix** to `send_message` or `list_events`. A
+    registry UUID is well-formed but wrong, so the call fails *quietly* — and a silent failure reads
+    as "the peer ignored me", which is the one conclusion that makes you stop coordinating.
 - **`list_sessions` is incomplete — the banner is the authoritative roster.** It enumerates only
   desktop-spawned sessions; a VS Code session in this repo is absent from it entirely (verified
   2026-07-30: 4 listed vs 6 in the on-disk registry). Never conclude "nobody else is here" from it.
