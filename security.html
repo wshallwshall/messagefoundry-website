@@ -158,7 +158,7 @@
           <h3>Connections (systems)</h3>
           <ul class="feature-list" style="margin-top:12px">
             <li>Per-connection credentials — HTTP Basic over TLS or per-connection API keys — vaulted, scoped, rotated, and recorded.</li>
-            <li><b>Mutual TLS (mTLS)</b> client-certificate auth, <b>OAuth&nbsp;2.0</b> client-credentials, and <b>SMART on FHIR</b> (Backend Services), for connections that require them.</li>
+            <li><b>Mutual TLS (mTLS)</b> client-certificate auth for connections that require it.</li>
             <li><b>group-Managed Service Account (gMSA) — optional.</b> For Active Directory deployments, run the engine's Windows service under a gMSA so its password is AD-rotated and never stored in config, and use that identity for integrated database authentication. Not required — SQL authentication with a vaulted secret also works.</li>
             <li><b>TLS by default</b>, including MLLP-over-TLS — with plaintext supported for endpoints that can't do TLS, inside your secure network perimeter.</li>
             <li>Per-connection IP allow-listing and network segmentation as defense-in-depth.</li>
@@ -169,6 +169,7 @@
           <ul class="feature-list" style="margin-top:12px">
             <li><b>Passwordless Windows SSO</b> — Kerberos / Integrated Windows Auth, so domain users sign in without a separate password.</li>
             <li>SSO federation via AD&nbsp;FS / Entra&nbsp;ID (OIDC / SAML) — so enterprise sign-in, and the MFA your organization's identity provider already enforces, flows through your existing IdP.</li>
+            <li><b>OAuth&nbsp;2.0</b> client-credentials and <b>SMART on FHIR</b> (Backend Services) for connections that require them.</li>
           </ul>
         </div>
       </div>
