@@ -69,5 +69,10 @@ encodes, which should survive any edit:
 
 Version pins track the current PyPI release (`0.3.2`) — check
 [PyPI](https://pypi.org/project/messagefoundry/) before treating any pin as final, and
-resolve the open content flags (DICOM shipped-vs-roadmap, throughput numbers, HIPAA
-penalty year).
+resolve the remaining open content flags (DICOM shipped-vs-roadmap, HIPAA penalty year).
+
+The **throughput numbers** flag is resolved: `Throughput-and-Capacity.md` is now the single
+source for published capacity — **40 million message events/day**, held at a >20% reserve
+against a measured ~603 events/s ceiling, in **total events (in + out)**. Keep the site's
+`/throughput/` page and that document in agreement; if a capacity figure changes, both move
+together.
