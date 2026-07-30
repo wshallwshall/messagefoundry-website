@@ -2,13 +2,13 @@
 
 This guide explains how an organization installs **MessageFoundry (MEFOR)** and stands up the
 **private git repository** that holds its integration configuration. It is the practical companion to
-[ADR 0017](https://github.com/MEFORORG/MessageFoundry/blob/main/docs/adr/0017-consumer-deployment-model.md) (the consumer deployment model).
+[ADR 0017](adr/0017-consumer-deployment-model.md) (the consumer deployment model).
 
 > **Scope.** This guide covers *install + config-repo + private git + running multiple instances*. For
 > the staged, go/no-go-gated path from a first install to full production (lab → shadow → limited →
 > full), plus security/PHI hardening, reliability tuning, and DR, read the
-> **[Early-Adopter Installation & Rollout Guide](https://github.com/MEFORORG/MessageFoundry/blob/main/docs/EARLY-ADOPTER-GUIDE.md)**. For network exposure / TLS
-> specifics see **[DEPLOYMENT.md](https://github.com/MEFORORG/MessageFoundry/blob/main/docs/DEPLOYMENT.md)**; for the Windows service see **[SERVICE.md](https://github.com/MEFORORG/MessageFoundry/blob/main/docs/SERVICE.md)**.
+> **[Early-Adopter Installation & Rollout Guide](EARLY-ADOPTER-GUIDE.md)**. For network exposure / TLS
+> specifics see **[DEPLOYMENT.md](DEPLOYMENT.md)**; for the Windows service see **[SERVICE.md](SERVICE.md)**.
 
 ---
 
@@ -34,14 +34,14 @@ Three ownership tiers — keeping them separate is the whole design:
 
 ## 2. Prerequisites
 
-- **Python 3.14+** on each engine host (the engine targets 3.14+).
+- **Python 3.14+** on each engine host (the engine requires 3.14+).
 - **git**, plus a **private git host** — GitHub (private repo), GitLab, Azure DevOps, Bitbucket, or a
   self-hosted server. Nothing about MessageFoundry requires a public repo; your config repo is yours.
-- A source for the engine wheel: **public PyPI** is the distribution channel
-  (`pip install messagefoundry`); an **internal package index** (Artifactory, Azure Artifacts, a
-  private PyPI) can mirror the signed wheel for air-gapped or offline sites.
+- A source for the engine wheel: **public PyPI** is the target distribution channel; until the project
+  publishes its first release, the signed **GitHub Release wheel** or an **internal package index**
+  (Artifactory, Azure Artifacts, a private PyPI) serves the same role.
 - Administrator/elevation on the host if you will install the engine as a Windows service (see
-  [SERVICE.md](https://github.com/MEFORORG/MessageFoundry/blob/main/docs/SERVICE.md)).
+  [SERVICE.md](SERVICE.md)).
 
 ---
 
@@ -52,18 +52,19 @@ On each host, create a virtual environment and install the engine at a **pinned 
 ```powershell
 python -m venv .venv
 .\.venv\Scripts\Activate.ps1                 # Linux/macOS: . .venv/bin/activate
-pip install "messagefoundry==0.2.2"          # pin the exact version (core runtime only)
+pip install "messagefoundry==0.1.0"          # pin the exact version (core runtime only)
 ```
 
-> ⚠️ **Early access.** `0.2.2` is an **Early Access** release on public PyPI — feature-complete and
+> ⚠️ **Early access.** `0.1.0` is an **Early Access** release on public PyPI — feature-complete and
 > test-validated, but the external review + pen test that gate a security-certified **v1.0** land after
-> launch. The exact-pin command above (`==0.2.2`) resolves today; earlier releases such as `0.2.1` also
-> remain installable (`pip install messagefoundry==0.2.1`). You can equally install from the engine's
+> launch. The exact-pin command above (`==0.1.0`) resolves today; the earlier `0.1.0rc1` pre-release also
+> remains installable (`pip install messagefoundry==0.1.0rc1`). You can equally install from the engine's
 > **GitHub Release assets** or your organization's **private index**.
 
 Add extras only for what a host actually runs — `messagefoundry[postgres]` (PostgreSQL store),
 `messagefoundry[sqlserver]` (SQL Server store + the DATABASE connectors, needs OS-level ODBC Driver 18),
-`messagefoundry[console]` (desktop admin console), `messagefoundry[sftp]` (SFTP connectors).
+`messagefoundry[harness]` (the PySide6 test harness GUI), `messagefoundry[sftp]` (SFTP connectors),
+`messagefoundry[fhir]` (FHIR codec + FHIR outbound), `messagefoundry[dicom]` (DICOM C-STORE SCP + codec).
 
 Key properties this install model gives you:
 
@@ -85,7 +86,7 @@ the **GitHub CLI** (`gh` ≥ 2.49), and optionally `sigstore` (`pip install sigs
 file that passes.
 
 ```powershell
-$V = "0.2.2"   # the exact version you intend to install
+$V = "0.1.0"   # the exact version you intend to install
 
 # Download the wheel + its Sigstore bundle from that release's assets
 gh release download "v$V" --repo MEFORORG/MessageFoundry `
@@ -107,7 +108,7 @@ The same attestation also covers the **public PyPI** copy of the wheel (it is by
 GitHub-built artifact, so the digest matches), so you can download-verify-then-install from the index:
 
 ```powershell
-$V = "0.2.2"
+$V = "0.1.0"
 pip download "messagefoundry==$V" --no-deps -d .\verify
 gh attestation verify (Get-ChildItem ".\verify\messagefoundry-$V-*.whl").FullName --repo MEFORORG/MessageFoundry
 pip install --no-index --find-links .\verify "messagefoundry==$V"
@@ -117,7 +118,7 @@ A registry/mirror substitution or a relabelled file **fails** the check. For a f
 this with `pip install --require-hashes -r requirements.lock` (the identity check above is the part
 `--require-hashes` cannot give you — it proves bytes-match-lockfile, not who built them). The
 `-rc`-tagged pre-releases publish to production PyPI too; the `--cert-identity` ref above must match the
-tag you are installing (e.g. `refs/tags/v0.2.2`).
+tag you are installing (e.g. `refs/tags/v0.1.0-rc1`).
 
 ---
 
@@ -140,7 +141,7 @@ my-config-repo/
 ├─ environments/prod.toml
 ├─ messages/sets/example_adt.hl7   # a synthetic fixture (NO real PHI) that gates `check`
 ├─ messagefoundry.toml             # THIS instance's settings (environment + posture + store + API + egress)
-├─ requirements.txt                # pins the engine:  messagefoundry==0.2.2
+├─ requirements.txt                # pins the engine:  messagefoundry==0.1.0
 ├─ .github/workflows/check.yml     # CI: install the pinned engine + run `messagefoundry check` on every PR
 ├─ .vscode/settings.json           # points the VS Code extension at config/ + messages/
 ├─ .gitignore  .gitattributes      # excludes stores, secrets, captures, venvs, caches
@@ -173,6 +174,14 @@ git commit -m "Initial MessageFoundry config (scaffolded)"
 git remote add origin git@github.com:your-org/mefor-config.git   # a PRIVATE repo
 git push -u origin main
 ```
+
+> **Where it's stored — local or remote.** The `git remote add` above points at a shared host, the right
+> default for **HA (multiple engine hosts), a team, or off-machine backup**. For a single-box (non-HA)
+> engine you can skip the remote and keep the repo local, adding one later. Any host works — a
+> self-hosted **Forgejo**/Gitea/GitLab, a private repo on your standard host, or a **bare repo on a
+> network share** for air-gapped sites. The IDE's **Set Up Version Control & Checks** and **Config Repo
+> Storage Location** commands set and change this without the terminal. Full guidance:
+> [VERSION-CONTROL.md](VERSION-CONTROL.md).
 
 What makes this private and safe:
 
@@ -208,7 +217,7 @@ its `MEFOR_*` environment. Two things every instance must state:
 Secrets and host-specific overrides come from the environment, e.g. `MEFOR_VALUE_<KEY>` for values used
 by `env("…")` in the graph, and `MEFOR_<SECTION>_<KEY>` for service settings. Precedence is **CLI flag >
 `MEFOR_*` env > `messagefoundry.toml` > built-in default**. Full reference:
-[CONFIGURATION.md](https://github.com/MEFORORG/MessageFoundry/blob/main/docs/CONFIGURATION.md).
+[CONFIGURATION.md](CONFIGURATION.md).
 
 ---
 
@@ -225,27 +234,37 @@ messagefoundry serve --config config --env test --project-root C:\srv\mefor\my-c
 - The engine **binds `127.0.0.1` by default** and **requires authentication**. To expose a channel
   off-loopback, configure **native TLS** (API: `[api].tls_cert_file`/`tls_key_file` or a trusted upstream
   terminator; MLLP inbound: per-connection `tls = true`) — a non-loopback bind without TLS is **refused at
-  startup**. See [DEPLOYMENT.md](https://github.com/MEFORORG/MessageFoundry/blob/main/docs/DEPLOYMENT.md).
-- For production, run the engine as a **Windows service via NSSM** — see [SERVICE.md](https://github.com/MEFORORG/MessageFoundry/blob/main/docs/SERVICE.md).
+  startup**. See [DEPLOYMENT.md](DEPLOYMENT.md).
+- For production, run the engine as a **Windows service via NSSM** — see [SERVICE.md](SERVICE.md).
+- For **multi-node high availability** (active-passive failover of a single instance), see
+  [CLUSTERING.md](CLUSTERING.md) — note it requires an operator-provided **floating VIP / L4 load
+  balancer** (a TCP-connect health check per inbound listener port) so senders follow the primary across
+  a failover. MEFOR ships the clustering + the `/cluster/*` health-check endpoints, but **not** the load
+  balancer itself; single-node deployments need none of this.
 
-### Launching the admin console (no command line)
+### Launching the admin console (in a browser)
 
-Operators monitor and run an instance from the **PySide6 admin console** — a separate desktop app that
-talks to the engine over its localhost API. Install the console extra, then drop a Desktop / Start-Menu
-shortcut so it opens with a double-click, no terminal:
+Operators monitor and run an instance from the **browser web console** served same-origin at `/ui`.
+It ships as a separate wheel (`messagefoundry-webconsole`) on its **own version line** — deliberately
+*not* lockstep with the engine — that the engine mounts in-process. The pair is checked at startup
+against the engine's UI-seam version and a mismatched pair is **refused**, so install the console
+release built for the engine version you pinned. The console is **on by default**, so on a local
+instance installing it is all you need:
 
 ```powershell
-pip install "messagefoundry[console]==0.2.2"     # PySide6 + keyring, into the same venv
-.\scripts\console\install-console-shortcut.ps1   # per-user icon (add -AllUsers, elevated, for machine-wide)
+pip install "messagefoundry-webconsole==0.2.15"   # the /ui web console, into the same venv
+# then (re)start the engine — there is no switch to turn on. To turn the console OFF, set
+# [security].serve_web_console = false (the old [api].serve_ui spelling is refused at config load)
 ```
 
-The shortcut launches `messagefoundry-console.exe` — a **windowed** launcher (no flashing console
-window) carrying the MessageFoundry badge. Double-click it: the console connects to the engine
-(`http://127.0.0.1:8765` by default — typically the boot-start [service](https://github.com/MEFORORG/MessageFoundry/blob/main/docs/SERVICE.md)) and prompts for
-sign-in, so nothing else is needed for the local case. Point it at a different engine with
-`-Url https://engine.internal:8765` (off-loopback requires TLS), and remove the icons with
-`uninstall-console-shortcut.ps1`. (A shell still works too: `messagefoundry-console` or
-`python -m messagefoundry.console`.)
+Browse to the engine's `/ui` (`http://127.0.0.1:8765/ui` by default — typically the boot-start
+[service](SERVICE.md)) and sign in; nothing else is needed for the local case. Off-loopback the console
+is **opt-in**: an exposed instance serves `/ui` only when `[security].serve_web_console = true` is set
+explicitly — a default-on console on an exposed bind quietly degrades to the JSON API with a warning —
+and it additionally requires TLS, plus `[security].web_console_public_address` behind a declared
+TLS-terminating proxy (see [REMOTE-CONSOLE.md](REMOTE-CONSOLE.md)). The former PySide6 desktop console
+was retired in favour of this browser console (BACKLOG #103); PySide6 now backs only the standalone
+test harness (`pip install "messagefoundry[harness]"`).
 
 ---
 
@@ -266,13 +285,13 @@ instance.** You do **not** maintain per-environment branches. Each host differs 
         │ data_class=…  │  │ data_class=phi│  │ production=f  │
         │ MEFOR_* (test)│  │ MEFOR_* (prod)│  │ MEFOR_* (poc) │
         └───────────────┘  └───────────────┘  └───────────────┘
-       engine 0.2.2 wheel  engine 0.2.2 wheel  engine 0.2.2 wheel  (pinned, identical)
+       engine 0.1.0 wheel  engine 0.1.0 wheel  engine 0.1.0 wheel  (pinned, identical)
 ```
 
 Promotion = merge to `main` → deploy that commit everywhere. A Test instance resolves
 `environments/test.toml`; Prod resolves `environments/prod.toml`; a Test instance can never accidentally
 read Prod values. (Each instance is otherwise an independent engine with its own store; for multi-node
-high availability of a single instance, see [CLUSTERING.md](https://github.com/MEFORORG/MessageFoundry/blob/main/docs/CLUSTERING.md).)
+high availability of a single instance, see [CLUSTERING.md](CLUSTERING.md).)
 
 ---
 
@@ -293,12 +312,12 @@ There is simply no developer workflow that routes through engine source — by c
 
 ## 10. Upgrading the engine
 
-1. Bump the pin in `requirements.txt` (e.g. `messagefoundry==0.2.2`) on a branch.
+1. Bump the pin in `requirements.txt` (e.g. `messagefoundry==0.2.0`) on a branch.
 2. `pip install -r requirements.txt` and run `messagefoundry check` locally; open a PR — CI re-validates
    your whole config against the new engine.
 3. Merge, and roll the new commit to Test first, then Production. Because everything is pinned and your
    config is gated by `check`, upgrades are deliberate and reversible (pin back). The full
-   upgrade/rollback runbook is in [EARLY-ADOPTER-GUIDE.md](https://github.com/MEFORORG/MessageFoundry/blob/main/docs/EARLY-ADOPTER-GUIDE.md) §13.
+   upgrade/rollback runbook is in [EARLY-ADOPTER-GUIDE.md](EARLY-ADOPTER-GUIDE.md) §13.
 
 ---
 
@@ -306,15 +325,15 @@ There is simply no developer workflow that routes through engine source — by c
 
 | Topic | Reference |
 |---|---|
-| Staged install-to-production rollout, hardening, DR | [EARLY-ADOPTER-GUIDE.md](https://github.com/MEFORORG/MessageFoundry/blob/main/docs/EARLY-ADOPTER-GUIDE.md) |
-| The consumer deployment model (rationale) | [ADR 0017](https://github.com/MEFORORG/MessageFoundry/blob/main/docs/adr/0017-consumer-deployment-model.md) |
-| Service settings / environments | [CONFIGURATION.md](https://github.com/MEFORORG/MessageFoundry/blob/main/docs/CONFIGURATION.md) |
-| Connections / the graph / `connections.toml` | [CONNECTIONS.md](https://github.com/MEFORORG/MessageFoundry/blob/main/docs/CONNECTIONS.md) |
-| Windows service install | [SERVICE.md](https://github.com/MEFORORG/MessageFoundry/blob/main/docs/SERVICE.md) |
-| Network exposure / TLS | [DEPLOYMENT.md](https://github.com/MEFORORG/MessageFoundry/blob/main/docs/DEPLOYMENT.md) |
-| Security / auth / RBAC / audit | [SECURITY.md](https://github.com/MEFORORG/MessageFoundry/blob/main/docs/SECURITY.md) |
-| PHI handling / encryption | [PHI.md](https://github.com/MEFORORG/MessageFoundry/blob/main/docs/PHI.md) |
-| Multi-node high availability | [CLUSTERING.md](https://github.com/MEFORORG/MessageFoundry/blob/main/docs/CLUSTERING.md) |
+| Staged install-to-production rollout, hardening, DR | [EARLY-ADOPTER-GUIDE.md](EARLY-ADOPTER-GUIDE.md) |
+| The consumer deployment model (rationale) | [ADR 0017](adr/0017-consumer-deployment-model.md) |
+| Service settings / environments | [CONFIGURATION.md](CONFIGURATION.md) |
+| Connections / the graph / `connections.toml` | [CONNECTIONS.md](CONNECTIONS.md) |
+| Windows service install | [SERVICE.md](SERVICE.md) |
+| Network exposure / TLS | [DEPLOYMENT.md](DEPLOYMENT.md) |
+| Security / auth / RBAC / audit | [SECURITY.md](SECURITY.md) |
+| PHI handling / encryption | [PHI.md](PHI.md) |
+| Multi-node high availability (needs a floating VIP / L4 LB) | [CLUSTERING.md](CLUSTERING.md) |
 
 ---
 

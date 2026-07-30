@@ -1,58 +1,129 @@
-# Architecture Overview
+# Architecture
 
-## A modular, contract-bounded design
+## Architectural standard: modular, contract-bounded components
 
-MessageFoundry is built as a **modular, loosely-coupled architecture with contract-defined boundaries (information hiding).** Components are decomposed so that a change inside one rarely forces changes in others, and so that separate teams can build in parallel against stable interfaces. This is the governing principle; the topology, store, and module map below are all instances of it.
+MessageFoundry is built as a **modular, loosely-coupled architecture with contract-defined
+boundaries (information hiding)** — so components can be built in parallel, by separate people or
+AI agents, without conflicts. This is the governing standard; the topology, store, and module map
+below are all instances of it.
 
-**Modular design.** The system is decomposed into independent components: the headless **engine**, the **code-first configuration** authored against it (Connections / Routers / Handlers plus per-environment values), the **monitoring console**, the **VS Code IDE extension**, the **test harness**, and the **CLI tools** (`generate` / `check` / `dryrun`, alongside `serve`) — with the Windows service and CI as the operational wrapping. Within the engine itself the boundaries are `config` / `parsing` / `store` / `transports` / `pipeline` / `auth` / `api`. Modularity bounds how much of the system any one change has to hold and lets concurrent work proceed without conflict.
+**Modular design (component-based architecture).** The system is decomposed into independent
+components: the headless **engine**, the **code-first config** authored against it
+(Connections/Routers/Handlers + per-environment values), the **web console** (`/ui`), the **IDE
+extension**, the **PySide6 test harness**, and the **CLI tools** (`generate` / `check` / `dryrun`,
+beyond `serve`) — with the
+NSSM **Windows service** and **CI** as the operational wrapping. Within the engine itself: `config` /
+`parsing` / `store` / `transports` / `pipeline` / `auth` / `api`. Modularity bounds how much of the
+system any one change — or any one AI context window — has to hold, and deconflicts concurrent builds.
 
-**Information hiding.** The foundational principle is information hiding / encapsulation, after David Parnas's 1972 paper *"On the Criteria To Be Used in Decomposing Systems into Modules."* Each module hides a design decision behind an interface, specifically so that separate people can work on modules in parallel and a change inside one doesn't ripple out to others.
+**Information hiding (Parnas).** The foundational principle is information hiding / encapsulation,
+from David Parnas's 1972 paper *"On the Criteria To Be Used in Decomposing Systems into Modules."*
+Its thesis is exactly our goal: decompose a system so each module hides a design decision behind an
+interface, **specifically so separate people can work on modules in parallel and a change inside
+one doesn't force changes in others.** That is the canonical citation for "split it up so teams
+don't conflict."
 
-**Separation of concerns — high cohesion, loose coupling.**
+**Separation of concerns — high cohesion + loose coupling.**
+- **High cohesion** — everything related to one concern lives inside one component (the engine's
+  message processing; the web console's UI). A change stays local.
+- **Loose coupling** — components depend on each other as little as possible, and only through
+  stable seams. Low coupling means a change in component A has a small **blast radius**, so two
+  people (or agents) editing A and B rarely touch the same code.
+- **Why it works:** parallel-work conflicts scale with **shared surface area**. Loose coupling
+  minimizes that surface; high cohesion keeps each change confined to one module.
 
-- **High cohesion** — everything related to one concern lives inside one component (the engine's message processing; the console's UI). A change stays local.
-- **Loose coupling** — components depend on each other as little as possible, and only through stable seams. Low coupling keeps the blast radius of any change small.
-- **Why it works:** the risk of conflicting changes scales with shared surface area. Loose coupling minimizes that surface; high cohesion keeps each change confined to one module.
+**Contract-first / interface-driven design.** Loose coupling only holds if the seams are explicit.
+We agree on the interface *first*, then each side builds behind it independently — the contract is
+the synchronization point; everything behind it is private and parallelizable. In this repo:
+- the **HTTP/WebSocket API** ([`api/app.py`](../messagefoundry/api/app.py)) is the contract between
+  the engine and its clients (web console, IDE, harness);
+- the **connector registry** ([`transports/base.py`](../messagefoundry/transports/base.py)) is the
+  contract for pluggable transports;
+- the **one-way dependency rule** (`pipeline` / `transports` / `parsing` / `store` / `config` never
+  import `api`) keeps the seams from leaking.
 
-**Contract-first / interface-driven design.** Loose coupling only holds if the seams are explicit, so the interface is agreed first and each side builds behind it independently. In MessageFoundry:
+**Organizational dimension.**
+- **Conway's Law** — systems tend to mirror the communication structure of the teams that build
+  them. The **Inverse Conway Maneuver** is the flip side: we draw module boundaries deliberately to
+  match how we want teams (or AI agents) to split work — see the parallel git worktrees in
+  [WORKTREES.md](WORKTREES.md).
+- **Module / boundary ownership** — each component has one owner at a time (the DDD equivalent is a
+  **bounded context**). Concurrent sessions keep their changes within their own module/branch.
 
-- the **HTTP / WebSocket API** is the contract between the engine and its clients (console, IDE);
-- the **connector registry** is the contract for pluggable transports;
-- a **one-way dependency rule** (`pipeline` / `transports` / `parsing` / `store` / `config` never import `api` or `console`) keeps the seams from leaking.
+## Topology: engine-as-library + localhost API
 
-**Organizational dimension.** Systems tend to mirror the communication structure of the teams that build them (Conway's Law). Module boundaries are drawn deliberately so that work can be split cleanly, and each component has a single owner at a time (a bounded context, in domain-driven-design terms).
+The engine is an importable Python package (`messagefoundry`). Clients — primarily the
+**browser web console** (`/ui`, `messagefoundry_webconsole`) — drive it over a localhost HTTP +
+WebSocket API (FastAPI/uvicorn). The same API serves three deployments without code changes:
 
-## Topology: engine-as-library plus a local API
+- **Embedded** — another Python program owns the engine in-process via `create_app(engine)`
+  (the async test client; embedding). A **UI client is never this** — it's always a separate
+  process (or a browser) that reaches the engine only over the HTTP API, never by importing it.
+- **Local daemon** — engine runs as a Windows service / Linux daemon; the web console attaches over
+  the API. See [SERVICE.md](SERVICE.md) for the Windows service setup (NSSM).
+- **Remote** — same API over the network (Phase 2+, with auth/TLS).
 
-The engine is an importable Python package (`messagefoundry`). Clients — primarily the PySide6 console — drive it over an HTTP + WebSocket API (FastAPI / uvicorn). The same API serves three deployment shapes without code changes:
+We deliberately did **not** start with two separate processes + hand-rolled IPC. The
+logical boundary (library API) comes first; physical split is a deployment choice.
 
-- **Embedded** — another Python program owns the engine in-process via `create_app(engine)` (for example the async test client). The console is never embedded; it is always a separate process that reaches the engine only over the API.
-- **Local daemon** — the engine runs as a Windows service or Linux daemon, and the console attaches over the API.
-- **Remote** — the same API over the network, with authentication and TLS.
+The same topology as a rendered diagram — clients are separate processes (or a browser) that reach
+the engine only through the API, and the engine packages never import `api`:
 
-The logical boundary (the library API) comes first; whether the engine and its clients run in one process or several is a deployment choice rather than an architectural one.
+```mermaid
+flowchart TB
+  classDef client fill:#e3f2fd,stroke:#1565c0,color:#0d2b45;
+  classDef api fill:#ede7f6,stroke:#5e35b1,color:#22103f;
+  classDef engine fill:#e8f5e9,stroke:#2e7d32,color:#10240f;
+  classDef deploy fill:#eceff1,stroke:#546e7a,color:#1c2429;
 
-**Deployment guidance:** the API binds to `127.0.0.1` (loopback) by default. Exposing a listener off loopback should always be done over TLS, with the interface authentication described under *Security* below.
+  CON["Web console /ui<br/>(browser)"]:::client
+  IDE["VS Code extension"]:::client
+  HARNESS["Test harness<br/>(PySide6)"]:::client
 
-### Topology, described
+  subgraph API_BND["API — localhost 127.0.0.1 · auth + RBAC · the only external surface"]
+    API["api/ — FastAPI + uvicorn<br/>HTTP + WebSocket"]:::api
+    AUTH["auth/ — authn + RBAC<br/>deny-by-default · hash-chained audit"]:::api
+  end
 
-Clients are separate processes that reach the engine only through the API, and the engine packages never import `api` or `console`:
+  subgraph ENGINE["Engine — headless asyncio service (no GUI imports)"]
+    PIPE["pipeline/ — RegistryRunner<br/>listener · router · transform · delivery workers"]:::engine
+    TRANS["transports/ — connector registry<br/>MLLP · File · X12 · DICOM C-STORE SCP (TCP/HTTP/DB planned)"]:::engine
+    PARSE["parsing/ — pure HL7/X12/DICOM library<br/>python-hl7 · hl7apy · X12 codec · DICOM codec · base64 binary codec"]:::engine
+    STORE[("store/ — staged queue<br/>SQLite WAL · SQL Server · AES-256-GCM")]:::engine
+    CFG["config/ — code-first wiring<br/>Connections · Routers · Handlers · environments/"]:::engine
+  end
 
-- **Clients** — the PySide6 console, the VS Code extension, and the test harness. The console and IDE talk to the engine only through the API. The test harness can additionally exercise transports directly (for example, MLLP send/receive). A client may import the pure parsing library directly.
-- **API surface** — the FastAPI + uvicorn HTTP/WebSocket layer, fronted by `auth` (authentication + RBAC, deny-by-default, with a hash-chained audit log). This is the engine's only external surface.
-- **Engine (headless, asyncio, no GUI imports)** — `pipeline` (the registry runner: listener, router, transform, and delivery workers); `transports` (the connector registry — MLLP, File, X12, FHIR, DICOM C-STORE SCP); `parsing` (a pure HL7 / X12 / DICOM library); `store` (the staged queue, encrypted at rest); and `config` (code-first wiring of Connections, Routers, Handlers, and environments).
+  NSSM["NSSM Windows service<br/>(messagefoundry serve)"]:::deploy
 
-The API depends on the engine. The engine packages depend only on each other in one direction, never on the API or console.
+  CON -.->|"HTTP/WS API client"| API
+  IDE -.->|"HTTP"| API
+  HARNESS -.->|"MLLP send/receive"| TRANS
+  CON -.->|"may import (pure lib)"| PARSE
+
+  API --> AUTH
+  API ==>|"depends on engine"| PIPE
+
+  PIPE --> TRANS
+  PIPE --> PARSE
+  PIPE --> STORE
+  PIPE --> CFG
+  TRANS --> PARSE
+
+  NSSM ==> ENGINE
+```
 
 ## The message store *is* the queue
 
-This is the single most important reliability decision. MessageFoundry uses a transactional **staged queue** built on SQLite in WAL mode — one generic `queue` table with a `stage` discriminator (`ingress` | `routed` | `outbound`). It implements the full router / transform split:
+The single most important reliability decision. We use a transactional **staged queue** on SQLite
+(WAL mode) — one generic `queue` table with a `stage` discriminator (`ingress` | `routed` |
+`outbound`). This is **Step B** of the staged pipeline (ADR 0001 — [docs/adr/0001-staged-pipeline-architecture.md](adr/0001-staged-pipeline-architecture.md)),
+the full router/transform split:
 
 ```
 inbound msg ─▶ decode / parse / (strict-validate)   [synchronous — still NAK on failure]
                     │
                     ▼ persist raw to the INGRESS stage  ─▶ commit ─▶ ACK source   [ACK-on-receipt]
-                    │
+                    │   (ingress + routed lanes key on channel_id; outbound on destination_name)
                     ▼ router worker (per inbound): run Router
               produce one ROUTED row per selected handler + complete the ingress row   (one txn)
                     │
@@ -60,118 +131,237 @@ inbound msg ─▶ decode / parse / (strict-validate)   [synchronous — still N
               produce an OUTBOUND row per destination + complete the routed row   (one txn)
                     │
                     ▼ per-destination delivery worker
-              deliver ─▶ mark done | mark failed + reschedule (retry policy)
+              deliver ─▶ mark done | mark failed+reschedule (retry policy)
 ```
 
-The **ACK is sent on receipt** — once the raw message is durably committed to the ingress stage, before routing, transform, or delivery — so a slow or hung downstream stage can no longer stall intake.
+The **ACK is sent on receipt** — once the raw message is durably committed to the ingress stage,
+*before* routing/transform/delivery — so a slow or hung router/transform/outbound can no longer stall
+intake (the bottleneck this removes). Each stage **handoff** is a single committed transaction
+(claim → produce-next-stage rows → complete-this-stage), so a message is never lost or partially
+handed off; a crash before commit rolls the stage back and it re-runs (each handoff is idempotent
+against the re-run — the consumed row is gone), and `reset_stale_inflight` recovers in-flight rows of
+**every** stage on startup. This gives **at-least-once delivery**, **retries**, and **replay** without
+a separate broker. Because at-least-once now leans on a re-run re-deriving identical output, **routers
+and transforms must be pure**; **outbound connections must be idempotent**. Correlation IDs are
+persisted for de-duplication. Each destination drains independently — a slow/failed one never blocks
+siblings, and a slow transform never blocks routing.
 
-Each stage **handoff** is a single committed transaction (claim → produce next-stage rows → complete this stage), so a message is never lost or partially handed off. A crash before commit rolls the stage back and it re-runs; each handoff is idempotent against the re-run because the consumed row is gone, and a startup recovery pass reclaims in-flight rows of every stage. This gives **at-least-once delivery, retries, and replay without a separate message broker.** Because at-least-once relies on a re-run re-deriving identical output, **routers and transforms must be pure** and **outbound connections must be idempotent**; correlation IDs are persisted for de-duplication. Each destination drains independently — a slow or failed one never blocks its siblings, and a slow transform never blocks routing.
+**Disposition flows with the message, decided by the store finalizer** (count-and-log): `RECEIVED` at
+ingress → `ROUTED` / `UNROUTED` after the router → `PROCESSED` (all delivered) / `FILTERED` (every
+handler ran, delivered nothing) / `NOT_DEPLOYED` (every destination the handlers addressed is in the
+graph but `deployed=false`) / `ERROR` (dead-lettered at any stage) once nothing is still in flight.
+The finalizer is the **single authority** — it never finalizes while any earlier-stage row is
+pending, so a delivered handler can't mark a message done while a sibling handler's routed row still
+awaits transform. The ACK means *receipt-and-persistence*, not a final disposition: a routing/
+transform failure is post-ACK, so it is logged + dead-lettered (operators rely on the disposition +
+AlertSink), not NAK'd.
 
-**Disposition flows with the message,** decided by a single store finalizer: `RECEIVED` at ingress → `ROUTED` / `UNROUTED` after the router → `PROCESSED` (all delivered) / `FILTERED` (every handler ran but delivered nothing) / `ERROR` (dead-lettered at any stage) once nothing is still in flight. The finalizer is the single authority: it never finalizes while any earlier-stage row is still pending, so a delivered handler can't mark a message done while a sibling handler's routed row still awaits transform. The ACK means receipt-and-persistence, not a final disposition — a routing or transform failure happens after the ACK, so it is logged and dead-lettered (operators rely on the disposition and on alerts) rather than NAK'd.
+`NOT_DEPLOYED` (BACKLOG #233, [ADR 0111](adr/0111-not-deployed-connections.md)) is the one
+disposition the finalizer cannot read off the queue rows: it decides `FILTERED` **by absence** (no
+rows left, message still `ROUTED`), so a declined destination would otherwise collapse to `FILTERED`
+and misreport operator intent. The decline is therefore persisted where the finalizer can see it —
+the **transform worker** drops a `Send` whose target outbound is `deployed=false` *before* it becomes
+an outbound-stage row, and writes one `not_deployed` `message_events` row per declined destination in
+that same handoff transaction (`MessageStore.transform_handoff`). Zero deliveries **with** that event
+finalize `NOT_DEPLOYED`; without it, `FILTERED`. A deployed sibling that delivers still finalizes
+`PROCESSED`, with the event row carrying the skipped leg. That event is in the store's audit floor,
+so the `message_events` verbosity gate can never thin it away — dropping it would take the
+disposition with it. Dry-run and the Test Bench never run the finalizer, so a fully-declined message
+previews there as `FILTERED`: the declined names stop at `RouteOutcome.declined` and are not carried
+into `DryRunResult`.
 
-The router / transform split keeps write amplification modest — roughly three durable transactions per single-handler message, plus one per additional handler.
+The router/transform split was taken after Step A's measured write amplification (now ~3 durable
+transactions/message for a single-handler message; +1 per extra handler) — recorded in
+[docs/benchmarks/step-b-write-amplification.md](benchmarks/step-b-write-amplification.md). An optional
+per-inbound `ack_after=delivered` (defer the ACK until delivery succeeds) is planned but not built —
+the pipeline is ACK-on-receipt only.
 
-### The staged flow, described
+The same staged flow as a rendered diagram:
 
-| Step | What happens | On failure |
-|---|---|---|
-| **Listener** | Decode, parse, optionally strict-validate the inbound message (MLLP / File / X12 / FHIR / DICOM). | Synchronous NAK (AR/AE) + `ERROR`, before anything is persisted. |
-| **Ingress stage** | Raw message committed durably; **ACK (AA) returned on receipt**. | — |
-| **Router worker** (per inbound) | Run the pure `@router`; produce one routed row per selected handler. | Post-ACK: logged + dead-lettered. |
-| **Routed stage** | One row per selected handler. | — |
-| **Transform worker** (per inbound) | Run the pure `@handler` transform; produce one outbound row per destination. | Post-ACK: logged + dead-lettered. |
-| **Outbound stage** | One row per destination. | — |
-| **Delivery worker** (per outbound) | Idempotent send, with retry and dead-letter. | Mark failed + reschedule per retry policy. |
-| **Store finalizer** | Single disposition authority; records `RECEIVED` → `ROUTED` / `UNROUTED` → `PROCESSED` / `FILTERED` / `ERROR`. | — |
+```mermaid
+flowchart TB
+  classDef stage fill:#fff3e0,stroke:#ef6c00,color:#3a1d00;
+  classDef worker fill:#e8f5e9,stroke:#2e7d32,color:#10240f;
+  classDef disp fill:#ede7f6,stroke:#5e35b1,color:#22103f;
+  classDef io fill:#e3f2fd,stroke:#1565c0,color:#0d2b45;
 
-Each `==>` handoff above is a single committed transaction.
+  SRC(["Inbound connection<br/>MLLP / File"]):::io
+  LISTEN["Listener<br/>decode · parse · (strict-validate)"]:::worker
+  NAK["NAK (AR/AE) + ERROR<br/>synchronous, pre-ingress"]:::disp
+
+  ING[("ingress stage<br/>raw committed")]:::stage
+  ACK(["ACK (AA) — on receipt"]):::io
+  RW["Router worker (per inbound)<br/>run @router — pure"]:::worker
+  ROUTED[("routed stage<br/>one row per selected handler")]:::stage
+  TW["Transform worker (per inbound)<br/>run @handler transform — pure"]:::worker
+  OUT[("outbound stage<br/>one row per destination")]:::stage
+  DW["Delivery worker (per outbound)<br/>idempotent send · retry · dead-letter"]:::worker
+  DEST(["Outbound connection(s)"]):::io
+
+  FIN{{"Store finalizer<br/>single disposition authority"}}:::disp
+  D1["RECEIVED"]:::disp
+  D2["ROUTED / UNROUTED"]:::disp
+  D3["PROCESSED / FILTERED<br/>NOT_DEPLOYED / ERROR"]:::disp
+
+  SRC --> LISTEN
+  LISTEN -->|"decode/parse/validate fail"| NAK
+  LISTEN -->|"ok"| ING
+  ING --> ACK
+  ING ==>|"committed txn"| RW
+  RW ==>|"committed txn"| ROUTED
+  ROUTED ==>|"committed txn"| TW
+  TW ==>|"committed txn"| OUT
+  OUT --> DW
+  DW --> DEST
+
+  ING -.->|"records"| D1
+  RW -.->|"records"| D2
+  DW -.->|"records"| D3
+  D1 -.-> FIN
+  D2 -.-> FIN
+  D3 -.-> FIN
+```
 
 ## Concurrency
 
-The engine has an asyncio core. There is one listener plus a **router worker** and a **transform worker** per inbound connection, and one delivery worker per outbound connection. Listeners (MLLP / TCP), pollers (file / DB), the router and transform workers, and retry timers are all asyncio tasks supervised by the registry runner, so a crash in one is isolated and the worker is respawned. The router and transform workers keep draining their inbound's already-ACKed messages even while the source is stopped. Each worker class has its own wake event, so a producer wakes only its downstream consumer.
+asyncio core. One listener + a **router worker** + a **transform worker** per **inbound connection**;
+one delivery worker per **outbound connection**. Listeners (MLLP/TCP), pollers (file/DB), the router/
+transform workers, and retry timers are all asyncio tasks supervised by the `RegistryRunner` so a
+crash in one is isolated (a crashed worker is respawned; the router/transform workers drain their
+inbound's already-ACKed messages even while the source is stopped). Each worker class has its own wake
+event, so a producer wakes only its downstream consumer (no cross-class lost wakeups).
 
-That isolation extends to **startup wiring.** A single connection that fails to build or bind at start (an unresolvable environment value or certificate, an egress refusal, a port already in use, or a refusal to expose cleartext off loopback) is recorded as `failed`, logged, and alerted — and the engine **starts the rest of the graph and serves the API** instead of aborting. A failed outbound still gets its delivery worker, so rows routed to it are retried rather than dropped, and a reload or restart that builds it heals the lane. A failed inbound simply isn't listening. Reload itself stays fail-fast: it validates the whole new registry before quiescing a healthy graph, so only startup degrades gracefully.
+That isolation now extends to **startup wiring** (ADR 0031): a single connection that fails to
+build/bind at start (unresolvable `env()`/cert, an egress refusal, a port in use, a cleartext-exposure
+refusal) is recorded `failed` + logged + alerted, and the engine **starts the rest of the graph and
+serves the API** instead of aborting. A failed outbound still gets its delivery worker, so rows routed
+to it are **retried, never dropped**, and a reload/restart that builds it self-heals the lane; a failed
+inbound just isn't listening. Reload itself stays fail-fast (it `build_check`s the whole new registry
+before quiescing a healthy graph) — only startup degrades.
 
 ## Parsing: tolerant-first, strict-on-demand
 
-- **python-hl7** parses tolerantly and powers the field *peek* used for routing. This is the hot path.
-- **hl7apy** does version-aware and profile validation, opt-in per inbound connection (`validation.strict`). It is slower and kept off the routing hot path.
+- **`python-hl7`** parses tolerantly and powers field *peek* for routing. Hot path.
+- **`hl7apy`** does version-aware + profile validation, opt-in per inbound connection
+  (`validation.strict`). Slower; kept off the routing hot path.
 
-Real-world HL7 v2 is frequently non-conformant. Strict-by-default would drop messages that must still route, so tolerance is the default and strictness is opt-in.
+Real-world HL7 v2 is frequently non-conformant. Strict-by-default would drop messages
+that must still route, so tolerance is the default and strictness is an opt-in.
 
-## Configuration: connections plus code-first routing
+## Configuration: connections + code-first routing
 
-The configuration model is a **graph wired by name, authored as Python** — there is no enclosing "channel" object:
+The target model is a **graph wired by name, authored as Python** — no enclosing "channel"
+object:
 
-- a **Connection** is a named inbound or outbound endpoint (MLLP, file, and so on);
-- an inbound Connection names a **Router** — a Python script that sees every received message, decides which Handler(s) to forward to, and may filter;
-- a **Handler** is a Python script that filters, transforms, and sends to outbound Connection(s).
+- a **Connection** is a named inbound or outbound endpoint (MLLP, file, …);
+- an inbound Connection names a **Router** — a Python script that sees every received message,
+  decides which **Handler(s)** to forward to, and may filter;
+- a **Handler** is a Python script that filters → transforms → sends to outbound Connection(s).
 
-Configuration is version-controlled, diff-able Python. The database stores runtime state and messages only — never configuration. (This is the opposite of engines that bury channel definitions as XML inside the database.)
+Config is version-controlled, diff-able Python; the database stores runtime state and messages
+**only**, never configuration (the opposite of Mirth burying channel XML in the DB).
 
-Connections, Routers, and Handlers are authored against the `messagefoundry` surface (`inbound` / `outbound` / `@router` / `@handler` / `Send` / `MLLP` / `File` / `Message`); a directory of such modules loads into a registry that the engine runs.
+Connections/Routers/Handlers are authored against the `messagefoundry` surface
+(`inbound`/`outbound`/`@router`/`@handler`/`Send`/`MLLP`/`File`/`Message`); a directory of such
+modules loads via `load_config` into a `Registry` that the engine's `RegistryRunner` runs.
 
-### The configuration graph, described
+The configuration graph wired by name (no enclosing "channel" object) as a rendered diagram:
 
-A typical inbound flow looks like this:
+```mermaid
+flowchart LR
+  classDef conn fill:#e3f2fd,stroke:#1565c0,color:#0d2b45;
+  classDef router fill:#fff3e0,stroke:#ef6c00,color:#3a1d00;
+  classDef handler fill:#e8f5e9,stroke:#2e7d32,color:#10240f;
 
-- **inbound** `IB_ACME_ADT` (MLLP) **names a router.**
-- The **`@router`** sees every message, filters, and forwards by name to one or more handlers.
-- **`@handler` `to_EHR`** filters and transforms, then **sends** to outbound `OB_EHR_ADT` (MLLP).
-- **`@handler` `to_archive`** filters and transforms, then **sends** to outbound `OB_ARCHIVE` (File).
+  IB["inbound: IB_ACME_ADT<br/>(MLLP)"]:::conn
+  R(["@router<br/>sees every message · filters · forwards by name"]):::router
+  H1["@handler: to_EHR<br/>filter → transform"]:::handler
+  H2["@handler: to_archive<br/>filter → transform"]:::handler
+  OB1["outbound: OB_EHR_ADT<br/>(MLLP)"]:::conn
+  OB2["outbound: OB_ARCHIVE<br/>(File)"]:::conn
 
-## Security and PHI
+  IB -->|"names a router"| R
+  R -->|"forward to handler(s)"| H1
+  R --> H2
+  H1 -->|"Send → outbound"| OB1
+  H2 -->|"Send → outbound"| OB2
+```
 
-Messages contain PHI, so access control and data protection are first-class concerns. Identity, RBAC, and the action audit log are detailed in the [security documentation](https://github.com/MEFORORG/MessageFoundry/blob/main/docs/SECURITY.md); data-at-rest, transport, logging, retention, and de-identification are detailed in the [PHI documentation](https://github.com/MEFORORG/MessageFoundry/blob/main/docs/PHI.md). Per-interface trust boundaries and a STRIDE threat model are in the [threat model](https://github.com/MEFORORG/MessageFoundry/blob/main/docs/security/THREAT-MODEL.md).
+## PHI / security
 
-**Identity and access.** The API enforces authentication and role-based access control, deny-by-default. PHI views are gated by distinct permissions (raw view versus summary view). A user-attributed, append-only, hash-chained **audit log** records who viewed, searched, or replayed messages. Local accounts have built-in, required **multi-factor authentication**; enterprise and Active Directory users get MFA through their own identity provider via SSO federation.
+Messages contain PHI. Access control and the *data* protections are tracked separately — see
+[SECURITY.md](SECURITY.md) (identity, RBAC, action audit) and [PHI.md](PHI.md) (data-at-rest,
+transport, logging, retention, de-identification), which is the authoritative built-vs-planned map.
+The per-interface trust boundaries and STRIDE threats are in
+security/THREAT-MODEL.md (PW.1–2 / ASVS V15), a maintainer-internal document —
+[SECURITY-DOCS-POLICY.md](SECURITY-DOCS-POLICY.md) explains what is withheld and what you can request.
 
-**Interface authentication.** Connections support **mutual TLS (mTLS)**, **OAuth 2.0 client-credentials**, and **SMART-on-FHIR Backend Services** for authenticating interface traffic.
+**Built today:** authentication + RBAC (PHI views gated by `messages:view_raw` /
+`messages:view_summary`), a user-attributed append-only **audit log** (hash-chained) of who
+viewed/searched/replayed messages, and **encryption-at-rest** for message bodies — AES-256-GCM through
+the store cipher when a key is set, with owner-only DB/WAL file permissions and required volume
+encryption covering the rest.
 
-**Data at rest and in transit.** Message bodies are encrypted at rest with **AES-256-GCM** through the store cipher when a key is set, with owner-only database and WAL file permissions and volume encryption covering the rest. Transport security (TLS / MLLPS), log redaction, and retention/purge enforcement round out the data-protection controls.
-
-**Posture.** MessageFoundry has completed an internal **OWASP ASVS 5.0 Level 3 self-assessment** (212 requirements met, 0 failed, 0 partial, 133 not applicable, of 345). This is a self-assessment, not an external audit. ASVS Level 3 recommends — but does not require — an independent code review and penetration test; both are planned. The architecture is designed to **support a HIPAA-compliant deployment**; HIPAA compliance ultimately depends on how an organization deploys and operates the system.
+**Roadmap (not yet enforced — see [PHI.md](PHI.md)):** structlog **log redaction**, **MLLPS / TLS**
+for transport, and **retention/purge** enforcement.
 
 ## Module map
 
 | Package / module | Responsibility |
 |---|---|
-| `messagefoundry.config` | Connector models and code-first wiring registry / loader, plus service settings. |
-| `messagefoundry.parsing` | Tolerant peek (python-hl7) and strict validation (hl7apy); the parse tree and the `Message` transform model; and pure non-HL7 codecs — X12 EDI, FHIR, DICOM (headers / SR, over pydicom), and a base64 binary-carriage codec. |
-| `messagefoundry.store` | Durable message store / **staged queue** (one `queue` table keyed by stage), SQLite WAL by default; every receipt is logged with a disposition that flows with the message. A `Store` protocol and an `open_store` factory abstract the backend; production PostgreSQL and SQL Server backends are at parity. |
-| `messagefoundry.transports` | Inbound and outbound connections (MLLP, file, X12, FHIR, DICOM C-STORE SCP inbound over pynetdicom, and more), resolved through a registry — never special-cased in the pipeline. |
-| `messagefoundry.anon` | Deterministic, secret-per-dataset pseudonymization / de-identification (fail-closed), exposed to capture tooling and the test harness. |
-| `messagefoundry.pipeline` | Per-message routing and handling (the registry runner) plus per-inbound-connection supervision; an offline `dryrun` mode. |
-| `messagefoundry.api` | The FastAPI surface for clients — the engine's only external interface. |
-| `messagefoundry.auth` | Authentication + RBAC core (no FastAPI): permissions and roles, identity, password hashing, opaque session tokens, MFA, and LDAP / Active Directory integration — enforced by `api`. |
-| `messagefoundry.generators` | Conformant synthetic HL7 generators (ADT, ORM, ORU, …) behind `messagefoundry generate`. |
-| `messagefoundry.console` | The PySide6 admin app — a separate process and an HTTP client to the API only. |
-| CLI entrypoint and gate | `serve` / `generate` / `check`, plus the `check` commit / CI gate. |
+| `messagefoundry.config` | Connector models (`models.py`) + code-first wiring registry/loader (`wiring.py`) + service settings (`settings.py`) |
+| `messagefoundry.parsing` | Tolerant peek (python-hl7) + strict validate (hl7apy); parse tree (`tree.py`) and the `Message` transform model (`message.py`); pure non-HL7 codecs — X12 EDI (`x12/`), DICOM headers/SR over pydicom (`dicom/`, ADR 0025), and the base64 binary-carriage codec (`binary.py`, ADR 0028) |
+| `messagefoundry.store` | Durable message store / **staged queue** (one `queue` table, `stage` = ingress\|outbound), SQLite WAL; every receipt logged with a disposition that flows with the message. `Store` protocol + `open_store` factory in `base.py`; production SQL Server backend in `sqlserver.py` |
+| `messagefoundry.transports` | Inbound & outbound connections (MLLP, file, X12 raw-TCP, DICOM C-STORE SCP inbound over pynetdicom — ADR 0025, …), resolved through a registry (`base.py`) — never special-cased in `pipeline/` |
+| `messagefoundry.anon` | Deterministic, secret-per-dataset pseudonymization / de-identification (fail-closed; ADR 0030) — exposed to the tee (`anonymize-captures`) and the test harness |
+| `messagefoundry.pipeline` | Per-message routing/handling (`RegistryRunner` in `wiring_runner.py`) + per-inbound-connection supervision (`engine.py`); offline `dryrun.py` |
+| `messagefoundry.api` | Localhost FastAPI surface (`app.py` + response `models.py`) — the engine's only external interface. The `/ui` browser web console mounts onto this app from a separate wheel (see below) via `mount_ui`, pinned against the `api/_ui_seam.py` contract ([WEBCONSOLE-PACKAGE.md](WEBCONSOLE-PACKAGE.md)) |
+| `messagefoundry.apiclient` | Qt-free / FastAPI-free engine-client library (ADR 0088) — a small typed httpx wrapper over the API, shared by the test harness and any future client |
+| `messagefoundry.auth` | Authn + RBAC core (no FastAPI): permissions/roles, `Identity`, password hashing, opaque session tokens, LDAP/Kerberos (`service.py`) — enforced by `api` |
+| `messagefoundry.generators` | Conformant synthetic HL7 generators (ADT, ORM, ORU, …) behind `messagefoundry generate` |
+| `messagefoundry.service` | Local Windows service control (`messagefoundry service {install,start,stop,status}`; ADR 0088), wrapping the NSSM scripts |
+| `__main__.py`, `checks.py` | CLI entrypoint (`serve` / `generate` / `check` / `service`) + the `check` commit/CI gate |
 
-The dependency direction is one-way: `pipeline` / `transports` / `parsing` / `store` / `config` never import `api` or `console`. The API depends on the engine; the console depends on the API.
+Dependency direction is one-way: `pipeline` / `transports` / `parsing` / `store` / `config`
+never import `api`. The API depends on the engine; the clients (web console, harness) depend on the API
+(via `apiclient`). The former PySide6 desktop console (`messagefoundry.console`) was retired — its
+reusable Qt widgets moved to the harness (BACKLOG #103, ADR 0032 retired).
 
-**Beyond the engine packages** (separate components, not part of `messagefoundry.*`): the code-first configuration an operator authors (their config modules plus per-environment value overrides), the VS Code IDE extension, the test harness, the sample configuration and message corpus, the Windows service scripts, and the CI / supply-chain workflows.
+**Beyond the engine packages** (separate components, not `messagefoundry.*`): the **code-first config**
+an operator authors (their `--config` modules + [`environments/`](../environments/) value overrides),
+the **web ops console** ([`messagefoundry_webconsole/`](../messagefoundry_webconsole/), a
+separately-versioned second wheel `messagefoundry-webconsole` mounted same-origin under `/ui` — ADR
+0065, [WEBCONSOLE-PACKAGE.md](WEBCONSOLE-PACKAGE.md)),
+the **IDE extension** ([`ide/`](../ide/)), the **test harness** ([`harness/`](../harness/)), the
+sample config + message corpus ([`samples/`](../samples/)), the **Windows service** scripts
+([`scripts/service/`](../scripts/service/)),
+and **CI / supply-chain** ([`.github/workflows/`](../.github/workflows/)).
 
 ## Dependencies
 
-Runtime and build dependencies are declared in `pyproject.toml` (the source of truth) as `>=` minimums, with a pinned, hashed resolution in committed lockfiles. MessageFoundry requires **Python 3.14+**.
+Declared in [`pyproject.toml`](../pyproject.toml) (the source of truth) as `>=` minimums; the pinned,
+hashed resolution lives in the committed **`uv.lock`** / **`requirements.lock`** (DEP-1, see
+[SECURITY.md](SECURITY.md#dependency-lockfile-dep-1)). Requires **Python 3.11+**.
 
 **Runtime**
 
 - `hl7` (python-hl7) — fast, tolerant parsing for the routing hot path
-- `hl7apy` — version-aware validation and profiles (opt-in strict path)
-- `pydantic` — configuration / connector models and validation
+- `hl7apy` — version-aware validation + profiles (opt-in strict path)
+- `pydantic` — config / connector models and validation
 - `aiosqlite` — async SQLite for the message store / queue
-- `fastapi` + `uvicorn[standard]` — the engine API
+- `fastapi` + `uvicorn[standard]` — localhost engine API
 - `argon2-cffi` — argon2id password hashing
 - `cryptography` — AES-256-GCM at-rest encryption for the store
-- `ldap3` + `pyspnego` — Active Directory / LDAP authentication and Windows SSO
+- `ldap3` + `pyspnego` — Active Directory / LDAP auth and Windows SSO (Kerberos)
 
 **Optional extras**
 
-- `console` → `PySide6` (LGPL — chosen so the open-source console is distributable)
-- `postgres` / `sqlserver` → production database backends at parity with SQLite (the SQL Server driver also needs the OS-level Microsoft ODBC Driver 18, which is not pip-installable; both are lazy-imported so SQLite-only installs skip them)
-- `dicom` → `pydicom` + `pynetdicom` (the DICOM codec — headers / SR only, no numpy — and the C-STORE SCP inbound connector; lazy-imported so non-DICOM installs skip it)
+- `harness` → `PySide6` (LGPL — chosen so the OSS test harness GUI is distributable; not PyQt) + `httpx` + `truststore` (was `[console]` before the desktop console was retired — BACKLOG #103)
+- `sqlserver` → `aioodbc` (production SQL Server store; also needs the OS-level Microsoft ODBC
+  Driver 18 for SQL Server, which is not pip-installable; lazy-imported so SQLite-only installs skip it)
+- `dicom` → `pydicom` + `pynetdicom` (DICOM codec — headers/SR only, no numpy — and the C-STORE SCP
+  inbound connector; ADR 0025; lazy-imported so non-DICOM installs skip it)
 - `dev` → `pytest`, `pytest-asyncio`, `httpx` (ASGI test client for the API), `ruff`, `mypy`
 
-**Build and tooling** — `hatchling` (build backend), Ruff (format and lint), mypy (strict), pytest.
+**Build / tooling** — `hatchling` (build backend), Ruff (format + lint, no Black), mypy (strict),
+pytest.

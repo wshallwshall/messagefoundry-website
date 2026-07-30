@@ -1,18 +1,18 @@
-# MessageFoundry — A Mental Model
+# MessageFoundry — A Mental Model of the Project
 
-*Open-source healthcare interface engine · Python · v0.2.2 (Early Access)*
+*Open-source healthcare integration engine · Python · v0.3.2 · prepared 2026-06-18, revised 2026-07-30*
 
-This document is an orientation map, not a manual. It builds the **mental model** you need to reason about MessageFoundry: what it is, the four building blocks, how a message flows, the invariants you must not break, and where everything lives. Read it top to bottom once and the rest of the documentation — and the engine's behavior — will make sense.
+This document is an orientation map, not a manual. It builds the **mental model** you need to reason about MessageFoundry: what it is, the four building blocks, how a message flows, the invariants you must not break, and where everything lives. Read it top to bottom once; afterwards the codebase and CLAUDE.md will make sense.
 
 ## 1. What it is, in one breath
 
-MessageFoundry is an **open-source, Python** interface engine for healthcare — a modern alternative to legacy interface engines like Mirth and Corepoint. It receives, routes, transforms, and validates clinical/business messages between systems. It handles **HL7 v2.x by default** and is payload-agnostic for other formats (JSON, XML/SOAP, X12 EDI, DB records).
+MessageFoundry is an **open-source, Python** integration engine for healthcare — a modern alternative to legacy interface engines like Mirth and Corepoint. It receives, routes, transforms, and validates clinical/business messages between systems. It handles **HL7 v2.x by default** and is payload-agnostic for other formats (JSON, XML/SOAP, X12 EDI, DB records).
 
 What sets it apart: **you can set it up visually** — guided wizards scaffold connections and routes, validate your config as you save, and let you test against sample messages — **or write the routing and handling in plain Python** when you want full control. Either way the logic is ordinary Python you own and version-control — not a legacy engine’s embedded scripting language, and not a locked-in low/no-code GUI. Connection setup in particular can be pure data (a TOML file edited by hand or in a VS Code GUI). *Python is the power tool, not the price of entry.*
 
 > **The pitch in one line:** *The best of the legacy interface engines — their proven reliability, deep connector catalogs, and battle-tested handling of HL7 v2 plus JSON, X12, and other formats — with none of the lock-in: configuration you own and version-control (set up with guided wizards or in Python), a durable, broker-free queue (SQLite by default, or Postgres/SQL Server), and auth, RBAC, audit, and encryption-at-rest built in rather than bolted on.*
 
-**Stack:** python-hl7 (tolerant parsing) + hl7apy (strict validation), FastAPI/uvicorn (localhost engine API), SQLite/aiosqlite (message store; Postgres & SQL Server also supported), PySide6 (admin console). Python 3.14+, asyncio core.
+**Stack:** python-hl7 (tolerant parsing) + hl7apy (strict validation), FastAPI/uvicorn (localhost engine API), SQLite/aiosqlite (message store; Postgres & SQL Server also supported), a browser web console (`/ui`, `messagefoundry_webconsole`) as the operator UI, and PySide6 (the standalone test harness). Python 3.14+, asyncio core.
 
 ## 2. The core model: a graph of four building blocks
 
@@ -85,15 +85,15 @@ def handle(msg):
 
 Note env(): the downstream peer differs per environment, so it’s resolved from environments/\<env\>.toml at load — the **same module runs unchanged in dev, staging, and prod**. Naming convention is \[TYPE\]\_\[PARTNER\]\_\[MESSAGE\] — e.g. IB_ACME_ADT (inbound) / OB_ACME_ADT (outbound).
 
-## 3. The architecture: engine-as-library + console-over-API
+## 3. The architecture: engine-as-library + web-console-over-API
 
 This is a **client/server split, not a monolithic GUI app**. Internalize these two halves and the directory layout falls into place:
 
 - **Engine** — a headless asyncio service (FastAPI/uvicorn). It owns the store and supervises one runner per inbound connection. **No GUI imports** — it is testable headless and runnable as a Windows service.
 
-- **Console** — a separate PySide6 process that talks to the engine ONLY over a localhost HTTP/WebSocket API. It never imports the engine or touches the DB directly.
+- **Web console** — the operator UI, a browser SPA the engine serves same-origin at `/ui` (`messagefoundry_webconsole`, mounted in-process — ADR 0065). It talks to the engine ONLY over the localhost HTTP/WebSocket API, never importing the engine or touching the DB directly. It is the **sole operator console** — the former PySide6 desktop console was retired (BACKLOG #103); PySide6 now backs only the standalone test harness.
 
-> **Dependency direction (one-way — never violate):** pipeline / transports / parsing / store / config never import api or console. The API depends on the engine; the console depends on the API. One carve-out: parsing/ is a pure HL7 library the console may import for client-side rendering (e.g. the Parse Tree view). Importing any other engine package from the console is forbidden.
+> **Dependency direction (one-way — never violate):** pipeline / transports / parsing / store / config never import api. The API depends on the engine; the clients (web console, harness) depend on the API. One carve-out: parsing/ is a pure HL7 library a client may import for client-side rendering (e.g. the harness's Parse Tree view). Importing any other engine package from a client is forbidden.
 
 Why it matters: the deployment split (in-process / local daemon / remote host) becomes a **config choice, not an architectural fork**. The same API path serves all three. The database holds runtime state and messages only — **never configuration.**
 
@@ -101,19 +101,19 @@ Why it matters: the deployment split (in-process / local daemon / remote host) b
 
 Splitting a headless library from its clients, with a single API contract between them, isn’t architectural purity for its own sake — it pays off in concrete ways:
 
-- **One contract, any number of clients.** The HTTP/WebSocket API (api/app.py) is the engine’s only external surface, so anything can drive it — the PySide6 console, the VS Code extension (stage/promote), the messagefoundry CLI, your own scripts, a monitoring system, a future web UI. You’re never locked to the bundled GUI: the API is the product boundary, and a new front-end is a new client, not new engine code.
+- **One contract, any number of clients.** The HTTP/WebSocket API (api/app.py) is the engine’s only external surface, so anything can drive it — the browser web console (`/ui`), the VS Code extension (stage/promote), the messagefoundry CLI, the PySide6 test harness, your own scripts, a monitoring system. You’re never locked to one UI: the API is the product boundary, and a new front-end is a new client, not new engine code.
 
-- **One code path for every deployment shape.** Embed the engine in your own Python app (import it), run it headless as a Windows service, or point a console at a local daemon — and, later, at a remote host over TLS. The deployment split is a config choice, not a fork: no hand-rolled IPC to maintain, and no “embedded vs server” editions to keep in sync.
+- **One code path for every deployment shape.** Embed the engine in your own Python app (import it), run it headless as a Windows service, or point a browser at a local daemon’s `/ui` — and, later, at a remote host over TLS. The deployment split is a config choice, not a fork: no hand-rolled IPC to maintain, and no “embedded vs server” editions to keep in sync.
 
 - **Headless means testable, automatable, and serviceable.** Because no engine package imports the GUI, the whole engine runs with no display — in CI, in a container, as an unattended service with nobody logged in. The GUI can never become a hidden runtime dependency, and message flow never depends on a window being open.
 
 - **The security boundary is explicit and unbypassable.** Authentication, RBAC, audit, and TLS all live at the one API choke point. The console has no privileged backdoor — it authenticates and is authorized like any other client, and every PHI access is audited with the acting user. Because the console can’t import the engine or touch the DB (the one-way dependency rule above), there is simply no path to bypass that boundary, by accident or by design. A monolithic GUI would hold in-process access to PHI with no enforceable line.
 
-- **Engine and console evolve independently.** The contract decouples them: the engine and the console can be built, tested, and shipped by different people (or agents) as long as the API holds — each keeps its own internal concurrency model (§8) without imposing it on the other (the modularity standard, §10).
+- **Engine and console evolve independently.** The contract decouples them: the engine and the web console can be built, tested, and shipped by different people (or agents) as long as the API holds — each keeps its own internal model without imposing it on the other (the modularity standard, §10). The web console even ships as a separately-versioned wheel the engine mounts.
 
-- **Clients attach and detach freely.** Restart the console without touching the engine (and vice versa); run several observers against one engine; receive live push updates over the WebSocket stats feed (WS /ws/stats) — all without interrupting message flow.
+- **Clients attach and detach freely.** Reload the web console without touching the engine (and vice versa); run several observers against one engine; receive live push updates over the WebSocket stats feed (WS /ws/stats) — all without interrupting message flow.
 
-> **Mental model:** the engine is a service with a published contract, and every UI — including the official console — is just a client of it. That single boundary is where reliability (headless, testable), security (auth / RBAC / audit in one place), and flexibility (embed / daemon / remote) all come from.
+> **Mental model:** the engine is a service with a published contract, and every UI — including the operator web console — is just a client of it. That single boundary is where reliability (headless, testable), security (auth / RBAC / audit in one place), and flexibility (embed / daemon / remote) all come from.
 
 ### Configuration lives in files, not the database
 
@@ -146,12 +146,12 @@ MessageFoundry isn’t one program — it’s a small toolkit arranged around th
 |----|----|----|
 | **Engine service** | messagefoundry serve *(as a Windows service via NSSM)* | The headless runtime: owns the store, runs the Connection/Router/Handler graph through the staged queue, and exposes the localhost HTTP/WebSocket API. Everything else talks to this. |
 | **Command-line tool** | messagefoundry \<cmd\> | One binary, many jobs: serve, init (scaffold a config repo), validate / graph / dryrun / check (the commit/CI gate), connection (edit connections.toml), generate (synthetic HL7), plus key/audit security ops. The introspection commands touch no network — git hooks and the VS Code extension shell them. |
-| **Admin & monitoring console** | python -m messagefoundry.console (PySide6; \[console\] extra) | The operator GUI: connection dashboard, message browser with per-message disposition + delivery/audit trail, HL7 parse-tree viewer, dead-letter queue with replay, and user/session/MFA management. A pure API client — it never touches the DB. |
+| **Admin & monitoring web console** | browse to the engine's `/ui` (`[api].serve_ui`; `messagefoundry-webconsole` wheel) | The operator GUI, in the browser: connection dashboard, message browser with per-message disposition + delivery/audit trail, HL7 parse-tree viewer, dead-letter queue with replay, and user/session/MFA management. A pure API client — it never touches the DB. (The former PySide6 desktop console was retired — BACKLOG #103.) |
 | **VS Code configuration extension** | the ide/ extension (open in VS Code, press F5) | The authoring surface: a New Route Wizard, validate-on-save, a Test Bench that dry-runs .hl7 files with before/after diffs, Stage → Promote to a running engine, and an HL7-aware @messagefoundry AI chat participant. Shells the CLI’s introspection commands. |
 | **Test harness** | python -m harness *(standalone PySide6)* | Exercises a running engine with synthetic, PHI-free traffic: Send / Receive / File / Compose / Monitor tabs (inject ACK faults, malformed messages, delivery failures), headless CI scenarios that assert dispositions, and a separate asyncio load-testing engine with tunable profiles (warmup → ramp → soak) and an SLO report. |
 | **Tee relay** | python -m tee *(standalone; no engine imports)* | A migration de-risking tool: sit in front of a legacy engine and a shadow MessageFoundry, ACK on receipt, and forward the same bytes to both so you can compare output before cutover (rollback = stop the relay). *Test/synthetic data only — not PHI-hardened.* |
 
-> **The throughline:** the engine is the only long-running service and the only thing that touches the store. The console, the extension, and the harness are separate processes that drive or observe it over the one API; the tee relay sits in front of it. That’s the “one contract, many clients” split from §3, made concrete.
+> **The throughline:** the engine is the only long-running service and the only thing that touches the store. The web console (in a browser), the extension, and the harness drive or observe it over the one API; the tee relay sits in front of it. That’s the “one contract, many clients” split from §3, made concrete.
 
 ## 5. How a message flows: the staged pipeline
 
@@ -169,7 +169,7 @@ The point of splitting routing from transform: a slow or failing transform can *
 
 > **At-least-once, broker-free:** The transactional staged queue (SQLite in WAL mode, or PostgreSQL / SQL Server) gives at-least-once delivery, retries, replay, and dead-lettering WITHOUT a separate message broker. The inbound is ACKed only after the raw message is durably committed to the ingress stage (ACK-on-receipt). Every stage handoff (ingress→routed, routed→outbound) is a single committed transaction: claim → produce next-stage rows → complete this stage. A crash before commit rolls back and re-runs; each handoff is idempotent — meaning safe to repeat: re-running it lands the same result with no extra effect.
 >
-> **Therefore — purity is mandatory:** Because a re-run must re-derive identical output, Routers and Transforms MUST be pure (message in → message out, no external side effects), and outbound connections must be idempotent. The one sanctioned exception (ADR 0010): a Handler may make a live, read-only db_lookup(connection, statement, params) for enrichment/gating — its result may differ per pass, accepted by design. It runs off the event loop, is gated by \[egress\].allowed_db, and is unavailable to a Router or in dry-run.
+> **Therefore — purity is mandatory:** Because a re-run must re-derive identical output, Routers and Transforms MUST be pure (message in → message out, no external side effects), and outbound connections must be idempotent. The sanctioned exception is a Handler making a live, **read-only** lookup for enrichment/gating — either db_lookup(connection, statement, params) against a database (ADR 0010, gated by \[egress\].allowed_db) or fhir_lookup(connection, query) against a FHIR API (ADR 0043, gated by \[egress\].allowed_http, GET-only). Its result may differ per pass, accepted by design. Both run off the event loop and are unavailable to a Router or in dry-run (they raise).
 
 ### “At-least-once” does not mean routine duplicates
 
@@ -204,7 +204,10 @@ A core promise: **nothing is ever silently dropped**. Every received message is 
 | UNROUTED | No Handler matched (still counted + logged). | After the router runs. |
 | PROCESSED | Every Handler transformed and delivered. | After transform + delivery. |
 | FILTERED | Every Handler ran but delivered nothing. | After transform. |
+| NOT_DEPLOYED | Every destination the Handlers chose is present in the config but marked deployed = false — the Sends were **declined**, not filtered. | After transform (the finalizer reads the recorded decline). |
 | ERROR / dead-letter | A stage failed (parse/validate/route/transform/deliver). | At whichever stage failed. |
+
+About NOT_DEPLOYED: a Connection can be declared deployed = false — it stays in the graph (validate / check / graph still see it) but the engine never builds it, so a Send to it is declined and logged rather than queued. It gets its own disposition so that outcome isn’t silently collapsed into FILTERED, which would read as “the Handler chose not to send.”
 
 ACK vs NAK timing: decode/parse/strict-validate failures **NAK synchronously** at the listener (AR/AE) and record ERROR before any ingress row. But routing/transform/delivery failures happen *after* the ACK — they do NOT NAK the sender. Operators rely on the message’s ERROR/dead-letter disposition and the AlertSink, not the ACK, for post-ingress failures.
 
@@ -252,7 +255,7 @@ The engine's concurrency is built on **asyncio** — Python's built-in framework
 
 A word on what that means, since it shapes the rest of this section. **Concurrency** is the engine doing many things at once — receiving on dozens of connections, transforming, and delivering, all interleaved — without any one of them stalling the others. There are two common ways to get it. **Threads** ask the operating system to run several streams of work in true parallel; they work, but they share memory and must coordinate with locks, which makes subtle races and deadlocks easy to introduce. **asyncio** takes a different route: a single thread runs an **event loop** that juggles many lightweight tasks cooperatively. Each task runs until it has to wait on something slow — a network socket, a disk write — then hands control back to the loop, which advances another task; when the wait is over, the task picks up where it left off.
 
-That model is a near-perfect fit here, because an interface engine spends almost all its time waiting on **input/output (I/O)** — reading MLLP sockets, writing the store, sending to downstreams — rather than doing heavy computation. Picture one very efficient cook who starts many dishes and, the moment one is simmering, turns to move another along: never idle, and never two cooks colliding in a shared kitchen. One process can therefore look after hundreds of connections and messages cheaply, each “worker” a lightweight task rather than a heavyweight operating-system thread. The flip side — and the reason the rules below matter — is that because it is all one thread, a single task that **blocks** (stops to do something slow without yielding) freezes every other task at once.
+That model is a near-perfect fit here, because an integration engine spends almost all its time waiting on **input/output (I/O)** — reading MLLP sockets, writing the store, sending to downstreams — rather than doing heavy computation. Picture one very efficient cook who starts many dishes and, the moment one is simmering, turns to move another along: never idle, and never two cooks colliding in a shared kitchen. One process can therefore look after hundreds of connections and messages cheaply, each “worker” a lightweight task rather than a heavyweight operating-system thread. The flip side — and the reason the rules below matter — is that because it is all one thread, a single task that **blocks** (stops to do something slow without yielding) freezes every other task at once.
 
 - Never block the event loop — use aiosqlite and async connectors.
 
@@ -260,13 +263,13 @@ That model is a near-perfect fit here, because an interface engine spends almost
 
 - Catch exceptions specifically (never bare except, never swallow silently). Route bad messages to the error/dead-letter path rather than crashing a connection.
 
-The console is the deliberate exception. It’s a separate GUI process (§3), and graphical interfaces have their own established concurrency model: **Qt** keeps the interface responsive by running it on a main thread and pushing background work onto worker threads that report back via signals/slots. So the two halves of MessageFoundry each use the model that suits them — asyncio inside the engine, Qt threads inside the console — and because they are separate processes, the two never mix.
+The standalone PySide6 **test harness** is the deliberate exception. It’s a separate GUI process (§3), and graphical interfaces have their own established concurrency model: **Qt** keeps the interface responsive by running it on a main thread and pushing background work onto worker threads that report back via signals/slots. So the two halves each use the model that suits them — asyncio inside the engine, Qt threads inside the harness — and because they are separate processes, the two never mix. (The browser web console runs its own async model in the browser, likewise never mixed with the engine's.)
 
 ## 9. Security & PHI: first-class, on-premises by default
 
 This engine carries PHI, so security is built, not bolted on:
 
-- **Auth + RBAC** — local + Active Directory (LDAP) users, fixed built-in roles, deny-by-default per-route permissions, opaque sessions, native TOTP MFA for local accounts, full audit (auth/, api/, docs/SECURITY.md).
+- **Auth + RBAC** — local + AD (LDAP/Kerberos) users, built-in roles (plus custom roles, ADR 0045), deny-by-default per-route permissions, opaque sessions, native TOTP MFA **and** browser WebAuthn passkeys (ADR 0068, the \[webauthn\] extra) for local accounts, full audit (auth/, api/, docs/SECURITY.md).
 
 - **Encryption-at-rest** — message bodies are AES-256-GCM encrypted in the store.
 
@@ -278,7 +281,7 @@ This engine carries PHI, so security is built, not bolted on:
 
 ## 10. How you build and extend it
 
-- **Guided tooling lowers the floor.** You don’t have to be a strong programmer to get going: the VS Code extension ships a New Route Wizard, validate-on-save, and a Test Bench (dry-run .hl7 files with before/after diffs), and the console plus the connections.toml GUI let you add and edit connections without hand-writing config. Get a route running with wizards, then drop into Python only when you need custom logic.
+- **Guided tooling lowers the floor.** You don’t have to be a strong programmer to get going: the VS Code extension ships a New Route Wizard, validate-on-save, and a Test Bench (dry-run .hl7 files with before/after diffs), and the web console plus the connections.toml GUI let you add and edit connections without hand-writing config. Get a route running with wizards, then drop into Python only when you need custom logic.
 
 - **Connections are pluggable via a registry.** Implement the inbound/outbound connector in transports/ and register it (transports/base.py); the pipeline resolves connections through the registry — never special-case a connection type inside pipeline/.
 
@@ -301,18 +304,18 @@ This engine carries PHI, so security is built, not bolted on:
 | parsing/ | peek.py (python-hl7 hot path), tree.py, validate.py (hl7apy strict), x12/ codec. Pure library. |
 | store/ | Store protocol + open_store factory; SQLite WAL store; Postgres; SQL Server. |
 | auth/ | Authn + RBAC core (no FastAPI): permissions/roles, Identity, passwords, tokens, ldap, totp. |
-| api/ | FastAPI app + models + auth — the engine's only external surface. |
-| console/ | PySide6 admin app (separate process; HTTP client to the API). |
+| api/ | FastAPI app + models + auth — the engine's only external surface (serves the `/ui` web console same-origin). |
+| apiclient/ | Qt-free / FastAPI-free engine-client library (ADR 0088) — the shared HTTP client. |
 | generators/ | Conformant synthetic HL7 generators — messagefoundry generate. |
 | checks.py | messagefoundry check — commit/CI gate (validate + dryrun + advisory lint). |
 | ide/ | VS Code extension (TypeScript): setup, promote, test bench, AI commands. |
 | samples/ | Example Connection/Router/Handler modules + send_mllp.py sender. |
 | harness/ | Standalone PySide6 send/receive + load-test harness (PHI-free synthetic traffic). |
-| docs/ | ARCHITECTURE.md, ADRs (0001–0021), SECURITY.md, PHI.md, CONNECTIONS.md, and more. |
+| docs/ | ARCHITECTURE.md, ADRs (0001–0153), SECURITY.md, PHI.md, CONNECTIONS.md, and more. |
 
 ## 12. System requirements
 
-Before deploying, here’s what the engine and its clients need. The engine is a headless Python/asyncio service; the console is a separate desktop app. Full detail and sizing tiers are in docs/SYSTEM-REQUIREMENTS.md.
+Before deploying, here’s what the engine and its clients need. The engine is a headless Python/asyncio service; the operator console runs in a browser at `/ui`. Full detail and sizing tiers are in docs/SYSTEM-REQUIREMENTS.md.
 
 ### Hardware
 
@@ -326,29 +329,31 @@ Keep the message store on a fast *local* disk, not a network share — the stage
 
 ### Platform, runtime & store
 
-- **OS.** Windows Server 2022/2025 is the primary supported platform (Windows-service deploy via NSSM); Windows Server 2019 and Windows 10/11 are supported; the engine also runs on modern Linux (under systemd — no bundled installer); macOS is development/console only.
+- **OS.** Windows Server 2022/2025 is the primary supported platform (Windows-service deploy via NSSM); Windows Server 2019 and Windows 10/11 are supported; the engine also runs on modern Linux (under systemd — no bundled installer); macOS is development only.
 
 - **Runtime.** Python 3.14+ (64-bit). No C compiler needed for the default install. The Windows service uses NSSM (registering it needs admin rights).
 
-- **Store.** SQLite (WAL) is the bundled, zero-setup default for single-node; **PostgreSQL 13+** or **SQL Server 2019/2022** for production (run the server DB on its own host; SQL Server also needs the OS-level ODBC Driver 18, RCSI recommended). MySQL/Oracle aren’t supported.
+- **Store.** SQLite (WAL) is the bundled, zero-setup default for single-node; **PostgreSQL 13+** or **SQL Server 2022/2025** for production (run the server DB on its own host; SQL Server also needs the OS-level ODBC Driver 18, RCSI recommended). MySQL/Oracle aren’t supported.
 
-- **Clients.** The PySide6 desktop console (not browser-based) and the VS Code extension; no web browser is needed to operate the engine.
+- **Clients.** The **browser web console** served under `/ui` (`[api].serve_ui`; [ADR 0065](adr/0065-web-ops-dashboard.md)) is the operator UI, alongside the VS Code extension for authoring. The `/ui` console is **not** in the engine wheel: it ships as a separately-versioned second distribution (`messagefoundry-webconsole`) that the engine **mounts same-origin, in-process** — install it alongside the engine to use `serve_ui` ([WEBCONSOLE-PACKAGE.md](WEBCONSOLE-PACKAGE.md)). The former PySide6 desktop console was retired (BACKLOG #103); PySide6 now backs only the standalone test harness. A web browser is needed to use the `/ui` console; the engine itself operates headless.
 
 - **Network.** The engine API binds 127.0.0.1:8765 by default (auth-required; in-process TLS for off-loopback exposure); inbound MLLP/TCP listeners use operator-defined ports on a trusted segment; outbound reachability (and, for a server DB, the DB host) as configured.
 
-> **Sizing, in brief:** a single process runs all message work on one CPU core (asyncio + Python’s GIL), so throughput is bounded mainly by transform cost per message and durable-write cost. SQLite single-node suits pilots through a few hundred msg/s; past that, scale intra-node on a server DB (many lanes draining concurrently via SELECT … FOR UPDATE SKIP LOCKED) into the low thousands of msg/s, bounded by the database’s commit ceiling. These are engineering estimates — measure your own feeds with the load harness (docs/LOAD-TESTING.md) before go-live. For multi-node failover, see §14.
+> **Sizing, in brief:** a single process runs all message work on one CPU core (asyncio + Python’s GIL), so throughput is bounded mainly by transform cost per message and durable-write cost. The measured per-interface bound is **~60 msg/s end-to-end** for one strictly-ordered feed against an *instant-acknowledging* partner, against **~450 msg/s at intake** (ACK-on-receipt) — about 16 ms of engine overhead per message (docs/THROUGHPUT.md §8). On the published reference config the sustainable single-node rates were **≥ 70 msg/s (SQLite) · ~50 (PostgreSQL) · ~30 (SQL Server)**, all conformance-clean, on a 4-vCPU runner with the database co-located (docs/benchmarks/TUNING-BASELINE.md — the canonical record for measured throughput). Two traps: per-interface ceilings do **not** add (a measured 16-lane run delivered **87 msg/s in aggregate**, where summing would have predicted ~960), and the higher intra-node tiers — many lanes draining one server DB concurrently via SELECT … FOR UPDATE SKIP LOCKED — are **projections, not demonstrated figures**. Measure your own feeds with the load harness (docs/LOAD-TESTING.md) before go-live; sizing tiers and their caveats are in docs/SYSTEM-REQUIREMENTS.md. To scale past one core, see §15 (engine shards); for multi-node failover, see §14.
 
 ## 13. Deployment & operations
 
-- **Install:** the supported production artifact is the signed, version-pinned PyPI wheel (pip install "messagefoundry==0.2.2"); then messagefoundry init scaffolds your own config repo (ADR 0017). Extras are opt-in: \[postgres\], \[sqlserver\], \[console\], \[sftp\].
+- **Install:** the supported production artifact is the signed, version-pinned PyPI wheel (pip install "messagefoundry==0.3.2"); then messagefoundry init scaffolds your own config repo (ADR 0017). Extras are opt-in: \[postgres\], \[sqlserver\], \[harness\] (the PySide6 test harness), \[sftp\], \[fhir\], \[dicom\], \[x12\], \[xml\], \[webauthn\], \[vault\], \[otel\]. The `/ui` web console installs alongside as the separate `messagefoundry-webconsole` distribution, published to PyPI on its own `webconsole-v*` cadence.
 
 - **Run headless:** python -m messagefoundry serve --config samples/config --db ./messagefoundry.db --env dev — API on http://127.0.0.1:8765 (GET /connections, /messages, /stats, WS /ws/stats).
 
 - **Windows service:** the engine runs as a Windows service via NSSM (scripts/service/, docs/SERVICE.md).
 
-- **HA:** active-passive high availability is built (self-fencing leadership lease, leader-gated graph) on Postgres and SQL Server. Active-passive is the supported HA model; horizontal active-active scale-out is not part of the product.
+- **HA:** active-passive high availability is built (self-fencing leadership lease, leader-gated graph) on Postgres and SQL Server (§14). **Active-active HA** — the same graph running concurrently on every node — was dropped on 2026-06-18 and its code removed; it is not a planned milestone, and active-passive is the supported HA model.
 
-- **Verify (a task isn’t done until these pass):** ruff check + ruff format --check, mypy (strict), pytest (with QT_QPA_PLATFORM=offscreen for console tests). No Black; Ruff only.
+- **Scale-out:** availability and scale are **different axes**, and dropping active-active decided only the first. To scale past one CPU core you run **engine shards** — N serve --shard processes partitioned by *connection* over one unified store (§15). That is built, and it is the scaling axis.
+
+- **Verify (a task isn’t done until these pass):** ruff check + ruff format --check, mypy (strict), pytest (with QT_QPA_PLATFORM=offscreen for the PySide6 harness tests). No Black; Ruff only.
 
 ### Two repositories: the engine you install vs. the config repo you own
 
@@ -379,7 +384,7 @@ messagefoundry serve --config ./mefor-config/config --env prod # the engine just
 
 ## 14. High availability (active-passive)
 
-The built-in HA model is **active-passive failover** (the Corepoint/Rhapsody model): run N identical engine processes against one shared server database; exactly one — the leader — runs the whole graph, and the rest are warm standbys that take over on failure. Single-node is the byte-identical default; a cluster is opt-in. Horizontal active-active scale-out is not part of the product. Full guide: docs/CLUSTERING.md.
+The built-in HA model is **active-passive failover** (the Corepoint/Rhapsody model): run N identical engine processes against one shared server database; exactly one — the leader — runs the whole graph, and the rest are warm standbys that take over on failure. Single-node is the byte-identical default; a cluster is opt-in. **Active-active HA** — the same graph running concurrently on every node — is not part of the product (dropped 2026-06-18, code removed). That is a decision about *availability*, not about capacity: adding capacity is a separate, built axis, and it is §15. Full guide: docs/CLUSTERING.md.
 
 ```
               floating VIP / load balancer
@@ -422,7 +427,7 @@ The built-in HA model is **active-passive failover** (the Corepoint/Rhapsody mod
 backend = "postgres"   # or "sqlserver"; SQLite cannot cluster
 server = "db.internal"
 database = "messagefoundry"
-pool_size = 5          # >= 2 (>= 3 preferred)
+pool_size = 40         # default (ADR 0062); >= 2 (>= 3 preferred)
 
 [cluster]
 enabled = true
@@ -435,24 +440,57 @@ leader_lease_ttl_seconds = 30       # a standby acquires only once the lease exp
 >
 > **Mental model:** HA is the same engine and the same shared DB as single-node, plus a self-fencing lease that guarantees exactly one leader runs the graph at a time. Treat failover as minutes-class, not zero-downtime: front it with a VIP and keep downstream connections idempotent.
 
-## 15. Dependencies & supply chain
+## 15. Scaling out: engine shards (multi-process)
+
+One process runs all message work on one core (§8). When a node’s load outgrows that, the built answer is **engine sharding**: run N engine subprocesses — each an ordinary, complete engine — and partition the **inbound Connections** between them, all against **ONE unified store**.
+
+> **Say which kind of shard you mean — and never write a bare “shard.”** An **engine shard** is what this section describes: N engine processes partitioned by *connection*, over ONE unified store. A **database shard** — splitting the store itself across several databases — is a different idea, and it is **declined**: the no-split-store rule is absolute, so reversing it would take a new decision record, not an exception. The two have opposite consequences (cross-shard reads span K stores only for *database* shards; engine shards share one), which is why conflating them causes real errors. Everything below means *engine* shard.
+
+- **You tag connections, not messages.** An inbound carries a shard name — inbound(..., shard="a") in Python, or shard = "a" in connections.toml. Every untagged inbound belongs to an implicit "default" shard, so an untagged config is a single-shard deployment that behaves exactly like a plain serve. Partitioning by *message key* was rejected: it would fan one source across shards and break per-connection FIFO.
+
+- **A supervisor runs the fleet.** messagefoundry supervise discovers the distinct shard ids in the config and spawns one serve --shard \<id\> subprocess per shard, each with its own API port (\<base\>+offset in sorted shard order, so a restart re-binds the same port). It monitors them, restarts one that exits, and stops them all cleanly on shutdown.
+
+- **Intake is partitioned; the rest is shared.** A shard’s Registry holds only *its* inbounds but the **same** outbound Connections, Routers, Handlers, code sets and lookups — Routers and Handlers are pure, so sharing the definitions is sound. Delivery is the exception: each outbound lane is claimed by exactly **one** shard (a deterministic owner), because N concurrent claimers on a single FIFO lane could invert its order. A Handler on any shard may still Send to any outbound; the owning shard drains it.
+
+- **One store, always.** More than one shard **requires a server DB** (PostgreSQL or SQL Server) so every shard connects to the same database — a multi-shard config on a single-file store is refused at startup, before anything spawns. A store split into one file per shard was the original design and is now deprecated: it fragments search, dashboards, audit, dead-letter and replay across K databases.
+
+- **Not the same thing as HA.** Engine sharding and \[cluster\] active-passive are mutually exclusive and refused together at startup — the leadership lease is store-wide, so leadership would transfer *across* shard ids.
+
+```python
+inbound("IB_ACME_ADT", MLLP(port=2600), router="acme_adt_router", shard="a")
+```
+
+```bash
+messagefoundry supervise --config ./config --base-port 8765   # one subprocess per shard id
+```
+
+**What’s measured, and what isn’t.** On a consumer 8-core test box, supervise scaled roughly linearly — 1 → 2 → 4 shards at ~50 → 88.7 → 165.5 msg/s aggregate, about η ≈ 0.85 of a core per added shard. The portable result is that **speedup shape**, not the absolute rate: multiply η by *your* measured single-shard rate. Two honest caveats — that run used the since-deprecated per-shard SQLite store, and N shards actively sharing one server DB, while built and invariant-tested, is **not yet certified as a supported production topology** (it awaits a clean multi-engine no-loss bench). Until it is, size production multi-engine deployments as active-passive (§14). Detail: docs/SYSTEM-REQUIREMENTS.md and docs/benchmarks/TUNING-BASELINE.md.
+
+## 16. Dependencies & supply chain
 
 MessageFoundry keeps its dependency surface deliberately small and stdlib-first (FTP, for instance, uses the standard library — no package at all), and treats every third-party library as **SOUP — Software of Unknown Provenance**: a black box you control at your own boundary rather than by reading its source.
 
 ### What it depends on
 
-The runtime needs about a dozen packages; everything past the core is an **opt-in extra that’s lazy-imported**, so a default SQLite install pulls none of them:
+The runtime core is around eighteen packages; everything past it is an **opt-in extra that’s lazy-imported**, so a default SQLite install pulls none of them:
 
 | **Group** | **Packages** | **What for** |
 |----|----|----|
-| **Core runtime** | hl7apy, python-hl7, pydantic, aiosqlite, fastapi, uvicorn, argon2-cffi, cryptography, ldap3, pyspnego, tomlkit, tzdata | HL7 validate/parse, config models, the SQLite store, the API, password hashing + AES-256-GCM PHI-at-rest, AD/Kerberos auth, TOML writing, tz data. Always installed. |
-| \[console\] | PySide6, keyring | The admin console GUI + OS-keyring storage for its auth token. |
-| \[postgres\] | asyncpg | PostgreSQL store backend (pure-Python driver, no OS dependency). |
+| **Core runtime** | hl7apy, python-hl7, pydantic, aiosqlite, fastapi, starlette, uvicorn\[standard\], argon2-cffi, cryptography, ldap3, pyspnego, tomlkit, tzdata, prometheus-client, defusedxml, psutil, httpx, truststore | HL7 validate/parse, config models, the SQLite store, the API (Starlette carries its own explicit floor), password hashing + AES-256-GCM PHI-at-rest, AD/Kerberos auth, TOML writing, tz data, the Prometheus /metrics surface + host gauges, hardened XML parsing, and the shared HTTP client (apiclient, tray, harness monitor, ASGI test client) with OS-trust-store verification. Always installed, plus one annotated-types\<0.8 constraint pin on a transitive. |
+| \[harness\] | PySide6 | The standalone PySide6 test harness GUI. (Was `[console]` before the desktop console was retired — BACKLOG #103; its HTTP client, httpx + truststore, moved to the core runtime.) |
+| \[postgres\] | asyncpg | PostgreSQL store backend (no OS dependency; ships compiled wheels). |
 | \[sqlserver\] | aioodbc *+ OS ODBC Driver 18* | SQL Server store backend (the ODBC driver installs at the OS level, not via pip). |
 | \[sftp\] | paramiko | SFTP transport for the REMOTEFILE connector (FTP/FTPS use the stdlib). |
-| \[dev\] | pytest, ruff, mypy, httpx | Tests, lint/format, strict type-checking, and the ASGI API test client. |
+| \[fhir\] | fhir.resources, fhirpathpy | The typed FHIR model + FHIRPath codec behind parsing/fhir/. |
+| \[dicom\] | pynetdicom, pydicom | DICOM C-STORE SCP/SCU connectors + the headers/SR codec (no pixel data, so no numpy). |
+| \[x12\] | pyx12 | Opt-in *strict* X12 validation; the tolerant X12 peek/parse hot path needs nothing. |
+| \[xml\] | lxml, xmlschema, signxml | XML/SOAP accessors, XSD validation, and XML-DSig signatures. |
+| \[webauthn\] | webauthn | Browser passkeys (WebAuthn/FIDO2) as a second factor for local accounts. |
+| \[vault\] | hvac | The HashiCorp Vault key provider — envelope-decrypt the store’s data key via Vault Transit. |
+| \[otel\] | opentelemetry-sdk, opentelemetry-exporter-otlp | Optional OpenTelemetry export; the Prometheus /metrics path needs none of it. |
+| \[dev\] | pytest (+ asyncio / timeout / rerun plugins), ruff, mypy | Tests, lint/format, and strict type-checking. |
 
-Version floors carry security rationale, not just compatibility — e.g. cryptography is floored at the release that fixes a specific advisory, and the fastapi floor pulls a Starlette past two CVEs.
+Version floors carry security rationale, not just compatibility — e.g. cryptography is floored at the release that fixes a specific advisory, and Starlette carries an **explicit** floor of its own (fastapi’s pin would allow an older one) that clears three CVEs.
 
 ### How they’re pinned and kept current
 
@@ -470,7 +508,7 @@ Dependencies are declared in two tiers. pyproject.toml states loose \>= minimums
 >
 > **Verify before you install:** every release is built by GitHub Actions, Sigstore-signed, and ships SLSA build-provenance + PEP 740 attestations and an SBOM. A consumer verifies a downloaded wheel against its source commit with gh attestation verify \<wheel\> --repo MEFORORG/MessageFoundry, and always pins the exact version; an air-gapped site mirrors the signed wheel to a private index.
 
-## 16. Vocabulary you must use precisely
+## 17. Vocabulary you must use precisely
 
 | **Term** | **Means** |
 |----|----|
@@ -481,14 +519,15 @@ Dependencies are declared in two tiers. pyproject.toml states loose \>= minimums
 | **Send** | A Handler's instruction to deliver a message to a named outbound. |
 | **Registry / RegistryRunner** | The loaded graph of connections/routers/handlers, and the engine that runs it. |
 | **Stage** | ingress → routed → outbound — the three persisted queue stages. |
-| **Disposition** | A message's status: RECEIVED / ROUTED / UNROUTED / PROCESSED / FILTERED / ERROR. |
+| **Disposition** | A message's status: RECEIVED / ROUTED / UNROUTED / PROCESSED / FILTERED / NOT_DEPLOYED / ERROR. |
 | **Connector** | A pluggable transport implementation in transports/ (MLLP, file, …). |
-| **db_lookup** | The one sanctioned non-pure input: a Handler's live, read-only DB read (ADR 0010). |
+| **db_lookup / fhir_lookup** | The sanctioned non-pure inputs: a Handler's live, read-only DB read (ADR 0010) or FHIR read/search (ADR 0043). |
+| **Engine shard** | N serve --shard processes partitioned by *connection*, over ONE unified store (§15). Always qualified — a **database shard** (splitting the store across databases) is a different, declined idea, and a bare "shard" is never acceptable. |
 | **“channel” / “route”** | Fine as casual prose for a wired path; there is NO built channel/route element. |
 | **Idempotent** | An operation that’s safe to repeat: doing it twice has the same effect as doing it once. A re-delivered message lands the same result, so a retry causes no harm — which is what makes at-least-once safe (§5). |
 
-## 17. The whole model in one paragraph
+## 18. The whole model in one paragraph
 
-> MessageFoundry is a headless asyncio engine that receives messages on inbound Connections, persists each one durably before ACKing (so nothing is ever dropped), then moves it through a three-stage durable queue (SQLite by default, or Postgres/SQL Server) — ingress → routed → outbound — where a per-connection Router (pure Python) decides which Handlers see it and each Handler (pure Python) filters, transforms, and Sends it to outbound Connections. Every stage handoff is one committed transaction, giving at-least-once delivery, retries, replay, and dead-lettering with no separate broker; the price is that routers and transforms must be pure (the lone exception being a read-only db_lookup). A separate PySide6 console drives it all over a localhost HTTP/WebSocket API — never touching the engine or DB directly. There is no “channel” object: the config is a by-name graph of four building blocks — Connection, Router, Handler, message store — authored as code-first Python (with connection transport optionally as TOML data), with auth, RBAC, audit, and encryption-at-rest built in because it carries PHI.
+> MessageFoundry is a headless asyncio engine that receives messages on inbound Connections, persists each one durably before ACKing (so nothing is ever dropped), then moves it through a three-stage durable queue (SQLite by default, or Postgres/SQL Server) — ingress → routed → outbound — where a per-connection Router (pure Python) decides which Handlers see it and each Handler (pure Python) filters, transforms, and Sends it to outbound Connections. Every stage handoff is one committed transaction, giving at-least-once delivery, retries, replay, and dead-lettering with no separate broker; the price is that routers and transforms must be pure (the exceptions being a read-only db_lookup / fhir_lookup). A browser web console (served same-origin at `/ui`) drives it all over a localhost HTTP/WebSocket API — never touching the engine or DB directly. There is no “channel” object: the config is a by-name graph of four building blocks — Connection, Router, Handler, message store — authored as code-first Python (with connection transport optionally as TOML data), with auth, RBAC, audit, and encryption-at-rest built in because it carries PHI.
 
-*For more depth, see the Architecture reference and the engine's documentation.*
+*Sources: README.md, CLAUDE.md, messagefoundry/\_\_init\_\_.py, samples/config/ (IB_ACME_ADT, IB_RTE_ELIGIBILITY), and ADRs 0001/0004/0007/0010/0012/0013/0016/0037/0043/0063/0073. For depth, read docs/ARCHITECTURE.md and docs/architecture-diagram.md.*
