@@ -37,9 +37,10 @@ Three ownership tiers — keeping them separate is the whole design:
 - **Python 3.14+** on each engine host (the engine requires 3.14+).
 - **git**, plus a **private git host** — GitHub (private repo), GitLab, Azure DevOps, Bitbucket, or a
   self-hosted server. Nothing about MessageFoundry requires a public repo; your config repo is yours.
-- A source for the engine wheel: **public PyPI** is the target distribution channel; until the project
-  publishes its first release, the signed **GitHub Release wheel** or an **internal package index**
-  (Artifactory, Azure Artifacts, a private PyPI) serves the same role.
+- A source for the engine wheel: **public PyPI** is the distribution channel and the recommended
+  install (`pip install "messagefoundry==<version>"`). For estates that cannot install from the
+  public index, the signed **GitHub Release wheel** or an **internal package index** (Artifactory,
+  Azure Artifacts, a private PyPI) mirroring it serves the same role.
 - Administrator/elevation on the host if you will install the engine as a Windows service (see
   [SERVICE.md](SERVICE.md)).
 

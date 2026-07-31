@@ -389,9 +389,12 @@ current position on it.
 
 **Designed but deferred (ADR 0002 — build before off-loopback exposure):**
 
-- **Federated SSO for operators (OAuth 2.0 / OIDC / SAML via Entra)** — gets a dedicated federated-SSO
-  ADR when 0.2 design begins; today's operator directory auth is direct LDAPS bind + Kerberos SSO, not
-  federation. (Native TOTP MFA, transport TLS, MLLP-over-TLS, and client-cert mTLS are all **built** —
+- **Federated SSO for operators (OAuth 2.0 / OIDC / SAML via Entra)** — the **OIDC** leg now has its
+  dedicated federated-SSO ADR: [ADR 0142](adr/0142-federated-sso-oidc-authorization-code-pkce-relying-party-hybrid-ad-backed.md)
+  (Proposed 2026-07-21 — an OIDC authorization-code + PKCE relying party, AD-backed; code merged,
+  awaiting lab validation), self-gated **off** behind `[auth].oidc_enabled` (default `false`).
+  **SAML 2.0 is declined** in that ADR on XML-signature-wrapping grounds. The shipped default for
+  operator directory auth remains direct LDAPS bind + Kerberos SSO, not federation. (Native TOTP MFA, transport TLS, MLLP-over-TLS, and client-cert mTLS are all **built** —
   see above.)
 
 **Aspirational / planned (not built, no ADR yet):**

@@ -867,7 +867,7 @@ silences an event you didn't name. Matching is pure config (no code/`eval`).
 
 | Key | Type | Default | Notes |
 |---|---|---|---|
-| `event_type` | str | `any` | match this event: `any`, `connection_stopped`, `queue_buildup`, `storage_threshold`, `cert_expiry`, `connection_error`, `message_stall`, `integrity_drift`, or `gcm_invocations` |
+| `event_type` | str | `any` | match this event. The validator accepts `any` plus exactly these **18**, and **rejects anything else at config load**, so a typo is loud rather than a rule that silently never matches: `backup_failed`, `bootstrap_admin_expiring`, `cert_expiry`, `connection_error`, `connection_stopped`, `content_match`, `dr_activated`, `gcm_invocations`, `integrity_drift`, `lane_stuck`, `leadership_acquired`, `message_stall`, `queue_buildup`, `rcsi_off_degraded`, `saturation`, `secret_rotation`, `storage_threshold`, `update_available` |
 | `connection` | str (glob) | `*` | glob over the connection name (e.g. `OB_*`, `IB_ACME_*`) |
 | `min_depth` | int | _unset_ | `queue_buildup` only — match only when pending depth is at/over this |
 | `min_oldest_seconds` | num | _unset_ | `queue_buildup` only — …or the oldest pending message has waited at least this long |
@@ -970,8 +970,10 @@ the secret-side twin of [`[cert_monitor]`](#cert_monitor). A TLS cert carries it
 long-lived secret (the **store data-encryption key** today; connector credentials in a future
 `SecretProvider`) has none, so a stale key can sit unrotated with no in-engine signal. The engine
 periodically compares each tracked secret's operator-recorded **last-rotated date** against its **max
-age** and raises a **`secret_rotation_due`** alert (an [`[alerts]`](#alerts) event — route it with a
-`[[alerts.rules]]` rule) when it is overdue or within `warn_days` of due. It reads only the rotation
+age** and raises a rotation-due alert (an [`[alerts]`](#alerts) event — route it with a
+`[[alerts.rules]]` rule as **`event_type = "secret_rotation"`**, which is the wire name the validator
+accepts; the longer `secret_rotation_due` is the internal `AlertSink` method name and is **rejected at
+config load** if you write it in a rule) when it is overdue or within `warn_days` of due. It reads only the rotation
 **dates** you configure here — **never any secret value** (PHI-free). This is a *reminder*, not
 enforcement: it never rotates a key or blocks startup (run `rotate-key` to rotate the store DEK). Under
 `[security].enforcement = enforce`, a store DEK past `store_key_max_age_days + enforce_grace_days`
