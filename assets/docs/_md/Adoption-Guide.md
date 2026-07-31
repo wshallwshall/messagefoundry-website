@@ -86,7 +86,7 @@ use the table below alongside them when planning.
 | Validation & load tooling (`generate`, `check`, `dryrun`, the test harness, the load harness) | ✅ Built — see §8/§9 and [LOAD-TESTING.md](LOAD-TESTING.md) |
 | Windows-service deployment via NSSM | ✅ Built — see [SERVICE.md](SERVICE.md) |
 | **Native transport TLS** (API + MLLP) | ✅ Built — in-process API TLS (HTTPS/WSS) + per-connection MLLP-over-TLS, ≥TLS 1.2, opt-in mTLS, and a **fail-closed off-loopback bind guard** (a non-loopback bind without TLS is refused). Raw TCP/X12 stay plaintext (loopback/proxy). See [DEPLOYMENT.md](DEPLOYMENT.md). |
-| **Native MFA** (TOTP, local accounts) | ✅ Built — RFC 6238 TOTP + single-use recovery codes; `[auth].require_mfa` enforces a second factor for local Administrators at the step-up boundary. AD/Entra users' MFA stays delegated to the IdP. See [SECURITY.md](SECURITY.md). |
+| **Native MFA** (TOTP, local accounts) | ✅ Built — RFC 6238 TOTP + single-use recovery codes; `[security].require_mfa` (**on by default**) enforces a second factor for **every local account** — `require_mfa_scope` defaults to `every_local_account`; set it to `administrators` for the narrower posture. AD/Entra users' MFA stays delegated to the IdP. See [SECURITY.md](SECURITY.md). |
 | **Off-box log + audit forwarding** | ✅ Built — `[logging].forward_*` ships operational logs + PHI-redacted audit rows to a syslog/SIEM collector, over **native TLS** when you set `forward_protocol = "tls"` (RFC 5425, ADR 0080; port 6514, CA anchor via `forward_tls_*`). Residual: the transport **default** is UDP, so TLS is a per-deployment opt-in — set it, or front the collector with a local TLS-forwarding agent. See [PHI.md](PHI.md) §7. |
 | **Active-passive HA / failover** | ✅ Built (Track B) — opt-in leader/standby cluster on a **shared server-DB** store (PostgreSQL or SQL Server): only the leader runs the graph, self-fencing leadership lease, immediate on-promotion recovery. Single-node stays the byte-identical default. See [CLUSTERING.md](CLUSTERING.md) + §14. |
 
@@ -251,7 +251,8 @@ the built-in default `samples/config` exists only in a source checkout), `--serv
 > ⚠️ **The active environment is required.** `serve` refuses to start (exit 2) without `--env <name>`
 > (or `[ai].environment`) — there is no silent `prod` default, so a missing env can never resolve
 > another environment's values/secrets. Built-in names `dev`/`staging`/`prod` carry a default posture;
-> a custom name (e.g. `test`, `poc`) also needs `[ai].data_class` + `[ai].production`. The active
+> a custom name (e.g. `test`, `poc`) also needs `[security].handles_real_patient_data` +
+> `[security].production_instance` (both booleans). The active
 > environment is logged at startup.
 
 > 🔑 **`dev` now carries the PHI posture ([ADR 0148](adr/0148-phi-default-posture-and-an-explicit-security-enforcement-level.md)) — provide a store key or declare synthetic.**
@@ -272,12 +273,14 @@ the built-in default `samples/config` exists only in a source checkout), `--serv
 
 ### 4.4 Run it as a Windows service (the supported production run-mode)
 
-Use the elevated installer; install under a **least-privilege virtual account** rather than the
-default LocalSystem:
+Use the elevated installer. It already defaults to a **least-privilege per-service virtual account**
+(`NT SERVICE\<ServiceName>`, no password); pass `-ServiceAccount` only to run under a *different*
+account, and `-AllowLocalSystem` to opt out to LocalSystem. `-Environment` is **required** (ADR 0017) —
+the installer refuses without it rather than registering a service that dies on every start:
 
 ```powershell
 # from an elevated shell
-scripts\service\install-service.ps1 -ServiceAccount "NT SERVICE\MessageFoundry"
+scripts\service\install-service.ps1 -Environment prod
 ```
 
 The installer is idempotent, auto-downloads a SHA-256-pinned NSSM, bakes absolute `serve` paths into
@@ -397,8 +400,8 @@ Full references: **[SECURITY.md](SECURITY.md)**, **[PHI.md](PHI.md)**, and **[DE
 - [ ] **For Active Directory:** use **LDAPS** with a trusted CA, never set `MEFOR_ALLOW_INSECURE_TLS`
       in production, and configure the directory's lockout/complexity policy (the engine's account
       lockout covers local accounts only). AD/Entra MFA is enforced by your directory; **local
-      accounts** use the engine's **native TOTP MFA** (`[auth].require_mfa`, WP-14) — enable it before
-      an off-loopback PHI exposure.
+      accounts** use the engine's **native TOTP MFA** (`[security].require_mfa`, WP-14) — it is **on by
+      default for every local account**, so leave it on before an off-loopback PHI exposure.
 - [ ] **Populate the fail-closed `[egress]` allowlist** (it defaults to unrestricted) for REST/Database
       destinations.
 - [ ] **Keep logging at `INFO` or above** and `expose_docs` off in production. Full payloads are never
@@ -442,7 +445,7 @@ Key semantics to internalize:
 - [ ] **Wire real alerts.** Configure the `[alerts]` **webhook and/or email** notifier — do **not**
       rely on the default logging-only sink. The conservative defaults (FIFO head-of-line blocking,
       retry-forever, STOP-on-internal-error) are only safe if a human gets paged when a lane stalls.
-- [ ] **Set `[delivery]` buildup thresholds** (`max_oldest_seconds` defaults to 300s; set a `max_depth`
+- [ ] **Set `[delivery]` buildup thresholds** (`buildup_max_oldest_seconds` defaults to 300s; set a `buildup_max_depth`
       sized to each connection's throughput) so `queue_buildup` fires before a stuck lane silently
       backs up. Buildup detection now covers the ingress and routed stages too, not just outbound.
 - [ ] **Choose `RetryPolicy` per outbound deliberately:** retry-forever for partners that must never
@@ -553,7 +556,8 @@ host, start the engine, confirm `/health`, run `/status/integrity-check` (SQLite
 and spot-check `/messages` and dispositions.
 
 **Keep the store bounded.** `[retention]` is **off by default (kept forever)**. Set `max_db_mb` (drives
-a `storage_threshold` alert), `messages_days` / `dead_letter_days` (body purge), and the daily VACUUM
+a `storage_threshold` alert), `[security].delete_message_bodies_after_days` / `[retention].dead_letter_days`
+(body purge), and the daily VACUUM
 so the store doesn't grow unbounded and a full disk doesn't take you down mid-pilot.
 
 ---

@@ -129,7 +129,7 @@ When the engine runs from somewhere other than the repo root (e.g. under the ser
 
 **Network / auth posture.** The API binds **`127.0.0.1:8765`** and **requires authentication** by default. A non-loopback bind without TLS is refused at startup; configure native TLS (or an upstream terminator) to expose it. Details: [SECURITY.md](SECURITY.md) and [DEPLOYMENT.md](DEPLOYMENT.md).
 
-**Store encryption (PHI instances).** On a PHI-carrying environment (`data_class = phi`), `serve` warns — and on a *production* PHI instance **refuses to start** — if no store encryption key is configured. Mint one with `messagefoundry gen-key` (set it as `MEFOR_STORE_ENCRYPTION_KEY`), or on Windows DPAPI-protect it to a file with `messagefoundry protect-key --generate --out <file>` and point `[store].encryption_key_file` at it. The full key story is in [PHI.md](PHI.md).
+**Store encryption (PHI instances).** On a PHI instance (`[security].handles_real_patient_data = true`), `serve` **refuses to start** — in *every* environment, `dev` and `staging` included, not just production — if no store encryption key is configured. Mint one with `messagefoundry gen-key` (set it as `MEFOR_STORE_ENCRYPTION_KEY`), or on Windows DPAPI-protect it to a file with `messagefoundry protect-key --generate --out <file>` and point `[store].encryption_key_file` at it. The full key story is in [PHI.md](PHI.md).
 
 Confirm it's up:
 
@@ -158,7 +158,7 @@ Put it under version control with **Set Up Version Control & Checks** in the IDE
 
 ### 5. Open the admin console (in a browser)
 
-The console is the **browser web console** served same-origin by the engine at `/ui` (install the `messagefoundry-webconsole` wheel alongside the engine and set `[api].serve_ui = true`). With the engine running, browse to:
+The console is the **browser web console** served same-origin by the engine at `/ui` — install the `messagefoundry-webconsole` wheel alongside the engine and it is served automatically, **on by default** at a loopback bind (turn it off with `[security].serve_web_console = false`). With the engine running, browse to:
 
 ```
 http://127.0.0.1:8765/ui
@@ -488,7 +488,7 @@ The console is served by the engine itself, so start the engine first (note the 
 python -m messagefoundry serve --config samples/config --db ./messagefoundry.db --env dev
 ```
 
-Then open the web console in a browser (the engine serves it at `/ui` when `[api].serve_ui` is on):
+Then open the web console in a browser (the engine serves it at `/ui` by default, with the `messagefoundry-webconsole` distribution installed):
 
 ```
 http://127.0.0.1:8765/ui
@@ -606,7 +606,7 @@ The SMTP password is a secret — supply it via `MEFOR_ALERTS_EMAIL_PASSWORD`, n
 - **A lane stopped processing.** A `connection_stopped` alert means an outbound's worker halted on an internal/code error (`internal_error = stop`). The messages are preserved for replay; fix the cause, then reload/restart the connection.
 - **A connection shows `failed`.** A connection that can't build or bind **at startup** (bad settings, a port already in use) is isolated as a degraded `failed` status instead of taking the engine down — every other lane keeps running ([ADR 0031](adr/0031-startup-connection-fault-isolation.md)). Fix the config/bind, then recover it: restart an inbound (`POST /connections/{name}/start`), or reload to rebuild a failed outbound. (Reload itself stays fail-fast — a broken config is rejected whole, never partially applied.)
 - **Backlog growing.** A `queue_buildup` alert usually means a retry-forever head is blocking its FIFO lane, or the downstream is down. Check the destination, then inspect/purge or replay the blocking row.
-- **Console can't reach the engine.** The API binds `127.0.0.1:8765` by default and requires auth; confirm the engine is serving (`python -m messagefoundry serve --config samples/config --db ./messagefoundry.db --env dev`), that `[api].serve_ui` is on with the `messagefoundry-webconsole` distribution installed, and that your browser is pointed at that host/port's `/ui`.
+- **Console can't reach the engine.** The API binds `127.0.0.1:8765` by default and requires auth; confirm the engine is serving (`python -m messagefoundry serve --config samples/config --db ./messagefoundry.db --env dev`), that the `messagefoundry-webconsole` distribution is installed and the console has not been turned off (`[security].serve_web_console`), and that your browser is pointed at that host/port's `/ui`.
 - **Low disk / store growing.** `GET /status` reports DB size and free disk; a `storage_threshold` alert fires past `[retention].max_db_mb`. Tune retention in `[retention]` ([CONFIGURATION.md](CONFIGURATION.md)) — purges null PHI bodies while keeping the message/disposition rows, so counts and audit stay intact. The row is kept; its PHI columns — operator-attached `metadata` included — are blanked.
 
 ---

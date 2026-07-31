@@ -85,7 +85,7 @@ backend-limited.
 | `auth` | enum | `sql` | `sql` · `integrated` · `entra` (SQL Server). `integrated` connects `Trusted_Connection=yes` — the **service account's** Windows identity authenticates (no SQL password); the turnkey **gMSA** walkthrough (grant the gMSA a SQL login + run the service under it) is [`DEPLOY-SERVER-DB.md` §1.1](DEPLOY-SERVER-DB.md). |
 | `username` | str | — | server DBs (required when `auth = sql`) |
 | `password` | secret | — | **env only** (`MEFOR_STORE_PASSWORD`) |
-| `require_managed_identity` | bool | `false` | delegated-identity precondition (#203, ASVS 13.2.1/13.3.2): when `true`, `serve` **refuses** (production) / **warns** (non-production) unless the store authenticates via a managed identity — SQL Server `auth = integrated`/`entra`. SQLite is exempt; Postgres cannot satisfy it. Off by default |
+| `require_managed_identity` | bool | `false` | delegated-identity precondition (#203, ASVS 13.2.1/13.3.2): when `true`, `serve` **refuses to start (exit 2)** unless the store authenticates via a managed identity — SQL Server `auth = integrated`/`entra`. SQLite is exempt; Postgres cannot satisfy it. Off by default. **The refuse/warn split is `[security].enforcement`, not the deployment tier** — `enforce` is the shipped default on `dev` and `staging` as much as on `prod`, so a staging box that turns this on and leaves `auth = "sql"` is **refused**, not warned; it downgrades to a warning only under `enforcement = warn` |
 | `encrypt`, `trust_server_certificate` | bool | `true`/`false` | TLS to the DB |
 | `ssl_root_cert` | path | — | server DBs — pin the DB server's certificate by **file** so a private/self-signed DB CA verifies **without** a machine-wide trust import, on the **secure** posture only (`encrypt = true`, `trust_server_certificate = false`) — it never disables verification. **Postgres:** an asyncpg `SSLContext` CA-bundle (chain + hostname still checked). **SQL Server:** the ODBC Driver **18.1+** `ServerCertificate` keyword (a leaf/exact-cert match; needs driver ≥ 18.1). Rejected for SQLite (no TLS); a missing file fails loud at load. A path, not a secret — may live in the file. See [`DEPLOY-SERVER-DB.md` §5](DEPLOY-SERVER-DB.md). |
 | `multi_subnet_failover` | bool | `false` | **SQL Server only** — emit the ODBC `MultiSubnetFailover=Yes` keyword so a client connecting to an Always On Availability Group **listener** reaches the current primary promptly across subnets, instead of serially waiting out each replica subnet's DNS/TCP timeout on failover. A no-op for Postgres/SQLite (they never see the ODBC string). Off by default — only a multi-subnet AOAG needs it. |
@@ -174,25 +174,30 @@ The one row that *does* vary:
 
 > **MLLP-over-TLS** is built too (WP-13b — per-connection `tls`/`tls_*` on the `MLLP(...)` connector,
 > see [CONNECTIONS.md](CONNECTIONS.md)), and the §0 **exposed-gate is enforced**: a non-loopback
-> *plaintext* MLLP listener is refused at startup unless `serve --allow-insecure-bind`. Gate #4's
-> transport-TLS subset is complete, and **native TOTP MFA (WP-14) is also built** (`[auth].require_mfa`,
-> local accounts). See [ADR 0002](adr/0002-phase2-transport-security-and-strong-auth.md).
+> *plaintext* MLLP listener is refused at startup — `serve --allow-insecure-bind` is **clamped inert**
+> on the shipped posture and does not lift it. Gate #4's transport-TLS subset is complete, and
+> **native TOTP MFA (WP-14) is also built** (`[security].require_mfa`, local accounts — the old
+> `[auth].require_mfa` spelling is **rejected at config load**).
+> See [ADR 0002](adr/0002-phase2-transport-security-and-strong-auth.md).
 
 > **WebAuthn passkeys (WP-14b, [ADR 0068](adr/0068-browser-webauthn-passkeys-offloopback.md)).**
 > Browser passkeys for local users need the optional **`[webauthn]` extra**
 > (`pip install messagefoundry[webauthn]`) — no new `[auth]` setting: installing the extra + a user
 > enrolling on `/ui/account` is the opt-in (extra-less installs show a legible notice, never an
-> error). The WebAuthn RP identity rides **`[api].public_origin`** when set; a plain loopback
-> deployment derives it from the request URL, but **behind a declared reverse proxy**
-> (`tls_terminated_upstream`) ceremonies **fail closed until `public_origin` is set** — and note
-> that **changing `public_origin`'s host later invalidates every enrolled passkey** (they pin
-> their mint-time RP; the account page marks them "unusable (origin changed)").
+> error). The WebAuthn RP identity rides the external origin — set it as
+> **`[security].web_console_public_address`** (the internal field is still `api.public_origin`, but
+> `[api].public_origin` is a relocated key and is **rejected at config load**, row above). A plain
+> loopback deployment derives the RP from the request URL, but **behind a declared reverse proxy**
+> (`tls_terminated_upstream`) an unset origin is a startup **refusal**, not a degraded ceremony: with
+> the console served, `serve` exits 2 until it is set — and note that **changing that host later
+> invalidates every enrolled passkey** (they pin their mint-time RP; the account page marks them
+> "unusable (origin changed)").
 
 > **Off-loopback browser-console walkthrough (L5b, ADR 0068 §8).** The two supported postures:
 > **in-process TLS** (`tls_cert_file` [+`tls_key_file`]) — the browser connects directly to the
 > engine — or a **declared upstream terminator** (`tls_terminated_upstream = true` +
-> `trusted_proxies = ["<proxy egress IP or CIDR>"]` + **`public_origin`**, which the L5b ladder now
-> requires). `trusted_proxies` entries match the proxy's **direct TCP peer address exactly** (CIDR
+> `trusted_proxies = ["<proxy egress IP or CIDR>"]` + **`[security].web_console_public_address`**,
+> which the L5b ladder now requires). `trusted_proxies` entries match the proxy's **direct TCP peer address exactly** (CIDR
 > supported, but scope it to the proxy pool — every host inside an entry may forge its own source
 > address; watch the `::1`-vs-`127.0.0.1` mismatch) — a *syntactically valid but wrong* entry silently
 > disables the forwarded-header rewrite, collapsing audit/rate-limit source IPs to the proxy. An
@@ -221,7 +226,7 @@ byte-identical SSL context.
 ### `[inbound]` — inbound listener defaults
 | Key | Type | Default | Notes |
 |---|---|---|---|
-| `bind_host` | str | `127.0.0.1` | the **default** network interface every inbound MLLP/TCP listener binds to. Authors never set a `host` on an inbound connection (a wiring error if they do) — it's a per-environment operator decision here. Binding `0.0.0.0` exposes unauthenticated MLLP to the network, so it's deliberate (DEV typically loopback, PROD a specific NIC behind a firewall). A non-loopback bind **requires `tls=true`** on each MLLP connection (the §0 exposed-gate refuses a plaintext off-loopback listener at startup) unless `serve --allow-insecure-bind` is passed. A single connection may override this with a per-connection `bind_address` (and restrict peers with `source_ip_allowlist`) — MLLP/TCP only; see [CONNECTIONS.md](CONNECTIONS.md). |
+| `bind_host` | str | `127.0.0.1` | the **default** network interface every inbound MLLP/TCP listener binds to. Authors never set a `host` on an inbound connection (a wiring error if they do) — it's a per-environment operator decision here. Binding `0.0.0.0` exposes unauthenticated MLLP to the network, so it's deliberate (DEV typically loopback, PROD a specific NIC behind a firewall). A non-loopback bind **requires `tls=true`** on each MLLP connection: the §0 exposed-gate refuses a plaintext off-loopback listener at startup with a `WiringError`. `serve --allow-insecure-bind` downgrades that refusal **only when the instance is not both enforcing and PHI** — and since `enforcement = enforce` is the default and all three built-in env names (`dev`/`staging`/`prod`) derive PHI, on a stock instance the flag is **clamped inert** and the bind still fails. A single connection may override this with a per-connection `bind_address` (and restrict peers with `source_ip_allowlist`) — MLLP/TCP only; see [CONNECTIONS.md](CONNECTIONS.md). |
 | `ack_after` | enum | `ingest` | the **default** ACK timing every inbound inherits (staged pipeline, [ADR 0001](adr/0001-staged-pipeline-architecture.md)). `ingest` = ACK-on-receipt, once the raw message is durably committed to the ingress stage and **before** routing/transform/delivery. `delivered` (defer the ACK until delivery succeeds) is **not built** — wiring it raises a `WiringError`, so it fails loud rather than silently ACKing early. A connection's own `ack_after=` overrides this. |
 | `stream_inflight_budget_bytes` | int (bytes) | `0` | aggregate cap on the **total** bytes of over-threshold message bodies concurrently mid-detach across **all** inbounds (#149, [ADR 0105](adr/0105-streaming-very-large-hl7-attachments-detach-the-opaque-document-from-the-transformable-skeleton.md)). A detach that would push the running total over it is refused with backpressure (the message is NAK'd/`ERROR`'d, never accepted-and-dropped), so a burst of very large documents can't exhaust memory. `0` (default) = unlimited — a *single* body is still bounded by the per-connection `max_message_bytes`. Only over-threshold streaming detaches count against it. |
 
@@ -772,9 +777,13 @@ checked against the resolved (`env()`-substituted) destination.
 > search parameter. Default-off keeps the flat form for back-compat, which leaves the query-encoding an author
 > responsibility — the structured form is the safe path either way.
 
-> `serve` warns at startup in a `prod`/`staging` environment when egress is fully open (no allowlist set
-> **and** `deny_by_default` off) — a transform could then send PHI anywhere. Lock it down with
-> `deny_by_default = true` or the per-transport lists above.
+> **Fully-open egress on a PHI instance is a startup REFUSAL, not a warning.** With no
+> `[egress].allowed_*` list set and deny-by-default off, `serve` **exits 2** — on **any** PHI instance,
+> and all three built-in environment names (`dev`, `staging`, `prod`) derive PHI, not just
+> `prod`/`staging` — under `[security].enforcement = enforce`, the shipped default. It downgrades to a
+> stderr warning only under `enforcement = warn`; a **synthetic** instance is exempt. Lock it down with
+> the per-transport lists above and/or **`[security].block_unlisted_outbound = true`** (the old
+> `[egress].deny_by_default` spelling is rejected at config load).
 
 > The webhook/SMTP **alert** sinks carry no message bodies (no PHI) and keep their own host allowlists
 > in `[alerts]` (`webhook_allowed_hosts` / `smtp_allowed_hosts`).
@@ -846,7 +855,7 @@ best-effort and runs on a background task, so it never blocks or hangs a deliver
 | `email_subject_template` | str | _unset_ | optional **operator-editable** alert-email subject (#138, [ADR 0127](adr/0127-operator-editable-alert-email-templates-with-a-non-phi-variable-allowlist.md)). Unset (the default, with its two siblings) = the fixed subject + key/value body, byte-identical to before. When set it is a `{name}` template over a **closed non-PHI variable allow-list**, validated at config load and **fail-closed** — an unknown or message-derived reference raises rather than rendering |
 | `email_body_template` | str | _unset_ | the same, for the **plain-text** body. The plain-text part is **always** sent, even when an HTML alternative is configured |
 | `email_html_template` | str | _unset_ | the same, adding an **HTML alternative** part whose substituted *values* are HTML-escaped. Never HTML-only — it supplements `email_body_template`, it does not replace it |
-| `security_notifications_required` | bool | `true` | **secure-by-default gate (BACKLOG #188, ASVS 6.3.5/6.3.7).** On a **PHI** instance, if no effective out-of-band security-notification channel is configured — `[auth].notify_security_events` on **and** `email_smtp_host` + `email_from` set — `serve` **refuses to start in production** and **warns** in a non-production PHI env. Set `false` to accept the pull-only `GET /me/security-events` feed instead (audited). |
+| `security_notifications_required` | bool | `true` | **secure-by-default gate (BACKLOG #188, ASVS 6.3.5/6.3.7).** On a **PHI** instance, if no effective out-of-band security-notification channel is configured — `[auth].notify_security_events` on **and** `email_smtp_host` + `email_from` set — `serve` **refuses to start (exit 2)**. **The refuse/warn split is `[security].enforcement`, not the production tier** — the gate reads `enforcing`, `enforce` is the shipped default, and **all three** built-in env names derive PHI, so `serve --env staging` on stock defaults with no `[alerts]` SMTP is refused, not warned. It warns only under `enforcement = warn`. Set `false` to accept the pull-only `GET /me/security-events` feed instead (audited). |
 | `realert_seconds` | num | 300 | suppress re-notifying the same (event, connection) more often than this (anti-spam for a flapping lane). A matching rule's `cooldown_seconds` overrides it. |
 | `rules` | list | `[]` | ordered `[[alerts.rules]]` table array — per-event severity, transport routing, thresholds, suppression, cooldown (see below). Empty = today's behaviour (every event → every transport at `warning`). |
 

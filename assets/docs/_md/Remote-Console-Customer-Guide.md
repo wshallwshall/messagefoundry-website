@@ -64,21 +64,41 @@ Place them somewhere the engine's service account can read, e.g. `C:\MessageFoun
 
 ## Step 2 — Configure the engine server
 
-Edit the engine's configuration file, **`messagefoundry.toml`**, on the server. Add or update the
-`[api]` section:
+Edit the engine's configuration file, **`messagefoundry.toml`**, on the server. Exposure is controlled
+from the `[security]` section, and the certificate paths from `[api]`:
 
 ```toml
+[security]
+local_access_only = false                         # reachable from off this machine
+listen_address    = "0.0.0.0"                     # or a specific NIC IP, e.g. "10.0.0.12"
+serve_web_console = true                          # REQUIRED explicitly when exposed (see note below)
+web_console_public_address = "https://engine-host:8765"   # the origin the browser uses
+
 [api]
-host = "0.0.0.0"                                  # listen on the network (or a specific NIC IP)
 port = 8765                                       # the API port the console connects to
 tls_cert_file = "C:/MessageFoundry/tls/engine-cert.pem"
 tls_key_file  = "C:/MessageFoundry/tls/engine-key.pem"
 ```
 
+**That block alone will not start the engine.** Because the engine performs no OCSP/CRL revocation
+checking, an off-loopback bind that terminates TLS in-process is refused (**exit 2**) until you attest
+your revocation posture. That attestation is an **environment variable, not a TOML key**:
+
+```
+setx MEFOR_TLS_REVOCATION_ATTESTED 1
+```
+
+Under NSSM set it on the service rather than in an interactive shell —
+`nssm set MessageFoundry AppEnvironmentExtra MEFOR_TLS_REVOCATION_ATTESTED=1`. Setting it is you
+taking responsibility for revocation checking ([ADR 0078](adr/0078-certificate-revocation-posture.md)).
+
 Notes:
 
-- `host = "0.0.0.0"` listens on all network interfaces; you can instead use a specific address (e.g.
-  `"10.0.0.12"`) to limit it to one network.
+- `listen_address = "0.0.0.0"` listens on all network interfaces; you can instead use a specific
+  address (e.g. `"10.0.0.12"`) to limit it to one network.
+- `serve_web_console` must be set **explicitly** when the engine is exposed. The console is on by
+  default only for loopback binds — on an exposed instance a default-on console silently degrades to
+  JSON-only.
 - If your private key is **password-protected**, supply the passphrase via the environment variable
   `MEFOR_API_TLS_KEY_PASSWORD` — never put it in the file.
 - The engine **will refuse to start** if you open it to the network **without** a certificate (this
@@ -157,7 +177,8 @@ This is optional and off by default.
 |---|---|
 | `certificate verify failed` / "not trusted by the trust provider" | The PC doesn't trust the engine's certificate. Add `--cacert <file>`, or install the issuing CA into the PC's Windows certificate store. |
 | `refusing to use plaintext http to non-loopback host …` | You used an `http://` address to a remote engine. Use the `https://` address (configure the certificate in Step 2). |
-| The **engine** won't start after editing the config | You set `host` to a network address without a certificate. Add `tls_cert_file` (+ `tls_key_file`) under `[api]`, or revert `host` to `127.0.0.1`. |
+| The **engine** won't start after editing the config | Either you exposed it without a certificate — add `tls_cert_file` (+ `tls_key_file`) under `[api]` — or you have not attested revocation: set `MEFOR_TLS_REVOCATION_ATTESTED=1` (Step 2). To back out entirely, set `[security].local_access_only = true`. |
+| `moved to [security]. … and is no longer accepted` | You used a pre-ADR-0118 key such as `[api].host`. Exposure now lives in `[security]` (`local_access_only` / `listen_address`); the old spellings are rejected when the config loads. |
 | "hostname mismatch" when connecting | The certificate's name (SAN) doesn't match the address in `--url`. Reissue the certificate for the correct hostname/IP. |
 | Console can't reach the server at all | Check the firewall on the engine server (default port **8765/TCP**) and that the service is running. |
 

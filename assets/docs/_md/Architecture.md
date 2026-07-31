@@ -302,8 +302,12 @@ viewed/searched/replayed messages, and **encryption-at-rest** for message bodies
 the store cipher when a key is set, with owner-only DB/WAL file permissions and required volume
 encryption covering the rest.
 
-**Roadmap (not yet enforced — see [PHI.md](PHI.md)):** structlog **log redaction**, **MLLPS / TLS**
-for transport, and **retention/purge** enforcement.
+**Also built (see [PHI.md](PHI.md)):** **PHI redaction on the logging path** — stdlib `logging` only
+(deliberately not structlog), with an always-on handler filter plus the `safe_exc()` chokepoint, so an
+exception rendered into a stored disposition or a log line is scrubbed of HL7-shaped content;
+**MLLP-over-TLS** (TLS 1.2+, server-certificate verification with hostname checking, opt-in mTLS)
+configured per connection, with an off-loopback plaintext listener refused at startup; and
+**retention/purge** enforcement, run by the engine's async `RetentionRunner`.
 
 ## Module map
 
