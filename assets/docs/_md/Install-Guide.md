@@ -63,7 +63,8 @@ pip install "messagefoundry==0.3.2"          # pin the exact version (core runti
 
 Add extras only for what a host actually runs — `messagefoundry[postgres]` (PostgreSQL store),
 `messagefoundry[sqlserver]` (SQL Server store + the DATABASE connectors, needs OS-level ODBC Driver 18),
-`messagefoundry[harness]` (the PySide6 test harness GUI), `messagefoundry[sftp]` (SFTP connectors),
+`messagefoundry[harness]` (PySide6 only — the harness itself is the separate `messagefoundry-harness`
+distribution), `messagefoundry[sftp]` (SFTP connectors),
 `messagefoundry[fhir]` (FHIR codec + FHIR outbound), `messagefoundry[dicom]` (DICOM C-STORE SCP + codec).
 
 Key properties this install model gives you:
@@ -265,7 +266,9 @@ explicitly — a default-on console on an exposed bind quietly degrades to the J
 and it additionally requires TLS, plus `[security].web_console_public_address` behind a declared
 TLS-terminating proxy (see [REMOTE-CONSOLE.md](REMOTE-CONSOLE.md)). The former PySide6 desktop console
 was retired in favour of this browser console (BACKLOG #103); PySide6 now backs only the standalone
-test harness (`pip install "messagefoundry[harness]"`).
+test harness, which ships as its own lockstep distribution — `pip install messagefoundry-harness`,
+then `python -m harness`. (The engine wheel does not contain `harness/`; the `messagefoundry[harness]`
+extra supplies only PySide6, and the harness distribution pulls it in for you.)
 
 ---
 

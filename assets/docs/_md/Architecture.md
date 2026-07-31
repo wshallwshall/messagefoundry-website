@@ -61,7 +61,11 @@ WebSocket API (FastAPI/uvicorn). The same API serves three deployments without c
   process (or a browser) that reaches the engine only over the HTTP API, never by importing it.
 - **Local daemon** — engine runs as a Windows service / Linux daemon; the web console attaches over
   the API. See [SERVICE.md](SERVICE.md) for the Windows service setup (NSSM).
-- **Remote** — same API over the network (Phase 2+, with auth/TLS).
+- **Remote** — the same API over the network. Supported today, **off by default**: set
+  `[security].local_access_only = false` and name the bind address in `[security].listen_address`,
+  with TLS either **in-process** (`[api].tls_cert_file`) or **terminated upstream** at a declared
+  trusted proxy (`[api].tls_terminated_upstream` + `[api].trusted_proxies`). Auth is always required,
+  and an off-loopback plaintext bind is refused at startup.
 
 We deliberately did **not** start with two separate processes + hand-rolled IPC. The
 logical boundary (library API) comes first; physical split is a deployment choice.
@@ -87,7 +91,7 @@ flowchart TB
 
   subgraph ENGINE["Engine — headless asyncio service (no GUI imports)"]
     PIPE["pipeline/ — RegistryRunner<br/>listener · router · transform · delivery workers"]:::engine
-    TRANS["transports/ — connector registry<br/>MLLP · File · X12 · DICOM C-STORE SCP (TCP/HTTP/DB planned)"]:::engine
+    TRANS["transports/ — connector registry<br/>MLLP · TCP · HTTP · File · SFTP/FTP · REST · SOAP · Database · X12 · FHIR · DICOM · Email · …"]:::engine
     PARSE["parsing/ — pure HL7/X12/DICOM library<br/>python-hl7 · hl7apy · X12 codec · DICOM codec · base64 binary codec"]:::engine
     STORE[("store/ — staged queue<br/>SQLite WAL · SQL Server · AES-256-GCM")]:::engine
     CFG["config/ — code-first wiring<br/>Connections · Routers · Handlers · environments/"]:::engine
@@ -360,12 +364,12 @@ hashed resolution lives in the committed **`uv.lock`** / **`requirements.lock`**
 
 **Optional extras**
 
-- `harness` → `PySide6` (LGPL — chosen so the OSS test harness GUI is distributable; not PyQt) + `httpx` + `truststore` (was `[console]` before the desktop console was retired — BACKLOG #103)
+- `harness` → `PySide6` only (LGPL — chosen so the OSS test harness GUI is distributable; not PyQt); the harness is the sole PySide6 consumer (was `[console]` before the desktop console was retired — BACKLOG #103; its HTTP client, `httpx` + `truststore`, is now a base runtime dependency rather than part of this extra)
 - `sqlserver` → `aioodbc` (production SQL Server store; also needs the OS-level Microsoft ODBC
   Driver 18 for SQL Server, which is not pip-installable; lazy-imported so SQLite-only installs skip it)
 - `dicom` → `pydicom` + `pynetdicom` (DICOM codec — headers/SR only, no numpy — and the C-STORE SCP
   inbound connector; ADR 0025; lazy-imported so non-DICOM installs skip it)
-- `dev` → `pytest`, `pytest-asyncio`, `httpx` (ASGI test client for the API), `ruff`, `mypy`
+- `dev` → `pytest` (with the `asyncio`, `timeout` and `rerunfailures` plugins), `ruff`, `mypy` (`httpx`, the ASGI test client, is now a base dependency and is no longer declared here)
 
 **Build / tooling** — `hatchling` (build backend), Ruff (format + lint, no Black), mypy (strict),
 pytest.

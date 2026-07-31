@@ -58,8 +58,9 @@ operate it over a localhost HTTP API. See [ARCHITECTURE.md](ARCHITECTURE.md) for
 and who are comfortable validating a pre-1.0 tool against their own traffic before trusting it. A single
 engine node on a trusted network is the simplest pilot; **native TLS** (API + MLLP) and an opt-in
 **active-passive failover** cluster on a shared server-DB store (PostgreSQL or SQL Server) are both built when you need them (see
-§2/§6/§14). What is genuinely *not* there yet is MFA, off-box log shipping, and a de-identification
-framework — track those items (§2) and pilot the parts that are ready. (Horizontal *active-active*
+§2/§6/§14), as are **native TOTP MFA** for local accounts and **off-box log/audit forwarding** to a
+syslog/SIEM collector. What is genuinely *not* there yet is a de-identification
+framework — track that item (§2) and pilot the parts that are ready. (Horizontal *active-active*
 scale-out was dropped and is not a planned milestone; active-passive HA is the supported HA model.)
 
 ---
@@ -102,8 +103,7 @@ use the table below alongside them when planning.
 
 **The early-adopter bargain, stated plainly:** you get a durable engine with native TLS, real auth,
 opt-in active-passive failover, and a real validation toolchain, in exchange for validating capacity on
-your own hardware and supplying the operational pieces that aren't built yet (MFA, off-box logs,
-de-identification). If that trade is acceptable, the rest of this guide is your playbook.
+your own hardware and supplying the one operational piece that isn't built yet (de-identification). If that trade is acceptable, the rest of this guide is your playbook.
 
 ---
 
@@ -207,11 +207,13 @@ host.
 | `harness` | PySide6 | Running the standalone test-harness GUI |
 | `sftp` | paramiko | SFTP connectors |
 | `sqlserver` | `aioodbc` **+ OS-level Microsoft ODBC Driver 18** | The SQL Server *store* backend (`backend=sqlserver`, production) and the DATABASE connector family. |
-| `dev` | pytest/ruff/mypy/httpx | Development & CI |
+| `dev` | pytest (+ asyncio/timeout/rerunfailures plugins), ruff, mypy | Development & CI |
 
-> ⚠️ There is **no friendly preflight** for the `postgres` extra: if you set `backend=postgres` but
-> forgot `pip install 'messagefoundry[postgres]'`, you get a raw `ImportError` at startup instead of a
-> clear message. Install the extra with the backend.
+> ⚠️ `messagefoundry check` cannot catch a missing `postgres` extra — it validates a *declared*
+> backend without dialing the database. If you set `backend=postgres` but forgot
+> `pip install 'messagefoundry[postgres]'`, the engine fails at startup with a clear error naming the
+> extra and the exact pip command (the `sqlserver` backend behaves the same way). Install the extra
+> with the backend.
 
 ### Start your own config repo (`messagefoundry init`)
 
@@ -370,9 +372,10 @@ Guidance for a clean first flow:
 ## 6. Security & PHI hardening before real data
 
 Full references: **[SECURITY.md](SECURITY.md)**, **[PHI.md](PHI.md)**, and **[DEPLOYMENT.md](DEPLOYMENT.md)**
-(network exposure). MEFOR ships real auth, RBAC, audit, opt-in at-rest encryption, and **native TLS**
-(API + MLLP, with a fail-closed off-loopback bind guard); the remaining transport gaps are **MFA** and
-**off-box log shipping**. Complete this checklist **before any real PHI flows**:
+(network exposure). MEFOR ships real auth, RBAC, audit, opt-in at-rest encryption, **native TLS**
+(API + MLLP, with a fail-closed off-loopback bind guard), **native TOTP MFA** for local accounts, and
+**off-box log/audit forwarding**; the remaining transport gap is **TLS for the raw TCP and X12
+connectors**, which are plaintext-only. Complete this checklist **before any real PHI flows**:
 
 - [ ] **API off-loopback requires native TLS.** The API binds `127.0.0.1` by default. To reach it from
       another host, configure **in-process TLS** (`[api].tls_cert_file` + `[api].tls_key_file`,
@@ -637,7 +640,11 @@ as a **separate, later** step so you retain a fallback.
 **Verify-it-runs (after every start/restart):** `GET /health` → `{"status":"ok"}`, send a synthetic
 message, and confirm the **"wiring started"** banner in `service.out.log`.
 
-**Monitoring surfaces (poll the API + parse logs — there is no Prometheus exporter):**
+**Monitoring surfaces (scrape `/metrics` with Prometheus; poll the JSON API and watch the logs for the rest):**
+
+- `/metrics` — **Prometheus text exposition**: per-connection counters, queue-depth / in-pipeline /
+  oldest-pending gauges, latency histograms, and host CPU/memory. Gated by `monitoring:read` exactly
+  like `/stats`, so point your scraper at it with a service token.
 - `/stats` — outbox counts by status.
 - `/status` — DB size vs disk free, journal mode, counts. **Scrape db-size-vs-disk-free.**
 - `/status/integrity-check` — on-demand store integrity.
@@ -654,8 +661,10 @@ message, and confirm the **"wiring started"** banner in `service.out.log`.
 
 **Log management:** logs land under `<DataDir>\logs` via NSSM. Configure rotation, keep the level at
 `INFO` or above (DEBUG can leak PHI — §6), treat `service.out/err.log` as **potential-PHI artifacts**
-(ACL them; don't ship them off-box — off-box logging is deferred), and include them in your retention
-policy.
+(ACL them; rather than shipping the raw files, use the built off-box evidence copy — the
+`[logging].forward_*` syslog/SIEM stream, to which PHI redaction applies exactly as it does to stdout —
+and set `forward_protocol = "tls"`, since the transport default is UDP), and include them in your
+retention policy.
 
 **Graceful drain for maintenance:** stopping the service (Ctrl+C / NSSM stop) triggers the ASGI
 lifespan to call `engine.stop()` for a clean drain. Always **drain → stop → back up → change → restart

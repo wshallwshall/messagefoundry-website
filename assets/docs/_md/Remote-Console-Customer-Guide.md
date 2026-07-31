@@ -19,9 +19,11 @@ No code changes are required; everything here is configuration.
 
 ## What you're setting up
 
-The MessageFoundry **engine** runs on a server (usually as a Windows service). The **console** is a
-separate desktop application that monitors and operates the engine. By default the engine only
-accepts connections from the **same machine** (`127.0.0.1`), so the console must run on the server.
+The MessageFoundry **engine** runs on a server (usually as a Windows service). Its operator UI is the
+**web console** — a browser application the engine serves same-origin at `/ui`, on by default at a
+loopback bind, shipping as a separate distribution (`pip install messagefoundry-webconsole`). There is
+no desktop application to install. By default the engine only accepts connections from the **same
+machine** (`127.0.0.1`), so the console is reachable only from the server until you expose it.
 
 To use the console from another PC, you:
 

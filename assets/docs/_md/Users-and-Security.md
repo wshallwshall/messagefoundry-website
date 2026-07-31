@@ -334,7 +334,7 @@ Automated security scanning runs in continuous integration:
 
 **Every release publishes a verifiable supply chain**, not a questionnaire answer: a **CycloneDX SBOM** of the engine, an **OpenVEX** document carrying our per-CVE exploitability assessments, **Sigstore signatures** over the wheel, sdist, SBOM and VEX, **SLSA build provenance** binding each artifact to its source commit, and PyPI-side PEP 740 attestations. Feed the SBOM and VEX to your own scanner and you triage real risk rather than unreachable CVEs. Verification commands are in the [supply-chain guide](https://github.com/MEFORORG/MessageFoundry/blob/main/docs/SUPPLY-CHAIN.md).
 
-A private vulnerability-disclosure policy is published with the project. A full-history secret scan to complement push-protection secret scanning is a tracked CI addition.
+A private vulnerability-disclosure policy is published with the project. A **full-history secret scan** (`gitleaks`, over the complete git history rather than just the tip) runs as a **blocking** CI gate alongside GitHub-native push protection, and the same scanner is available as a pre-commit hook so a credential is caught before it is ever committed.
 
 ### Dependency lockfile
 

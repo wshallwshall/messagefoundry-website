@@ -366,9 +366,12 @@ The engine logs to stdout/stderr with a stdlib `logging` setup (one timestamped 
 stream — see [`messagefoundry/logging_setup.py`](../messagefoundry/logging_setup.py)),
 with a CR/LF log-injection filter and a `safe_exc()` PHI-redaction chokepoint on the
 exception path (WP-6c — see [PHI.md §7](PHI.md#7-logging--phi-redaction)). NSSM captures
-those streams to the files above and rotates them at ~10 MB. Structured (JSON) logging
-+ off-box (syslog/SIEM) forwarding are planned (bundled with off-box exposure); until
-then **avoid raising the level to `DEBUG` in production**, since verbose output may
+those streams to the files above and rotates them at ~10 MB. For structured stdout set
+`[logging].format = "json"` (one JSON object per line); to ship a copy off-box to a
+syslog/SIEM collector set `[logging].forward_host`, and `forward_protocol = "tls"` for a
+native RFC 5425 encrypted hop, which also needs `forward_tls_ca_file` (a PEM trust anchor
+for the collector). PHI redaction and control-char scrubbing apply to both sinks. Still
+**avoid raising the level to `DEBUG` in production**, since verbose output may
 include message content.
 
 **Restrict the log directory's ACL** so the captured stdout/stderr (operational data,

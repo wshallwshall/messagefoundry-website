@@ -466,9 +466,13 @@ guarantees. The table below summarizes the posture per interface.
 | **Database egress** | Connection-string injection, MITM | Parameterized queries, ODBC injection guard, fail-closed TLS verification |
 | **Audit / log forwarding** | On-host tampering, PHI leakage in transit | Hash-chained tamper-evidence (HMAC-keyed once a store key is set; unkeyed SHA-256 on a keyless store), off-box forwarding for an independent copy that also covers a deleted tail, native TLS transport, redaction applied to the forwarded stream |
 
-An **inbound web-service listener** — a partner calling *into* MessageFoundry over HTTP — is
-deliberately **not built today**; it is a distinct surface that will need its own
-authentication and TLS design before it ships.
+An **inbound web-service listener** — a partner `POST`ing into MessageFoundry over HTTP — **is
+built** ([ADR 0023](adr/0023-inbound-http-listener.md)): a connector-owned HTTP/1.1 receiver with
+per-connection TLS, opt-in mutual TLS, peer-IP allow-listing, connection/body/header/slow-loris caps,
+and the same off-loopback cleartext refusal every other listener carries. What is still deferred is
+narrower and worth stating plainly: **there is no on-socket partner authentication on the `POST`
+itself** — front it with a proxy or mutual TLS, or keep it on a trusted segment — and the synchronous
+SOAP-envelope reply is not implemented.
 
 ## Verification posture — self-assessed, not certified
 
@@ -485,9 +489,11 @@ conducted **by the project, on itself**. It is **not** a certification, an accre
 passed audit, or a third-party penetration test, and it should not be read as one. **No
 independent security assessment, code review, or DAST engagement has been performed.** ASVS
 at Level 3 *recommends* — but does not require — an independent review; ours is scheduled
-rather than done. A dated risk acceptance covers that gap while the project is pre-1.0 and
-loopback-only, and an **independent engagement is a documented prerequisite before any
-off-loopback or production PHI exposure**. We publish no numeric score here, because a score
+rather than done. A dated risk acceptance covers that gap while the project is pre-1.0. Because
+MessageFoundry is **self-hosted**, the decision to deploy it beyond loopback — and the assessment
+that justifies that decision — rest with the **implementing organization**: we state what has and
+has not been independently verified rather than gating your deployment on it, and we would expect an
+adopter to weigh an independent engagement before a production PHI exposure. We publish no numeric score here, because a score
 without an assessor's name behind it invites exactly the misreading we are trying to avoid;
 the current assessment and the risk register are available to adopters, evaluators, and
 security reviewers under NDA through the private contact route.
