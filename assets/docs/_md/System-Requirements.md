@@ -232,8 +232,10 @@ bullet says so rather than interpolating. Here is the derivation, so you can che
 - **Standard single-node — ~30–70 msg/s** is that same reference config's full measured band: **~30
   (SQL Server) · ~50 (PostgreSQL) · ≥ 70 (SQLite, still not saturated at the top rate step)**. It brackets
   the **~60 msg/s end-to-end** ceiling measured for one strictly-ordered interface against an
-  *instant-acknowledging* partner, versus **~450 msg/s at intake** (ACK-on-receipt) — i.e. **~16 ms** of
-  engine overhead per message ([THROUGHPUT.md](THROUGHPUT.md) §8). `30–70 × 32,000 ≈ 0.96–2.24 M/day`. The
+  *instant-acknowledging* partner, versus **~193 msg/s per engine at intake** (ACK-on-receipt,
+  engine-CPU-bound; ~383 msg/s measured at two engines) — i.e. **~16 ms** for the whole serial
+  per-message budget, most of which is store round-trips rather than engine time
+  ([THROUGHPUT.md](THROUGHPUT.md) §8). `30–70 × 32,000 ≈ 0.96–2.24 M/day`. The
   ~1000 msg/s pass-through figure quoted above is a **vendor's** self-benchmark, not a MEFOR measurement.
 - **High single-node — ~70–100 msg/s** is the highest rate ever measured from **one engine process**:
   **~97 msg/s max sustainable** (zero-loss, bounded backlog) and **~107 msg/s** as a burst that still
@@ -259,8 +261,12 @@ bullet says so rather than interpolating. Here is the derivation, so you can che
   where summing the per-lane ceilings would have predicted ~960/s, an **~11× over-report**
   ([THROUGHPUT.md](THROUGHPUT.md) §7). Always take `min(measured concurrent aggregate, Σ per-interface)`,
   and measure a high-fan-out hub rather than sizing it off the low-fan-out rows above.
-  **~165 msg/s of ingress is the highest end-to-end rate measured anywhere in this project**; no figure in
-  this document may be quoted as more.
+  **~165 msg/s of ingress is the highest end-to-end rate in the sizing tiers above**, and no figure in
+  this document may be quoted as more. That bound is about *these* tiers, which are per-interface
+  ingress rates on the hardware described here — it is not a statement about the engine's aggregate
+  ceiling. A separate four-shard measurement against a shared SQL Server store reached ~603 total
+  message events per second (counting messages in **and** out); see the Throughput & Capacity
+  document. The two are different units on different hardware and should never be compared directly.
 - **Do not size on a future per-core lever.** Group-commit and the wider "reduce committed transactions per
   event" lever are **closed, not pending** — group-commit was withdrawn
   ([ADR 0055](adr/0055-group-commit-durable-write.md)) and the pre-registered measurement returned ABANDON

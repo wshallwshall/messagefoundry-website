@@ -41,6 +41,12 @@
 <body>
   <a class="skip-link" href="#main">Skip to content</a>
 
+  <div class="eabar" role="region" aria-label="Project status">
+    <div class="container">
+      <p><strong>Early Access &middot; beta.</strong> We're building toward 1.0 &mdash; and we want people involved now, while it can still be shaped. <a href="/status.html">Where the project stands &rarr;</a></p>
+    </div>
+  </div>
+
   <header class="site-header">
     <div class="container header-inner">
       <a class="brand" href="/" aria-label="MessageFoundry home">
@@ -77,6 +83,7 @@
           <button type="button" class="nav-group__btn" aria-expanded="false" aria-haspopup="true" aria-controls="nav-company">About Us</button>
           <div class="nav-group__menu" id="nav-company">
             <a href="/about.html">About</a>
+            <a href="/status.html">Project status</a>
             <a href="/licensing.html">Licensing</a>
             <a href="/contact.html">Contact</a>
             <a href="/sponsor.html">Sponsor</a>
@@ -121,10 +128,11 @@
             <tr><th scope="row"><a href="/assets/docs/MessageFoundry-Migration-Guide.pdf" target="_blank" rel="noopener">Migrating from a legacy engine (Corepoint, Rhapsody, Mirth, etc.)</a> <span class="pdf-tag">PDF</span></th><td>A vendor-fair playbook for moving interfaces to MessageFoundry: inventory, map, validate, cut over with rollback.</td></tr>
             <tr class="grp"><th colspan="2" scope="colgroup">Concepts &amp; reference</th></tr>
             <tr><th scope="row"><a href="/assets/docs/MessageFoundry-Architecture.pdf" target="_blank" rel="noopener">Architecture overview</a> <span class="pdf-tag">PDF</span></th><td>A modular, contract-bounded engine with a durable store-as-queue pipeline so no message is lost.</td></tr>
+            <tr><th scope="row"><a href="/assets/docs/MessageFoundry-Throughput-and-Capacity.pdf" target="_blank" rel="noopener">Throughput &amp; capacity</a> <span class="pdf-tag">PDF</span></th><td>What we measured to establish 40 million message events a day, what was <em>not</em> saturated at that ceiling, and how to size against your own partners' acknowledgement times.</td></tr>
             <tr><th scope="row"><a href="/assets/docs/MessageFoundry-HL7-Validation.pdf" target="_blank" rel="noopener">HL7 validation</a> <span class="pdf-tag">PDF</span></th><td>Three composable tiers — tolerant peek, strict structural, and cross-field business consistency.</td></tr>
             <tr><th scope="row"><a href="/assets/docs/MessageFoundry-CI-Quality.pdf" target="_blank" rel="noopener">Automated testing &amp; quality</a> <span class="pdf-tag">PDF</span></th><td>How thousands of automated tests run on every change to keep the engine reliable.</td></tr>
             <tr class="grp" id="security"><th colspan="2" scope="colgroup">Security &amp; compliance</th></tr>
-            <tr><th scope="row"><a href="/assets/MessageFoundry-Secure-Development-Standards.pdf" target="_blank" rel="noopener">Secure Development Standards</a> <span class="pdf-tag">PDF</span></th><td>The foundation — the full NIST SSDF / 800-115 / 800-66 mapping and the OWASP ASVS 5.0 Level 3 self-assessment (212 met · 0 failed · 0 partial · 133 N/A of 345).</td></tr>
+            <tr><th scope="row"><a href="/assets/MessageFoundry-Secure-Development-Standards.pdf" target="_blank" rel="noopener">Secure Development Standards</a> <span class="pdf-tag">PDF</span></th><td>The foundation — the full NIST SSDF / 800-115 / 800-66 mapping and the OWASP ASVS 5.0 Level 3 self-assessment across all 345 requirements.</td></tr>
             <tr><th scope="row"><a href="/assets/docs/MessageFoundry-Security-Overview.pdf" target="_blank" rel="noopener">Security overview</a> <span class="pdf-tag">PDF</span></th><td>Secure-by-default controls, a secure SDLC, the per-interface threat model, and the ASVS L3 self-assessment.</td></tr>
             <tr><th scope="row"><a href="/assets/docs/MessageFoundry-Users-and-Security.pdf" target="_blank" rel="noopener">Users &amp; security</a> <span class="pdf-tag">PDF</span></th><td>How every operator is authenticated and authorized — local accounts, MFA, Active Directory, RBAC, and audit.</td></tr>
             <tr><th scope="row"><a href="/assets/docs/MessageFoundry-ASVS-HIPAA-Penalty.pdf" target="_blank" rel="noopener">App security &amp; HIPAA penalties</a> <span class="pdf-tag">PDF</span></th><td>How application-security verification (OWASP ASVS) shapes HIPAA breach-penalty tier exposure.</td></tr>
@@ -178,6 +186,7 @@
         </div>
         <div class="footer-col">
           <h4>Project</h4>
+          <a href="/status.html">Project status</a>
           <a href="https://github.com/MEFORORG/MessageFoundry" target="_blank" rel="noopener">GitHub</a>
           <a href="https://github.com/MEFORORG/MessageFoundry/issues" target="_blank" rel="noopener">Issues</a>
           <a href="/contact.html">Contact</a>

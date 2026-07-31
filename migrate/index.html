@@ -74,6 +74,12 @@
 <body>
   <a class="skip-link" href="#main">Skip to content</a>
 
+  <div class="eabar" role="region" aria-label="Project status">
+    <div class="container">
+      <p><strong>Early Access &middot; beta.</strong> We're building toward 1.0 &mdash; and we want people involved now, while it can still be shaped. <a href="/status.html">Where the project stands &rarr;</a></p>
+    </div>
+  </div>
+
   <header class="site-header">
     <div class="container header-inner">
       <a class="brand" href="/" aria-label="MessageFoundry home">
@@ -110,6 +116,7 @@
           <button type="button" class="nav-group__btn" aria-expanded="false" aria-haspopup="true" aria-controls="nav-company">About Us</button>
           <div class="nav-group__menu" id="nav-company">
             <a href="/about.html">About</a>
+            <a href="/status.html">Project status</a>
             <a href="/licensing.html">Licensing</a>
             <a href="/contact.html">Contact</a>
             <a href="/sponsor.html">Sponsor</a>
@@ -138,7 +145,7 @@
   <section class="section">
     <div class="container" style="max-width:820px">
 
-      <p class="lead" style="margin-bottom:8px">Migrations fail when they're all-or-nothing. This playbook is vendor-neutral and incremental: prove one interface, then the next, keeping the old engine running until each is trusted.</p>
+      <p class="lead" style="margin-bottom:8px">Migrations fail when they're all-or-nothing. This playbook is vendor-neutral and incremental: prove one interface, then the next, keeping the old engine running until each is trusted. MessageFoundry is a new, Early Access project — start with a sandbox install, and read <a href="/status.html">where the project stands</a> before you plan a cutover.</p>
 
       <h2>1. Inventory your interfaces</h2>
       <p>Catalog every channel before touching anything: its inbound and outbound connections, its routing and transforms, its filters, and its volumes. The inventory makes the scope explicit and surfaces the handful of interfaces that carry most of the risk.</p>
@@ -154,7 +161,7 @@
       <p>Move traffic over in <b>stages behind go/no-go gates</b>, one interface at a time, keeping the legacy engine as a fallback until each is trusted. The <a href="/assets/docs/MessageFoundry-Adoption-Guide.pdf" target="_blank" rel="noopener">Adoption &amp; rollout guide</a> lays out the staged plan; the <a href="/assets/docs/MessageFoundry-Migration-Guide.pdf" target="_blank" rel="noopener">Migration guide</a> covers the interface-by-interface mechanics.</p>
 
       <div class="callout" style="margin-top:30px">
-        <p style="margin:0"><strong>Why teams move.</strong> Interface-engine costs climb as budgets tighten, and channel-based config is hard to review and test. MessageFoundry is open-source and self-hosted, with no per-interface licensing — and interfaces become ordinary Python you can diff, test, and own. <a href="/comparison.html">See the comparison →</a></p>
+        <p style="margin:0"><strong>Why teams move off legacy engines.</strong> Interface-engine costs climb as budgets tighten, and channel-based config is hard to review and test. MessageFoundry is open-source and self-hosted, with no per-interface licensing — and interfaces become ordinary Python you can diff, test, and own. <a href="/comparison.html">See the comparison →</a></p>
       </div>
 
       <div class="btn-row" style="margin-top:30px">
@@ -235,6 +242,7 @@
         </div>
         <div class="footer-col">
           <h4>Project</h4>
+          <a href="/status.html">Project status</a>
           <a href="https://github.com/MEFORORG/MessageFoundry" target="_blank" rel="noopener">GitHub</a>
           <a href="https://github.com/MEFORORG/MessageFoundry/issues" target="_blank" rel="noopener">Issues</a>
           <a href="/contact.html">Contact</a>

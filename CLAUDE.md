@@ -37,6 +37,16 @@ repo). It is **not** the engine. Served at https://messagefoundry.org via GitHub
   - **The owner defines v0.1 scope — ask, don't guess.** The repo owner is the accountable source for
     what's in v0.1; when unsure whether a capability is in scope, ask rather than inferring from the
     lagging engine docs.
+  - **Project maturity — say it plainly (standing owner decision, 2026-07-30).** MessageFoundry
+    **started in May 2026**. It is a **new, Early Access, beta-level project, developed quickly**, and
+    the site must not read as more established than that. State the age, the beta status, and the pace
+    where a reader forms an impression of maturity; invite **feedback**, **contributors**, and
+    **sandbox test installations** by users and organizations who want to help steer it. Never imply
+    field-proven maturity, a long production track record, a reference list of live sites, external
+    audit, or a staffed support organization — none of those exist yet. `/status.html` is the canonical
+    statement; link it rather than restating it at length. **This does not reinstate per-feature
+    "built vs planned" splits or status badges** — a capability in scope is still written in present
+    tense. Maturity of the *project* is caveated; the *feature set* is not.
   - **Protocol & message-type breadth (standing owner decision — do not re-litigate).** The site
     positions MessageFoundry as a broad *healthcare interface engine* that connects "a wide range of
     protocols and message types" — pre-approved aspirational framing; write it confidently. (Per owner

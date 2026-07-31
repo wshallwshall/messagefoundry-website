@@ -53,6 +53,12 @@
 <body>
   <a class="skip-link" href="#main">Skip to content</a>
 
+  <div class="eabar" role="region" aria-label="Project status">
+    <div class="container">
+      <p><strong>Early Access &middot; beta.</strong> We're building toward 1.0 &mdash; and we want people involved now, while it can still be shaped. <a href="/status.html">Where the project stands &rarr;</a></p>
+    </div>
+  </div>
+
   <header class="site-header">
     <div class="container header-inner">
       <a class="brand" href="/" aria-label="MessageFoundry home">
@@ -89,6 +95,7 @@
           <button type="button" class="nav-group__btn" aria-expanded="false" aria-haspopup="true" aria-controls="nav-company">About Us</button>
           <div class="nav-group__menu" id="nav-company">
             <a href="/about.html">About</a>
+            <a href="/status.html">Project status</a>
             <a href="/licensing.html">Licensing</a>
             <a href="/contact.html">Contact</a>
             <a href="/sponsor.html">Sponsor</a>
@@ -182,7 +189,7 @@
       <div class="grid grid-3">
         <div class="card">
           <h3>Network</h3>
-          <p><b>MLLP</b> — correct <code>0x0B … 0x1C 0x0D</code> framing, inbound and outbound, with ACK/NAK generation (AA / AE / AR) and a per-connection ack mode. <b>TCP</b> for raw stream endpoints. <b>X12 / EDI</b> over TCP — ISA/IEA-framed interchanges, inbound and outbound. <b>DICOM</b> imaging — C-STORE SCP/SCU and C-ECHO over DIMSE, plus DICOMweb STOW-RS (<a href="/dicom.html" style="color:var(--accent)">DICOM imaging →</a>).</p>
+          <p><b>MLLP</b> — correct <code>0x0B … 0x1C 0x0D</code> framing, inbound and outbound, with ACK/NAK generation (AA / AE / AR) and a per-connection ack mode. <b>TCP</b> for raw stream endpoints. <b>X12 / EDI</b> over TCP — ISA/IEA-framed interchanges, inbound and outbound. <b>DICOM</b> imaging — C-STORE SCP/SCU and C-ECHO over DIMSE, plus DICOMweb STOW-RS (<a href="/dicom.html" style="color:var(--accent-ink)">DICOM imaging →</a>).</p>
         </div>
         <div class="card">
           <h3>Web services</h3>
@@ -286,7 +293,7 @@
         </div>
         <div class="card">
           <h3>AI-assisted migration</h3>
-          <p>Moving from another engine is AI-assisted by design: paste your existing Mirth / Cloverleaf / Rhapsody logic and the assistant helps you express it as Python — typically far less effort than re-platforming. Code-only and governed.</p>
+          <p>Moving from another engine is AI-assisted by design: paste your existing Mirth / Cloverleaf / Rhapsody logic and the assistant helps you express it as Python — which can be far less work than re-platforming. Code-only and governed.</p>
         </div>
       </div>
     </div>
@@ -362,7 +369,7 @@
       <div>
         <span class="eyebrow">High availability</span>
         <h2>Stay up through failures</h2>
-        <p class="lead">Run a primary with a hot standby: if the primary fails, the standby takes over with no message loss. The data tier rides your database's own HA — PostgreSQL replication or SQL&nbsp;Server Always On.</p>
+        <p class="lead">Run a primary with a hot standby: if the primary fails, the standby takes over without losing in-flight messages. The data tier rides your database's own HA — PostgreSQL replication or SQL&nbsp;Server Always On.</p>
       </div>
       <ul class="feature-list">
         <li><b>Active-passive failover</b> — a standby promotes on primary failure; in-flight work resumes from the durable store.</li>
@@ -419,7 +426,7 @@
         <div class="faq-item"><h3>What systems and protocols can MessageFoundry connect?</h3><p>It connects the systems you already run over MLLP (with TLS), TCP, HTTP/REST, SOAP, FHIR REST, files, SFTP/FTP, databases, and DICOM — so a wide range of protocols and message types flow through one engine.</p></div>
         <div class="faq-item"><h3>Do I write interfaces in code or with a GUI?</h3><p>Both. You can set up Connections, Routers, and Handlers with guided wizards in the VS Code extension and admin console, or write them in plain Python for full control — version-controlled like any codebase.</p></div>
         <div class="faq-item"><h3>Is MessageFoundry built for PHI and security?</h3><p>Yes. PHI is a first-class concern: it stays self-hosted, traffic is encrypted with TLS, message bodies at rest with AES-256-GCM, every operator is authenticated, and access is audited. It's built to NIST SSDF / 800-66 and self-assessed against OWASP ASVS Level 3.</p></div>
-        <div class="faq-item"><h3>How does MessageFoundry scale?</h3><p>MessageFoundry scales horizontally by adding interfaces. The unit of capacity is one inbound interface, which sustains roughly 50 messages per second in our measurements — on the order of a million messages a day — with strict in-order, durable, at-least-once processing, so messages aren't silently dropped. That is well beyond what a single hospital's routine ADT feed needs, with comfortable headroom for bursts. When you need more, you split feeds at the source across more interfaces and aggregate throughput is the sum across them, plus an optional multi-node tier. These figures are measured on anonymized, representative message traffic; real throughput depends on your transforms, storage, and hardware.</p><p style="margin-top:10px"><a href="/throughput/">How throughput really works →</a></p></div>
+        <div class="faq-item"><h3>How does MessageFoundry scale?</h3><p>MessageFoundry scales horizontally by adding interfaces. The unit of capacity is one inbound interface, which sustains roughly 50 messages per second in our measurements — on the order of a million messages a day — with strict in-order, durable, at-least-once processing, so messages aren't silently dropped. That is well beyond what a single hospital's routine ADT feed needs, with comfortable headroom for bursts. When you need more, you split feeds at the source across more interfaces, plus an optional multi-node tier. Aggregate throughput is not simply the sum of those interfaces — they share a store, and measured concurrent runs land below the naive total — so treat the sum as an upper bound. These figures are measured on anonymized, representative message traffic; real throughput depends on your transforms, storage, and hardware.</p><p style="margin-top:10px"><a href="/throughput/">How throughput really works →</a></p></div>
       </div>
     </div>
   </section>
@@ -466,7 +473,7 @@
       "name": "How does MessageFoundry scale?",
       "acceptedAnswer": {
         "@type": "Answer",
-        "text": "MessageFoundry scales horizontally by adding interfaces. The unit of capacity is one inbound interface, which sustains roughly 50 messages per second in our measurements — on the order of a million messages a day — with strict in-order, durable, at-least-once processing, so messages aren't silently dropped. That is well beyond what a single hospital's routine ADT feed needs, with comfortable headroom for bursts. When you need more, you split feeds at the source across more interfaces and aggregate throughput is the sum across them, plus an optional multi-node tier. These figures are measured on anonymized, representative message traffic; real throughput depends on your transforms, storage, and hardware."
+        "text": "MessageFoundry scales horizontally by adding interfaces. The unit of capacity is one inbound interface, which sustains roughly 50 messages per second in our measurements — on the order of a million messages a day — with strict in-order, durable, at-least-once processing, so messages aren't silently dropped. That is well beyond what a single hospital's routine ADT feed needs, with comfortable headroom for bursts. When you need more, you split feeds at the source across more interfaces, plus an optional multi-node tier. Aggregate throughput is not simply the sum of those interfaces — they share a store, and measured concurrent runs land below the naive total — so treat the sum as an upper bound. These figures are measured on anonymized, representative message traffic; real throughput depends on your transforms, storage, and hardware."
       }
     }
   ]
@@ -529,6 +536,7 @@
         </div>
         <div class="footer-col">
           <h4>Project</h4>
+          <a href="/status.html">Project status</a>
           <a href="https://github.com/MEFORORG/MessageFoundry" target="_blank" rel="noopener">GitHub</a>
           <a href="https://github.com/MEFORORG/MessageFoundry/issues" target="_blank" rel="noopener">Issues</a>
           <a href="/contact.html">Contact</a>

@@ -24,6 +24,12 @@
 <body>
   <a class="skip-link" href="#main">Skip to content</a>
 
+  <div class="eabar" role="region" aria-label="Project status">
+    <div class="container">
+      <p><strong>Early Access &middot; beta.</strong> We're building toward 1.0 &mdash; and we want people involved now, while it can still be shaped. <a href="/status.html">Where the project stands &rarr;</a></p>
+    </div>
+  </div>
+
   <header class="site-header">
     <div class="container header-inner">
       <a class="brand" href="/" aria-label="MessageFoundry home">
@@ -60,6 +66,7 @@
           <button type="button" class="nav-group__btn" aria-expanded="false" aria-haspopup="true" aria-controls="nav-company">About Us</button>
           <div class="nav-group__menu" id="nav-company">
             <a href="/about.html" class="active" aria-current="page">About</a>
+            <a href="/status.html">Project status</a>
             <a href="/licensing.html">Licensing</a>
             <a href="/contact.html">Contact</a>
             <a href="/sponsor.html">Sponsor</a>
@@ -76,7 +83,8 @@
     <div class="container center">
       <span class="eyebrow">Our story</span>
       <h1 style="max-width:24ch;margin-inline:auto">We built the interface engine we wished we had</h1>
-      <p class="lead">MessageFoundry started as a reaction — to interface-engine price hikes, to contracts that are easier to sign than to leave, and to a market where the tools hospitals depend on keep getting more expensive just as budgets get tighter. We thought healthcare deserved an open, modern alternative. So we built one — and made it free.</p>
+      <p class="lead">MessageFoundry started in <b>May 2026</b> as a reaction — to interface-engine price hikes, to contracts that are easier to sign than to leave, and to a market where the tools hospitals depend on keep getting more expensive just as budgets get tighter. We thought healthcare deserved an open, modern alternative. So we started building one — in the open, and free.</p>
+      <p class="lead">It's a young project, and we'd rather say so than let you find out later: it's in Early Access, it moves fast, and it's <a href="/status.html">looking for people to test it in a sandbox</a> and tell us what's wrong with it.</p>
     </div>
   </section>
 
@@ -100,7 +108,7 @@
       </div>
       <ul class="feature-list">
         <li><b>Open source and self-hosted</b> — no per-interface licensing, so your costs don't climb every time you add a feed, and nothing is locked inside a vendor's runtime.</li>
-        <li><b>Easy to move off legacy</b> — AI-assisted migration drafts MessageFoundry equivalents of your existing channels, so switching is measured in weeks, not multi-year projects.</li>
+        <li><b>Easy to move off legacy</b> — AI-assisted migration drafts MessageFoundry equivalents of your existing channels, so a port starts from working drafts instead of a blank page.</li>
         <li><b>Approachable for your whole team</b> — set interfaces up with guided wizards, or work in plain Python, one of the world's most widely used languages — so it's easy for analysts and developers alike, and for the team you already have.</li>
         <li><b>AI assistance on your terms</b> — use modern AI coding help if you want it, skip it if you don't; either way it's code-only and PHI-safe by construction.</li>
       </ul>
@@ -125,11 +133,11 @@
         <span class="eyebrow">The essentials</span>
         <h2>The practical bits</h2>
       </div>
-      <div class="grid grid-3">
+      <div class="grid grid-3 grid--top">
         <div class="card">
           <h3>Where it stands</h3>
-          <p>Early Access connects MLLP, TCP, X12/EDI, HTTP/REST, SOAP, FHIR REST, databases, and files (local and SFTP/FTP/FTPS); deeply parses HL7 v2 and routes JSON, XML, and X12/EDI; and delivers durably — with active-passive high availability, RBAC, a tamper-evident audit log, and encryption at rest, on SQLite, PostgreSQL, or SQL Server. Inbound REST/SOAP/FHIR listeners and SMART on FHIR are on the roadmap.</p>
-          <p style="margin:10px 0 0"><a href="/features.html">See the full feature list →</a></p>
+          <p>Early Access connects MLLP, TCP, X12/EDI, HTTP/REST, SOAP, FHIR REST, databases, and files (local and SFTP/FTP/FTPS); deeply parses HL7 v2 and routes JSON, XML, and X12/EDI; and delivers durably — with active-passive high availability, RBAC, a tamper-evident audit log, and encryption at rest, on SQLite, PostgreSQL, or SQL Server. Inbound REST/SOAP/FHIR listeners and SMART on FHIR are on the roadmap. It's Early Access and beta-level — new, fast-moving, and unproven at scale.</p>
+          <p style="margin:10px 0 0"><a href="/features.html">Full feature list →</a> · <a href="/status.html">Project status →</a></p>
         </div>
         <div class="card">
           <h3>License</h3>
@@ -201,6 +209,7 @@
         </div>
         <div class="footer-col">
           <h4>Project</h4>
+          <a href="/status.html">Project status</a>
           <a href="https://github.com/MEFORORG/MessageFoundry" target="_blank" rel="noopener">GitHub</a>
           <a href="https://github.com/MEFORORG/MessageFoundry/issues" target="_blank" rel="noopener">Issues</a>
           <a href="/contact.html">Contact</a>

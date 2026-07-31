@@ -26,7 +26,7 @@ Machine-enforced structure (layer boundaries, strict typing), tests whose assert
 
 ### The MEFOR result
 
-All 11 signals Built and running in CI: enforced boundaries, strict typing, 5,400+ behavior-verifying tests, locked dependencies, 11 security scanners. The one durable gap ever found — the PyPI leak — was caught by this rubric and closed.
+All 11 signals Built and running in CI: enforced boundaries, strict typing, 8,200+ behavior-verifying tests, locked dependencies, 11 security scanners. The one durable gap ever found — the PyPI leak — was caught by this rubric and closed.
 
 # The 11 Signals at a Glance
 
@@ -282,7 +282,7 @@ The five gates this document adds (rubric rows 7–11) are *quality-measurement*
 |----|----|----|----|
 | 1 | Enforced architecture boundaries | ✅ **Built — Strong** | `tests/test_dependency_boundaries.py` AST-scans engine packages, blocks `fastapi`/`pyside6`/`api`/`console` imports, in the required CI `test` leg |
 | 2 | Strict typing | ✅ **Built — Strong** | `[tool.mypy] strict = true`, dual-platform CI; all 33 `# type: ignore` + 100 `# noqa` carry rule codes; no blanket ignores |
-| 3 | Tests verify behavior, not mocks | ✅ **Built — Strong** | 5,402 test functions; ~7,600 value-`==` asserts; ~1,000 `pytest.raises`; **0** `assert_called*`; live SQL Server + Postgres integration legs |
+| 3 | Tests verify behavior, not mocks | ✅ **Built — Strong** | 8,224 test functions across 546 files; ~11,300 value-`==` asserts; ~1,480 `pytest.raises`; **0** `assert_called*`; live SQL Server + Postgres integration legs |
 | 4 | Dependency integrity | ✅ **Built — Strong** | Hash-locked `requirements.lock` (DEP-1 lock-sync + `--require-hashes` CI); pip-audit; `CLAUDE.md`/AI-companion verify-before-add rule |
 | 5 | Security scanning + threat model | ✅ **Built — Strong** *(caveat A.4)* | 11 scanners (CodeQL, semgrep, bandit, gitleaks, pip-audit, crypto-inventory, forbidden-content, Trivy, Scorecard, zizmor, npm-audit); SECURITY.md (735 ln) + PHI.md (688 ln) |
 | 6 | Published-artifact integrity (supply-chain-*out*) | ✅ **Built — found & fixed this cycle** | Was 🔴: the PyPI **sdist** swept the whole repo, shipping `docs/security/*`, `CLAUDE.md`, `scripts/publish/*` on releases 0.1.0..0.2.15 (the mirror leak-gate never covered the PyPI path — a control-parity miss, §3). **Fixed \#1020:** `[tool.hatch.build.targets.sdist] only-include` + a fail-closed "sdist is package-only" gate in `release.yml`; **v0.3.0 verified package-only against the live PyPI artifact** (sha256 download). Historical 0.1.0..0.2.15 sdists remain public (owner-only PyPI deletion). |

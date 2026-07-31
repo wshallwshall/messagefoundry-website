@@ -74,6 +74,12 @@
 <body>
   <a class="skip-link" href="#main">Skip to content</a>
 
+  <div class="eabar" role="region" aria-label="Project status">
+    <div class="container">
+      <p><strong>Early Access &middot; beta.</strong> We're building toward 1.0 &mdash; and we want people involved now, while it can still be shaped. <a href="/status.html">Where the project stands &rarr;</a></p>
+    </div>
+  </div>
+
   <header class="site-header">
     <div class="container header-inner">
       <a class="brand" href="/" aria-label="MessageFoundry home">
@@ -110,6 +116,7 @@
           <button type="button" class="nav-group__btn" aria-expanded="false" aria-haspopup="true" aria-controls="nav-company">About Us</button>
           <div class="nav-group__menu" id="nav-company">
             <a href="/about.html">About</a>
+            <a href="/status.html">Project status</a>
             <a href="/licensing.html">Licensing</a>
             <a href="/contact.html">Contact</a>
             <a href="/sponsor.html">Sponsor</a>
@@ -136,8 +143,8 @@
           <span><i class="dot"></i> Free &amp; open source</span>
           <span><i class="dot"></i> No per-interface fees</span>
           <span><i class="dot"></i> No per-seat fees</span>
-          <span><i class="dot"></i> Fast legacy migration</span>
-          <span><i class="dot"></i> Now in Early Access</span>
+          <span><i class="dot"></i> AI-assisted migration</span>
+          <span><i class="dot"></i> Early Access — new &amp; moving fast</span>
         </div>
       </div>
       <div>
@@ -235,6 +242,16 @@ ROOMS = <span class="f">code_set</span>(<span class="s">"bed_locations"</span>)
     </div>
   </section>
 
+  <!-- ───────────────────────────── project status notice ───────────────────────────── -->
+  <section class="section section--dark section--tight">
+    <div class="container">
+      <div class="callout" style="max-width:900px;margin-inline:auto">
+        <p><strong>Before you read further — this is a young project, and we're mid-build.</strong> MessageFoundry started in <b>May 2026</b>. It's in <b>Early Access</b>: beta-level software, developed quickly, with rough edges to match. We're working toward the <b>1.0 release</b> now — which is exactly why this is the moment to get involved. Decisions made in the next few months are the ones you can still influence.</p>
+        <p style="margin:12px 0 0"><strong>What we're asking for.</strong> Run it in a <b>sandboxed test environment</b>, point it at your interface shapes, and tell us what breaks and what's missing. Findings from real-world traffic patterns change our plans more than anything we could invent on our own — and they change them cheaply while we're still pre-1.0. <a href="/status.html">See exactly where the project stands →</a></p>
+      </div>
+    </div>
+  </section>
+
   <!-- ───────────────────────────── standards trust bar ───────────────────────────── -->
   <section class="section section--dark section--tight" style="border-top:1px solid var(--border-dk)">
     <div class="container center">
@@ -252,7 +269,7 @@ ROOMS = <span class="f">code_set</span>(<span class="s">"bed_locations"</span>)
   <!-- ───────────────────────────── positioning ───────────────────────────── -->
   <section class="section section--alt section--tight" style="padding-bottom:36px">
     <div class="container center">
-      <p class="lead" style="font-size:1.28rem;color:var(--text)">A focused, dependable alternative to expensive legacy engines — for any interface you run, whatever the protocol or message type. Every message is delivered reliably and <b>never silently dropped</b>, your team <b>stays in control</b> instead of locked into a vendor's platform, and you can <b>stand it up fast and migrate your existing interfaces over</b> with AI assistance.</p>
+      <p class="lead" style="font-size:1.28rem;color:var(--text)">A focused, open-source alternative to expensive legacy engines — for any interface you run, whatever the protocol or message type. Every message is delivered reliably and <b>never silently dropped</b>, your team <b>stays in control</b> instead of locked into a vendor's platform, and you can <b>stand it up fast and migrate your existing interfaces over</b> with AI assistance.</p>
     </div>
   </section>
 
@@ -289,7 +306,7 @@ ROOMS = <span class="f">code_set</span>(<span class="s">"bed_locations"</span>)
         <div class="card">
           <span class="ico"><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M3 4h18v4H3V4zm0 6h18v4H3v-4zm0 6h18v4H3v-4zM6 5.5A.5.5 0 1 0 6 6.5.5.5 0 0 0 6 5.5zm0 6a.5.5 0 1 0 0 1 .5.5 0 0 0 0-1zm0 6a.5.5 0 1 0 0 1 .5.5 0 0 0 0-1z"/></svg></span>
           <h3>Never lose track of a message</h3>
-          <p>Every message that arrives is persisted the moment it lands, then tracked to a clear outcome as it's processed in order — so nothing is ever silently dropped, and your counts always reflect what really happened.</p>
+          <p>Every message that arrives is persisted the moment it lands, then tracked to a clear outcome as it's processed in order — so nothing is silently dropped, and your counts reflect what really happened.</p>
         </div>
         <div class="card">
           <span class="ico"><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M4 4h16a1 1 0 0 1 1 1v11a1 1 0 0 1-1 1h-7v2h3v2H8v-2h3v-2H4a1 1 0 0 1-1-1V5a1 1 0 0 1 1-1zm1 2v9h14V6H5z"/></svg></span>
@@ -311,7 +328,7 @@ ROOMS = <span class="f">code_set</span>(<span class="s">"bed_locations"</span>)
       <div class="grid grid-2" style="margin-bottom:30px">
         <div class="card">
           <h3>NIST SSDF <span class="badge" style="vertical-align:middle">800-218</span></h3>
-          <p>Built through a secure development lifecycle — threat-modeled per interface, peer-reviewed, and secure by default.</p>
+          <p>Built through a secure development lifecycle — threat-modeled per interface, automatically reviewed in CI, and secure by default.</p>
         </div>
         <div class="card">
           <h3>NIST 800-115</h3>
@@ -323,7 +340,7 @@ ROOMS = <span class="f">code_set</span>(<span class="s">"bed_locations"</span>)
         </div>
         <div class="card">
           <h3>OWASP ASVS 5.0 <span class="badge" style="vertical-align:middle">Level 3</span></h3>
-          <p>Self-assessed against the highest application-security assurance level — ASVS Level 3 — for software handling the most sensitive data. Across all 345 L3 requirements: <b>212 met, 0 failed, 0 partial, 133 not applicable</b>. A self-assessment, not an external audit.</p>
+          <p>Self-assessed against the highest application-security assurance level — ASVS Level 3 — for software handling the most sensitive data. All 345 L3 requirements are assessed, and the partials still open are being closed by shipping real controls rather than reclassified away. A self-assessment, not an external audit.</p>
         </div>
       </div>
       <div class="center">
@@ -347,7 +364,7 @@ ROOMS = <span class="f">code_set</span>(<span class="s">"bed_locations"</span>)
       </div>
       <ul class="feature-list">
         <li><b>No per-interface licensing</b> — it fits into your environment, and you add interfaces without a bigger bill each time.</li>
-        <li><b>Migrate with AI, not a project</b> — the assistant drafts MessageFoundry equivalents from your existing channels, so you move off your current engine in weeks, not quarters.</li>
+        <li><b>Migrate with AI, not a project</b> — the assistant drafts MessageFoundry equivalents from your existing channels, so porting can be far less work than re-platforming onto another proprietary engine.</li>
         <li><b>Own your stack</b> — your configuration lives in your git and your messages in your database; switch on your terms, with no contract lock-in.</li>
         <li><b>Ships through your own CI/CD</b> — review interface changes in pull requests and gate them with automated tests, like the rest of your software.</li>
         <li><b>Easy to configure, powerful when needed</b> — setup wizards generate the config for you, with full Python control whenever a case calls for it.</li>
@@ -366,7 +383,7 @@ ROOMS = <span class="f">code_set</span>(<span class="s">"bed_locations"</span>)
         <div class="faq-item"><h3>What protocols and message types does MessageFoundry support?</h3><p>It connects a wide range of protocols and message types, with deep HL7 v2 support — plus FHIR, X12/EDI, and DICOM — over transports including MLLP (with TLS), HTTP/REST, SOAP, files, SFTP, and databases.</p></div>
         <div class="faq-item"><h3>Is MessageFoundry an alternative to legacy interface engines?</h3><p>Yes. MessageFoundry is a modern, open-source alternative to legacy healthcare interface engines such as Mirth Connect, Rhapsody, and Corepoint. It is self-hosted and Python-native — interfaces are plain Python under version control — with no per-interface licensing.</p></div>
         <div class="faq-item"><h3>Where does my data live?</h3><p>On your own servers. MessageFoundry is self-hosted on-premises or in your private cloud, so PHI never leaves your infrastructure. It starts zero-config on SQLite and scales to PostgreSQL or SQL Server.</p></div>
-        <div class="faq-item"><h3>How much message volume can MessageFoundry handle?</h3><p>Comfortably more than a single hospital's interface needs, with headroom to scale. On anonymized production telemetry, one inbound interface sustains a measured ~50 messages per second on commodity hardware — which works out to roughly 180,000 in a peak hour. A hospital's full ADT feed peaks at only around 1-2 messages per second, so a single interface carries that workload with room to spare, and interfaces scale out horizontally for higher volumes. Real-world throughput depends on your transforms, storage, and hardware. Whatever the rate, every message is persisted before it's acknowledged and delivered in order per interface, at-least-once — so messages aren't silently dropped.</p><p style="margin-top:10px"><a href="/throughput/">How throughput really works →</a></p></div>
+        <div class="faq-item"><h3>How much message volume can MessageFoundry handle?</h3><p>Comfortably more than a single hospital's interface needs, with headroom to scale. On anonymized, representative message traffic, one inbound interface sustains a measured ~50 messages per second on commodity hardware — which works out to roughly 180,000 in a peak hour. A hospital's full ADT feed peaks at only around 1-2 messages per second, so a single interface carries that workload with room to spare, and interfaces scale out horizontally for higher volumes. Real-world throughput depends on your transforms, storage, and hardware. Whatever the rate, every message is persisted before it's acknowledged and delivered in order per interface, at-least-once — so messages aren't silently dropped.</p><p style="margin-top:10px"><a href="/throughput/">How throughput really works →</a></p></div>
       </div>
     </div>
   </section>
@@ -421,7 +438,7 @@ ROOMS = <span class="f">code_set</span>(<span class="s">"bed_locations"</span>)
       "name": "How much message volume can MessageFoundry handle?",
       "acceptedAnswer": {
         "@type": "Answer",
-        "text": "Comfortably more than a single hospital's interface needs, with headroom to scale. On anonymized production telemetry, one inbound interface sustains a measured ~50 messages per second on commodity hardware — which works out to roughly 180,000 in a peak hour. A hospital's full ADT feed peaks at only around 1-2 messages per second, so a single interface carries that workload with room to spare, and interfaces scale out horizontally for higher volumes. Real-world throughput depends on your transforms, storage, and hardware. Whatever the rate, every message is persisted before it's acknowledged and delivered in order per interface, at-least-once — so messages aren't silently dropped."
+        "text": "Comfortably more than a single hospital's interface needs, with headroom to scale. On anonymized, representative message traffic, one inbound interface sustains a measured ~50 messages per second on commodity hardware — which works out to roughly 180,000 in a peak hour. A hospital's full ADT feed peaks at only around 1-2 messages per second, so a single interface carries that workload with room to spare, and interfaces scale out horizontally for higher volumes. Real-world throughput depends on your transforms, storage, and hardware. Whatever the rate, every message is persisted before it's acknowledged and delivered in order per interface, at-least-once — so messages aren't silently dropped."
       }
     }
   ]
@@ -485,6 +502,7 @@ ROOMS = <span class="f">code_set</span>(<span class="s">"bed_locations"</span>)
         </div>
         <div class="footer-col">
           <h4>Project</h4>
+          <a href="/status.html">Project status</a>
           <a href="https://github.com/MEFORORG/MessageFoundry" target="_blank" rel="noopener">GitHub</a>
           <a href="https://github.com/MEFORORG/MessageFoundry/issues" target="_blank" rel="noopener">Issues</a>
           <a href="/contact.html">Contact</a>

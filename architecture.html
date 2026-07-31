@@ -56,6 +56,12 @@
 <body>
   <a class="skip-link" href="#main">Skip to content</a>
 
+  <div class="eabar" role="region" aria-label="Project status">
+    <div class="container">
+      <p><strong>Early Access &middot; beta.</strong> We're building toward 1.0 &mdash; and we want people involved now, while it can still be shaped. <a href="/status.html">Where the project stands &rarr;</a></p>
+    </div>
+  </div>
+
   <header class="site-header">
     <div class="container header-inner">
       <a class="brand" href="/" aria-label="MessageFoundry home">
@@ -92,6 +98,7 @@
           <button type="button" class="nav-group__btn" aria-expanded="false" aria-haspopup="true" aria-controls="nav-company">About Us</button>
           <div class="nav-group__menu" id="nav-company">
             <a href="/about.html">About</a>
+            <a href="/status.html">Project status</a>
             <a href="/licensing.html">Licensing</a>
             <a href="/contact.html">Contact</a>
             <a href="/sponsor.html">Sponsor</a>
@@ -121,6 +128,7 @@
       <div class="btn-row center" style="margin-top:24px">
         <a class="btn btn-primary" href="/assets/docs/MessageFoundry-Mental-Model.pdf" target="_blank" rel="noopener">Read the mental model (PDF) ↓</a>
       </div>
+      <p style="margin:26px auto 0;max-width:760px;color:var(--muted-dk);font-size:.95rem">This architecture is real and running — but the project is young. MessageFoundry started in <b>May 2026</b> and is in Early Access. <a href="/status.html" style="color:var(--accent)">See where it stands →</a></p>
     </div>
   </section>
 
@@ -131,7 +139,7 @@
         <span class="eyebrow">1 · The whole system</span>
         <h2>Top-level components</h2>
         <p class="lead center">Beyond the engine itself, MessageFoundry ships as a set of <b>independent, separately-built components</b> — operator tools, the version-controlled config, the CLI and Windows service that run it, dev/test tooling, a standalone migration tee relay, and the CI-to-PyPI release path. Operator tools reach the engine <b>only</b> through the localhost API; the engine is the core, and everything else sits around it.</p>
-        <p style="margin-top:14px"><a href="/tools.html" style="color:var(--accent);font-weight:650">See the whole toolkit, up close →</a></p>
+        <p style="margin-top:14px"><a href="/tools.html" style="color:var(--accent-ink);font-weight:650">See the whole toolkit, up close →</a></p>
       </div>
       <svg class="dg" viewBox="0 0 940 460" role="img" aria-labelledby="t0 d0">
         <title id="t0">Top-level components — the whole system</title>
@@ -317,8 +325,8 @@
         <p><strong>Why nothing is lost.</strong> Every message is committed to the store before it's ACKed, and each stage handoff is a single transaction — so a crash can only ever repeat the last step, never skip it. In normal operation every message is delivered exactly once. The one edge case: if the engine crashes after a downstream send but before it records that success, on restart it re-sends that single in-flight message rather than risk dropping it. (Engineers call this "deliver again rather than lose" guarantee <b>at-least-once</b> — the deliberate opposite of <em>at-most-once</em>, which can silently lose clinical data.) That rare re-send is detectable, not noise: a re-delivered HL7 message carries the same <code>MSH-10</code> control ID, so a downstream sees a retry of a known message — exactly where deduplication belongs.</p>
       </div>
       <div class="callout" style="margin-top:22px;max-width:900px;margin-inline:auto">
-        <p><strong>How much one interface carries.</strong> Capacity is a measured property of this staged queue, not a separate claim. On anonymized production telemetry, a single inbound interface sustains a measured <b>~50 messages/second</b> on commodity hardware — about <b>180,000 in a peak hour</b> and on the order of <b>1.6 million a day</b> — with every message committed to the durable store before it's ACKed and delivered strict per-interface FIFO. Whatever the rate, nothing is counted that isn't stored, and nothing is silently dropped.</p>
-        <p style="margin-bottom:0">Those day-level figures are sized to the <em>busy hour</em>, not a flat 24 hours: clinical ADT traffic is business-hours-bursty, and on the same telemetry the busiest hour runs roughly <b>2.7&times;</b> the daily average (one interface moves about <b>18&nbsp;GB/day</b> at ~11.5&nbsp;KB/message). A single hospital's full ADT feed is only a few percent of one interface, so capacity is rarely the question for one site — and when it is, you scale horizontally: feeds split at the source across more interfaces, throughput is the sum across them, plus an optional multi-node tier. At that grain, <b>45&nbsp;million messages a day is roughly 28 interfaces</b> — distributed, not forced through a single pipe. Your real numbers track your transforms, storage, and hardware. <a href="/throughput/">How to read these throughput numbers →</a></p>
+        <p><strong>How much one interface carries.</strong> Capacity is a measured property of this staged queue, not a separate claim. On anonymized, representative message traffic, a single inbound interface sustains a measured <b>~50 messages/second</b> on commodity hardware — about <b>180,000 in a peak hour</b> and on the order of <b>1.6 million a day</b> — with every message committed to the durable store before it's ACKed and delivered strict per-interface FIFO. Whatever the rate, nothing is counted that isn't stored, and nothing is silently dropped.</p>
+        <p style="margin-bottom:0">Those day-level figures are sized to the <em>busy hour</em>, not a flat 24 hours: clinical ADT traffic is business-hours-bursty. In <b>de-identified ADT traffic profiled from a live hospital interface feed</b>, the busiest hour runs roughly <b>2.7&times;</b> the daily average, at around <b>11.5&nbsp;KB</b> per message — so one interface moves on the order of <b>18&nbsp;GB/day</b>. Treat the message size as <em>directionally</em> right rather than a constant: it varies a great deal by feed, and messages carrying <b>base64-encoded documents or images</b> are far larger, which changes the storage and bandwidth arithmetic well before it changes the message rate. A single hospital's full ADT feed is only a few percent of one interface, so capacity is rarely the question for one site — and when it is, you scale horizontally: feeds split at the source across more interfaces, plus an optional multi-node tier. At that grain, <b>16&nbsp;million messages a day is roughly 10 interfaces</b> — distributed, not forced through a single pipe. Your real numbers track your transforms, storage, and hardware. <a href="/throughput/">How to read these throughput numbers →</a> &nbsp;·&nbsp; <a href="/assets/docs/MessageFoundry-Throughput-and-Capacity.pdf" target="_blank" rel="noopener">Throughput &amp; capacity (PDF) ↓</a></p>
       </div>
     </div>
   </section>
@@ -440,6 +448,7 @@
         </div>
         <div class="footer-col">
           <h4>Project</h4>
+          <a href="/status.html">Project status</a>
           <a href="https://github.com/MEFORORG/MessageFoundry" target="_blank" rel="noopener">GitHub</a>
           <a href="https://github.com/MEFORORG/MessageFoundry/issues" target="_blank" rel="noopener">Issues</a>
           <a href="/contact.html">Contact</a>

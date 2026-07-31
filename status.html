@@ -1,0 +1,300 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Project status — MessageFoundry</title>
+  <meta name="description" content="MessageFoundry, the open-source HL7 interface engine, started in May 2026 — Early Access and beta-level. Where the project stands, and how to help.">
+  <link rel="canonical" href="https://messagefoundry.org/status.html">
+  <link rel="icon" href="/assets/img/favicon.svg" type="image/svg+xml">
+  <meta name="theme-color" content="#0b1220">
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="MessageFoundry">
+  <meta property="og:title" content="Project status — MessageFoundry">
+  <meta property="og:description" content="A new project, built in the open. Started May 2026, Early Access and beta-level, moving fast — and looking for sandbox test installs, feedback, and contributors.">
+  <meta property="og:url" content="https://messagefoundry.org/status.html">
+  <meta property="og:image" content="https://messagefoundry.org/assets/img/og.png">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta property="og:image:type" content="image/png">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:image" content="https://messagefoundry.org/assets/img/og.png">
+  <link rel="stylesheet" href="/assets/css/styles.css">
+</head>
+<body>
+  <a class="skip-link" href="#main">Skip to content</a>
+
+  <div class="eabar" role="region" aria-label="Project status">
+    <div class="container">
+      <p><strong>Early Access &middot; beta.</strong> We're building toward 1.0 &mdash; and we want people involved now, while it can still be shaped. You're reading it.</p>
+    </div>
+  </div>
+
+  <header class="site-header">
+    <div class="container header-inner">
+      <a class="brand" href="/" aria-label="MessageFoundry home">
+        <img class="brand-mark" src="/assets/img/logo.svg" alt="" width="28" height="28">
+        <span class="brand-name">Message<span class="brand-accent">Foundry</span><span class="brand-tm">™</span></span>
+      </a>
+      <button class="nav-toggle" aria-expanded="false" aria-controls="site-nav" aria-label="Toggle navigation"><span></span><span></span><span></span></button>
+      <nav class="site-nav" id="site-nav">
+        <div class="nav-group">
+          <button type="button" class="nav-group__btn" aria-expanded="false" aria-haspopup="true" aria-controls="nav-product">Product</button>
+          <div class="nav-group__menu" id="nav-product">
+            <a href="/overview.html">Overview</a>
+            <a href="/features.html">Features</a>
+            <a href="/features-table.html">Feature list</a>
+            <a href="/architecture.html">Architecture</a>
+            <a href="/reliability.html">Reliability (CI)</a>
+            <a href="/tools.html">Tools</a>
+            <a href="/editor.html">Editor</a>
+            <a href="/console.html">Console</a>
+            <a href="/ai.html">AI assist</a>
+          </div>
+        </div>
+        <a href="/security.html">Security</a>
+        <a href="/comparison.html">Comparison</a>
+        <div class="nav-group">
+          <button type="button" class="nav-group__btn" aria-expanded="false" aria-haspopup="true" aria-controls="nav-getstarted">Get started</button>
+          <div class="nav-group__menu" id="nav-getstarted">
+            <a href="/getting-started.html">Quickstart</a>
+            <a href="/guides/">Guides</a>
+            <a href="/documents.html">Documents</a>
+          </div>
+        </div>
+        <div class="nav-group">
+          <button type="button" class="nav-group__btn" aria-expanded="false" aria-haspopup="true" aria-controls="nav-company">About Us</button>
+          <div class="nav-group__menu" id="nav-company">
+            <a href="/about.html">About</a>
+            <a href="/status.html" class="active" aria-current="page">Project status</a>
+            <a href="/licensing.html">Licensing</a>
+            <a href="/contact.html">Contact</a>
+            <a href="/sponsor.html">Sponsor</a>
+          </div>
+        </div>
+        <a class="btn btn-ghost" href="/pypi.html">PyPI<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3l8 4.5l0 9l-8 4.5l-8 -4.5l0 -9l8 -4.5"/><path d="M12 12l8 -4.5"/><path d="M12 12l0 9"/><path d="M12 12l-8 -4.5"/><path d="M16 5.25l-8 4.5"/></svg></a>
+        <a class="btn btn-ghost" href="https://github.com/MEFORORG/MessageFoundry" target="_blank" rel="noopener">GitHub ↗</a>
+      </nav>
+    </div>
+  </header>
+  <main id="main">
+
+  <section class="section section--dark section--tight">
+    <div class="container center">
+      <span class="eyebrow">Project status</span>
+      <h1 style="max-width:22ch;margin-inline:auto">A new project, built in the open</h1>
+      <p class="lead">MessageFoundry started in <b>May 2026</b>. It's young, it's in <b>Early Access</b>, and it's moving fast toward its <b>1.0 release</b>. This page says plainly where the project stands — so you can weigh how new it is alongside what it already does.</p>
+      <p class="lead" style="margin-top:14px">We'd rather have you involved now, while 1.0 is still being finished, than win you over later. <a href="#help" style="color:var(--accent)">Here's what would help most →</a></p>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="container grid grid-2" style="align-items:start">
+      <div>
+        <span class="eyebrow">Where things stand</span>
+        <h2>Young, and honest about it</h2>
+        <p class="lead">We would rather you hear this from us now than discover it in the middle of a pilot. Everything below is the same thing we would tell you on a call.</p>
+        <p>None of it means the engineering is careless — the design is deliberate, the tests are real, and the security work is documented. It means the mileage isn't there yet, and mileage is something only time and other people's traffic can buy.</p>
+      </div>
+      <ul class="feature-list">
+        <li><b>Started May 2026</b> — the project is months old, not years. Treat it as promising and unproven, because that's what it is.</li>
+        <li><b>Early Access, beta-level</b> — it installs, runs, and moves messages. It will also have rough edges and bugs you would not expect from a product that's been in the field for a decade.</li>
+        <li><b>Development is fast</b> — releases land often, and ahead of 1.0 behavior can still change between them. Pin a version and read the release notes before you upgrade.</li>
+        <li><b>Self-assessed, not externally audited</b> — we publish an <a href="/security.html">OWASP ASVS Level 3 self-assessment</a>, but an independent code review and penetration test are still ahead of us.</li>
+        <li><b>No support organization yet</b> — help comes from the maintainer and from GitHub, not from a staffed support desk with a phone number.</li>
+      </ul>
+    </div>
+  </section>
+
+  <section class="section section--dark">
+    <div class="container">
+      <div class="center" style="margin-bottom:34px">
+        <span class="eyebrow">Instead of a track record</span>
+        <h2>What we do to earn trust we haven't had time to earn</h2>
+        <p class="lead center">A project this young can't offer you years of uptime at other people's hospitals. What it can offer is evidence about how the code is built and checked — so here it is, specifically, and all of it is visible in the public repository.</p>
+      </div>
+      <div class="grid grid-2" style="align-items:start">
+        <div class="card">
+          <h3>Every change is gated</h3>
+          <ul class="feature-list" style="margin-top:12px">
+            <li><b>The full test suite, on three platforms</b> — every merge runs it on Ubuntu, Windows Server 2022, and Windows Server 2025. If it doesn't pass on all three, it doesn't go in.</li>
+            <li><b>Static analysis and secret scanning on every commit</b> — bandit, semgrep, gitleaks, pip-audit, and npm-audit run as gates, not as advisory noise.</li>
+            <li><b>Advisory quality jobs</b> — complexity, clone detection, diff coverage, and mutation testing run alongside, to catch what a passing test suite hides.</li>
+          </ul>
+        </div>
+        <div class="card">
+          <h3>And the dependencies underneath</h3>
+          <ul class="feature-list" style="margin-top:12px">
+            <li><b>A daily CVE sweep</b> — the pinned dependency tree is audited every day, so a vulnerability newly disclosed against an unchanged dependency surfaces in about 24 hours instead of waiting for a weekly run. Dependabot opens dependency PRs weekly on top of that.</li>
+            <li><b>A private channel for security flaws</b> — coordinated disclosure with published remediation windows, so a researcher never has to post a vulnerability in public to reach us. <a href="/security.html#report">Report privately →</a></li>
+          </ul>
+        </div>
+      </div>
+      <div class="callout" style="max-width:900px;margin:28px auto 0">
+        <p><strong>And you don't have to take our word for any of it.</strong> The whole engine is open source, so read it. We self-assessed against <b>OWASP ASVS Level 3</b> — the highest level, not the easier Level 2 — and <a href="/security.html">published the standard and the assessment summary</a> so you can see the scope and the exclusions, not just a badge. The project ships a <b>test harness</b>, so you can run the throughput tests on your own hardware rather than believing our numbers. And if your security team or your own AI review tooling finds something, we'd far rather hear it now than after someone's in production.</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="section section--alt" id="help">
+    <div class="container">
+      <div class="center" style="margin-bottom:34px">
+        <span class="eyebrow">How you can help</span>
+        <h2>Get involved before 1.0 lands, not after</h2>
+        <p class="lead center">An HL7 interface engine gets good by meeting messages its authors never imagined. That means we need your feeds, your edge cases, and your opinions — early, while the design is still soft enough to change. Once 1.0 ships, interfaces harden and defaults get difficult to move; right now they're still genuinely up for discussion.</p>
+      </div>
+      <div class="grid grid-3">
+        <div class="card">
+          <h3>Run a sandbox install</h3>
+          <p>The single most useful thing anyone can do right now. Stand MessageFoundry up in a <b>sandboxed, non-production environment</b>, point it at synthetic messages or a test feed, and run the interface shapes you actually have.</p>
+          <p style="margin-top:12px">Then tell us where it broke, what was missing, and what felt wrong. Findings from real-world interface patterns carry more weight in our planning than anything we could invent on our own.</p>
+          <p style="margin-top:12px"><b>No PHI</b> — synthetic or de-identified data only, please.</p>
+          <p style="margin:12px 0 0"><a href="/getting-started.html">Start with the quickstart →</a></p>
+        </div>
+        <div class="card">
+          <h3>Send feedback</h3>
+          <p>Tell us what's missing, what's confusing, and what broke. Rough notes are welcome — you don't need a reproduction case or a polished bug report to be useful to us.</p>
+          <p style="margin-top:12px">Feature requests and "this is how our shop actually does it" corrections are just as valuable as defects, and they're the kind of thing that changes a roadmap while it can still be changed cheaply.</p>
+          <p style="margin-top:12px">Security flaws are the exception — those go through the <a href="/security.html#report">private channel</a>, never a public issue.</p>
+          <p style="margin:12px 0 0"><a href="https://github.com/MEFORORG/MessageFoundry/issues" target="_blank" rel="noopener">Open an issue ↗</a></p>
+        </div>
+        <div class="card">
+          <h3>Become a contributor</h3>
+          <p>Code, documentation, connectors, and test corpora are all fair game, and healthcare interface experience is worth as much here as Python experience.</p>
+          <p style="margin-top:12px">The best place to start is a GitHub issue describing what you'd like to change, so we can agree on the shape before you spend your evenings on it. A signed Contributor License Agreement is required before a pull request can be merged.</p>
+          <p style="margin:12px 0 0"><a href="https://github.com/MEFORORG/MessageFoundry" target="_blank" rel="noopener">Read the source ↗</a></p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="container">
+      <div class="center" style="margin-bottom:34px">
+        <span class="eyebrow">How it's built, and by whom</span>
+        <h2>The things you'd find out eventually</h2>
+        <p class="lead center">Better you hear them here, in our own words, than discover them halfway through an evaluation.</p>
+      </div>
+      <div class="grid grid-2" style="align-items:start">
+        <div class="card">
+          <h3>One maintainer, for now</h3>
+          <p>MessageFoundry is currently maintained by one person. That's a genuine risk to weigh if you're thinking about depending on it — a single maintainer is a single point of failure, and no amount of test coverage changes that.</p>
+          <p style="margin-top:12px">It's also the single biggest reason we're asking for contributors. More eyes on the code is the fix, and it's a fix other people have to help with.</p>
+        </div>
+        <div class="card">
+          <h3>Built with AI assistance — and we say so</h3>
+          <p>A large share of this code was written with AI coding tools under human review, gated by the tests and security checks above. We'd rather disclose that plainly than let you find out and wonder what else went unsaid.</p>
+          <p style="margin-top:12px">It's a fair thing to weigh — so weigh it directly: the whole engine is open source. Review it with your own people, or point your own AI security-review tooling at it, and tell us what you find.</p>
+        </div>
+        <div class="card">
+          <h3>No freemium, ever</h3>
+          <p>There's no crippled free tier with the useful parts locked behind a purchase. The open-source engine is the whole product — you get all of it, and you can read every line.</p>
+          <p style="margin-top:12px">A separately-licensed commercial edition exists for organizations that need different terms, but it isn't how you unlock functionality. <a href="/licensing.html">How licensing works →</a></p>
+        </div>
+        <div class="card">
+          <h3>Independent review needs funding</h3>
+          <p>An external code review and penetration test are the next real assurance step, and they realistically cost somewhere between <b>$25,000 and $50,000</b>. ASVS Level 3 recommends outside validation but doesn't require it — we want it anyway.</p>
+          <p style="margin-top:12px">Paying for it means grant or sponsor funding, not license fees. If you can help with that, or know where such funding lives, we'd like to hear from you. <a href="/sponsor.html">About sponsorship →</a></p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section section--alt">
+    <div class="container">
+      <div class="center" style="margin-bottom:30px">
+        <span class="eyebrow">Being straight with you</span>
+        <h2>What we're not claiming</h2>
+        <p class="lead center">The rest of this site describes what MessageFoundry does. Here's what it doesn't have yet — the things a mature vendor would be able to put in front of you.</p>
+      </div>
+      <div class="grid grid-2" style="align-items:start">
+        <div class="card">
+          <h3>Not yet proven at scale</h3>
+          <p>MessageFoundry has not run for years across many production sites, and no amount of internal testing substitutes for that. If your evaluation depends on a long reference list of live hospitals, we don't have one to give you today.</p>
+        </div>
+        <div class="card">
+          <h3>Not yet independently reviewed</h3>
+          <p>The security work is documented and self-assessed against a high bar, but an <a href="/security.html">independent external review and penetration test</a> are planned rather than done, and organization-level certifications sit further out still.</p>
+        </div>
+      </div>
+      <div class="callout callout--tint" style="max-width:900px;margin:28px auto 0">
+        <p><strong>So should you use it?</strong> In a sandbox, today — yes, and we'd genuinely like you to. For live PHI traffic your organization depends on, weigh it the way you'd weigh any young project, and talk to us first. We would rather lose a deployment we weren't ready for than earn one we couldn't support.</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="section section--tight">
+    <div class="container">
+      <div class="cta-band">
+        <h2>Help shape where this goes</h2>
+        <p class="lead center" style="color:var(--muted-dk)">Stand it up in a sandbox, break it, and tell us what happened. That's how this gets good.</p>
+        <div class="btn-row center">
+          <a class="btn btn-primary" href="/getting-started.html">Start a sandbox install</a>
+          <a class="btn btn-ghost" href="/contact.html">Talk to us</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  </main>
+
+  <footer class="site-footer">
+    <div class="container">
+      <div class="footer-grid">
+        <div class="footer-brand">
+          <a class="brand" href="/" aria-label="MessageFoundry home">
+            <img class="brand-mark" src="/assets/img/logo.svg" alt="" width="28" height="28">
+            <span class="brand-name">Message<span class="brand-accent">Foundry</span><span class="brand-tm">™</span></span>
+          </a>
+          <p class="footer-tagline"><b>More</b> Than an HL7 Interface Engine</p>
+          <p>Open-source healthcare interface engine — secure by default, built to recognized standards, connecting a wide range of protocols and message types.</p>
+          <div class="badge-row" style="margin-top:16px">
+            <span class="badge">Open source</span>
+            <span class="badge">No lock-in</span>
+            <span class="badge">Self-hosted</span>
+          </div>
+        </div>
+        <div class="footer-col">
+          <h4>Product</h4>
+          <a href="/overview.html">Overview</a>
+          <a href="/features.html">Features</a>
+          <a href="/architecture.html">Architecture</a>
+          <a href="/reliability.html">Reliability</a>
+          <a href="/dicom.html">DICOM</a>
+          <a href="/security.html">Security &amp; PHI</a>
+          <a href="/documents.html">Documents</a>
+        </div>
+        <div class="footer-col">
+          <h4>Tools</h4>
+          <a href="/tools.html">Tools</a>
+          <a href="/editor.html">Editor</a>
+          <a href="/console.html">Console</a>
+          <a href="/ai.html">AI assist</a>
+        </div>
+        <div class="footer-col">
+          <h4>Get started</h4>
+          <a href="/getting-started.html">Quickstart</a>
+          <a href="/guides/">Guides</a>
+          <a href="/comparison.html">Comparison</a>
+        </div>
+        <div class="footer-col">
+          <h4>Project</h4>
+          <a href="/status.html">Project status</a>
+          <a href="https://github.com/MEFORORG/MessageFoundry" target="_blank" rel="noopener">GitHub</a>
+          <a href="https://github.com/MEFORORG/MessageFoundry/issues" target="_blank" rel="noopener">Issues</a>
+          <a href="/contact.html">Contact</a>
+          <a href="/licensing.html">License</a>
+          <a href="/about.html">About</a>
+          <a href="/sponsor.html">Sponsor</a>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        <span>© 2026 MEFOR-ORG, a non-profit — this website and its content, all rights reserved. The MessageFoundry engine is separately open source, licensed under AGPL-3.0-or-later.</span>
+        <span>MessageFoundry and the MessageFoundry word mark are trademarks of MEFOR-ORG. Mirth Connect, Cloverleaf, Rhapsody, Corepoint, and Ensemble are trademarks of their respective owners; MessageFoundry is independent and unaffiliated.</span>
+      </div>
+    </div>
+  </footer>
+
+  <script src="/assets/js/nav.js" defer></script>
+</body>
+</html>
