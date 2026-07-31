@@ -8,7 +8,7 @@
 
 Pipeline:  markdown -> _pdf-template.html -> headless Chrome --print-to-pdf.
 
-Three things this script exists to get right, each of which has bitten before:
+Four things this script exists to get right, each of which has bitten before:
 
   1. **UTF-8, explicitly.** Python on Windows defaults to cp1252, which turns
      em-dashes into mojibake that ships into the PDF. Every read and write here
@@ -19,6 +19,16 @@ Three things this script exists to get right, each of which has bitten before:
      so the stale PDF survives and any content check passes falsely.
   3. **The masthead version must be current.** It defaults to whatever PyPI says
      right now rather than a constant that quietly rots.
+  4. **Relative links must be absolutised BEFORE Chrome sees them.** The sources
+     are written for the engine repo, so their links are repo-relative
+     (``adr/0001-....md``, ``SECURITY.md``, ``../messagefoundry/api/app.py``).
+     Chrome resolves those against the temp HTML's ``file:///`` base and bakes
+     the LOCAL ABSOLUTE PATH into the PDF's link annotations -- which is both
+     dead for every reader and a disclosure of the build machine's username and
+     worktree names. 492 such URIs shipped in 15 of the 20 published PDFs before
+     this was caught. :func:`absolutise_links` rewrites them to public GitHub
+     URLs first, and :func:`verify` now fails the render if any ``file://``
+     annotation survives.
 """
 from __future__ import annotations
 
@@ -41,6 +51,12 @@ TEMPLATE = os.path.join(HERE, "_pdf-template.html")
 
 MOJIBAKE = "\u00e2\u20ac"          # 'â€' — what a cp1252-decoded em-dash looks like
 PYPI_JSON = "https://pypi.org/pypi/messagefoundry/json"
+
+# The engine repo is PUBLIC, so a repo-relative link can be turned into one a reader can
+# actually open rather than merely stripped. The sources live in the engine's docs/, so a
+# bare or adr/ target is docs/-relative and a ../ target is repo-root-relative.
+GH_BLOB = "https://github.com/MEFORORG/MessageFoundry/blob/main/"
+GH_TREE = "https://github.com/MEFORORG/MessageFoundry/tree/main/"
 
 # Sources that don't live in assets/docs/_md/, with their published destination.
 EXTRA_SOURCES = {
@@ -126,6 +142,39 @@ def normalize_markdown(md_text: str) -> str:
     return "\n".join(out)
 
 
+_MD_LINK = __import__("re").compile(r"(\]\()([^)\s]+)(\))")
+
+
+def absolutise_links(md_text: str) -> str:
+    """Rewrite repo-relative markdown links to public GitHub URLs (gotcha #4).
+
+    Left alone: anything already absolute (``http://``, ``https://``, ``mailto:``)
+    and pure in-page anchors (``#section``) -- those resolve correctly as-is.
+
+    Everything else is a path written for the engine repo, and Chrome would
+    otherwise turn it into a ``file:///`` URI naming the build machine:
+
+        adr/0001-x.md            -> {blob}docs/adr/0001-x.md
+        SECURITY.md#dep-1        -> {blob}docs/SECURITY.md#dep-1
+        ../messagefoundry/x.py   -> {blob}messagefoundry/x.py
+        ../harness/              -> {tree}harness/          (dirs use /tree/)
+
+    A ``#fragment`` is preserved and never used to pick blob-vs-tree.
+    """
+    def sub(m: "object") -> str:
+        open_, target, close = m.group(1), m.group(2), m.group(3)
+        if target.startswith(("http://", "https://", "mailto:", "#")):
+            return m.group(0)
+        path, _, frag = target.partition("#")
+        if not path:                                    # bare "#anchor"
+            return m.group(0)
+        rel = path[3:] if path.startswith("../") else "docs/" + path
+        base = GH_TREE if rel.endswith("/") else GH_BLOB
+        return open_ + base + rel + (("#" + frag) if frag else "") + close
+
+    return _MD_LINK.sub(sub, md_text)
+
+
 def split_title(md_text: str) -> tuple[str, str]:
     """Lift the leading '# Title' into the masthead so it isn't printed twice."""
     lines = md_text.split("\n")
@@ -140,7 +189,7 @@ def split_title(md_text: str) -> tuple[str, str]:
 def render_html(md_path: str, version: str, date: str) -> tuple[str, str]:
     import markdown
 
-    raw = normalize_markdown(io.open(md_path, encoding="utf-8").read())
+    raw = absolutise_links(normalize_markdown(io.open(md_path, encoding="utf-8").read()))
     title, body_md = split_title(raw)
     body_html = markdown.markdown(
         body_md,
@@ -180,12 +229,25 @@ def to_pdf(chrome: str, html: str, pdf_path: str) -> None:
         shutil.rmtree(profile, ignore_errors=True)
 
 
-def verify(pdf_path: str, version: str) -> tuple[int, bool, bool]:
+def verify(pdf_path: str, version: str) -> tuple[int, bool, bool, int]:
+    """pages, mojibake-clean, version-stamped, and the count of local file:// links.
+
+    The last one is gotcha #4's regression guard: a ``file://`` annotation means a
+    repo-relative link escaped :func:`absolutise_links` and the PDF now carries this
+    machine's paths. Counted here so the render FAILS instead of shipping quietly.
+    """
     from pypdf import PdfReader
 
     reader = PdfReader(pdf_path)
     text = "\n".join((p.extract_text() or "") for p in reader.pages)
-    return len(reader.pages), MOJIBAKE not in text, ("v" + version.lstrip("v")) in text
+    local = 0
+    for page in reader.pages:
+        for annot in page.get("/Annots") or []:
+            uri = (annot.get_object().get("/A") or {}).get("/URI")
+            if uri and str(uri).startswith("file:"):
+                local += 1
+    return (len(reader.pages), MOJIBAKE not in text,
+            ("v" + version.lstrip("v")) in text, local)
 
 
 def main() -> int:
@@ -227,14 +289,15 @@ def main() -> int:
             pdf_path = os.path.join(args.out_dir, os.path.basename(pdf_path))
         title, html = render_html(md_path, version, date)
         to_pdf(chrome, html, pdf_path)
-        pages, clean, stamped = verify(pdf_path, version)
-        ok = clean and stamped
+        pages, clean, stamped, local = verify(pdf_path, version)
+        ok = clean and stamped and not local
         failures += 0 if ok else 1
         print("%-34s %3d pp  %-9s %s%s" % (
             name, pages, "%.0f KB" % (os.path.getsize(pdf_path) / 1024),
             "OK " if ok else "FAIL",
-            "" if ok else ("  [%s%s]" % ("mojibake " if not clean else "",
-                                         "version-not-found" if not stamped else "")),
+            "" if ok else ("  [%s%s%s]" % ("mojibake " if not clean else "",
+                                           "version-not-found " if not stamped else "",
+                                           "%d local file:// links" % local if local else "")),
         ))
     print("\n%d rendered, %d failed" % (len(targets), failures))
     return 1 if failures else 0
