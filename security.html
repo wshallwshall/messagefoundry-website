@@ -107,7 +107,7 @@
         </div>
         <div class="card">
           <h3>NIST 800-115 — tested in CI</h3>
-          <p>Security testing follows <b>NIST SP 800-115</b>: automated SAST, software-composition analysis, and secret-scanning on every build, plus a full functional and integration suite exercised against the running engine. <b>Dynamic application security testing (DAST) has not been performed</b>, and neither has an independent external review or penetration test — both are planned after Early Access.</p>
+          <p>Security testing follows <b>NIST SP 800-115</b>: automated SAST, software-composition analysis, and secret-scanning on every build, plus a full functional and integration suite exercised against the running engine. Dynamic testing is <b>limited to an automated authorization sweep</b> — on every build, a live instance is probed over a real network socket to confirm that gated endpoints refuse unauthenticated and under-privileged callers. It does not cover the non-HTTP ingress listeners, the browser console, or TLS, and <b>no independent DAST, external code review, or penetration test has been performed</b> — all planned after Early Access.</p>
         </div>
         <div class="card">
           <h3>NIST 800-66 Rev. 2 — HIPAA-mapped</h3>
