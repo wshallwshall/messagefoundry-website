@@ -234,7 +234,7 @@ authentication on the channel · **Egress gate** = the `[egress]` allow-list tha
 | **Raw TCP source** | `[inbound].bind_host` = `127.0.0.1` | **No** — plaintext only | None | — | **Yes** — non-loopback plaintext refused (`check_tcp_tls_exposure`, PR #558); no TLS to enable, so keep loopback / firewall-segment / proxy-terminate |
 | **X12 source** (ISA/IEA framed) | `[inbound].bind_host` = `127.0.0.1` | **No** — plaintext only (same socket plumbing as raw TCP) | None | — | **Yes** — non-loopback plaintext refused (`check_tcp_tls_exposure`, PR #558); keep loopback / firewall-segment / proxy-terminate |
 | **File source** | local filesystem | n/a (no network) | n/a | — | n/a |
-| **Database poll source** | connects to `[store]` DB | **Yes** — inherits the store DB connection TLS (`[store].encrypt` default true) | Store DB auth | `[egress].allowed_db` | n/a (outbound DB connection) |
+| **Database poll source** | **binds no socket** — dials an operator-configured DB host: its own `server` (required) and `port` (default `1433`). **Not** the `[store]` database, and it inherits nothing from `[store]` | **Yes, per connection** — its own `encrypt` (default true) + `trust_server_certificate` (default false) on the default `dialect="sqlserver"`. On `dialect="generic"` TLS is the ODBC driver's own keyword and is **not** engine-enforced | its own `auth` / `username` / `password` | `[egress].allowed_db` | n/a (outbound DB connection) |
 
 ### Outbound (the engine dials a destination)
 
@@ -339,10 +339,15 @@ does not resolve to a listed `host:port` makes the config **fail at load / reloa
 |---|---|
 | `[egress].allowed_mllp` | MLLP destinations |
 | `[egress].allowed_tcp` | raw TCP **and** X12 destinations |
-| `[egress].allowed_http` | REST, SOAP, and alert-webhook destinations |
+| `[egress].allowed_http` | REST, SOAP, **FHIR**, **DICOMweb (STOW-RS)** destinations, the **SMART token endpoint**, and the read-only `fhir_lookup` |
 | `[egress].allowed_db` | DATABASE destination + the DB poll source |
 | `[egress].allowed_remote` | RemoteFile SFTP/FTPS/FTP (source + destination) |
 | `[egress].allowed_file_dirs` | File destination directories |
+
+**The alert sinks are *not* on this table and are not covered by `[egress]`.** The webhook and SMTP
+*alert* sinks carry no PHI bodies and keep their **own** host allow-lists —
+`[alerts].webhook_allowed_hosts` and `[alerts].smtp_allowed_hosts`. Populate those separately; an
+`[egress].allowed_http` entry does nothing for a webhook alert.
 
 For an off-loopback deployment, populate the lists you use so a transform cannot exfiltrate to an
 unapproved address. The **global deny-by-default toggle is built** — `[security].block_unlisted_outbound`

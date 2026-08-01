@@ -56,7 +56,9 @@ only the host can. On a host that does not provide it:
   operator can satisfy on Windows, so refusing by default would break deployments over something they
   cannot change. An estate that has standardized on confidential-computing hosts can make the missing
   declaration fatal with `[security].require_memory_encryption_declaration = true` (default `false`).
-  Loopback and synthetic instances are unaffected and silent. See
+  Loopback and synthetic instances are **silent — but not exempt**: the warning is keyed on exposure
+  to keep startup output off unwatched deployments, not because the risk differs, and
+  `GET /security/posture` states the property for every instance. See
   [CONFIGURATION.md](CONFIGURATION.md) `[security]` and
   OFF-LOOPBACK-DEPLOYMENT.md.
 
@@ -123,7 +125,7 @@ SEV-SNP needs EPYC 7003+ and TDX needs 5th Gen Xeon Scalable+, which is newer th
 
 | Client | Requirement |
 |---|---|
-| **Web console** (the operator UI) | A modern browser — **nothing to install on the operator's machine.** The engine serves the console same-origin under `/ui` from its own FastAPI app ([ADR 0065](adr/0065-web-ops-dashboard.md)), **on by default** since [ADR 0143](adr/0143-web-console-on-by-default-disableable-with-loopback-secure-context-browser-hardening.md) (`[security].serve_web_console`; set it to `false` for a JSON-API-only deployment). It ships as a separately-versioned wheel, `messagefoundry-webconsole`, mounted in-process. This is the **sole operator console** — the PySide6 desktop console was retired ([ADR 0032](adr/0032-console-desktop-launch.md)). |
+| **Web console** (the operator UI) | A modern browser — **nothing to install on the operator's machine.** The engine serves the console same-origin under `/ui` from its own FastAPI app ([ADR 0065](adr/0065-web-ops-dashboard.md)), **on by default for loopback binds** since [ADR 0143](adr/0143-web-console-on-by-default-disableable-with-loopback-secure-context-browser-hardening.md) (`[security].serve_web_console`; set it to `false` for a JSON-API-only deployment). On an **exposed** instance — a non-loopback host, a declared TLS terminator, or a set public address — a default-on console **auto-degrades to JSON-only** with a warning and `/ui` is not served; serving it off-box is opt-in and needs `serve_web_console = true` *plus* TLS *plus* `[security].web_console_public_address`. It ships as a separately-versioned wheel, `messagefoundry-webconsole`, mounted in-process. This is the **sole operator console** — the PySide6 desktop console was retired ([ADR 0032](adr/0032-console-desktop-launch.md)). |
 | **VS Code extension** | Visual Studio Code (current stable) — route wizard, validate-on-save, test bench, stage→promote. |
 | Test harness — *optional, not needed to run the engine* | The standalone synthetic send/receive/load harness (`python -m harness`) is the **only** PySide6 (Qt) surface left. It ships as its **own distribution**, released in lockstep with the engine and deliberately **not** included in the engine wheel: `pip install messagefoundry-harness` (which pulls `messagefoundry[harness]`, i.e. PySide6). Windows / Linux / macOS, a separate process reaching the engine only over the HTTP API. It is a **testing tool** — an engine host that does not run it needs no Qt and no GUI at all. |
 

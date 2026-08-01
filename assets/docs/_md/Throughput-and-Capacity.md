@@ -105,8 +105,13 @@ preserve the ordering and at-least-once delivery guarantees the engine makes. Se
 not something more hardware relieves.
 
 That has a directly practical consequence: **adding processor cores to the database does not
-raise this ceiling.** We measured that rather than assuming it. The levers that would raise it
-are fewer database transactions per message and faster transaction-log storage.
+raise this ceiling.** We measured that rather than assuming it. Nor do the two changes people
+usually reach for next. Cutting the number of database transactions per message was measured
+directly: a 28% reduction in committed transactions moved sustained throughput by less than one
+percent — inside measurement noise — so transaction reduction is a measured dead end rather than a
+lever. Faster transaction-log storage is on the same footing: the store commits far below its
+measured ceiling, so the log is not what the pipeline is waiting on. We have no identified
+throughput lever, and we would rather say so than name one we have already falsified.
 
 We describe the precise mechanism as well-corroborated rather than proven — it is consistent
 with everything we measured, but we have not isolated it to the exclusion of all alternatives,
