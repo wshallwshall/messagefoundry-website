@@ -339,7 +339,7 @@ MessageFoundry (MEFOR) is an open-source **HL7 v2.x interface engine** — a can
 |---|---|---|---|
 | V1 | Encoding and Sanitization | Yes | HL7 input validation, output encoding, parameterized SQL |
 | V2 | Validation and Business Logic | Yes | HL7 structural/content validation; routing/business-rule checks |
-| V3 | Web Frontend Security | **No** | No browser-delivered UI (PySide6 desktop + APIs); documented exclusion. Re-scope if a web/admin UI is added |
+| V3 | Web Frontend Security | Yes | **Core browser surface** — the web console (`messagefoundry_webconsole`) is served same-origin under `/ui` and is on by default at a loopback bind ([ADR 0065](adr/0065-web-ops-dashboard.md), amended by [ADR 0143](adr/0143-web-console-on-by-default-disableable-with-loopback-secure-context-browser-hardening.md)). Controls: a **per-response nonce CSP** (`script-src 'nonce-…' 'strict-dynamic'`), **COOP**/**CORP** `same-origin`, an HttpOnly **`SameSite=Strict`** session cookie — `__Host-`-prefixed and `Secure` in an effective-https context — and a server-side **`Sec-Fetch-Site`/`Origin`** check on state-changing `/ui` POSTs |
 | V4 | API and Web Service | Yes | **Core surface** — the localhost engine API: authn/authz per endpoint, payload size limits, WS-Origin checks. REST/SOAP outbound destinations plus a **generic inbound HTTP listener** (ADR 0023); **XXE/DTD defenses apply when inbound XML / SOAP-IN body parsing is added** — no inbound XML attack surface yet |
 | V5 | File Handling | Yes | File-handler interface: path confinement, content validation, atomic write-then-rename, malware scan, encryption at rest |
 | V6 | Authentication | Yes | Per §7.4; align to NIST SP 800-63 |
@@ -355,7 +355,7 @@ MessageFoundry (MEFOR) is an open-source **HL7 v2.x interface engine** — a can
 | V16 | Security Logging and Error Handling | Yes | Tamper-evident audit log; fail-closed errors; no PHI/secrets in logs |
 | V17 | WebRTC | **No** | Not applicable — no WebRTC; documented exclusion |
 
-*In scope: 12 chapters active today (V1, V2, V4–V8, V11–V16). V10 (OAuth/OIDC) is now **partly active** — outbound OAuth 2.0 client-credentials / SMART on FHIR are built (ADR 0024); inbound OAuth/OIDC remains N/A. V9 (JWT) is in scope when JWT is introduced — currently N/A. Documented exclusions: V3, V17.*
+*In scope: 14 chapters active today (V1–V8, V11–V16). **V3 (Web Frontend Security) is active** — the browser web console ships same-origin under `/ui` and is on by default at a loopback bind, so the chapter is scored rather than excluded. V10 (OAuth/OIDC) is **partly active** — outbound OAuth 2.0 client-credentials / SMART on FHIR are built (ADR 0024); inbound OAuth/OIDC remains N/A. V9 (JWT) is in scope when JWT is introduced — currently N/A. Documented exclusion: V17 (no WebRTC surface).*
 
 ### A.4 Interface authentication mechanisms
 
