@@ -18,8 +18,17 @@ the engine needs, see [`ANTIVIRUS-FIREWALL.md`](ANTIVIRUS-FIREWALL.md).
 
 MessageFoundry runs **on-premises** and binds **loopback (`127.0.0.1`) by default** — the engine API
 (`[security].local_access_only = true`), and every inbound listener via `[inbound].bind_host`. In that
-posture there is **no off-host network exposure**: nothing PHI-bearing crosses a wire. Everything below
-is about what changes when you deliberately bind a channel to a routable address.
+posture **no MessageFoundry listener is reachable off-host**.
+
+**That is a claim about listeners only — it is not a claim that nothing PHI-bearing crosses a wire.**
+Outbound delivery is **unaffected by the bind posture**: a loopback-bound engine still dials every
+configured destination (MLLP, REST/SOAP, FHIR, DICOMweb, SFTP/FTPS, SMTP, Direct, a customer database),
+still performs `db_lookup` / `fhir_lookup` reads, and still forwards syslog/SIEM logs and webhook
+alerts — all off-box, and those delivery hops carry PHI. The outbound controls below (egress
+allow-lists, the cleartext-hop rules, per-connection TLS) apply to a loopback deployment too.
+
+Everything else below is about what changes when you deliberately bind a *channel* to a routable
+address.
 
 **Fail-closed rule (ADR 0002 §0):** a non-loopback **API** bind is *refused at startup* unless TLS is
 configured (or an upstream TLS terminator is trusted), and every inbound **listen** type — MLLP, HTTP,
