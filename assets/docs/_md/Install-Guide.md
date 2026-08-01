@@ -209,8 +209,9 @@ its `MEFOR_*` environment. Two things every instance must state:
 
 - **`[ai].environment`** — a free-form name (`test`, `prod`, `poc`, …) that selects
   `environments/<name>.toml`.
-- **Security posture, explicit and decoupled from the name:** `[ai].data_class` (`synthetic` | `phi` —
-  does this instance carry *real* PHI?) and `[ai].production` (is this a production tier?). Built-in names
+- **Security posture, explicit and decoupled from the name:** `[security].handles_real_patient_data`
+  (`true` | `false` — does this instance carry *real* PHI?) and `[security].production_instance`
+  (`true` | `false` — is this a production tier?). Built-in names
   `dev`/`staging`/`prod` derive a sensible default posture; **any custom name must state posture
   explicitly** — the engine fails closed rather than guess.
 

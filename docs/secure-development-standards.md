@@ -319,7 +319,7 @@ The project maintains a current evidence set so any claim is backed:
 
 MessageFoundry (MEFOR) is an open-source **HL7 v2.x interface engine** — a candidate alternative to commercial engines (Corepoint, Mirth Connect, Rhapsody, Cloverleaf). It routes and transforms clinical messages between systems.
 
-**Technology stack:** Python 3.14+, FastAPI/uvicorn, aiosqlite/SQLite (WAL), `python-hl7`/`hl7apy`, PySide6 (desktop UI), Windows/PowerShell deployment; MLLP transport with native MLLP-over-TLS (opt-in via cert config — ADR 0002); application-layer AES-256-GCM encryption at rest (database-native where the backend provides it). Durable message store with FIFO/per-key ordering and dead-letter handling.
+**Technology stack:** Python 3.14+, FastAPI/uvicorn, aiosqlite/SQLite (WAL), `python-hl7`/`hl7apy`, a same-origin browser ops console served at `/ui`, PySide6 (the standalone test harness only — the desktop admin console was retired, BACKLOG #103), Windows/PowerShell deployment; MLLP transport with native MLLP-over-TLS (opt-in via cert config — ADR 0002); application-layer AES-256-GCM encryption at rest (database-native where the backend provides it). Durable message store with FIFO/per-key ordering and dead-letter handling.
 
 ### A.2 Interfaces and surfaces
 
@@ -327,8 +327,11 @@ MessageFoundry (MEFOR) is an open-source **HL7 v2.x interface engine** — a can
 - **REST and SOAP** web-service interfaces — **outbound destinations built** (per-connection bearer / Basic-over-TLS; SOAP WS-Security + XML-DSig per ADR 0015). A **generic inbound HTTP listener is built** (ADR 0023) as the substrate REST/SOAP-in ride on; ADR 0003/0004 framed the original non-HL7 transport + payload-agnostic ingress design.
 - **Database** source (inbound poll) and destination — ADR 0003.
 - **File-handler interface** (file-drop pickup / output).
-- **PySide6 desktop client**, plus an **opt-in read-only web ops dashboard** served under `/ui`
-  (`[api].serve_ui`, off by default — [ADR 0065](adr/0065-web-ops-dashboard.md)).
+- **Browser ops console** served same-origin under `/ui` — the **sole operator console** since the
+  PySide6 desktop client was retired (BACKLOG #103). It is **on by default** at a loopback bind
+  (`[security].serve_web_console`; [ADR 0065](adr/0065-web-ops-dashboard.md),
+  [ADR 0143](adr/0143-web-console-on-by-default-disableable-with-loopback-secure-context-browser-hardening.md))
+  and carries **write** actions (replay, purge, connection flags), not read-only as at its M1.
 
 ### A.3 OWASP ASVS 5.0 Level 3 — chapter applicability
 
@@ -374,8 +377,9 @@ current position on it.
   with optional client-certificate **mTLS** (API `tls_client_ca_file`; MLLP `tls_ca_file`), an
   off-loopback bind guard, and a certificate-expiry monitor — ADR 0002 / WP-13a/13b.
 - **Operator strong-auth (control plane):** native **RFC 6238 TOTP MFA** for **local** accounts
-  (ADR 0002 WP-14, built 2026-06-17) — enrolled per user, enforced for the Administrator role via
-  `[auth].require_mfa` and re-verified at the sensitive-operation step-up boundary; AD/Entra users'
+  (ADR 0002 WP-14, built 2026-06-17) — enrolled per user, enforced via `[security].require_mfa`
+  (on by default; `require_mfa_scope` defaults to every local account) and re-verified at the
+  sensitive-operation step-up boundary; AD/Entra users'
   MFA is delegated to the IdP. Recovery codes are argon2id-hashed; the TOTP secret is store-cipher
   protected.
 - **Operator / directory (control plane, not interface auth):** **LDAPS** directory bind
@@ -446,8 +450,8 @@ each release and on any trigger below. Those are maintainer-internal documents;
 [`SECURITY-DOCS-POLICY.md`](SECURITY-DOCS-POLICY.md) explains what is withheld and what you can request.
 
 - **6.3.3 — multi-factor authentication.** **Satisfied for local accounts** — native RFC 6238 TOTP MFA
-  is **built** (ADR 0002 WP-14, 2026-06-17), enforced for the Administrator role via `[auth].require_mfa`
-  at the step-up boundary; **AD/Entra-account MFA is delegated to the IdP** (the supported enterprise
+  is **built** (ADR 0002 WP-14, 2026-06-17), enforced via `[security].require_mfa` (on by default,
+  for every local account) at the step-up boundary; **AD/Entra-account MFA is delegated to the IdP** (the supported enterprise
   path). No longer a deferred Fail. *(Hardware/WebAuthn second factors are now **built** — browser
   WebAuthn passkeys as the phishing-resistant second factor at the step-up boundary, ADR 0068 / WP-14b,
   behind the `[webauthn]` extra.)*
