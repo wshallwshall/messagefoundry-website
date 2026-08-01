@@ -47,8 +47,8 @@
     },
     {
       "@type": "HowToStep",
-      "name": "Open the admin console",
-      "text": "Install the console extra and attach the desktop admin console to the API for dashboards, message search, and one-click replay."
+      "name": "Open the web console",
+      "text": "Install the web console package alongside the engine and browse to /ui for dashboards, message search, and one-click replay."
     },
     {
       "@type": "HowToStep",
@@ -198,12 +198,12 @@ pip install messagefoundry</pre>
         </div>
 
         <div class="step">
-          <h3>Open the admin console</h3>
-          <p>A separate desktop app that attaches to the API — dashboards, message search and browse, parse-tree viewer, and one-click replay.</p>
+          <h3>Open the web console</h3>
+          <p>The operator GUI runs in your browser, served by the engine itself — dashboards, message search and browse, parse-tree viewer, and one-click replay. Nothing to install on each workstation, and it's on by default.</p>
           <div class="code-card">
             <div class="code-card__bar"><i></i><i></i><i></i><span class="code-card__name">terminal</span></div>
-<pre class="code">pip install <span class="s">"messagefoundry[console]"</span>
-python -m messagefoundry.console --url http://127.0.0.1:8765</pre>
+<pre class="code">pip install messagefoundry-webconsole
+<span class="c"># restart the engine, then open http://127.0.0.1:8765/ui</span></pre>
           </div>
         </div>
 
