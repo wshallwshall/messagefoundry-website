@@ -9,3 +9,8 @@ desktop.ini
 # local preview servers / logs
 *.log
 .claude/
+
+# Python bytecode from the doc-PDF tooling. Pages serves the whole repo root, so a
+# committed __pycache__ would be published at messagefoundry.org.
+__pycache__/
+*.pyc
