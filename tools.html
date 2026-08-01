@@ -216,12 +216,12 @@
         <div class="card">
           <h3>Test harness</h3>
           <span class="tool-cmd">python -m harness</span>
-          <p>Exercises a running engine with synthetic, PHI-free traffic: Send / Receive / File / Compose / Monitor tabs (inject ACK faults, malformed messages, delivery failures), headless CI scenarios that assert dispositions, and a separate load-testing engine with tunable profiles (warmup → ramp → soak) and an SLO report.</p>
+          <p>Exercises a running engine with synthetic, PHI-free traffic: Send / Receive / File / Compose / Monitor tabs (inject ACK faults, malformed messages, delivery failures), headless CI scenarios that assert dispositions, and a separate load-testing engine with tunable profiles (warmup → ramp → soak) and an SLO report. Ships as its own distribution, released in lockstep with the engine — <code>pip install messagefoundry-harness</code>; it isn't part of the engine wheel.</p>
         </div>
         <div class="card">
           <h3>Tee relay</h3>
           <span class="tool-cmd">python -m tee</span>
-          <p>A migration de-risking tool: sit it in front of a legacy engine and a shadow MessageFoundry, ACK on receipt, and forward the same bytes to both — so you can compare output before cutover (rollback is just stopping the relay). Test and synthetic data only; not PHI-hardened.</p>
+          <p>A migration de-risking tool: sit it in front of a legacy engine and a shadow MessageFoundry, ACK on receipt, and forward the same bytes to both — so you can compare output before cutover (rollback is just stopping the relay). Test and synthetic data only; not PHI-hardened. Run it from a source checkout of the engine repository — unlike the harness, it isn't published as a package.</p>
         </div>
       </div>
     </div>
