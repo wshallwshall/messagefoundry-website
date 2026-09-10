@@ -41,7 +41,7 @@ encodes, which should survive any edit:
 - The **amber "Foundry" wordmark accent is masthead-only**. Never accent the brand name in
   body copy.
 - The **trademark mark belongs to the logo lockup only**.
-- **MEFOR-ORG** is the legal entity in the colophon; **MessageFoundry** is the product.
+- **MessageFoundry Foundation** is the legal entity in the colophon; **MessageFoundry** is the product.
 - The masthead and colophon are a page-1 title block and an end-of-document block — neither
   is a running header/footer.
 
