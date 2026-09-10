@@ -1,28 +1,19 @@
 # Installing MessageFoundry — the engine + your configuration repository
 
-This guide explains how an organization installs **MessageFoundry (MEFOR)** and stands up the
-**private git repository** that holds its integration configuration. It is the practical companion to
-[ADR 0017](adr/0017-consumer-deployment-model.md) (the consumer deployment model).
+Install **MessageFoundry (MEFOR)** and create the **private Git repository** that holds your interface configuration. This guide accompanies [ADR 0017](adr/0017-consumer-deployment-model.md), which defines the deployment model.
 
-> **Scope.** This guide covers *install + config-repo + private git + running multiple instances*. For
-> the staged, go/no-go-gated path from a first install to full production (lab → shadow → limited →
-> full), plus security/PHI hardening, reliability tuning, and DR, read the
-> **[Early-Adopter Installation & Rollout Guide](EARLY-ADOPTER-GUIDE.md)**. For network exposure / TLS
-> specifics see **[DEPLOYMENT.md](DEPLOYMENT.md)**; for the Windows service see **[SERVICE.md](SERVICE.md)**.
+> **Scope.** This guide covers installation, the configuration repository, private Git, and multiple instances.
+> For lab, shadow, limited, and full rollout stages, read the **[Early-Adopter Installation & Rollout Guide](EARLY-ADOPTER-GUIDE.md)**.
+> That guide also covers security, PHI controls, reliability, and disaster recovery.
+> For network exposure and TLS, read **[DEPLOYMENT.md](DEPLOYMENT.md)**. For the Windows service, read **[SERVICE.md](SERVICE.md)**.
 
 ---
 
 ## 1. The model in one paragraph
 
-MessageFoundry ships as a **read-only, version-pinned engine** (a Python wheel) that your team installs
-but **never edits**. All of *your* work — the Connections, Routers, and Handlers that define your
-interfaces — lives in a **separate, private git repository your organization owns**: your *config repo*.
-One config repo drives **all** of your engine instances (Test and Production at minimum; optionally
-POC/Staging), with each instance selecting its environment and security posture at runtime. The
-practical consequence: integration developers author and review interface logic in a normal git/PR
-workflow, and the engine underneath them is a fixed, auditable dependency they cannot quietly modify.
+Install MessageFoundry as a **read-only, version-pinned Python wheel**. Keep Connections, Routers, and Handlers in a **separate private Git repository owned by your organization**. One configuration repository serves Test and Production, with optional POC or Staging instances. Each instance selects its environment and security settings at runtime. Developers review interface changes through pull requests. The engine remains a fixed dependency.
 
-Three ownership tiers — keeping them separate is the whole design:
+Keep these three areas separate:
 
 | Tier | What it is | Who owns / edits it |
 |---|---|---|
@@ -36,11 +27,9 @@ Three ownership tiers — keeping them separate is the whole design:
 
 - **Python 3.14+** on each engine host (the engine requires 3.14+).
 - **git**, plus a **private git host** — GitHub (private repo), GitLab, Azure DevOps, Bitbucket, or a
-  self-hosted server. Nothing about MessageFoundry requires a public repo; your config repo is yours.
+  self-hosted server. Nothing about MessageFoundry requires a public repo. Your config repo is yours.
 - A source for the engine wheel: **public PyPI** is the distribution channel and the recommended
-  install (`pip install "messagefoundry==<version>"`). For estates that cannot install from the
-  public index, the signed **GitHub Release wheel** or an **internal package index** (Artifactory,
-  Azure Artifacts, a private PyPI) mirroring it serves the same role.
+  install (`pip install "messagefoundry==<version>"`). If public-index installation is unavailable, use the signed GitHub Release wheel or a mirrored internal package index. Examples include Artifactory, Azure Artifacts, and private PyPI.
 - Administrator/elevation on the host if you will install the engine as a Windows service (see
   [SERVICE.md](SERVICE.md)).
 
@@ -56,22 +45,17 @@ python -m venv .venv
 pip install "messagefoundry==0.3.2"          # pin the exact version (core runtime only)
 ```
 
-> ⚠️ **Early access.** MessageFoundry is in **Early Access** on public PyPI — feature-complete and
-> test-validated, but the independent external review and penetration test that ASVS
-> recommends at Level 3 have not yet been performed. Pin the version you have qualified;
-> check [PyPI](https://pypi.org/project/messagefoundry/) for the current release. You can
-> equally install from your organization's **private index**.
+> ⚠️ **Early Access.** MessageFoundry is beta-level software on public PyPI.
+> The independent external review and penetration test recommended by ASVS Level 3 have not occurred.
+> Pin the version that your organization has tested. Check [PyPI](https://pypi.org/project/messagefoundry/) for the current release.
+> You can also install from your organization’s private index.
 
-Add extras only for what a host actually runs — `messagefoundry[postgres]` (PostgreSQL store),
-`messagefoundry[sqlserver]` (SQL Server store + the DATABASE connectors, needs OS-level ODBC Driver 18),
-`messagefoundry[harness]` (PySide6 only — the harness itself is the separate `messagefoundry-harness`
-distribution), `messagefoundry[sftp]` (SFTP connectors),
-`messagefoundry[fhir]` (FHIR codec + FHIR outbound), `messagefoundry[dicom]` (DICOM C-STORE SCP + codec).
+Install only the extras that the host requires. `messagefoundry[postgres]` supports PostgreSQL. `messagefoundry[sqlserver]` supports SQL Server and DATABASE connectors, with OS-level ODBC Driver 18. `messagefoundry[harness]` supplies PySide6 only. The harness itself uses the separate `messagefoundry-harness` distribution. `messagefoundry[sftp]` supplies SFTP connectors. `messagefoundry[fhir]` supplies the FHIR codec and outbound. `messagefoundry[dicom]` supplies C-STORE SCP and its codec.
 
-Key properties this install model gives you:
+The install model supports these controls:
 
 - **Non-editable.** A normal `pip install` lands the engine in `site-packages` as a regular installed
-  package — not an editable checkout. Developers import its public surface; they do not have the engine
+  package — not an editable checkout. Developers import its public surface. They do not have the engine
   source tree in front of them to change.
 - **Pinned + reproducible.** The exact version is recorded in your config repo's `requirements.txt`
   (Step 2). An engine upgrade is a deliberate, reviewable one-line bump — never an accident. For a fully
@@ -80,12 +64,7 @@ Key properties this install model gives you:
 
 ### Verify the release before you install (supply-chain integrity)
 
-MessageFoundry ships **one signed wheel to many PHI-bearing instances**, so verify the artifact's
-provenance *before* installing it — pinning a version (or a hash) proves you got a *fixed* file, not that
-it's the one MessageFoundry built. Every release carries **SLSA build provenance** (binding the wheel's
-SHA-256 → the source commit → the GitHub Actions builder) and a **Sigstore signature**. Check both with
-the **GitHub CLI** (`gh` ≥ 2.49), and optionally `sigstore` (`pip install sigstore`); install **only** the
-file that passes.
+Verify the wheel’s origin before installation. A pinned version or hash identifies a fixed file but does not establish who built it. Each release includes **SLSA build provenance** linking the wheel’s SHA-256, source commit, and GitHub Actions builder, plus a **Sigstore signature**. Check both with the **GitHub CLI** (`gh` ≥ 2.49) and, optionally, `sigstore` (`pip install sigstore`). Install **only** the verified file.
 
 ```powershell
 $V = "0.3.2"   # the version you intend to install — see PyPI for the current release
@@ -106,8 +85,7 @@ python -m sigstore verify identity "messagefoundry-$V-py3-none-any.whl" `
 pip install ".\messagefoundry-$V-py3-none-any.whl"
 ```
 
-The same attestation also covers the **public PyPI** copy of the wheel (it is byte-identical to the
-GitHub-built artifact, so the digest matches), so you can download-verify-then-install from the index:
+The public PyPI wheel is byte-identical to the GitHub-built artifact, so the same attestation covers it. Download, verify, then install it:
 
 ```powershell
 $V = "0.3.2"
@@ -116,18 +94,13 @@ gh attestation verify (Get-ChildItem ".\verify\messagefoundry-$V-*.whl").FullNam
 pip install --no-index --find-links .\verify "messagefoundry==$V"
 ```
 
-A registry/mirror substitution or a relabelled file **fails** the check. For a fully pinned deploy, pair
-this with `pip install --require-hashes -r requirements.lock` (the identity check above is the part
-`--require-hashes` cannot give you — it proves bytes-match-lockfile, not who built them). The
-`-rc`-tagged pre-releases publish to production PyPI too; the `--cert-identity` ref above must match the
-tag you are installing (e.g. `refs/tags/v0.3.2`).
+A substituted or relabelled file fails verification. Pair this check with `pip install --require-hashes -r requirements.lock` for a fully pinned deployment. Hash checks confirm that bytes match the lockfile. The identity check confirms who built them. Pre-releases tagged `-rc` also publish to production PyPI. The `--cert-identity` reference must match the installed tag, such as `refs/tags/v0.3.2`.
 
 ---
 
 ## 4. Step 2 — Create your config repo with the scaffolder
 
-The engine ships an `init` command that lays down a complete, **`check`-green-from-the-first-commit**
-config repo skeleton:
+The `init` command creates a configuration repository that passes `check`:
 
 ```powershell
 messagefoundry init ./my-config-repo
@@ -157,10 +130,9 @@ pip install -r requirements.txt
 messagefoundry check --config config --messages messages/sets
 ```
 
-`check` runs validate + dry-run against the synthetic fixture — the same gate your CI runs on every pull
-request. From here, your developers replace the starter feed with real Connections/Routers/Handlers,
-authored against the engine's public surface (`inbound` / `outbound` / `@router` / `@handler` / `Send` /
-`Message` / `MLLP` / `File` / `env` / `code_set` …). They never touch engine code to do it.
+`check` validates the configuration and runs the synthetic fixture without delivery. Continuous integration runs the same check on each pull request. Replace the starter feed with your Connections, Routers, and Handlers.
+
+The public engine API includes `inbound`, `outbound`, `@router`, `@handler`, `Send`, and `Message`. It also includes `MLLP`, `File`, `env`, and `code_set`. Configuration changes do not require engine edits.
 
 ---
 
@@ -177,15 +149,13 @@ git remote add origin git@github.com:your-org/mefor-config.git   # a PRIVATE rep
 git push -u origin main
 ```
 
-> **Where it's stored — local or remote.** The `git remote add` above points at a shared host, the right
-> default for **HA (multiple engine hosts), a team, or off-machine backup**. For a single-box (non-HA)
-> engine you can skip the remote and keep the repo local, adding one later. Any host works — a
-> self-hosted **Forgejo**/Gitea/GitLab, a private repo on your standard host, or a **bare repo on a
-> network share** for air-gapped sites. The IDE's **Set Up Version Control & Checks** and **Config Repo
-> Storage Location** commands set and change this without the terminal. Full guidance:
-> [VERSION-CONTROL.md](VERSION-CONTROL.md).
+> **Repository storage.** Use the shared host from `git remote add` for multiple engine hosts, team access, or off-machine backup.
+> A single-machine deployment without high availability can use a local repository. You can add a remote later.
+> Options include self-hosted Forgejo, Gitea, or GitLab. You can also use your usual private host or a bare repository on a network share.
+> For setup without a terminal, use **Set Up Version Control & Checks** or **Config Repo Storage Location**.
+> Refer to [VERSION-CONTROL.md](VERSION-CONTROL.md).
 
-What makes this private and safe:
+Protect the repository with these controls:
 
 - **Repo visibility.** Create the remote as **Private** on whatever host you standardize on. The engine
   imposes no requirement here — your config repo is yours, access-controlled by your git host's
@@ -197,8 +167,7 @@ What makes this private and safe:
 - **No PHI in the repo.** Test fixtures are **synthetic only**. Real message bodies live in the engine's
   secured store at runtime, not in git.
 - **CI as the gate.** The included `check.yml` installs the pinned engine and runs `messagefoundry check`
-  on every PR. Turn on **branch protection** on `main` so changes land only through reviewed,
-  check-passing pull requests — interface logic gets the same rigor as application code.
+  on every PR. Enable branch protection on `main`. Require reviewed pull requests with passing checks.
 - **Branch → PR → review → merge** is the entire authoring workflow. There is no separate "engine
   change" path for developers, because there is no engine to change.
 
@@ -214,7 +183,7 @@ its `MEFOR_*` environment. Two things every instance must state:
 - **Security posture, explicit and decoupled from the name:** `[security].handles_real_patient_data`
   (`true` | `false` — does this instance carry *real* PHI?) and `[security].production_instance`
   (`true` | `false` — is this a production tier?). Built-in names
-  `dev`/`staging`/`prod` derive a sensible default posture; **any custom name must state posture
+  `dev`/`staging`/`prod` derive a sensible default posture. **any custom name must state posture
   explicitly** — the engine fails closed rather than guess.
 
 Secrets and host-specific overrides come from the environment, e.g. `MEFOR_VALUE_<KEY>` for values used
@@ -233,26 +202,18 @@ messagefoundry serve --config config --env test --project-root C:\srv\mefor\my-c
 - **`--project-root`** (or `[environments].base_dir` in `messagefoundry.toml`) anchors
   `environments/<env>.toml` resolution to the repo root, so values resolve **regardless of the working
   directory**. This matters when the engine runs as a **Windows service under NSSM**, where the launch
-  directory isn't your repo. (Omit it only when you always launch from the repo root.)
+  directory is not your repo. (Omit it only when you always launch from the repo root.)
 - The engine **binds `127.0.0.1` by default** and **requires authentication**. To expose a channel
   off-loopback, configure **native TLS** (API: `[api].tls_cert_file`/`tls_key_file` or a trusted upstream
-  terminator; MLLP inbound: per-connection `tls = true`) — a non-loopback bind without TLS is **refused at
+  terminator. MLLP inbound: per-connection `tls = true`) — a non-loopback bind without TLS is **refused at
   startup**. See [DEPLOYMENT.md](DEPLOYMENT.md).
 - For production, run the engine as a **Windows service via NSSM** — see [SERVICE.md](SERVICE.md).
-- For **multi-node high availability** (active-passive failover of a single instance), see
-  [CLUSTERING.md](CLUSTERING.md) — note it requires an operator-provided **floating VIP / L4 load
-  balancer** (a TCP-connect health check per inbound listener port) so senders follow the primary across
-  a failover. MEFOR ships the clustering + the `/cluster/*` health-check endpoints, but **not** the load
-  balancer itself; single-node deployments need none of this.
+- For active-passive failover, refer to [CLUSTERING.md](CLUSTERING.md). Supply a floating VIP or L4 load balancer. Use a TCP-connect check for each inbound listener port so senders reach the primary after failover. MEFOR ships the clustering + the `/cluster/*` health-check endpoints, but **not** the load
+  balancer itself. Single-node deployments need none of this.
 
 ### Launching the admin console (in a browser)
 
-Operators monitor and run an instance from the **browser web console** served same-origin at `/ui`.
-It ships as a separate wheel (`messagefoundry-webconsole`) on its **own version line** — deliberately
-*not* lockstep with the engine — that the engine mounts in-process. The pair is checked at startup
-against the engine's UI-seam version and a mismatched pair is **refused**, so install the console
-release built for the engine version you pinned. The console is **on by default**, so on a local
-instance installing it is all you need:
+Operators use the **browser web console** at `/ui`. Install its separate `messagefoundry-webconsole` wheel in the engine environment. The console has its **own version line**, rather than matching engine release numbers. At startup, the engine checks the pair’s UI compatibility version and **refuses a mismatch**. Install a console release compatible with your pinned engine. The console is **on by default** for local instances:
 
 ```powershell
 pip install "messagefoundry-webconsole==0.2.15"   # the /ui web console, into the same venv
@@ -260,24 +221,17 @@ pip install "messagefoundry-webconsole==0.2.15"   # the /ui web console, into th
 # [security].serve_web_console = false (the old [api].serve_ui spelling is refused at config load)
 ```
 
-Browse to the engine's `/ui` (`http://127.0.0.1:8765/ui` by default — typically the boot-start
-[service](SERVICE.md)) and sign in; nothing else is needed for the local case. Off-loopback the console
-is **opt-in**: an exposed instance serves `/ui` only when `[security].serve_web_console = true` is set
-explicitly — a default-on console on an exposed bind quietly degrades to the JSON API with a warning —
-and it additionally requires TLS, plus `[security].web_console_public_address` behind a declared
-TLS-terminating proxy (see [REMOTE-CONSOLE.md](REMOTE-CONSOLE.md)). The former PySide6 desktop console
-was retired in favour of this browser console (BACKLOG #103); PySide6 now backs only the standalone
-test harness, which ships as its own lockstep distribution — `pip install messagefoundry-harness`,
-then `python -m harness`. (The engine wheel does not contain `harness/`; the `messagefoundry[harness]`
-extra supplies only PySide6, and the harness distribution pulls it in for you.)
+For local access, open `/ui` at `http://127.0.0.1:8765/ui` and sign in. The engine usually runs as a [service](SERVICE.md).
+
+For remote access, explicitly set `[security].serve_web_console = true` and configure TLS. Otherwise, an exposed instance serves only the JSON API and logs a warning. A declared TLS proxy also requires `[security].web_console_public_address`. Refer to [REMOTE-CONSOLE.md](REMOTE-CONSOLE.md).
+
+The browser console replaces the retired PySide6 desktop console (BACKLOG #103). PySide6 now supports only the separate test harness. Install it with `pip install messagefoundry-harness`, then run `python -m harness`. The harness releases match the engine. The engine wheel excludes `harness/`. The `messagefoundry[harness]` extra supplies only PySide6, which the harness distribution installs automatically.
 
 ---
 
 ## 8. Multiple instances from one repo (Test, Production, POC…)
 
-This is the payoff of the model: **the same reviewed commit of your config repo is deployed to every
-instance.** You do **not** maintain per-environment branches. Each host differs only in its
-`messagefoundry.toml` (environment name + posture) and its `MEFOR_*` environment:
+Deploy **the same reviewed configuration commit** to each instance. You do not need per-environment branches. Each host has its own `messagefoundry.toml` environment and security settings, plus its `MEFOR_*` variables:
 
 ```
                 ┌────────────────────────────────┐
@@ -294,8 +248,8 @@ instance.** You do **not** maintain per-environment branches. Each host differs 
 ```
 
 Promotion = merge to `main` → deploy that commit everywhere. A Test instance resolves
-`environments/test.toml`; Prod resolves `environments/prod.toml`; a Test instance can never accidentally
-read Prod values. (Each instance is otherwise an independent engine with its own store; for multi-node
+`environments/test.toml`. Prod resolves `environments/prod.toml`. A Test instance can never accidentally
+read Prod values. (Each instance is otherwise an independent engine with its own store. For multi-node
 high availability of a single instance, see [CLUSTERING.md](CLUSTERING.md).)
 
 ---
@@ -305,20 +259,19 @@ high availability of a single instance, see [CLUSTERING.md](CLUSTERING.md).)
 Three layers reinforce the boundary:
 
 1. **Packaging.** The engine is an installed, **non-editable** wheel. Developers work exclusively in the
-   config repo; the engine source isn't in their working tree.
-2. **Version pinning.** `requirements.txt` pins an exact engine version; any change to it is a visible,
-   reviewable PR — and CI re-runs `check` against the new version before it can merge.
+   config repo. The engine source is not in their working tree.
+2. **Version pinning.** `requirements.txt` pins an exact engine version. Each version change requires a reviewable pull request. Continuous integration reruns `check` against the new version before merge.
 3. **(Optional) OS enforcement.** Operators can make the venv's `site-packages` read-only (Windows ACL)
-   so the installed engine can't be edited in place even by mistake.
+   so the installed engine cannot be edited in place even by mistake.
 
-There is simply no developer workflow that routes through engine source — by construction.
+Developers work in the configuration repository. Engine upgrades follow the review process below.
 
 ---
 
 ## 10. Upgrading the engine
 
 1. Bump the pin in `requirements.txt` (e.g. `messagefoundry==X.Y.Z`) on a branch.
-2. `pip install -r requirements.txt` and run `messagefoundry check` locally; open a PR — CI re-validates
+2. `pip install -r requirements.txt` and run `messagefoundry check` locally. Open a PR — CI re-validates
    your whole config against the new engine.
 3. Merge, and roll the new commit to Test first, then Production. Because everything is pinned and your
    config is gated by `check`, upgrades are deliberate and reversible (pin back). The full
@@ -342,9 +295,4 @@ There is simply no developer workflow that routes through engine source — by c
 
 ---
 
-### Bottom line
-Install the pinned engine into a venv; run `messagefoundry init` to scaffold a private config repo; push
-it to your private git host with branch protection + the included CI check; deploy as many instances as
-you need from that one repo, each with its own environment name, posture, and secrets. Your developers
-get a clean, reviewable, code-first authoring experience, and the engine stays a fixed, auditable
-dependency they never edit.
+Install a pinned engine, create a private configuration repository with `messagefoundry init`, and enable branch protection and continuous integration checks. Deploy reviewed commits to each instance with separate environment settings and secrets.

@@ -1,36 +1,31 @@
 # Running a cluster (active-passive HA)
 
-> **Status: built (Track B).** Single-node operation is the default and is byte-identical whether or
-> not this feature exists — a cluster is opt-in via `[cluster].enabled = true` on a server-DB store
-> (PostgreSQL **or** SQL Server).
+> **Status: built (Track B).** Single-node operation remains the default, with unchanged behavior.
+> Set `[cluster].enabled = true` to enable clustering on PostgreSQL **or** SQL Server.
 > Clustering is the **active-passive** (leader/standby failover) HA model — the supported HA mode.
 > The horizontal **active-active** scale-out path (the graph running concurrently on every node) was
-> **dropped (2026-06-18) and its code removed**; it is not a planned milestone.
+> **dropped (2026-06-18) and its code removed**. It is not a planned milestone.
 > Design records: the cluster ADRs [0005](adr/0005-transform-accessible-state.md) /
 > [0006](adr/0006-external-data-lookups.md) (the converged data) and
 > [ADR 0008](adr/0008-cluster-observability-api.md) (the observability API below). Code:
 > [`pipeline/cluster.py`](../messagefoundry/pipeline/cluster.py) (PostgreSQL) +
 > [`pipeline/cluster_sqlserver.py`](../messagefoundry/pipeline/cluster_sqlserver.py) (SQL Server).
 
-MessageFoundry provides HA by running **N identical engine processes against ONE shared server database**
-(PostgreSQL or SQL Server) in an **active-passive** (one leader, the rest warm standbys) model. There is
-no separate broker: the
-durable staged queue, the row leases, leader election, and the config/state convergence all live in the
-shared database. Single-node stays the no-op default; turning on `[cluster]` makes the nodes coordinate
-so exactly one — the leader — runs the graph and a standby takes over on failure.
+MessageFoundry provides high availability (HA) through **N identical engine processes sharing one server database**, either PostgreSQL or SQL Server. One leader runs the graph. The other nodes remain warm standbys.
+
+The database holds the durable staged queue, row leases, leader election, and shared configuration/state versions. No separate broker is required. Single-node operation remains the default. Enable `[cluster]` to coordinate nodes and let a standby take over after failure.
 
 ## Requirements
 
 A clustered deployment **requires** (enforced at config load):
 
 - `[cluster].enabled = true`
-- `[store].backend = "postgres"` **or** `"sqlserver"` — SQLite is single-file/single-node; the cluster
+- `[store].backend = "postgres"` **or** `"sqlserver"` — SQLite is single-file/single-node. The cluster
   needs the shared `nodes` table + row leases a server DB provides. Both backends run the same
   active-passive leadership lease (`pipeline/cluster.py` for Postgres, `pipeline/cluster_sqlserver.py`
   for SQL Server).
-- `[store].pool_size >= 2` — a clustered node drives concurrent background work against the pool (the
-  membership/lease-renewal maintenance loop + the leader reclaim sweep + the per-stage workers), so it
-  needs headroom over the store's working connections (prefer `>= 3`).
+- `[store].pool_size >= 2` — a clustered node runs concurrent membership, lease-renewal, reclaim, and stage workers.
+  Allow extra connections for that work (prefer `>= 3`).
 
 Every node points at the **same** server database (same `[store]` server/database/schema) and runs
 the **same** config dir.
@@ -89,74 +84,39 @@ python -m messagefoundry serve --service-config messagefoundry.toml --config ./c
 
 ## What each node does
 
-MessageFoundry runs **active-passive** (the Corepoint/Rhapsody model): the **leader (primary)** runs
-the whole message graph; every other node is a **warm standby** that contends for leadership only. The
-cluster coordinates the parts that must not double-run or interleave:
+The **leader (primary)** runs the whole message graph. Every other node remains a **warm standby** and competes for leadership. The cluster coordinates these operations:
 
-- **Active-passive graph gating (Workstream A1).** The wired graph — **all** listeners (MLLP/TCP/File/
-  …) **and** the router/transform/delivery workers — runs **only on the leader**. A standby binds no
-  listeners and runs no workers; it stays warm (membership heartbeat + cache convergence) and brings the
-  graph up the moment it acquires leadership, and tears it down if it loses leadership. The graph
-  supervisor polls leadership on a short interval so a demotion/fence **promptly** stops a node
-  accepting new inbound work and initiating new processing. (The hard guarantee against *concurrent
-  double-processing of a given row* is the **self-fencing leadership lease** + the leader-gated graph:
-  the graph runs only on the leader, and a partitioned/slow old leader self-fences and lets its
-  leadership lease **expire** before a standby can acquire leadership — so by the time a promoted node
-  acts, the old leader has provably stopped. The store's **row leases** are the additional backstop for
-  the *recurring background* reclaim sweep, which only takes rows whose lease has **expired**.) Clients
-  reconnect to whichever node is currently primary via a **floating VIP / load-balancer health check**
-  (see the deployment doc). On promotion the new leader recovers the prior leader's stranded in-flight
-  rows immediately — an *owner-scoped, lease-blind* on-promotion recovery (it re-pends only rows owned by
-  *another* instance, never its own), so failover delivery resumes at once instead of waiting out the
-  per-row lease TTL (`[store].lease_ttl_seconds`, default 60s — previously the dominant ~60s Postgres
-  failover-recovery delay; #293). This is safe under the self-fencing guarantee above; the *recurring
-  background* sweep stays lease-gated.
-- **Leader election (self-fencing lease).** Exactly one node holds the `leader_lease` row and is the
-  **leader**. The leader renews the lease every `heartbeat_seconds` (to `DB_now + leader_lease_ttl_seconds`,
-  measured on the database's own clock, so node clock skew doesn't affect who may hold it); a standby
-  acquires only once that lease has **expired**. A leader that cannot renew within
-  `leader_fence_timeout_seconds` (< the TTL) **self-fences** — it stops acting as leader before the lease
-  can expire and a standby acquire it, so a network-partitioned old leader never double-processes
-  (the split-brain guard). On a clean stop the leader expires its lease so a standby takes over at once.
-- **Store-checked leader epoch (fencing token).** The self-fence above is *temporal* — it relies on a
-  paused/partitioned old leader noticing it has fallen behind and demoting itself before the lease TTL
-  elapses. As a **second, durable** backstop the `leader_lease` row also carries a monotonic
-  `leader_epoch` that is **bumped only on a fresh acquire** (a standby taking over) — never on a renew —
-  so a node that took over holds a strictly *greater* epoch than the leader it superseded. On promotion
-  the engine reads the held epoch from the coordinator and pushes it into the store
-  (`Store.set_leader_epoch`); every FIFO claim then validates, **inside the single claim transaction**,
-  that the held epoch is still current (`held >= leader_lease.leader_epoch`). A superseded ex-leader that
-  resumes after an unusually long pause — past even the temporal fence — therefore claims **0 rows**: its
-  held epoch is now older than the live leader's, so the claim's `UPDATE` matches nothing and it delivers
-  nothing. The current leader's held epoch equals the lease epoch, so it claims normally; per-lane FIFO is
-  unaffected (the guard only ever *rejects* a stale claim, never reorders a valid one). This is a
-  **server-DB-only** safeguard (Postgres / SQL Server); SQLite is a single active node, so its
-  `set_leader_epoch` is a no-op and the claim is byte-identical. The migration that adds the column is
-  additive (`ADD COLUMN IF NOT EXISTS` / a guarded `ALTER`, run under the DDL lock), so an in-place
-  upgrade of a live cluster is safe; the column back-fills to `0` and the first fresh acquire after the
-  upgrade bumps it to `1`.
+- **Active-passive graph gating (Workstream A1).** Only the leader runs listeners (MLLP, TCP, File, and others) and Router, transform, and delivery workers. A standby runs membership heartbeats and cache convergence, but no listeners or workers. It starts the graph after it acquires leadership and stops the graph after it loses leadership.
+
+  The graph supervisor checks leadership at short intervals. A demotion or self-fence stops new intake and processing. The self-fencing leadership lease prevents the old leader from processing before a standby can acquire leadership. Row leases provide another safeguard for the recurring reclaim sweep, which recovers only expired leases.
+
+  Clients reconnect through a floating VIP or load-balancer health check. On promotion, the new leader immediately recovers rows owned by another instance, never its own rows. This owner-scoped recovery ignores row-lease expiry because the old leader has already stopped under the self-fencing guarantee.
+
+  Delivery therefore does not wait for `[store].lease_ttl_seconds`, whose default is 60s. That wait previously caused the approximately 60s PostgreSQL recovery delay (#293). The recurring background sweep still checks row-lease expiry.
+
+- **Leader election (self-fencing lease).** Exactly one node holds the `leader_lease` row. It renews the lease every `heartbeat_seconds` to `DB_now + leader_lease_ttl_seconds`. The database clock determines expiry, so node clock differences do not affect leadership.
+
+  A standby can acquire only an expired lease. If the leader cannot renew within `leader_fence_timeout_seconds`, it stops acting as leader. That timeout is less than the lease TTL, so the old leader stops before a standby can take over. A clean shutdown expires the lease for prompt takeover.
+
+- **Store-checked leader epoch (fencing token).** The temporal self-fence requires the old leader to detect a pause or partition before its lease expires. The `leader_lease` row also carries a monotonic `leader_epoch` as a database safeguard. Only a fresh leadership acquisition increases this value. Renewal does not change it.
+
+  On promotion, the engine passes the coordinator’s epoch to `Store.set_leader_epoch`. Each FIFO claim transaction checks `held >= leader_lease.leader_epoch`. If an old leader resumes after the temporal timeout, its stale epoch permits **0 rows**. Its `UPDATE` matches nothing, so it delivers nothing.
+
+  The current leader has a matching epoch and claims normally. This check rejects stale claims without changing valid FIFO order. It applies to PostgreSQL and SQL Server only. SQLite uses one active node, so `set_leader_epoch` has no effect and its claim behavior is unchanged.
+
+  The column migration is additive: `ADD COLUMN IF NOT EXISTS` or a guarded `ALTER` under the DDL lock. It supports an in-place cluster upgrade. Existing rows receive `0`, and the first fresh acquisition increases the value to `1`.
+
 - **Leader-gated WRITE singletons.** Retention purges and the lease-reclaim sweep run **only on the
   leader**, so they never double-execute.
-- **Leader-gated poll-source intake.** Only the leader polls a **shared** external resource (a watched
-  directory / DB-poll table / remote dir). Under active-passive the standby doesn't run the graph at
-  all, so this is belt-and-suspenders (the poll loop is also internally leader-gated).
-- **Per-lane FIFO survives failover.** Because the graph runs on the **leader only**, per-lane FIFO is
-  naturally serialized by that single processor. Across a failover, the ordinary FIFO claim
-  (`claim_next_fifo`) reclaims a crashed/fenced prior leader's **stranded head** — this lane's
-  expired-lease in-flight row, in the same transaction before the head SELECT — so the stranded row
-  blocks the lane and a later row can never deliver ahead of it. (This replaced the dropped active-active
-  per-lane lease mechanism.)
-- **Reference / config / transform-state convergence.** The leader materializes each reference set from
-  its source and followers read-through the shared snapshot; an operator config reload on one node bumps
-  a shared version token and every other node reloads its own config dir to converge; transform-state
-  writes propagate the same way via a per-namespace version token.
+- **Leader-gated poll-source intake.** Only the leader polls shared resources, such as watched directories, database tables, or remote directories. The standby does not run the graph. The poll loop also checks leadership as a separate safeguard.
+
+- **Per-lane FIFO survives failover.** Only the leader processes the graph. The ordinary FIFO claim (`claim_next_fifo`) recovers a stranded lane-head row with an expired lease before the head SELECT. Both operations use the same transaction. The stranded head blocks later rows, so they cannot pass it. This replaced the removed active-active per-lane lease mechanism.
+
+- **Reference, configuration, and transform-state convergence.** The leader builds each reference-set snapshot, and followers read it from the shared database. A configuration reload on one node increases a shared version token. Other nodes then reload their own configuration directories. Transform-state writes use a separate version token for each namespace.
 
 ## Observability — `/cluster/status` and `/cluster/nodes`
 
-Two read-only endpoints on the engine API expose membership and leadership. Both require
-`Permission.MONITORING_READ` (held by VIEWER and up — no PHI, no new permission) and are reachable via
-the console or any API client. They cost a cheap in-memory read (`/cluster/status`) or a single
-`nodes`-table read (`/cluster/nodes`).
+Two read-only API endpoints expose membership and leadership. Both require `Permission.MONITORING_READ`, held by VIEWER and higher roles. Neither exposes PHI or adds a permission. Use the console or any API client. `/cluster/status` reads memory. `/cluster/nodes` reads the `nodes` table once.
 
 ### `GET /cluster/status` — this node's posture
 
@@ -170,10 +130,13 @@ the console or any API client. They cost a cheap in-memory read (`/cluster/statu
 }
 ```
 
-`role` is the active-passive role for operators / a load-balancer health check: `"primary"` when this
-node is the leader (it runs the graph), `"standby"` when it is a warm follower (no listeners bound, no
-workers running), or `"single-node"` when not clustered. Single-node (no cluster) reports `clustered:
-false`, `is_leader: true`, `role: "single-node"`, `config_version: 0`:
+`role` identifies the node for operators and load-balancer checks:
+
+- `"primary"`: the leader runs the graph.
+- `"standby"`: the follower has no listeners or workers.
+- `"single-node"`: clustering is disabled.
+
+A single node reports `clustered: false`, `is_leader: true`, `role: "single-node"`, and `config_version: 0`:
 
 ```json
 { "node_id": "host:1234:ab12cd34", "clustered": false, "is_leader": true,
@@ -182,9 +145,7 @@ false`, `is_leader: true`, `role: "single-node"`, `config_version: 0`:
 
 ### `GET /cluster/nodes` — all nodes + the derived leader
 
-`leader_node_id` is the single **live** leader; a crashed ex-leader whose row still carries the leader
-flag is filtered out by a freshness check (`last_seen` within `node_timeout_seconds`), so it is never
-reported as the leader.
+`leader_node_id` identifies the single **live** leader. The freshness check excludes a crashed former leader when `last_seen` exceeds `node_timeout_seconds`. A stale leader flag does not override that check.
 
 Two-node cluster:
 
@@ -204,15 +165,13 @@ Two-node cluster:
 }
 ```
 
-`lease_owner` / `lease_expires_at` are the **authoritative** leadership-lease state read from the
-`leader_lease` row: who holds the self-fencing lease and the DB-clock epoch at which it expires (the
-instant a standby could acquire if the leader stops renewing). `lease_owner` normally equals
-`leader_node_id` (the heartbeat-flag-derived leader); a brief divergence during failover is expected —
-the lease is the source of truth for who may process. Each node also reports its **leader-preference
-config** (ADR 0096): `acquire_delay_seconds` (its take-over-of-expired handicap; `0.0` = none) and
-`promotable` (`false` = a non-promotable standby that can never become leader) — so an operator can SEE
-which nodes are handicapped or passive across the cluster. Single node (synthetic self-entry — no heartbeat
-history, so `started_at`/`last_seen` are `null`; permanently leader, so `lease_expires_at` is `null`):
+`lease_owner` and `lease_expires_at` come from the authoritative `leader_lease` row. They identify the lease holder and expiry time on the database clock. After expiry, a standby can acquire the lease if the leader does not renew it.
+
+`lease_owner` normally equals the heartbeat-derived `leader_node_id`. A brief difference during failover is expected. The lease determines which node may process messages.
+
+Each node also reports its leader-preference settings (ADR 0096). `acquire_delay_seconds` delays acquisition of an expired lease, with `0.0` meaning no delay. `promotable: false` prevents a standby from becoming leader.
+
+A single node has no heartbeat history, so `started_at` and `last_seen` are `null`. It remains leader, with `lease_expires_at: null`:
 
 ```json
 {
@@ -227,18 +186,11 @@ history, so `started_at`/`last_seen` are `null`; permanently leader, so `lease_e
 }
 ```
 
-A cleanly stopped node leaves a `status: "left"` tombstone (and its leader flag cleared); a crashed
-node's row goes stale (its `last_seen` stops advancing) and the freshness filter stops counting it as
-the leader. `leader_node_id` is always **at most one** node — during a failover window (an old leader's
-flag not yet cleared while the new leader's flag is already set) the freshest still-beating node wins,
-so the array never shows two leaders and never names a dead node.
+A clean shutdown leaves a `status: "left"` record and clears the leader flag. A crashed node stops updating `last_seen`, so the freshness check excludes it. During failover, the freshest live heartbeat wins if both old and new leader flags remain set. The result names at most one leader and never names a dead node.
 
-`/cluster/status` is the **per-node authoritative** leadership signal (it reads that node's own
-in-memory lock gate); `/cluster/nodes` derives leadership from the heartbeat flag and so can lag it by
-up to one `heartbeat_seconds` interval. So immediately after a clean failover the freshly-promoted node
-can report `is_leader: true` on `/cluster/status` for one beat before `/cluster/nodes` folds its flag in
-and surfaces it as `leader_node_id` — a transient `leader_node_id: null` there is the one-tick fold-in
-lag, not a lost-leader incident.
+`/cluster/status` reads the node’s own leadership gate and is authoritative for that node. `/cluster/nodes` uses heartbeat flags and can lag by one `heartbeat_seconds` interval.
+
+After failover, the new primary can report `is_leader: true` before `/cluster/nodes` shows its `leader_node_id`. A temporary `leader_node_id: null` during that interval reflects the heartbeat delay.
 
 ## Deployment topology (active-passive)
 
@@ -259,39 +211,33 @@ lag, not a lost-leader incident.
                                         DB-tier HA: PG replication / SQL Server Always On
 ```
 
-**One primary processes; the rest are warm standbys.** All nodes point at the **same** server DB and run
-the **same** config dir; the `leader_lease` row elects exactly one primary, which alone binds listeners
+**One primary processes. The rest are warm standbys.** All nodes point at the **same** server DB and run
+the **same** config dir. The `leader_lease` row elects exactly one primary, which alone binds listeners
 and runs workers (A standby binds nothing). DB-tier high availability (a replica / failover) is
 **delegated to the database** (PostgreSQL streaming replication, SQL Server Always On) — MessageFoundry
 does not replicate the store itself.
 
 ### Client reconnect — a floating VIP / LB health check is REQUIRED
 
-Like Rhapsody/Corepoint, clients reach "the engine" through a **floating VIP or load balancer**, not a
-fixed node — so a failover is transparent to senders (modulo a reconnect):
+Senders connect through a **floating VIP or load balancer**. After failover, they reconnect through that address to reach the new primary:
 
-> **Planned alternative — engine-managed VIP (Windows-only).** [ADR 0056](adr/0056-engine-managed-vip-failover.md)
-> proposes an **opt-in** mode where the **engine itself** owns the VIP (no external LB/VRRP/WSFC), moving it
-> in lockstep with the leadership lease. It is **Windows-only** and **not yet built**. Until it ships — and
-> on **Linux/containerized** deployments, which it does **not** cover — use the external floating VIP / LB
-> described here, which stays the **cross-platform** default and the recommended posture for the strictest
-> split-brain guarantee.
+> **Planned Windows-only alternative.** [ADR 0056](adr/0056-engine-managed-vip-failover.md) proposes optional engine ownership of the VIP. The engine would move it with the leadership lease, without an external LB, VRRP, or WSFC. This feature is **not built**.
+> Until it is available, use the external VIP or load balancer described here. Linux and container deployments will still require that external option. It remains the cross-platform default and recommended option for the strictest split-brain guarantee.
 
 - **MLLP / TCP inbound (per listener).** Use a VIP per inbound port whose health check is a **TCP
   connect to that port**. Because only the **primary** binds the port (the active-passive graph gating),
-  the check passes only on the primary, so the VIP routes inbound traffic to it automatically; on
+  the check passes only on the primary, so the VIP routes inbound traffic to it automatically. On
   failover the new primary binds the port, the old one's closes, and the VIP follows. MLLP senders see
   a connection drop and reconnect through the VIP — make partners **reconnect on drop** (standard MLLP
   client behavior).
-- **Engine API edge (console / IDE).** The API is a control/read plane over the shared DB and is up on
-  **every** node, so an API VIP can health-check the unauthenticated **`GET /health`** (liveness). To
+- **Engine API edge (console / IDE).** The control/read API runs on **every** node against the shared database.
+  An API VIP can check liveness through unauthenticated **`GET /health`**. To
   pin operations to the primary, read **`GET /cluster/status`** → `role` (`"primary"` / `"standby"`),
   or **`GET /cluster/nodes`** → `leader_node_id` + `lease_owner` (the console surfaces the live primary).
 
 ### Failover is not instantaneous
 
-There is a promotion window, as in Rhapsody (minutes-class) — quantify it from the Workstream-D failover
-benchmark, don't assume zero-downtime:
+Failover includes a promotion window. Measure it with the Workstream-D failover benchmark before planning availability requirements:
 
 - **Clean stop** (graceful shutdown / planned switchover): the leaving primary **expires its lease**, so a
   standby acquires on its next heartbeat — failover is prompt (≈ one `heartbeat_seconds`).
@@ -299,7 +245,7 @@ benchmark, don't assume zero-downtime:
   `leader_lease_ttl_seconds`. A partitioned old primary **self-fences** within
   `leader_fence_timeout_seconds` (< the TTL), so it stops processing before the standby takes over.
 - During the window, in-flight rows are protected by the **row leases** (a standby reclaims only
-  *expired* leases); the new primary runs an owner-scoped recovery **once on promotion** to recover the
+  *expired* leases). The new primary runs an owner-scoped recovery **once on promotion** to recover the
   dead primary's in-flight rows promptly (and the ordinary FIFO claim reclaims a stranded lane head, so
   order survives). At-least-once delivery + idempotent re-runs mean a row interrupted mid-delivery is
   re-delivered after its lease expires (so downstream connections must stay idempotent).
@@ -310,17 +256,17 @@ The defaults (`heartbeat_seconds=10`, `leader_fence_timeout_seconds=20`, `leader
 trade a ~30 s crash-failover for ample margin. Lower all three proportionally (keeping
 `heartbeat < fence < ttl`) for faster failover at the cost of less tolerance for a slow DB / GC pause.
 Because the **leadership** lease is evaluated on the **database's** clock, node clock skew does not
-affect who may hold leadership; the **row** leases, however, use node wall-clock — see below.
+affect who may hold leadership. The **row** leases, however, use node wall-clock — see below.
 
 ## Operational assumptions (honor these)
 
 1. **Clock sync (NTP).** Row leases are wall-clock — keep node clocks reasonably synced so a
-   lease expiry isn't mistimed across nodes.
+   lease expiry is not mistimed across nodes.
 2. **Identical config on every node.** Each node loads the graph (Connections / Routers / Handlers) from
-   its **own** config dir; convergence coordinates the reload *version*, not the files. Deploy the same
+   its **own** config dir. Convergence coordinates the reload *version*, not the files. Deploy the same
    config dir to all nodes.
 3. **Coordinated config changes.** Apply a config change as a **coordinated (not rolling) restart**, so
-   nodes don't run divergent graphs across the change window.
+   nodes do not run divergent graphs across the change window.
 
 ## Related
 

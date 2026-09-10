@@ -1,20 +1,12 @@
 # Security Overview
 
-MessageFoundry is a healthcare interface engine that carries PHI, so security is a
-first-class design constraint rather than an afterthought. This overview describes the
-controls that are built into the engine today: how it authenticates and authorizes every
-action, how it protects data at rest and in transit, how it produces a tamper-evident
-record of what happened, the development and CI practices behind the code, and the threat
-model for each interface. It closes with an honest statement of our verification posture —
-what we hold ourselves to, and what has **not** been independently reviewed.
+MessageFoundry authenticates operators, controls access, encrypts stored data, and records audit events. This document describes those controls, development checks, and interface threat models. It also identifies optional controls and limits of independent verification.
 
-This page is a summary. For the full engineering detail behind these controls, see the
-**Secure Development Standards** document (linked at the end). Where a control is opt-in or
-off by default, that is called out explicitly — we would rather be precise than impressive.
+For engineering details, refer to **Secure Development Standards** at the end of this document. The sections below identify controls that are optional or disabled by default.
 
 ## Secure by default
 
-MessageFoundry is built to fail closed and to make the safe configuration the default one.
+MessageFoundry uses fail-closed controls and secure default settings.
 
 - **Authentication is on by default, and cannot be turned off toward the network.** The
   running service attaches an authentication layer to every route apart from a small
@@ -52,8 +44,7 @@ MessageFoundry is built to fail closed and to make the safe configuration the de
 
 ### Authentication
 
-Operators authenticate as **local accounts** or against **Active Directory**, and every
-action is attributed to a distinct user in the audit trail — no shared logins.
+Operators use **local accounts** or **Active Directory**. The audit record identifies the user for each action. Do not share accounts.
 
 - **Local accounts** use **argon2id** password hashing (tuned cost parameters, with a
   concurrency cap so a login flood cannot exhaust CPU). The password policy is aligned to
@@ -110,7 +101,7 @@ MessageFoundry* — a revoked role, a disabled account, a revoked session — ta
 next request. A change made in the *directory* is a different matter: it propagates through
 the reconciliation pass described above, not immediately.
 
-Two finer-grained controls layer on top of route-level RBAC:
+Two additional controls restrict route-level access:
 
 - **Per-channel scoping** confines an operator's message and connection access to a defined
   set of interfaces. Out-of-scope message reads return `404` (so they never reveal that a
@@ -125,8 +116,7 @@ Two finer-grained controls layer on top of route-level RBAC:
 
 ### Defense-in-depth for sensitive actions
 
-High-value and administrative operations are protected by several independent layers, not by
-network location alone:
+Several controls protect high-value and administrative operations:
 
 - **Step-up re-verification** — sensitive admin operations require a recent credential
   re-proof (having satisfied MFA), on a sudo-style freshness window: five minutes by default,
@@ -267,10 +257,7 @@ level (a config reload does not), but nothing refuses it. Both are operator deci
 both are ones to make deliberately, because the application log is itself a PHI read surface
 (below).
 
-Stated honestly: redaction is conservative, not de-identification. It rewrites HL7-shaped
-spans, date runs, and multi-token name runs — an adversarially crafted *single-token*
-identifier can still survive it, which is why the application log is itself classified as a
-PHI read surface and gated behind a permission.
+Redaction does not de-identify data. It removes HL7-shaped spans, date sequences, and multi-token names. A specially constructed single-token identifier can remain. For this reason, application logs are a PHI read surface and require permission.
 
 ### Retention
 
@@ -279,19 +266,9 @@ and metadata — while keeping the message row, so counts, disposition, and audi
 survive the purge. Every pass that does real work writes a single audit entry with cutoffs
 and counts (never content).
 
-Two of these windows are genuinely enforced, and the rest are not — the distinction matters
-for a data-minimisation review, so here it is plainly. **Enforced:** the inbound PHI-body
-window and the dead-letter body window. Under the default enforcement posture the service
-**refuses to start** with either of them unbounded, and a non-enforcing PHI instance
-auto-bounds them to 30 days; keeping PHI indefinitely is an explicit, audited opt-out.
-**Available but unset:** transform state (which by design may hold a correlation map),
-saved search filters, alert and connection-event detail, and application log files each ship
-with their own window *available*, defaulting to keep-forever, and nothing refuses to start
-if you leave them that way — bounding them is a deployment step. A small number of tiers have
-no purge path at all yet, including a legacy outbound-body table on stores upgraded from an
-older SQL Server schema. So do not read this section as a promise that all PHI ages out of
-the system on its own. Audit-log pruning, separately, is deliberately *not* performed — the
-trail is keep-forever by design.
+The engine enforces retention for inbound PHI bodies and dead-letter bodies. Under default enforcement, an unbounded window prevents startup. A non-enforcing PHI instance limits these windows to 30 days automatically. Indefinite PHI retention requires an explicit, audited exception.
+
+Transform state, saved search filters, alert details, connection-event details, and application logs have optional retention windows. Their defaults retain data indefinitely and do not prevent startup. Set these windows during deployment. Some data has no purge path, including the legacy outbound-body table on upgraded SQL Server stores. Audit logs remain indefinitely by design.
 
 ## Tamper-evident audit
 
@@ -306,11 +283,7 @@ unconditional and cannot be switched off. Each row also records the caller's cli
 so the trail answers *where from* as well as *who*. Credentials, tokens, and PHI bodies are
 never written to the audit trail.
 
-Each audit row carries a `row_hash` chaining the previous row's hash with this row's content,
-and the client address is folded inside the chain, so attribution cannot be rewritten without
-breaking it. The chain is verified with a command-line tool (`messagefoundry audit-verify`).
-Two properties of it are worth stating precisely, because a reviewer who reads the verifier
-will find them anyway.
+Each audit row has a `row_hash` that includes the previous hash and current content. The client address is included in the chain. Use `messagefoundry audit-verify` to check the chain. The two limits below apply.
 
 **Keyed or keyless, depending on the store key.** With a store encryption key configured the
 chain is **keyed** — an HMAC under a key derived from that key, or, under the Vault/OpenBao
@@ -418,13 +391,7 @@ Engineering controls are a relative strength of the project, and the core set ru
 - **A customer/PHI leak guard** and a cryptographic-inventory discovery gate, both of which
   also fail the build.
 
-Advisory alongside them — running on every change, reported to reviewers, but **not**
-merge-blocking: **CodeQL** code scanning on the extended security query suite (on every push
-and pull request plus a weekly schedule), container-image scanning, and supply-chain posture
-scoring. CodeQL is advisory for a specific and, we think, creditable reason: uploading its
-results needs a permission that pull requests from forks do not carry, so requiring it would
-block every outside contribution. We would rather say which checks stop a merge than imply
-that all of them do.
+CodeQL, container-image scanning, and supply-chain scoring report results without blocking merge. CodeQL runs on pushes, pull requests, and a weekly schedule with extended security queries. Fork pull requests lack the permission required to upload CodeQL results. For this reason, the project does not require that check for merge.
 
 Behind the pipeline sit a per-interface threat model, a release gate, a root-cause review of
 every significant vulnerability, and published remediation targets on two schedules — 7 / 30
@@ -441,30 +408,22 @@ with GitHub-native SLSA build provenance — so the provenance of an installed a
 verified, not just its contents. A private vulnerability-disclosure channel with the
 published targets above is in place.
 
-Honest caveats: development is currently single-maintainer, with blocking CI gates and
-adversarial code review compensating for the absence of a second human reviewer; and while
-hash-pinned installation is documented and used in our own CI, we cannot enforce it inside an
-adopter's environment.
+One maintainer currently develops the project. Blocking checks and adversarial code review do not provide a second human reviewer. The project documents hash-pinned installation and uses it in its own checks. It cannot enforce that installation method in an adopter's environment.
 
 ## Threat model by interface
 
-The project maintains a STRIDE-lite threat model with explicit trust boundaries. The trust
-boundary is the **organization's private network plus the host's OS accounts**: MessageFoundry
-is deployed inside a single healthcare organization's network, never internet-facing, and the
-model assumes a trusted operating system with correct file permissions and operator-supplied
-volume encryption. The engine is **single-tenant** and makes no cross-tenant isolation
-guarantees. The table below summarizes the posture per interface.
+The STRIDE-lite threat model defines the organization's private network and host operating-system accounts as its trust boundary. Deployment is inside one healthcare organization's network, never internet-facing. The model assumes a trusted operating system, correct file permissions, and operator-supplied volume encryption. The engine is single-tenant and provides no cross-tenant isolation guarantee. The table summarizes each interface.
 
 | Interface | Primary threats | Controls |
 |---|---|---|
-| **Operator API / console** | Credential theft, privilege escalation, session hijack | Authentication on by default (never disableable toward the network), deny-by-default RBAC, field-level PHI authorization, MFA + step-up on sensitive actions, opaque revocable sessions, loopback-by-default with TLS required off-loopback |
-| **Inbound HL7 / MLLP** | Malformed-message DoS, parser abuse, untrusted-network exposure | Pre-parse size/segment caps, frame/connection/idle caps, MLLP-over-TLS with peer verification, no-silent-drop persistence |
+| **Operator API / console** | Credential theft, privilege escalation, session hijack | Authentication is enabled by default and cannot be disabled for network access. Controls include deny-by-default RBAC, field-level PHI permissions, MFA, step-up checks, and revocable opaque sessions. The default bind is loopback. Other binds require TLS. |
+| **Inbound HL7 / MLLP** | Malformed-message DoS, parser abuse, untrusted-network exposure | Size and segment limits apply before parsing. Frame size, connection count, and idle time are bounded. MLLP-over-TLS verifies peers. Each received message is persisted. |
 | **Inbound file** | Path traversal, oversized input | Filename sanitization, path-traversal defense, input size cap |
-| **Inbound X12 / DICOM** | Untrusted-payload injection, content confusion | Payload-agnostic ingress (formats are not force-applied), tolerant codecs, allowlisted DICOM calling AE titles and peer IPs, the same parameterization and persistence guarantees |
+| **Inbound X12 / DICOM** | Untrusted-payload injection, content confusion | Ingress does not force a message format. Codecs tolerate supported variations. DICOM restricts calling AE titles and peer IPs. Parameterization and persistence controls also apply. |
 | **Outbound REST / FHIR** | SSRF, credential leakage, sending PHI to the wrong place | Redirect refusal, fail-closed egress allowlist, OAuth 2.0 client-credentials / SMART Backend Services, fail-closed TLS verification |
-| **Active Directory (LDAPS)** | Credential interception, filter injection | LDAPS with certificate verification, RFC 4515 filter escaping, engine-side sign-in window; lockout and MFA are the directory's to enforce and the engine does not verify them |
+| **Active Directory (LDAPS)** | Credential interception, filter injection | LDAPS verifies certificates. LDAP filters use RFC 4515 escaping. The engine limits sign-in attempts. The directory must enforce lockout and MFA. The engine cannot verify those directory controls. |
 | **Database egress** | Connection-string injection, MITM | Parameterized queries, ODBC injection guard, fail-closed TLS verification |
-| **Audit / log forwarding** | On-host tampering, PHI leakage in transit | Hash-chained tamper-evidence (HMAC-keyed once a store key is set; unkeyed SHA-256 on a keyless store), off-box forwarding for an independent copy that also covers a deleted tail, native TLS transport, redaction applied to the forwarded stream |
+| **Audit / log forwarding** | On-host tampering, PHI leakage in transit | The audit chain uses HMAC when a store key exists, or unkeyed SHA-256 without one. Off-host copies preserve evidence of deleted tail rows. Forwarded records use the same redaction filters and support native TLS. |
 
 An **inbound web-service listener** — a partner `POST`ing into MessageFoundry over HTTP — **is
 built** ([ADR 0023](adr/0023-inbound-http-listener.md)): a connector-owned HTTP/1.1 receiver with
@@ -476,13 +435,7 @@ SOAP-envelope reply is not implemented.
 
 ## Verification posture — self-assessed, not certified
 
-MessageFoundry is verified internally against **OWASP ASVS 5.0, targeting Level 3** — chosen
-above the usual Level 2 norm because the engine carries PHI. The assessment is pinned to a
-specific ASVS version and is re-scored when the posture changes. One thing to know up front,
-rather than discover: the engine's default enforcement posture changed recently, and the
-per-requirement re-score and sign-off against that change are **outstanding** — so the
-current internal scorecard trails the posture this page describes. We would rather tell you
-the artefact is mid-cycle than describe it as settled.
+The project assesses MessageFoundry against **OWASP ASVS 5.0, targeting Level 3**. The assessment records the ASVS version and requires rescoring when controls change. Rescoring and sign-off for the recent default-enforcement change remain **outstanding**. The current internal scorecard therefore predates the posture described here.
 
 **Read this part carefully.** That work is a point-in-time, code-backed gap analysis
 conducted **by the project, on itself**. It is **not** a certification, an accreditation, a
@@ -509,19 +462,11 @@ residual risks rather than obscure them.
 
 ## Deployment responsibilities
 
-The engine cannot enforce host-level controls, so the following remain the deployer's
-responsibility: whole-database or full-volume encryption for the store, its journals and temp
-files, and file-connector directories — on a server database, that cover lives on the
-*database* host, not the engine host; host operating-system permissions and physical
-security; the database tier's own backup lifecycle; and an operational incident-response and
-breach-notification program.
+The deploying organization must secure the host and database environment. This includes volume or whole-database encryption, journals, temporary files, file-connector directories, operating-system permissions, and physical access. For server databases, encryption must cover the database host. The organization also owns database backups, incident response, and breach notification.
 
-What the engine *does* provide on this front: **encrypted, retention-bounded DR archives**
-of the embedded store plus its configuration bundle (on a server-database deployment the
-data-tier backup is handed to the DBA and the engine archives configuration only), operator
-DR activate/release controls, and **active-passive high availability** — one leader, warm
-standbys, self-fencing leases — on PostgreSQL and SQL Server. An incident-response *workflow*
-is not part of the product.
+The engine supplies encrypted DR archives with retention limits for the embedded store and configuration bundle. For server databases, it archives configuration only. The database administrator handles database backups.
+
+The engine also supplies operator DR activation and release controls, plus active/passive availability on PostgreSQL and SQL Server. One leader runs with warm standbys and self-fencing leases. The product does not provide an incident-response workflow.
 
 ## Learn more
 

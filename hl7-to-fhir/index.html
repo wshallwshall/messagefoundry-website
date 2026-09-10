@@ -38,16 +38,44 @@
   }
   </script>
   <script type="application/ld+json">
-  {
-    "@context": "https://schema.org",
-    "@type": "FAQPage",
-    "mainEntity": [
-      { "@type": "Question", "name": "Can MessageFoundry convert HL7 v2 to FHIR?", "acceptedAnswer": { "@type": "Answer", "text": "Yes. You receive HL7 v2 (for example over MLLP), map the fields you need into a FHIR resource in a Python handler, and deliver it to your FHIR server with a FHIR REST connection. The mapping is code-first — ordinary Python you can version-control and test." } },
-      { "@type": "Question", "name": "Which FHIR version does MessageFoundry target?", "acceptedAnswer": { "@type": "Answer", "text": "The FHIR REST connection defaults to R4B, with R5 and STU3 selectable. Resources are delivered as application/fhir+json to your FHIR server's base URL using the standard create (POST), update (PUT), or transaction/batch interactions." } },
-      { "@type": "Question", "name": "Where does the HL7-to-FHIR mapping live?", "acceptedAnswer": { "@type": "Answer", "text": "In your handler, as plain Python — never hidden inside a connector. You read HL7 fields by path (PID-5.1, OBR-25, …) and build the FHIR resource explicitly, so the mapping is reviewable, testable, and yours." } },
-      { "@type": "Question", "name": "How does MessageFoundry avoid duplicate FHIR writes?", "acceptedAnswer": { "@type": "Answer", "text": "FHIR delivery is at-least-once, so the server operation must be idempotent. The FHIR connection exposes the native levers: interaction='update' (PUT by id) or a conditional knob (if-none-exist, conditional-update, or if-match)." } }
-    ]
-  }
+{
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    {
+      "@type": "Question",
+      "name": "Can MessageFoundry convert HL7 v2 to FHIR?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Yes. Receive HL7 v2 over MLLP and map the needed fields to a FHIR resource in a Python handler. Deliver it through a FHIR REST connection. Keep the mapping in version control and test it with your interface code."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Which FHIR version does MessageFoundry target?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "The FHIR REST connection defaults to R4B; R5 and STU3 are selectable. It sends application/fhir+json to your server’s base URL using create (POST), update (PUT), or transaction/batch interactions."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Where does the HL7-to-FHIR mapping live?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Write the mapping in your Python handler. Read fields by path, such as PID-5.1 or OBR-25, and build the FHIR resource. Review and test it with the rest of your code."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "How does MessageFoundry avoid duplicate FHIR writes?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "FHIR delivery is at-least-once, so server operations must tolerate repeated requests without duplicate writes. Use interaction='update' for PUT by id, or a conditional option: if-none-exist, conditional-update, or if-match."
+      }
+    }
+  ]
+}
   </script>
   <script type="application/ld+json">
   {
@@ -76,7 +104,7 @@
 
   <div class="eabar" role="region" aria-label="Project status">
     <div class="container">
-      <p><strong>Early Access &middot; beta.</strong> We're building toward 1.0 &mdash; and we want people involved now, while it can still be shaped. <a href="/status.html">Where the project stands &rarr;</a></p>
+      <p><strong>Early Access &middot; beta.</strong> Help test and shape the 1.0 release. <a href="/status.html">Where the project stands &rarr;</a></p>
     </div>
   </div>
 
@@ -134,14 +162,14 @@
       <nav class="crumb" aria-label="Breadcrumb"><a href="/">Home</a> <span aria-hidden="true">›</span> <a href="/guides/">Guides</a> <span aria-hidden="true">›</span> <span>HL7 v2 to FHIR</span></nav>
       <span class="eyebrow">Developer guide</span>
       <h1 style="max-width:18ch;margin-inline:auto">Convert HL7 v2 to FHIR in Python</h1>
-      <p class="lead">Bridge HL7 v2 feeds to a FHIR server with <b>MessageFoundry</b>: receive HL7 over MLLP, map the fields you need to a FHIR resource in a <b>code-first</b> Python handler, and deliver it over FHIR REST. The mapping is ordinary Python — reviewable, testable, and yours, never buried in a connector.</p>
+      <p class="lead">Receive HL7 v2 over MLLP, map fields to a FHIR resource in a Python handler, and deliver it to a FHIR server.</p>
     </div>
   </section>
 
   <section class="section">
     <div class="container" style="max-width:820px">
 
-      <p class="lead" style="margin-bottom:8px">MessageFoundry ships a first-class <code>FHIR</code> destination. Your handler builds a FHIR-JSON resource (or a transaction <code>Bundle</code>) and the connection delivers it to your server's base URL as <code>application/fhir+json</code> — defaulting to <b>R4B</b> (R5 and STU3 are selectable).</p>
+      <p class="lead" style="margin-bottom:8px">The <code>FHIR</code> destination sends a FHIR-JSON resource or transaction <code>Bundle</code> built by your handler. It delivers to your server’s base URL as <code>application/fhir+json</code>. The default version is <b>R4B</b>; you can select R5 or STU3.</p>
 
       <h2>1. Install the engine</h2>
       <p>Install MessageFoundry from <a href="/pypi.html">PyPI</a>. The optional <code>[fhir]</code> extra adds typed validation against the FHIR spec before delivery.</p>
@@ -153,7 +181,7 @@ pip install <span class="s">"messagefoundry[fhir]"</span></pre>
       </div>
 
       <h2>2. Declare an HL7 inbound and a FHIR outbound</h2>
-      <p>Receive HL7 v2 over MLLP, and declare a <code>FHIR</code> REST destination pointed at your server's <b>base</b> URL (e.g. <code>https://host/fhir</code>). Keep the URL and any token in <code>env()</code> so each environment resolves its own.</p>
+      <p>Receive HL7 v2 over MLLP. Set the <code>FHIR</code> REST destination to your server’s <b>base</b> URL, such as <code>https://host/fhir</code>. Use <code>env()</code> for the URL and token so each environment resolves its own values.</p>
       <div class="code-card">
         <div class="code-card__bar"><i></i><i></i><i></i><span class="code-card__name">config/lab_to_fhir.py</span></div>
 <pre class="code"><span class="k">import</span> json
@@ -167,7 +195,7 @@ pip install <span class="s">"messagefoundry[fhir]"</span></pre>
       </div>
 
       <h2>3. Map HL7 fields to a FHIR resource</h2>
-      <p>The mapping lives in your <b>handler</b>, as plain Python. Read HL7 fields by path and build the resource you want, then <code>Send</code> the JSON to the FHIR outbound.</p>
+      <p>Write the mapping in your Python <b>handler</b>. Read HL7 fields by path, build the resource, then <code>Send</code> the JSON to the FHIR destination.</p>
       <div class="code-card">
         <div class="code-card__bar"><i></i><i></i><i></i><span class="code-card__name">config/lab_to_fhir.py</span></div>
 <pre class="code"><span class="d">@router</span>(<span class="s">"oru_router"</span>)
@@ -209,7 +237,7 @@ pip install <span class="s">"messagefoundry[fhir]"</span></pre>
       </div>
 
       <div class="callout" style="margin-top:30px">
-        <p style="margin:0"><strong>Idempotency, built in.</strong> FHIR delivery is at-least-once, so the server operation should be idempotent. The connection's native levers cover it: <code>interaction="update"</code> (PUT by id), or a conditional knob — <code>if-none-exist</code>, <code>conditional-update</code>, or <code>if-match</code>.</p>
+        <p style="margin:0">FHIR delivery is at-least-once, so server operations must tolerate repeated requests without duplicate writes. Use <code>interaction="update"</code> for PUT by id. Conditional options include <code>if-none-exist</code>, <code>conditional-update</code>, and <code>if-match</code>.</p>
       </div>
 
       <div class="btn-row" style="margin-top:30px">
@@ -238,10 +266,10 @@ pip install <span class="s">"messagefoundry[fhir]"</span></pre>
     <div class="container">
       <div class="center" style="margin-bottom:28px"><span class="eyebrow">FAQ</span><h2>Frequently asked questions</h2></div>
       <div class="faq">
-        <div class="faq-item"><h3>Can MessageFoundry convert HL7 v2 to FHIR?</h3><p>Yes. You receive HL7 v2 (for example over MLLP), map the fields you need into a FHIR resource in a Python handler, and deliver it to your FHIR server with a FHIR REST connection. The mapping is code-first — ordinary Python you can version-control and test.</p></div>
-        <div class="faq-item"><h3>Which FHIR version does MessageFoundry target?</h3><p>The FHIR REST connection defaults to R4B, with R5 and STU3 selectable. Resources are delivered as application/fhir+json to your FHIR server's base URL using the standard create (POST), update (PUT), or transaction/batch interactions.</p></div>
-        <div class="faq-item"><h3>Where does the HL7-to-FHIR mapping live?</h3><p>In your handler, as plain Python — never hidden inside a connector. You read HL7 fields by path (PID-5.1, OBR-25, …) and build the FHIR resource explicitly, so the mapping is reviewable, testable, and yours.</p></div>
-        <div class="faq-item"><h3>How does MessageFoundry avoid duplicate FHIR writes?</h3><p>FHIR delivery is at-least-once, so the server operation must be idempotent. The FHIR connection exposes the native levers: interaction='update' (PUT by id) or a conditional knob (if-none-exist, conditional-update, or if-match).</p></div>
+        <div class="faq-item"><h3>Can MessageFoundry convert HL7 v2 to FHIR?</h3><p>Yes. Receive HL7 v2 over MLLP and map the needed fields to a FHIR resource in a Python handler. Deliver it through a FHIR REST connection. Keep the mapping in version control and test it with your interface code.</p></div>
+        <div class="faq-item"><h3>Which FHIR version does MessageFoundry target?</h3><p>The FHIR REST connection defaults to R4B; R5 and STU3 are selectable. It sends application/fhir+json to your server’s base URL using create (POST), update (PUT), or transaction/batch interactions.</p></div>
+        <div class="faq-item"><h3>Where does the HL7-to-FHIR mapping live?</h3><p>Write the mapping in your Python handler. Read fields by path, such as PID-5.1 or OBR-25, and build the FHIR resource. Review and test it with the rest of your code.</p></div>
+        <div class="faq-item"><h3>How does MessageFoundry avoid duplicate FHIR writes?</h3><p>FHIR delivery is at-least-once, so server operations must tolerate repeated requests without duplicate writes. Use interaction='update' for PUT by id, or a conditional option: if-none-exist, conditional-update, or if-match.</p></div>
       </div>
     </div>
   </section>
@@ -256,8 +284,8 @@ pip install <span class="s">"messagefoundry[fhir]"</span></pre>
             <img class="brand-mark" src="/assets/img/logo.svg" alt="" width="28" height="28">
             <span class="brand-name">Message<span class="brand-accent">Foundry</span><span class="brand-tm">™</span></span>
           </a>
-          <p class="footer-tagline"><b>More</b> Than an HL7 Interface Engine</p>
-          <p>Open-source healthcare interface engine — secure by default, built to recognized standards, connecting a wide range of protocols and message types.</p>
+          <p class="footer-tagline">Open-source healthcare interface engine</p>
+          <p>Route and transform healthcare messages with an open-source interface engine you run on your own servers.</p>
           <div class="badge-row" style="margin-top:16px">
             <span class="badge">Open source</span>
             <span class="badge">No lock-in</span>
@@ -300,8 +328,8 @@ pip install <span class="s">"messagefoundry[fhir]"</span></pre>
         </div>
       </div>
       <div class="footer-bottom">
-        <span>© 2026 MessageFoundry Foundation — this website and its content, all rights reserved. The MessageFoundry engine is separately open source, licensed under AGPL-3.0-or-later.</span>
-        <span>MessageFoundry and the MessageFoundry word mark are trademarks of MessageFoundry Foundation. Mirth Connect, Cloverleaf, Rhapsody, Corepoint, and Ensemble are trademarks of their respective owners; MessageFoundry is independent and unaffiliated.</span>
+        <span>© 2026 MessageFoundry, LLC — this website and its content, all rights reserved. The MessageFoundry engine is separately open source, licensed under AGPL-3.0-or-later.</span>
+        <span>MessageFoundry and the MessageFoundry word mark are trademarks of MessageFoundry, LLC. Mirth Connect, Cloverleaf, Rhapsody, Corepoint, and Ensemble are trademarks of their respective owners; MessageFoundry is independent and unaffiliated.</span>
       </div>
     </div>
   </footer>

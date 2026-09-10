@@ -1,30 +1,20 @@
 # HL7 validation: the three tiers
 
-MessageFoundry validates HL7 v2.x at three distinct tiers. Each catches a different class of problem;
-together they let a feed be both *tolerant* (real-world HL7 is frequently non-conformant) and *safe*
-(a safety-critical feed can reject anything off-spec). Pick the tiers a given feed needs — they
-compose.
+MessageFoundry validates HL7 v2.x at three tiers. Each catches a different kind of problem. Choose the tiers each feed needs. They can work together. Tolerant parsing handles non-conformant messages, while strict validation can reject off-spec input.
 
 | Tier | Engine | When | Checks | On failure |
 |---|---|---|---|---|
-| 1. Tolerant peek | `python-hl7` ([parsing/peek.py](../messagefoundry/parsing/peek.py)) | Always (hot path) | Parse + fast field access; size/segment caps; MSH present | Unparseable / oversized → `ERROR` (NAK), never crashes the connection |
+| 1. Tolerant peek | `python-hl7` ([parsing/peek.py](../messagefoundry/parsing/peek.py)) | Always (hot path) | Parse + fast field access. Size/segment caps. MSH present | Unparseable / oversized → `ERROR` (NAK), never crashes the connection |
 | 2. Strict structural | `hl7apy` ([parsing/validate.py](../messagefoundry/parsing/validate.py)) | Opt-in per inbound (`strict=True`) | Version-aware **schema**: segment cardinality, datatypes, table values, lengths, MSH-12 version | Non-conformant → synchronous NAK (AR/AE) at the listener |
-| 3. Business consistency | `parsing/consistency.py` (this WP) | In a Router/Handler | **Cross-field** coherence the schema can't express | Handler decides: `FILTERED` or `ERROR`/dead-letter |
+| 3. Business consistency | `parsing/consistency.py` (this WP) | In a Router/Handler | **Cross-field** coherence the schema cannot express | Handler decides: `FILTERED` or `ERROR`/dead-letter |
 
 ## Tier 1 — tolerant peek (always on)
 
-The hot path uses `python-hl7` for fast, forgiving field access (`msg["PID-3"]`), so routing never pays
-for full structural validation. It enforces only hard safety limits (max message bytes, max segments,
-MSH presence). A message that can't be parsed, or that exceeds a limit, is routed to the error/dead-
-letter path and logged `ERROR` — it never crashes the connection. This is the right default for most
-feeds: you accept what arrives, preserve the raw, and route bad messages to where an operator sees them.
+The hot path uses `python-hl7` for tolerant field access, such as `msg["PID-3"]`. Routing does not run full structural validation. It checks message-size and segment limits, and requires MSH. Unparseable or oversized messages enter the error/dead-letter path with `ERROR` logged. They do not crash the connection. This default preserves the raw message and makes failures visible to operators.
 
 ## Tier 2 — strict structural validation (opt-in)
 
-For a feed where an off-spec message must be *rejected at the door*, enable `hl7apy` strict validation
-on the **inbound** connection. It is version-aware (checks the message against the official HL7
-structure for its version) and is the slow path, so it is kept off routing and is **opt-in per
-connection**:
+Enable `hl7apy` strict validation on the **inbound** connection when off-spec messages must be rejected before routing. It checks the official HL7 structure for the message version. This slower path is **opt-in per connection** and stays outside routing:
 
 ```python
 from messagefoundry import MLLP, inbound
@@ -32,21 +22,14 @@ from messagefoundry import MLLP, inbound
 inbound("IB_ACME_ADT", MLLP(port=2575), router="adt_router", strict=True, hl7_version="2.5")
 ```
 
-A non-conformant message is **NAK'd synchronously** (AR/AE) at the listener, before it is ever routed —
-the sender is told immediately. Be **explicit about `hl7_version`** for a strict feed; don't rely on
-silent autodetection. Enable strict when: the downstream system is intolerant of malformed structure,
-the feed is contractually conformant, or correctness outweighs throughput. Leave it off for a tolerant
-archival/forwarding feed.
+The listener **NAKs a non-conformant message synchronously** (AR/AE), before routing. Set `hl7_version` explicitly. Do not rely on silent autodetection. Enable strict validation when a downstream system rejects malformed structure, the feed promises conformance, or correctness outweighs throughput. Leave it off for tolerant archival or forwarding feeds.
 
 Strict validation surfaces a single conformance error (not a full report) — a full report of a PHI
 message would be a data leak. See [parsing/validate.py](../messagefoundry/parsing/validate.py).
 
 ## Tier 3 — cross-field business consistency (Router/Handler)
 
-Strict validation checks each item against the schema **independently**. It does **not** check that
-*combinations of related items are reasonable*: that a required identifier is present, that a value is
-echoed consistently across segments, or that admit ≤ discharge. Per **ASVS 2.2.3 / 2.1.2**, that
-combined-item consistency is the **application's** job — in a code-first engine, the **Router/Handler**.
+Strict validation checks items against the schema **independently**. It does not check related values together: required identifiers, values repeated across segments, or whether admit ≤ discharge. Under **ASVS 2.2.3 / 2.1.2**, the application must check these relationships. In MessageFoundry, the **Router/Handler** does that work.
 
 [`messagefoundry/parsing/consistency.py`](../messagefoundry/parsing/consistency.py) provides small,
 **generic, composable** primitives. Each takes the parsed `Message` plus field *paths* and returns a
@@ -61,7 +44,7 @@ list of **PHI-safe** `Violation`s (rule + path, **never the field value**):
 | `matches(msg, path, pattern)` | the value fully matches a regex (a field-format allow-list) |
 | `check(*groups)` | flattens several results into one list for a single decision |
 
-The library **detects; the Handler decides.** Keeping it pure preserves the at-least-once *re-run*
+The library **detects. The Handler decides.** Keeping it pure preserves the at-least-once *re-run*
 invariant (a Handler must be a pure function of the message — CLAUDE.md §2). Compose the generic
 primitives into your feed's message-type-specific rules:
 
@@ -88,10 +71,10 @@ def validate_and_archive(msg):
 Acting on a non-empty result is a deliberate choice:
 
 - **`raise ConsistencyError(violations)`** → the message goes to the error/dead-letter path (logged
-  `ERROR`, surfaced via the AlertSink). Use this when a downstream system can't safely consume it. The
+  `ERROR`, surfaced via the AlertSink). Use this when a downstream system cannot safely consume it. The
   exception's string is built from rule + paths only, so it is **safe to log and store** (no PHI).
 - **`return None`** → the message is dropped and logged `FILTERED`. Use this for a benign coherence
-  issue you'd rather not forward.
+  issue you would rather not forward.
 
 A full worked example — wired inbound → router → handler → file — is in
 [`samples/consistency/validated_adt.py`](../samples/consistency/validated_adt.py):
@@ -102,10 +85,7 @@ python -m messagefoundry serve --config samples/consistency --db ./mf.db --env d
 
 ### PHI-safety
 
-A `Violation` records the **rule and the field path(s)**, never the field *value*. So violations can be
-logged, aggregated, or ridden into a stored disposition (via the `safe_exc()` chokepoint — see
-[PHI.md](PHI.md) §7) without leaking PHI: a date violation reads *"PID-7 is not a valid HL7 date/time"*,
-never the offending value.
+A `Violation` records the **rule and field paths**, never field values. It can be logged, aggregated, or included in a stored disposition through `safe_exc()`. See [PHI.md](PHI.md) §7. A date violation reads *"PID-7 is not a valid HL7 date/time"* without including the patient value.
 
 ## Choosing tiers
 

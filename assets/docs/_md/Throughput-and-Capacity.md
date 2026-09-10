@@ -7,15 +7,11 @@ your own deployment.**
 
 ## Summary
 
-MessageFoundry sustains **40 million message events per day**. That figure deliberately holds
-back **more than 20% of measured capacity as reserve**, rather than quoting the ceiling itself.
+The published reference is **40 million message events per day**. It reserves **more than 20% of measured capacity**. The measurement used four engine processes with one database. This arrangement is **not yet a supported production topology**.
 
-That figure is not a projection. It comes from a measured sustainable ceiling of approximately
-**603 message events per second** — about 52 million events per day — from which we publish
-roughly three quarters. The reserve is deliberate: a published number should be one you can
-run at every day, not a record set once under ideal conditions.
+The measured ceiling was approximately **603 message events per second**, or about 52 million events per day. The published figure uses roughly three quarters of that rate. This is a point estimate from sustained holds, not a long-duration test.
 
-Three things are worth knowing before the numbers mean anything:
+Use these conditions when you read the figures:
 
 - **A "message event" is one message in or one message out.** An interface that receives a
   message and delivers it to one destination produces two events.
@@ -29,9 +25,7 @@ Three things are worth knowing before the numbers mean anything:
 
 ## 1. What "message events per day" counts
 
-Interface engine capacity is conventionally counted in **total message events** — every
-message that enters the engine plus every message it delivers. This is the unit used across
-the industry for daily-volume figures, and it is the unit used here.
+This document counts **total message events**. Each inbound message is one event. Each outbound delivery is one event.
 
 | Shape | Events per message |
 |---|---|
@@ -41,9 +35,7 @@ the industry for daily-volume figures, and it is the unit used here.
 So 40 million events per day is roughly **20 million inbound messages** in a simple
 one-in-one-out feed, or fewer inbound messages where feeds fan out to several destinations.
 
-Quoting a bare "messages per day" without saying which unit is meant is the most common way
-capacity figures mislead. When comparing any two engines, confirm you are comparing the same
-one.
+Before you compare engines, identify the unit for each capacity figure. Total events, inbound messages, and deliveries are different units.
 
 ---
 
@@ -57,19 +49,14 @@ one.
 | Store | Microsoft SQL Server on its own host, local NVMe storage |
 | Fan-out tested | Both one-in-one-out and one-in-four-out |
 | Duration | Sustained holds, not short bursts |
-| Counted | **Completed** deliveries, confirmed drained — not messages offered |
-| Correctness | Zero loss, nothing stranded, per-lane order preserved, pipeline fully drained |
+| Counted | Completed deliveries. The pipeline was confirmed drained. Offered messages were excluded. |
+| Correctness | Zero loss. No messages remained stranded. Per-lane order was preserved. The pipeline drained fully. |
 
 ### Result
 
 **Approximately 600 to 605 message events per second, sustained.**
 
-The most useful property of this result is that it **did not change with fan-out**. Feeds that
-deliver to one destination and feeds that deliver to four converged on the same total-event
-ceiling, within measurement noise. Capacity is therefore governed by total event volume, not
-by how many destinations a feed serves — which makes sizing considerably simpler. One caveat we would
-rather state: the two fan-out cases also differed in destination count and offered rate, so this is an
-observed equality on the configurations tested rather than a clean single-variable isolation.
+The one-destination and four-destination tests reached the same total-event ceiling within measurement noise. Destination count and offered rate also changed between tests. Thus, the result does not isolate the effect of fan-out.
 
 ### From ceiling to published figure
 
@@ -80,74 +67,54 @@ observed equality on the configurations tested rather than a clean single-variab
 
 Publishing 40 million against a measured 52 million holds back about 23%.
 
-**Why reserve at all.** A ceiling is the point at which the system stops keeping up. Running a
-production interface engine at its ceiling means any variation — a busier hour, a slower
-partner, a maintenance window — turns into a growing backlog. Reserve is what absorbs that,
-and a capacity claim without one is a claim you cannot actually operate at.
+Reserve provides capacity for bursts, retries, slower partners, and maintenance. At the measured ceiling, an increase in work can cause the backlog to grow.
 
 ---
 
 ## 3. Nothing was saturated at the ceiling
 
-We checked specifically what ran out first at peak load. **Nothing did.**
+None of the resources listed below was exhausted at the measured ceiling.
 
 | Resource | At the ceiling | Exhausted? |
 |---|---|---|
 | Database CPU | ~69% average, measured while deliberately overloaded 25% past the ceiling | No |
 | Engine host CPU | Roughly half idle | No |
 | Database commit capacity | ~23,600–27,200 commits/second available against ~600 demanded | No — roughly 40× headroom |
-| Connection pool | Never fully in use; waits to acquire a connection averaged ~0.015 ms | No |
+| Connection pool | Never fully used. Connection acquisition waits averaged ~0.015 ms. | No |
 | Worker thread pool | Queue essentially empty — zero for 84% of samples | No |
 | Outbound delivery lanes | Around 90% idle | No |
 
-The limit is that certain durable writes must happen **in sequence** — one after another to
-preserve the ordering and at-least-once delivery guarantees the engine makes. Sequencing is
-not something more hardware relieves.
+The evidence points to durable writes that must occur in sequence to preserve ordering and at-least-once delivery. The precise mechanism remains an inference.
 
-That has a directly practical consequence: **adding processor cores to the database does not
-raise this ceiling.** We measured that rather than assuming it. Nor do the two changes people
-usually reach for next. Cutting the number of database transactions per message was measured
-directly: a 28% reduction in committed transactions moved sustained throughput by less than one
-percent — inside measurement noise — so transaction reduction is a measured dead end rather than a
-lever. Faster transaction-log storage is on the same footing: the store commits far below its
-measured ceiling, so the log is not what the pipeline is waiting on. We have no identified
-throughput lever, and we would rather say so than name one we have already falsified.
+Adding database processor cores did not increase the measured ceiling. A **28% reduction in committed transactions** changed sustained throughput by **less than one percent**, within measurement noise.
 
-We describe the precise mechanism as well-corroborated rather than proven — it is consistent
-with everything we measured, but we have not isolated it to the exclusion of all alternatives,
-and we would rather say so than overclaim.
+The store also operated below its measured commit ceiling. These results do not identify transaction reduction or faster log storage as effective ways to increase throughput. No effective change has been identified.
+
+The proposed mechanism agrees with the measurements. It has not been isolated from all alternatives.
 
 ---
 
 ## 4. Why your throughput will differ: partner systems
 
-This is the single most important factor in real deployments, and it is not the engine.
+Partner acknowledgement time can limit ordered delivery.
 
-**Ordered delivery is inherently serial.** When a feed must arrive in the order it was sent —
-the default, and a hard requirement for most clinical interfaces — the engine can have only one
-message in flight per destination:
+Ordered delivery is the default and is required for most clinical interfaces. The engine permits one message in flight per destination:
 
 1. Send message *N* to the partner.
 2. **Wait** while the partner receives it, processes it, usually writes it to its own database,
    and acknowledges it.
 3. Only then send message *N+1*.
 
-Step 2 is not the engine's time. It belongs to the network round-trip and to the partner's own
-processing, and because the stream is serial it lands squarely in the critical path.
+The wait includes network travel and partner processing. The next message cannot use that ordered stream until the wait ends.
 
 Approximately:
 
 > **messages/second ≈ 1000 ÷ (engine's fixed per-message cost + partner round-trip)**, in
 > milliseconds
 
-The engine's fixed cost is small and roughly constant. The partner's round-trip is yours, and
-it dominates as soon as it exceeds a few milliseconds. A partner acknowledging in 50 ms holds a
-single ordered interface to roughly 15 messages per second; at 250 ms, to about 4. **No amount
-of engine or database speed changes that.**
+Using the reference serial-path cost, a 50 ms acknowledgement gives about 15 messages per second. At 250 ms, the rate is about 4 messages per second. These are estimates for one ordered interface.
 
-Every figure in this document was measured against an **instantly acknowledging partner**. That
-is a deliberate choice — it isolates what the engine contributes — but it means these are
-ceilings under ideal conditions, not forecasts for your environment.
+Every measurement used an **instantly acknowledging partner**. This isolates the engine contribution. The figures are reference ceilings, not forecasts for a deployment.
 
 ### What you can do about a slow partner
 
@@ -175,16 +142,13 @@ ceilings under ideal conditions, not forecasts for your environment.
    interface is a single serial lane with a bounded rate — that is the physics of guaranteed
    ordering, not a product limitation.
 
-**One caution on adding interfaces.** Aggregate capacity is *not* simply the sum of each
-interface's individual ceiling. Interfaces share a database and an engine host, and we have
-measured concurrent aggregate throughput landing well below the naive sum. Size against a
-measured concurrent figure where you have one, and treat the sum as an upper bound only.
+Interfaces share a database and an engine host. Their measured combined rate can be lower than the sum of their individual ceilings. Use a measured concurrent rate for sizing. Treat the sum as an upper bound.
 
 ---
 
 ## 6. Scope and limits
 
-We would rather you know what these numbers do and do not cover.
+Keep these limits with each measurement:
 
 - **Synthetic data, laboratory conditions.** All measurements use generated HL7 messages on
   dedicated test infrastructure. Nothing here was measured against a live clinical system.
@@ -202,8 +166,7 @@ We would rather you know what these numbers do and do not cover.
   hardware- and workload-dependent, and a comparison run by one vendor against another is not
   evidence we would ask you to trust from anyone else.
 
-Treat every throughput figure — ours included — as a starting point for measurement in your own
-environment, not as a guarantee.
+Use throughput figures as references for tests in your environment. They do not guarantee deployment capacity.
 
 ---
 
@@ -216,5 +179,4 @@ Ours or anyone's:
 3. **How fast did the receiving system acknowledge?**
 4. **What is the peak-hour rate behind that daily average?**
 
-Without those four, a messages-per-second or messages-per-day figure is marketing rather than
-engineering.
+Capacity comparisons require the unit, ordering mode, partner response time, and peak-hour rate.

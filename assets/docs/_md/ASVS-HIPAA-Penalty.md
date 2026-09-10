@@ -1,6 +1,6 @@
 # Application Security & HIPAA Breach-Penalty Exposure
 
-*A CISO-facing primer on how the depth of application-security verification shapes HIPAA breach-penalty exposure — and how MessageFoundry's OWASP ASVS Level 3 self-assessment fits into a buyer's diligence.*
+*This document explains application-security evidence, HIPAA penalty exposure, and the limits of MessageFoundry's ASVS Level 3 self-assessment.*
 
 > **Not legal advice.** This page is educational and informational only. Nothing here is legal or
 > compliance advice, no attorney-client relationship is created by reading it, and it is not a
@@ -85,9 +85,9 @@ Notably, the *absence* of recognized practices is not treated as an aggravating 
 
 ## How MessageFoundry's ASVS L3 self-assessment supports your diligence
 
-MessageFoundry is developed against the **OWASP ASVS 5.0 Level 3** catalog — a level above the Level 2 bar typically expected of PHI-handling applications — and a documented self-assessment against that catalog's 345 requirements is maintained as part of the engineering record. Every control in it is either built or carries a **documented residual**.
+MessageFoundry uses the **OWASP ASVS 5.0 Level 3** catalog. The engineering record contains a self-assessment of its 345 requirements. The record identifies implemented controls and documented residuals.
 
-What this is — and is not:
+The assessment has these limits:
 
 - It is a **point-in-time, AI-assisted self-assessment**. It is **not a certification, not an audit, and not an independent review**, and we do not describe it as one. Neither OWASP nor NIST issues a certificate, and a self-assessment is not one.
 - **We publish no pass/fail count.** The scoring is under reconciliation, and by the project's own rule no figure is quotable until the final re-score lands — so a count here would be a claim we could not stand behind. (An earlier count circulated on this site and elsewhere; the document it came from has since been marked superseded as unreliable, and the figure was withdrawn.)
@@ -95,7 +95,7 @@ What this is — and is not:
 - The assessment set itself is maintained privately and can be made available to evaluators and security reviewers under NDA. The rule that decides what is published and what is withheld — and how to request the rest — is written down in the project's [security-documentation policy](https://github.com/MEFORORG/MessageFoundry/blob/main/docs/SECURITY-DOCS-POLICY.md).
 - We say MessageFoundry **supports a HIPAA-compliant deployment**. We do not say "HIPAA compliant," "NIST certified," "ASVS certified," or "guaranteed" — compliance is a property of *your* deployment and program, not of any single component.
 
-The point for a buyer's diligence is practical: the controls this work covers — encryption at rest and in transit, deny-by-default role-based access control, a hash-chained user-attributed audit trail, ingress validation, and disciplined handling of regulated data — are the same controls that map onto the HIPAA Security Rule's technical safeguards and onto the recognized-practices frameworks above. The self-assessment, and the artifacts behind it, are designed to slot into the evidence package your compliance team maintains — with its limits stated plainly enough that your team can weigh them.
+The assessment covers encryption, role-based access control, audit records, input validation, and regulated-data handling. These controls map to HIPAA technical safeguards. Your compliance team can include the assessment and supporting records in its evidence package. The assessment limits still apply.
 
 Interface authentication reflects the same posture:
 
@@ -106,13 +106,13 @@ Interface authentication reflects the same posture:
 
 ## Deployment guidance
 
-Strong application-security verification establishes the floor; a sound deployment preserves it. A few standing guidelines:
+The following deployment responsibilities support the application controls:
 
 - **Terminate TLS for any listener exposed beyond loopback.** Running a listener on `localhost` for local testing is fine in the clear; the moment a listener is reachable off the host, it should sit behind TLS (and, where appropriate, mTLS). MessageFoundry enforces this rather than trusting it — an off-loopback plaintext bind is refused at startup.
 - **Put enterprise operators in your directory**, so MFA and account lifecycle are governed by your existing identity provider; local accounts keep the engine's own second-factor requirement.
 - **Retain verification and operational artifacts** — assessment results, audit logs, alert and dead-letter history — as ongoing evidence, generated through the normal lifecycle rather than reconstructed after the fact.
 
-These are deployment responsibilities shared by any PHI-handling system, not gaps in the product.
+The deploying organization remains responsible for these controls.
 
 ## Takeaway
 

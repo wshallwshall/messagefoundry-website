@@ -39,15 +39,36 @@
   }
   </script>
   <script type="application/ld+json">
-  {
-    "@context": "https://schema.org",
-    "@type": "FAQPage",
-    "mainEntity": [
-      { "@type": "Question", "name": "How do I build an HL7 interface?", "acceptedAnswer": { "@type": "Answer", "text": "In MessageFoundry you build an HL7 interface from four blocks: a Connection (inbound and outbound), a Router that decides where each message goes, and a Handler that transforms and sends it. You write them as plain Python in a config module, validate with the commit gate, then run the engine." } },
-      { "@type": "Question", "name": "Do I have to write code, or can I use a GUI?", "acceptedAnswer": { "@type": "Answer", "text": "Either. The VS Code extension and admin console offer guided wizards for Connections and routes, or you can write them directly in Python for full control. Both produce the same version-controlled config." } },
-      { "@type": "Question", "name": "How do I test an HL7 interface before production?", "acceptedAnswer": { "@type": "Answer", "text": "Validate the config with the commit gate (python -m messagefoundry check), then send sample messages and watch each message reach a recorded disposition — routed, filtered, or unrouted. Because interfaces are plain Python, you can also unit-test routers and handlers like any code." } }
-    ]
-  }
+{
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    {
+      "@type": "Question",
+      "name": "How do I build an HL7 interface?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Define inbound and outbound Connections, a Router to choose Handlers, and a Handler to transform and send messages. Keep them in a Python config module. Validate the configuration with the commit gate, then run the engine."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Do I have to write code, or can I use a GUI?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Use guided wizards in the VS Code extension and admin console, or write Python directly. Both produce the same configuration for version control."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "How do I test an HL7 interface before production?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Run python -m messagefoundry check to validate the configuration. Send sample messages and check each recorded outcome: routed, filtered, or unrouted. Unit-test Routers and Handlers as Python functions."
+      }
+    }
+  ]
+}
   </script>
   <script type="application/ld+json">
   {
@@ -76,7 +97,7 @@
 
   <div class="eabar" role="region" aria-label="Project status">
     <div class="container">
-      <p><strong>Early Access &middot; beta.</strong> We're building toward 1.0 &mdash; and we want people involved now, while it can still be shaped. <a href="/status.html">Where the project stands &rarr;</a></p>
+      <p><strong>Early Access &middot; beta.</strong> Help test and shape the 1.0 release. <a href="/status.html">Where the project stands &rarr;</a></p>
     </div>
   </div>
 
@@ -134,7 +155,7 @@
       <nav class="crumb" aria-label="Breadcrumb"><a href="/">Home</a> <span aria-hidden="true">›</span> <a href="/guides/">Guides</a> <span aria-hidden="true">›</span> <span>Build an HL7 interface</span></nav>
       <span class="eyebrow">Developer guide</span>
       <h1 style="max-width:18ch;margin-inline:auto">Build an HL7 interface in Python</h1>
-      <p class="lead">An interface in <b>MessageFoundry</b> is four small pieces of plain Python: a <b>Connection</b> in, a <b>Router</b> to decide where messages go, a <b>Handler</b> to transform and send them, and a <b>Connection</b> out. Here's the whole thing — build it, validate it, and test it before it goes live.</p>
+      <p class="lead">Build an interface with an inbound Connection, a Router, a Handler, and an outbound Connection. Then validate the configuration and send a test message.</p>
     </div>
   </section>
 
@@ -168,7 +189,7 @@ mkdir config</pre>
       </div>
 
       <h2>3. Write a Router and a Handler</h2>
-      <p>The Router decides routing; the Handler does the work. Address HL7 fields by path; return an empty list to leave a message <em>unrouted</em>, or <code>None</code> from a Handler to <em>filter</em> it.</p>
+      <p>The Router selects Handlers, which transform or filter messages. Address HL7 fields by path. Return an empty list from a Router to leave a message <em>unrouted</em>. Return <code>None</code> from a Handler to <em>filter</em> it.</p>
       <div class="code-card">
         <div class="code-card__bar"><i></i><i></i><i></i><span class="code-card__name">config/adt_feed.py</span></div>
 <pre class="code"><span class="d">@router</span>(<span class="s">"adt_router"</span>)
@@ -183,14 +204,14 @@ mkdir config</pre>
       </div>
 
       <h2>4. Validate the interface</h2>
-      <p>Run the commit gate. It checks that every Connection, Router, and Handler is wired correctly before anything ships — the same gate you'd put in CI.</p>
+      <p>Run the commit gate to check the links between Connections, Routers, and Handlers. Use the same check in continuous integration.</p>
       <div class="code-card">
         <div class="code-card__bar"><i></i><i></i><i></i><span class="code-card__name">terminal</span></div>
 <pre class="code">python -m messagefoundry check --config config</pre>
       </div>
 
       <h2>5. Test it, then run it</h2>
-      <p>Run the engine and send a sample message. Every message reaches a recorded disposition — <b>routed</b>, <b>filtered</b>, or <b>unrouted</b> — so nothing is ever silently dropped. Because routers and handlers are plain Python, you can also unit-test them like any function.</p>
+      <p>Run the engine and send a sample message. Each message has a recorded outcome: <b>routed</b>, <b>filtered</b>, or <b>unrouted</b>. Routers and Handlers are Python functions, so you can also unit-test them.</p>
       <div class="code-card">
         <div class="code-card__bar"><i></i><i></i><i></i><span class="code-card__name">terminal</span></div>
 <pre class="code">python -m messagefoundry serve --config config --db messagefoundry.db
@@ -199,7 +220,7 @@ python samples/send_mllp.py samples/messages/adt_a01.hl7</pre>
       </div>
 
       <div class="callout" style="margin-top:30px">
-        <p style="margin:0"><strong>That's a complete interface.</strong> Receive, route, transform, send — version-controlled, validated, and testable. Add more interfaces by adding more modules; one config repo can drive Test, Production, and more.</p>
+        <p style="margin:0">Add interfaces by adding modules. One configuration repository can serve Test, Production, and other environments.</p>
       </div>
 
       <div class="btn-row" style="margin-top:30px">
@@ -228,9 +249,9 @@ python samples/send_mllp.py samples/messages/adt_a01.hl7</pre>
     <div class="container">
       <div class="center" style="margin-bottom:28px"><span class="eyebrow">FAQ</span><h2>Frequently asked questions</h2></div>
       <div class="faq">
-        <div class="faq-item"><h3>How do I build an HL7 interface?</h3><p>In MessageFoundry you build an HL7 interface from four blocks: a Connection (inbound and outbound), a Router that decides where each message goes, and a Handler that transforms and sends it. You write them as plain Python in a config module, validate with the commit gate, then run the engine.</p></div>
-        <div class="faq-item"><h3>Do I have to write code, or can I use a GUI?</h3><p>Either. The VS Code extension and admin console offer guided wizards for Connections and routes, or you can write them directly in Python for full control. Both produce the same version-controlled config.</p></div>
-        <div class="faq-item"><h3>How do I test an HL7 interface before production?</h3><p>Validate the config with the commit gate (python -m messagefoundry check), then send sample messages and watch each message reach a recorded disposition — routed, filtered, or unrouted. Because interfaces are plain Python, you can also unit-test routers and handlers like any code.</p></div>
+        <div class="faq-item"><h3>How do I build an HL7 interface?</h3><p>Define inbound and outbound Connections, a Router to choose Handlers, and a Handler to transform and send messages. Keep them in a Python config module. Validate the configuration with the commit gate, then run the engine.</p></div>
+        <div class="faq-item"><h3>Do I have to write code, or can I use a GUI?</h3><p>Use guided wizards in the VS Code extension and admin console, or write Python directly. Both produce the same configuration for version control.</p></div>
+        <div class="faq-item"><h3>How do I test an HL7 interface before production?</h3><p>Run python -m messagefoundry check to validate the configuration. Send sample messages and check each recorded outcome: routed, filtered, or unrouted. Unit-test Routers and Handlers as Python functions.</p></div>
       </div>
     </div>
   </section>
@@ -245,8 +266,8 @@ python samples/send_mllp.py samples/messages/adt_a01.hl7</pre>
             <img class="brand-mark" src="/assets/img/logo.svg" alt="" width="28" height="28">
             <span class="brand-name">Message<span class="brand-accent">Foundry</span><span class="brand-tm">™</span></span>
           </a>
-          <p class="footer-tagline"><b>More</b> Than an HL7 Interface Engine</p>
-          <p>Open-source healthcare interface engine — secure by default, built to recognized standards, connecting a wide range of protocols and message types.</p>
+          <p class="footer-tagline">Open-source healthcare interface engine</p>
+          <p>Route and transform healthcare messages with an open-source interface engine you run on your own servers.</p>
           <div class="badge-row" style="margin-top:16px">
             <span class="badge">Open source</span>
             <span class="badge">No lock-in</span>
@@ -289,8 +310,8 @@ python samples/send_mllp.py samples/messages/adt_a01.hl7</pre>
         </div>
       </div>
       <div class="footer-bottom">
-        <span>© 2026 MessageFoundry Foundation — this website and its content, all rights reserved. The MessageFoundry engine is separately open source, licensed under AGPL-3.0-or-later.</span>
-        <span>MessageFoundry and the MessageFoundry word mark are trademarks of MessageFoundry Foundation. Mirth Connect, Cloverleaf, Rhapsody, Corepoint, and Ensemble are trademarks of their respective owners; MessageFoundry is independent and unaffiliated.</span>
+        <span>© 2026 MessageFoundry, LLC — this website and its content, all rights reserved. The MessageFoundry engine is separately open source, licensed under AGPL-3.0-or-later.</span>
+        <span>MessageFoundry and the MessageFoundry word mark are trademarks of MessageFoundry, LLC. Mirth Connect, Cloverleaf, Rhapsody, Corepoint, and Ensemble are trademarks of their respective owners; MessageFoundry is independent and unaffiliated.</span>
       </div>
     </div>
   </footer>

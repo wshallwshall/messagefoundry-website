@@ -4,14 +4,14 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>The toolkit — what's in the box — MessageFoundry</title>
-  <meta name="description" content="MessageFoundry isn't one program — it's a small toolkit around the engine and its localhost API: the engine service, the command-line tool, the admin console, the VS Code extension, a test harness, and a migration tee relay. One contract, many clients.">
+  <meta name="description" content="Find the MessageFoundry engine, console, editor, command-line tools, test tools, and migration relay.">
   <link rel="canonical" href="https://messagefoundry.org/tools.html">
   <link rel="icon" href="/assets/img/favicon.svg" type="image/svg+xml">
   <meta name="theme-color" content="#0b1220">
   <meta property="og:type" content="website">
   <meta property="og:site_name" content="MessageFoundry">
   <meta property="og:title" content="The toolkit — what's in the box — MessageFoundry">
-  <meta property="og:description" content="The whole set of MessageFoundry tools — engine service, CLI, admin console, VS Code extension, test harness, and tee relay — each a separate process, every UI a client of the one localhost API.">
+  <meta property="og:description" content="Find the MessageFoundry engine, console, editor, command-line tools, test tools, and migration relay.">
   <meta property="og:url" content="https://messagefoundry.org/tools.html">
   <meta property="og:image" content="https://messagefoundry.org/assets/img/og.png">
   <meta property="og:image:width" content="1200">
@@ -19,7 +19,7 @@
   <meta property="og:image:type" content="image/png">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="The toolkit — what's in the box — MessageFoundry">
-  <meta name="twitter:description" content="One engine, one localhost API, many clients — the whole MessageFoundry toolkit.">
+  <meta name="twitter:description" content="Find the MessageFoundry engine, console, editor, command-line tools, test tools, and migration relay.">
   <meta name="twitter:image" content="https://messagefoundry.org/assets/img/og.png">
   <link rel="stylesheet" href="/assets/css/styles.css">
   <style>
@@ -58,7 +58,7 @@
 
   <div class="eabar" role="region" aria-label="Project status">
     <div class="container">
-      <p><strong>Early Access &middot; beta.</strong> We're building toward 1.0 &mdash; and we want people involved now, while it can still be shaped. <a href="/status.html">Where the project stands &rarr;</a></p>
+      <p><strong>Early Access &middot; beta.</strong> Help test and shape the 1.0 release. <a href="/status.html">Where the project stands &rarr;</a></p>
     </div>
   </div>
 
@@ -123,8 +123,8 @@
   <section class="section section--dark section--tight">
     <div class="container center">
       <span class="eyebrow">The toolkit</span>
-      <h1 style="max-width:20ch;margin-inline:auto">What's in the box</h1>
-      <p class="lead center">MessageFoundry isn't one program — it's a small toolkit arranged around the engine and its localhost API. Each tool is its own process you run on its own, and every UI is just a client of that one API. Here's the whole set.</p>
+      <h1 style="max-width:20ch;margin-inline:auto">Tools and commands</h1>
+      <p class="lead center">The toolkit includes the engine, console, editor, command-line tools, and migration relay. Use the list below to find each tool and its command.</p>
     </div>
   </section>
 
@@ -133,8 +133,8 @@
     <div class="container">
       <div class="center" style="margin-bottom:30px;max-width:720px">
         <span class="eyebrow">One contract, many clients</span>
-        <h2>One engine, one API, many tools</h2>
-        <p class="lead center">The engine is the only long-running service — and the only thing that touches the store. Everything else talks to it over the one localhost API; the tee relay sits in front.</p>
+        <h2>Tools connect through the engine API</h2>
+        <p class="lead center">The engine owns the message store. Operator tools connect through its local API; the migration tee relay sits in front of the engine.</p>
       </div>
       <svg class="dg" viewBox="0 0 940 470" role="img" aria-labelledby="tk-t tk-d">
         <title id="tk-t">The toolkit — one engine, many clients</title>
@@ -196,32 +196,32 @@
         <div class="card">
           <h3>Engine service</h3>
           <span class="tool-cmd">messagefoundry serve</span>
-          <p>The headless runtime: it owns the store, runs your Connections, Routers, and Handlers through the staged queue, and exposes the localhost HTTP/WebSocket API. Everything else talks to this. Runs as a Windows service via NSSM.</p>
+          <p>Runs Connections, Routers, and Handlers through the staged queue and owns the store. Exposes a local HTTP/WebSocket API. Supports Windows service installation through NSSM.</p>
         </div>
         <div class="card">
           <h3>Command-line tool</h3>
           <span class="tool-cmd">messagefoundry &lt;cmd&gt;</span>
-          <p>One binary, many jobs: <code>serve</code>, <code>init</code> (scaffold a config repo), <code>validate</code> / <code>dryrun</code> / <code>check</code> (the commit/CI gate), <code>connection</code> (edit connections.toml), and <code>generate</code> (synthetic HL7), plus key &amp; audit ops. The introspection commands touch no network — git hooks and the VS Code extension shell them.</p>
+          <p>Use <code>serve</code> to run the engine and <code>init</code> to create a config repository. <code>validate</code>, <code>dryrun</code>, and <code>check</code> form the commit and continuous integration gate. Use <code>connection</code> to edit connections.toml and <code>generate</code> for synthetic HL7. The tool also handles keys and audits. Git hooks and the VS Code extension run the introspection commands, which make no network calls.</p>
         </div>
         <div class="card">
           <h3>Admin &amp; monitoring console</h3>
           <span class="tool-cmd">open http://127.0.0.1:8765/ui</span>
-          <p>The operator GUI, in your browser: a connection dashboard, a message browser with each message's disposition, delivery/audit trail, and one-click replay, an HL7 parse-tree viewer, a dead-letter page, an alert-rules view, and user and session management. A pure API client — it never touches the database. <a href="/console.html">Tour the console →</a></p>
+          <p>Use the browser console to view connections, search messages, and inspect delivery and audit records. It includes replay, an HL7 parse tree, dead letters, alert rules, and user and session controls. It connects through the API and never accesses the database directly. <a href="/console.html">Tour the console →</a></p>
         </div>
         <div class="card">
           <h3>VS Code extension</h3>
           <span class="tool-cmd">open in VS Code → F5</span>
-          <p>The authoring surface: <b>HL7 autocomplete</b> and validate-on-save, a New Route Wizard, a Test Bench that dry-runs <code>.hl7</code> files with before/after diffs and step-through debugging, Stage&nbsp;→&nbsp;Promote to a running engine, and an optional <code>@messagefoundry</code> AI chat. <a href="/editor.html">Full tour of the editor →</a></p>
+          <p>Write routes with <b>HL7 autocomplete</b>, validation on save, and the New Route Wizard. The Test Bench runs <code>.hl7</code> files with before-and-after diffs and step-through debugging. Use Stage&nbsp;→&nbsp;Promote to deploy to a running engine, or optional <code>@messagefoundry</code> AI chat for coding help. <a href="/editor.html">Tour the editor →</a></p>
         </div>
         <div class="card">
           <h3>Test harness</h3>
           <span class="tool-cmd">python -m harness</span>
-          <p>Exercises a running engine with synthetic, PHI-free traffic: Send / Receive / File / Compose / Monitor tabs (inject ACK faults, malformed messages, delivery failures), headless CI scenarios that assert dispositions, and a separate load-testing engine with tunable profiles (warmup → ramp → soak) and an SLO report. Ships as its own distribution, released in lockstep with the engine — <code>pip install messagefoundry-harness</code>; it isn't part of the engine wheel.</p>
+          <p>Test a running engine with synthetic traffic containing no patient data. Send, Receive, File, Compose, and Monitor tabs let you inject acknowledgment faults, malformed messages, and delivery failures. Headless scenarios check message outcomes in continuous integration. A separate load-testing engine supports warmup, ramp, and soak profiles, with a service-level objective report. Install it with <code>pip install messagefoundry-harness</code>. It ships separately from the engine wheel, with matching releases.</p>
         </div>
         <div class="card">
           <h3>Tee relay</h3>
           <span class="tool-cmd">python -m tee</span>
-          <p>A migration de-risking tool: sit it in front of a legacy engine and a shadow MessageFoundry, ACK on receipt, and forward the same bytes to both — so you can compare output before cutover (rollback is just stopping the relay). Test and synthetic data only; not PHI-hardened. Run it from a source checkout of the engine repository — unlike the harness, it isn't published as a package.</p>
+          <p>Place the tee relay before a legacy engine and a shadow MessageFoundry instance. It acknowledges receipt and forwards the same bytes to both engines for comparison. Stop the relay to roll back. Use test and synthetic data only; the relay is not hardened for protected health information. Run it from an engine repository checkout; it is not published as a package.</p>
         </div>
       </div>
     </div>
@@ -231,7 +231,7 @@
   <section class="section section--dark">
     <div class="container">
       <div class="callout callout--on-dark" style="background:rgba(245,158,11,.07);border-color:rgba(245,158,11,.28);color:var(--text-dk);max-width:880px;margin:0 auto 30px">
-        <p style="margin:0"><strong style="color:var(--accent)">One contract, many clients.</strong> The engine is the only long-running service — and the only thing that touches the store. The console, the extension, and the harness are separate processes that drive or observe it over that one localhost API; the tee relay sits in front. And because that one API is the only door in — the console can't import the engine or reach the store directly — authentication, RBAC, and audit sit at a single choke point rather than spread across every tool. That's the <a href="/architecture.html" style="color:var(--accent)">architecture</a>, made concrete.</p>
+        <p style="margin:0">The engine is the only long-running service and the only process that accesses the store. The console, extension, and harness use its localhost API; the tee relay sits in front. That API handles authentication, role-based access control, and audits. <a href="/architecture.html" style="color:var(--accent)">See the architecture →</a></p>
       </div>
       <div class="center">
         <div class="btn-row center">
@@ -252,8 +252,8 @@
             <img class="brand-mark" src="/assets/img/logo.svg" alt="" width="28" height="28">
             <span class="brand-name">Message<span class="brand-accent">Foundry</span><span class="brand-tm">™</span></span>
           </a>
-          <p class="footer-tagline"><b>More</b> Than an HL7 Interface Engine</p>
-          <p>Open-source healthcare interface engine — secure by default, built to recognized standards, connecting a wide range of protocols and message types.</p>
+          <p class="footer-tagline">Open-source healthcare interface engine</p>
+          <p>Route and transform healthcare messages with an open-source interface engine you run on your own servers.</p>
           <div class="badge-row" style="margin-top:16px">
             <span class="badge">Open source</span>
             <span class="badge">No lock-in</span>
@@ -296,8 +296,8 @@
         </div>
       </div>
       <div class="footer-bottom">
-        <span>© 2026 MessageFoundry Foundation — this website and its content, all rights reserved. The MessageFoundry engine is separately open source, licensed under AGPL-3.0-or-later.</span>
-        <span>MessageFoundry and the MessageFoundry word mark are trademarks of MessageFoundry Foundation. Mirth Connect, Cloverleaf, Rhapsody, Corepoint, and Ensemble are trademarks of their respective owners; MessageFoundry is independent and unaffiliated.</span>
+        <span>© 2026 MessageFoundry, LLC — this website and its content, all rights reserved. The MessageFoundry engine is separately open source, licensed under AGPL-3.0-or-later.</span>
+        <span>MessageFoundry and the MessageFoundry word mark are trademarks of MessageFoundry, LLC. Mirth Connect, Cloverleaf, Rhapsody, Corepoint, and Ensemble are trademarks of their respective owners; MessageFoundry is independent and unaffiliated.</span>
       </div>
     </div>
   </footer>

@@ -1,8 +1,10 @@
 # Users & Security — Authentication and RBAC
 
-MessageFoundry authenticates operators and authorizes every action with **role-based access control (RBAC)**, deny-by-default, on by default. It supports **local users**, **Active Directory** (LDAP bind, with optional Windows SSO), and **OIDC federation for AD-backed identities**; it maps **AD security groups to roles**, and attributes each sign-in, each ePHI access, each permission denial and each state-changing action to a named user in a tamper-evident audit trail.
+MessageFoundry authenticates operators and uses deny-by-default **role-based access control (RBAC)** for each action. Authentication and RBAC are enabled by default. Sign-in options include local accounts, Active Directory, optional Windows SSO, and OIDC federation for AD-backed identities.
 
-RBAC is built in — not a paid add-on. Password policy ships with secure defaults, AD-group-to-role mapping is automatic, and a second authentication factor is **required by default for local accounts**.
+Active Directory security groups map to engine roles. The tamper-evident audit trail identifies each sign-in, ePHI access, permission denial, and state-changing action by user.
+
+RBAC is included with the engine. Password policy uses secure defaults. Active Directory group mapping assigns roles automatically. Local accounts require a second authentication factor by default.
 
 > **Scope.** This document covers **identity, access control, and the audit of operator actions**. The protection of the *data* itself — at-rest storage and encryption, transport, logging and redaction, retention, and de-identification — is covered separately in the [PHI handling guide](https://github.com/MEFORORG/MessageFoundry/blob/main/docs/PHI.md). MessageFoundry is designed to run **inside the organization's private network**, and binds `127.0.0.1` by default; the trust boundary and the management/data/inbound plane model are described in the PHI guide and the [deployment guide](https://github.com/MEFORORG/MessageFoundry/blob/main/docs/DEPLOYMENT.md). Off-loopback exposure is supported, but it is a **gated posture** — see *Enforcement model* below.
 
@@ -10,15 +12,15 @@ RBAC is built in — not a paid add-on. Password policy ships with secure defaul
 
 ## Enforcement model
 
-Authentication is **on by default, and cannot be disabled on a non-loopback bind** — that refusal is unconditional at every enforcement level, because serving full-privilege admin to the network is never one acknowledgement away. Each authenticated route additionally demands a specific **permission** — deny by default.
+Authentication is **enabled by default**. The engine refuses a non-loopback bind with authentication disabled at every enforcement level. Each protected route requires a specific permission. Access is denied unless the caller has that permission.
 
-**The off-switch, stated here rather than buried.** Authentication *can* be turned off on a **loopback** bind (`[security].require_sign_in = false`) — the embedding and local-development posture. In it, every request resolves to a built-in system identity that holds every role and therefore every permission, so neither RBAC nor the field-level gate below withholds anything. It is warned at startup and named in the running posture endpoint, and a non-loopback bind with it set is a hard refusal — but it is a genuine off-switch and it belongs in the same paragraph as the claim.
+For local development or embedding, `[security].require_sign_in = false` disables authentication on a loopback bind. Each request then uses a system identity with every role and permission. RBAC and field-level controls do not withhold data in this mode. Startup logs warn about the setting, and the running posture endpoint reports it. The engine refuses this setting on a non-loopback bind.
 
 A small, enumerated set of **JSON API** routes is deliberately outside that gate, and it is enumerated rather than summarized: `GET /health` (liveness), `GET /auth/providers` (which sign-in pathways this install offers, so the login page can render), `POST /auth/login` and `POST /auth/negotiate` (the sign-in ceremonies themselves, bounded by the per-IP **and** global sign-in window), and `GET /ai/policy` (so a central "AI off" can be enforced on a tokenless client). A further set of authenticated **self-service** routes — change your own password, list and revoke your own sessions, enroll your own second factor — requires no permission because it acts only on the caller's own account. One route (`GET /service/identity`) accepts **no bearer token at all**: it authenticates by verified mTLS client certificate only.
 
 The browser console is a **second plane with its own small unauthenticated set** — ten routes covering the sign-in, step-up and MFA pages (a gate demanding a fresh step-up in order to perform one would deadlock), plus the two OIDC legs — and a `/ui/static` **mount** carrying versioned CSS and JS, which is served with no gate at all. Every route on both planes is enumerated with its gate in the engine's [security reference](https://github.com/MEFORORG/MessageFoundry/blob/main/docs/SECURITY.md); nothing is left implicit.
 
-The in-process embedding factory is **fail-closed**: with no auth service attached it denies every protected route (HTTP 503) unless the caller explicitly opts out — the deliberate embedding/local-development escape hatch. The service refuses to serve with auth disabled on a non-loopback host.
+Without an authentication service, the in-process factory denies protected routes with HTTP 503. The caller can explicitly disable this check for local development or embedding. A non-loopback service bind with authentication disabled remains prohibited.
 
 Even with auth enabled, a non-loopback bind requires **TLS** — either in-process (an API TLS certificate; TLS 1.2 floor, configurable cipher list, optional client CA for mTLS) or terminated at a trusted upstream reverse proxy (with forwarded-header and trusted-proxy configuration). The in-process option carries one further precondition, and it is a refusal rather than a warning: stdlib TLS performs no OCSP/CRL fetch and the engine deliberately attempts none (on-premises, offline by default), so a **revoked-but-unexpired** certificate would otherwise still be accepted. An off-loopback in-process TLS bind therefore refuses to start unless revocation is proven in front of it — either by declaring the revocation-checking upstream terminator, or by setting `MEFOR_TLS_REVOCATION_ATTESTED=1` to attest that your terminator or PKI enforces revocation. Loopback and proxy-terminated deployments never reach that gate. Without TLS at all the bind is refused — and on a **PHI instance at the shipped enforcement level that refusal is not one flag away**: the command-line insecure-bind escape and its configuration twin are both clamped shut there, so a staging PHI box refuses exactly as production does. Reaching a cleartext off-box bind at all requires either declaring the instance non-PHI or turning the enforcement dial down to warn — each a named switch, warned at startup and reported in the running posture endpoint. That is the accurate claim and it is the stronger one: bearer tokens and PHI cannot cross the network in cleartext by accident, and the escape that does exist is one a reviewer can read straight off the posture output. A stray host edit cannot quietly void the loopback assumption.
 
@@ -30,7 +32,9 @@ A "synthetic" data label is a rare, warned, documented opt-out — and, since th
 
 ### First-run bootstrap admin
 
-On first start against an empty store, the engine creates a single **bootstrap admin** (username `admin`, role `Administrator`) with a random one-time password **generated through the active password policy**. The password is **written to an owner-only file** next to the store — **never to the log** — and only the file's location is logged, so the credential is never captured in service stdout. Sign in with it, change the password immediately (the account is flagged "must change password" and enforces this), and delete the file. Once any user exists, no further bootstrap occurs.
+On first start with an empty store, the engine creates the **bootstrap admin**, username `admin`, with role `Administrator`. The active password policy generates a random one-time password. The engine writes the password to an owner-only file beside the store. It logs only the file location.
+
+Sign in with the one-time password. Change the password immediately. Delete the credential file. The account enforces the password change. If any user already exists, the engine does not create a bootstrap account.
 
 **Auto-retirement.** The bootstrap account exists only to seed the first real admin, so while still **unclaimed** (never password-changed) it self-retires: it is **disabled once a second administrator exists**, and — if left unclaimed — disabled a configurable number of hours after creation (default 72 h; a value of `0` disables the timer). Once you change its password it becomes a normal admin account and is never auto-disabled, so a single-admin deployment can't lock itself out. A retired bootstrap login is refused like any other invalid credential, and the retirement is audited.
 
@@ -38,7 +42,7 @@ On first start against an empty store, the engine creates a single **bootstrap a
 
 An administrator (holding `users:manage`) recovers a locked-out or compromised **local** account with `POST /users/{user_id}/reset-password`. The engine generates a one-time password through the active policy, flags the account "must change password", and **revokes the user's sessions**. The temporary credential is returned **once** in the response for the admin to convey out-of-band, and the affected user is also emailed a reset notice. The administrator therefore never sets a *lasting* password the user keeps — the one-time credential must be rotated on first login.
 
-AD users are refused (they authenticate against the directory); resetting your own account is refused (use self-service change-password). The action is audited. For the same reason, **admin-created accounts are flagged "must change password"**, so the operator's initial password is a one-time temporary that the user must rotate.
+Password reset does not apply to Active Directory users. Use self-service change-password for your own account. The engine audits resets. Admin-created accounts also require a password change, so the initial password is temporary.
 
 **Anti-automation.** Sensitive *authenticated* writes carry a **per-actor human-timing pacing floor** — a sliding window keyed on the acting user, on by default at 12 writes per second, which sits an order of magnitude above human console interaction while a machine-speed loop trips immediately. Over the floor the request is refused with `429` and a `Retry-After`, and the refusal is logged, never silent. It complements — it does not replace — the RBAC gate, step-up re-verification, the sign-in sliding window, the per-account lockout, and the per-actor PHI-read throttle.
 
@@ -48,7 +52,7 @@ AD users are refused (they authenticate against the directory); resetting your o
 
 ## Roles & permissions
 
-Six **fixed built-in roles** cover the common separations of duty. Each maps to permissions from the catalog below; holding multiple roles grants the **union** of their permissions (deny-by-default otherwise).
+Six fixed roles cover common duties. Each role grants permissions from the catalog below. Multiple roles grant the union of their permissions. All other access is denied.
 
 | Role | Permissions |
 |---|---|
@@ -63,7 +67,7 @@ Permission catalog (27): `monitoring:read`, `monitoring:diagnose`, `messages:rea
 
 Two permissions — `config:validate` and `code:edit` — have **no API endpoint yet**. They are defined so the Deployment and Coding roles are complete and those endpoints can be gated the moment they land, without a roles migration.
 
-**Note what the Operator role actually reaches.** Beyond opening a single message, an Operator holds bulk raw export, edit-and-resubmit (which renders the full raw body), the redacted log tail, and the two PHI-touching uploaded-file capabilities. That is deliberate for an interface operator, and it is the role to think hardest about when you assign it. A Viewer holds no PHI-field permission at all, so every gated property comes back `null` for them.
+The Operator role permits bulk raw export, edit-and-resubmit, the redacted log tail, and two uploaded-file capabilities that access PHI. Review these permissions before assigning the role. Viewers have no PHI-field permissions. Gated properties return `null` for Viewers.
 
 ### Custom roles
 
@@ -108,7 +112,7 @@ A representative selection; the [security reference](https://github.com/MEFORORG
 
 ### Source-network allow-list
 
-The operator surface (JSON API, browser console, and the stats WebSocket) can be confined to a list of CIDRs or hosts. A request from outside the list is refused **403** — or a WebSocket close — in the **outermost** middleware, before routing, dependencies, the body cap and every auth check. **Loopback is always allowed**, unconditionally, so restricting the console can never lock the box out of its own console, and `GET /health` stays answerable so a locked-out operator can see the address the engine actually observes.
+The source-network allow-list can restrict the JSON API, browser console, and statistics WebSocket to specified CIDRs or hosts. Requests from other addresses receive **403**, or a WebSocket close, before routing and authentication. Loopback is always permitted. `GET /health` remains available so an operator can inspect the observed address.
 
 It is **off by default** (an empty list = no restriction). And one honest limit: behind an *undeclared* proxy or NAT, every request in the world resolves to the intermediary and this control is **inert**. The engine only detects that case and reports it on its posture endpoint; it does not close it, and this document will not describe it as if it did.
 
@@ -128,7 +132,9 @@ A highly sensitive operation requires the caller's session to have **re-proved i
 
 **Two exceptions worth stating rather than discovering.** First, a *paced* class of mutating admin routes carries its permission and the per-actor pacing floor but **no step-up**: connection start / stop / restart, DR activate and release, approvals approve and reject, alert acknowledge and resolve, and statistics reset. Second, on the browser console — the plane operators actually use — `POST /ui/uploaded-logs/upload` and `POST /ui/uploaded-logs/file/{file_id}/resend` carry only their `files:upload` / `files:browse` permission, while their JSON twins carry the step-up, because a multipart body cannot survive the re-auth redirect. So a PHI-at-rest write and a PHI re-injection are permission-gated but not step-up-gated on that plane.
 
-The most exploitable case is closed separately, and it ships closed: the routes that **bind or remove an authentication factor** — TOTP enroll, confirm and disable on the JSON API, passkey enroll and delete on the browser console — require a fresh proof bound to *that specific action*, single-use, rather than riding the session-wide window. So a session hijacked inside an already-open step-up window cannot enroll an attacker's authenticator. Name the switch, because it has one: that binding is `[auth].require_action_step_up`, **default on**; setting it to `false` is the documented organizational opt-out and reverts those routes to the shared 300-second window — which is precisely the hijack case above. Leave it on.
+Routes that add or remove authentication factors require a fresh, single-use proof for the specific action. These include TOTP enrollment, confirmation, and removal in the JSON API, plus passkey enrollment and removal in the browser console. A session inside its normal step-up window cannot use that window to add another authenticator.
+
+`[auth].require_action_step_up` is **enabled by default**. Setting it to `false` restores the shared 300-second window for those routes. This permits the session-hijack case described above. Keep the setting enabled.
 
 Step-up re-proves the password as a secondary verification. It **also** requires the session's second factor: an MFA-required caller is refused with `403` + `X-MFA-Required` until MFA verification succeeds, so these routes carry both a recent password re-verify **and** the MFA factor. A deliberate exception: the *enrollment* routes take a password-only step-up, because a gate an un-enrolled user cannot satisfy would stand in front of the one route that enrolls them. The step-up window composes with the dual-control approval above (the requester re-verifies; an independent approver still releases the action).
 
@@ -151,7 +157,7 @@ When the API is bound **off loopback** with the local-account MFA requirement **
 
 ### Administrative-interface defense-in-depth
 
-The administrative interface is defended by **multiple independent layers**, not network-location trust alone:
+The following controls protect the administrative interface:
 
 1. **Source-network allow-list** (above) — refused pre-routing, before any auth check. Off by default, and inert behind an undeclared proxy.
 2. **Network-location / exposed gate** — the API binds `127.0.0.1` by default, and on a PHI instance at the shipped enforcement level a non-loopback plaintext bind is refused at startup, with the insecure-bind escapes clamped shut. Lifting it means declaring the instance non-PHI or lowering the enforcement dial — both posture-reported. One layer, not the sole factor.
@@ -160,13 +166,13 @@ The administrative interface is defended by **multiple independent layers**, not
 5. **A genuine second authentication factor** at that boundary — TOTP or a WebAuthn passkey, so an MFA-required admin presents a real second factor, not a re-prompt of the same password.
 6. **A contextual-risk signal** — when enabled, a sensitive admin action arriving from a **client IP the session has not verified from** emits an audit event and an out-of-band notice and **forces a fresh step-up**; a successful re-auth from that address re-anchors the session and clears the signal. The event and notice fire once per (session, new address), so a replayed token can't inflate the audit log. It is advisory and step-up-forcing only — it never changes an RBAC allow/deny and never blocks the non-admin request path. **Default off**, and byte-identical on a single-host loopback bind; recommended on for an off-loopback admin deployment.
 
-**Continuous identity verification** underpins all of the above: every request re-resolves the user and roles from server-side state and re-checks idle/absolute timeout plus live disabled/role status, so a change made **in MessageFoundry** — a revoked role, a disabled account, a revoked session — takes effect on the next request. A change made in the **directory** is different: it propagates via the reconciliation pass described under *Propagating a directory disable*, bounded by interval × strikes rather than immediate.
+Each request reads the user and roles from server-side state. It also checks idle and absolute timeouts, disabled status, and current roles. Changes made in MessageFoundry take effect on the next request. Directory changes propagate through the reconciliation pass. Their delay depends on the interval and required consecutive results.
 
-**Device security-posture assessment is deployment-delegated**, not built in-process: an attested/managed admin host and an **mTLS client certificate** are the posture control, consistent with the on-prem console model. The engine has no device-attestation channel and does not attempt one. This is the documented residual.
+The deploying organization must assess administrator devices. The documented controls are a managed or attested host and an mTLS client certificate. The engine has no device-attestation service.
 
 ### Field-level (property) authorization
 
-Beyond gating whole *endpoints*, the API gates individual **PHI-bearing properties** within a response, so a caller can see an object without seeing its patient-identifying fields. The policy is declared in one place and enforced by a single redaction helper applied to every returned row, rather than re-implemented inline per endpoint. Be clear about what that does and does not buy: the helper is **fail-open by construction** — it must be *invoked* at each site, so a new PHI route shipped without its redaction call would leak silently. Centralization removes the risk of divergent per-endpoint rules, not the risk of a missing call. What covers the missing call is CI, described below.
+The API also controls individual **PHI-bearing properties** in responses. One policy and one redaction helper define those controls for all returned rows. Each endpoint must call the helper. A new route that omits that call can expose PHI because the helper is fail-open. The shared policy prevents inconsistent rules, but it cannot prevent omitted calls. The checks below address that risk.
 
 | Response property | Carries | Unlocked by |
 |---|---|---|
@@ -176,7 +182,7 @@ Beyond gating whole *endpoints*, the API gates individual **PHI-bearing properti
 | `raw` (single-message body), attachments, the transformed outbound payload, captured-response `body` | the full message / reply | `messages:view_raw` (whole-body gate, at the endpoint) |
 | bulk NDJSON export | many full bodies at once | `messages:export` **and** `messages:view_raw` |
 
-A caller lacking `messages:view_summary` receives those properties as `null`. Withholding is whole-value nulling — never partial masking. Bulk and detail reads that actually return a gated property feed a **coalesced per-actor/per-hour exposure census** in the audit trail, so a scripted bulk read can't harvest the patient census unaudited; a fully-redacted read by a caller with no PHI permission writes no census row, deliberately, so an unprivileged caller cannot amplify into unbounded audit growth.
+Without `messages:view_summary`, the caller receives `null` for those properties. The engine removes the whole value rather than masking part of it. Reads that return gated properties contribute to an audit count grouped by actor and hour. Fully redacted reads create no count entry. This prevents an unprivileged caller from creating unlimited audit records.
 
 **`messages:view_raw` is not a superset of `messages:view_summary`** — they are independent permission flags. The built-in roles *happen* to grant them nested (a role-policy convention, not a permission-model guarantee), so the **Viewer** role, holding neither, sees every gated property as `null` and is refused `GET /messages/{id}` outright. The split is nonetheless reachable — a custom role may hold `view_raw` **without** `view_summary` — which is exactly why the disposition fields sit on the `view_summary` tier: such a role still cannot reach exception text. Adding a new PHI-bearing response property means adding a row to the field map — CI asserts the map matches the documented table in **both** directions, asserts that every reachable response model is either mapped or on an explicit reviewed no-PHI list, and exercises every redaction surface over HTTP as an unprivileged caller — that last one being the only guard that can catch a new route shipped without its redaction call, which, given the fail-open default, no map-level test can. The three guards cover the three distinct ways this gate can be forgotten.
 
@@ -227,7 +233,7 @@ Users and admins can see and revoke individual sessions:
 - **`DELETE /me/sessions`** — "sign out everywhere else": revoke all your sessions except the current.
 - **`DELETE /users/{id}/sessions`** (`users:manage`) — admin force-sign-out of a user (offboarding or suspected compromise).
 
-Every targeted revoke is audited (with scope and actor). The web console surfaces this: an **Active sessions** view in the account menu lists your sessions and offers per-session revoke plus "sign out everywhere else", and the **Users** page has a **Revoke sessions** action for admin force-sign-out.
+The engine audits each targeted revocation with the actor and scope. The account menu provides **Active sessions**, individual revocation, and “sign out everywhere else.” Administrators use **Revoke sessions** on the **Users** page.
 
 ### Security-event notifications
 
@@ -249,11 +255,11 @@ Two further screens, both on by default and fully offline:
 
 | Pathway | Factor | Brute-force defense | Notes |
 |---|---|---|---|
-| **Local** (argon2id) | password **+** an engine-verified second factor (TOTP, recovery code, or a WebAuthn passkey), required by default for every local account; a passkey is asserted at `user_verification=preferred`, so a passkey-**only** account's second factor may be device possession alone | **per-account lockout** (5 attempts / 15 min, fed by both the password and the TOTP/recovery legs) + breach/context policy + the per-IP **and** global sign-in window | the only pathway the engine itself can lock out, and the only one with an origin-bound, phishing-resistant factor |
-| **AD** (LDAPS simple-bind) | password (MFA delegated to the directory, and **unverifiable at the engine**) | the **directory's** lockout/complexity policy; engine-side, only the sign-in sliding window | password strength + lockout are the AD domain's responsibility. LDAPS is the default, not a structural guarantee: a plain bind and a disabled certificate check are each an explicit opt-in |
+| **Local** (argon2id) | Password plus an engine-verified second factor: TOTP, recovery code, or WebAuthn passkey. Required by default for every local account. Passkeys use `user_verification=preferred`. For a passkey-only account, device possession alone can provide the second factor. | **per-account lockout** (5 attempts / 15 min, fed by both the password and the TOTP/recovery legs) + breach/context policy + the per-IP **and** global sign-in window | Only this pathway supports engine-enforced account lockout and an origin-bound, phishing-resistant factor. |
+| **AD** (LDAPS simple-bind) | password (MFA delegated to the directory, and **unverifiable at the engine**) | the **directory's** lockout/complexity policy; engine-side, only the sign-in sliding window | The AD domain manages password strength and lockout. LDAPS is the default. Plain binds and disabled certificate checks each require an explicit exception. |
 | **Kerberos / SPNEGO** | domain ticket (MFA delegated, unverifiable) | the **domain's** controls; passwordless on a joined client | experimental, off by default, single-leg; no engine-side password |
-| **OIDC federation** (browser, AD-backed) | IdP-asserted; **by default** a sign-in whose signature-verified token asserts no configured MFA claim is refused (`oidc_require_mfa_claim`, on by default — an operator switch, and one not surfaced in the loosening register) | no engine credential to guess; the sign-in window plus the IdP's own lockout | hybrid-only; roles come from the directory, never from a token claim |
-| **mTLS service identity** (one non-interactive route) | a verified client certificate mapped through a deny-by-default allow-list; requires in-process TLS and is off unless both a client CA and an identity map are configured | not applicable — no guessable secret | no session, no MFA, no step-up, and therefore **fenced away from PHI-view permissions** by construction; it authorizes no admin operation |
+| **OIDC federation** (browser, AD-backed) | The identity provider asserts MFA. By default, the engine rejects a signature-verified token without a configured MFA claim. `oidc_require_mfa_claim` controls this requirement. It is enabled by default but does not appear in the loosening register. | no engine credential to guess; the sign-in window plus the IdP's own lockout | Hybrid identities only. The directory supplies roles. Token claims do not supply roles. |
+| **mTLS service identity** (one non-interactive route) | A verified client certificate maps through a deny-by-default allow-list. Requires in-process TLS. Disabled unless both a client CA and an identity map are configured. | not applicable — no guessable secret | No session, MFA, or step-up. The certificate identity cannot hold PHI-view permissions or authorize administrator operations. |
 
 **Lockout asymmetry:** the engine's per-account lockout protects **local** accounts only. AD, Kerberos and OIDC brute-force resistance is the directory's or IdP's job — so for those deployments, set the domain lockout/complexity policy accordingly. The engine-side throttle that *does* cover them is the sliding-window sign-in limiter, per client IP **and** globally. Note that this limiter has a single switch that also disables the credential-ceremony budget: turning it off leaves the delegated pathways with **no engine-side anti-automation at all**, while local accounts keep their lockout. Treat it as a security control, not a tuning knob.
 
@@ -297,7 +303,7 @@ MessageFoundry **supports a HIPAA-compliant deployment** by providing the techni
 
 The browser **web console** at `/ui` is the operator UI: it shows a sign-in form (Local / Active Directory, and OIDC where federation is enabled), holds the session in a console-confined `SameSite=Strict` cookie, gates every action by permission, exposes a **Users** admin page to `users:manage` holders, and offers **Sign out**. It is served same-origin, in-process by the engine and is **on by default for a local loopback bind**. Off-box it stays **opt-in**: a default-on console on an exposed instance degrades to JSON-only with a warning rather than turning a working deployment into a start failure, and an *explicitly* enabled off-box console runs a further startup ladder requiring a declared public origin (behind a proxy the Host header is client-forwardable, and the exact origin is what anchors both the cross-site check and the WebAuthn origin binding).
 
-The former PySide6 desktop console has been **retired**; PySide6 now backs only the standalone test harness, which reaches the engine solely through the HTTP API.
+The PySide6 desktop console is retired. PySide6 now supports only the standalone test harness, which accesses the engine through the HTTP API.
 
 ---
 
@@ -315,13 +321,15 @@ For outbound connectors verifying a downstream server certificate, an organizati
 
 ## Security posture & self-assessment
 
-MessageFoundry maintains a **documented self-assessment against OWASP ASVS 5.0 at Level 3**. The requirement inventory — 345 requirements, of which 92 are Level-3-only — has been verified against canonical ASVS 5.0.0 and is the one figure here worth quoting.
+MessageFoundry maintains an **OWASP ASVS 5.0 Level 3 self-assessment**. The inventory contains 345 requirements, including 92 specific to Level 3. The project checked this inventory against ASVS 5.0.0.
 
-**We do not publish a pass/fail count, and we will not assert coverage in words instead.** The scoring is under reconciliation, and by the project's own rule no figure is quotable until the final re-score lands — an earlier edition of this page quoted one, taken from a document since marked unreliable, and it has been removed rather than restated. Saying "every control is built or carries a documented residual" would be that same figure written as prose, resting on a document a reader cannot open, so it is gone too. What a reader *can* check is the remediation ledger: findings from the re-scores are tracked as public backlog items, remediation is ongoing, and the programme has explicitly not been declared finished.
+The project publishes no pass/fail count while scoring remains under reconciliation. An earlier count came from a document later marked unreliable and was removed. A claim that every control is complete or has a recorded residual would imply the same unsupported count.
+
+The public remediation ledger tracks findings from rescoring. Remediation continues. The project has not declared the program complete.
 
 The framing that must travel with any of this: it is a **point-in-time, AI-assisted self-assessment — not a certification, not an audit, and not an independent review.** There has been **no third-party assessment, no penetration test, and no dynamic (DAST) testing** to date. We treat an independent review as a precondition we expect an adopter to require before off-loopback exposure — the internal risk record that carries this gap is available to evaluators under NDA rather than being an artifact we ask you to take on faith. To reconcile that with the exposed postures this page also documents: until such a review has run, the compensating controls we expect an off-loopback adopter to operate are the ones described above — TLS in front of every listener, the source-network allow-list, MFA left required, deny-by-default egress, and an off-box copy of the audit trail. MessageFoundry is not "certified" against any standard; NIST and OWASP issue no certificate, and no compliance outcome is guaranteed.
 
-The full security-document set — the threat model, the ASVS assessments, the remediation plans and the risk-acceptance register — is maintained privately, on a published rule: a document is withheld only if it describes an **open, un-remediated weakness in enough detail to act on**, or names a customer or deployment. Closed findings are published, because a fixed and documented weakness is transparency rather than an attacker roadmap. Adopters, evaluators and security reviewers can request the withheld material under NDA; the rule and the contact route are in the project's [security-documentation policy](https://github.com/MEFORORG/MessageFoundry/blob/main/docs/SECURITY-DOCS-POLICY.md).
+The project maintains threat models, ASVS assessments, remediation plans, and risk records privately under a published policy. It withholds documents that describe exploitable unresolved weaknesses or identify customers or deployments. Closed findings are published. Adopters, evaluators, and security reviewers can request withheld records under NDA. Refer to the [security-documentation policy](https://github.com/MEFORORG/MessageFoundry/blob/main/docs/SECURITY-DOCS-POLICY.md) for the rule and contact route.
 
 ### Supply-chain & CI security
 
@@ -332,7 +340,7 @@ Automated security scanning runs in continuous integration:
 - **Dependabot** — scheduled dependency-update PRs for `pip` and GitHub Actions.
 - **CodeQL** code scanning, **OpenSSF Scorecard**, and workflow static analysis, each as its own CI workflow. GitHub-native **secret scanning with push protection** is enabled at the repository level.
 
-**Every release publishes a verifiable supply chain**, not a questionnaire answer: a **CycloneDX SBOM** of the engine, an **OpenVEX** document carrying our per-CVE exploitability assessments, **Sigstore signatures** over the wheel, sdist, SBOM and VEX, **SLSA build provenance** binding each artifact to its source commit, and PyPI-side PEP 740 attestations. Feed the SBOM and VEX to your own scanner and you triage real risk rather than unreachable CVEs. Verification commands are in the [supply-chain guide](https://github.com/MEFORORG/MessageFoundry/blob/main/docs/SUPPLY-CHAIN.md).
+Each release includes a **CycloneDX SBOM**, an **OpenVEX** exploitability record, and **Sigstore signatures** for the wheel, sdist, SBOM, and VEX. **SLSA build provenance** binds packages to source commits. PyPI provides PEP 740 attestations. Refer to the [supply-chain guide](https://github.com/MEFORORG/MessageFoundry/blob/main/docs/SUPPLY-CHAIN.md) for verification commands.
 
 A private vulnerability-disclosure policy is published with the project. A **full-history secret scan** (`gitleaks`, over the complete git history rather than just the tip) runs as a **blocking** CI gate alongside GitHub-native push protection, and the same scanner is available as a pre-commit hook so a credential is caught before it is ever committed.
 
@@ -346,7 +354,7 @@ Before installing the engine wheel itself, **verify its release provenance** —
 
 The API endpoints that `code:edit` and `config:validate` will gate are deliberate follow-ups. Custom roles, OIDC federation, TOTP and WebAuthn MFA, API/WebSocket and MLLP TLS, mTLS service identity, per-channel RBAC and the published SBOM are all **built** — earlier editions of this page listed several of them as roadmap after they had shipped.
 
-The structural gap, stated plainly, is the one a pre-1.0 project cannot self-supply: **independent external verification** — a third-party ASVS review, a penetration test, and DAST. See *Security posture & self-assessment* above.
+Independent external verification remains outstanding: a third-party ASVS review, penetration testing, and dynamic application security testing. Refer to *Security posture & self-assessment*.
 
 ---
 

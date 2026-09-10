@@ -1,6 +1,6 @@
 # MessageFoundry User Guide
 
-MessageFoundry is an open-source, Python interface engine for healthcare — a modern alternative to Mirth Connect and Corepoint. It **receives, routes, transforms, and validates** messages between systems (HL7 v2.x by default, payload-agnostic for other formats), with routing and handling expressed as **ordinary Python you own and version-control**. This guide is **task-oriented** ("how do I…"): it walks you from a clean machine to a running engine, then through authoring Connections/Routers/Handlers and operating and monitoring the system. It links to the reference docs rather than restating them.
+MessageFoundry receives, routes, transforms, and validates healthcare messages. It uses HL7 v2.x by default and accepts other payload formats. Write routing and handling in Python and keep the code in version control. This guide covers installation, Connections, Routers, Handlers, and daily operation.
 
 ## Contents
 
@@ -17,24 +17,24 @@ MessageFoundry is an open-source, Python interface engine for healthcare — a m
 
 ## What MessageFoundry is, and how to use this guide
 
-MessageFoundry receives, routes, transforms, and validates messages between systems: **HL7 v2.x by default**, and payload-agnostic for other formats (JSON, XML/SOAP, X12 EDI, database records). Unlike a legacy engine's embedded scripting language or a locked-in low/no-code GUI, the routing and handling logic is **ordinary Python you own and version-control** — and connection setup in particular can be pure data (a TOML file, edited by hand or in a VS Code GUI). The engine runs headless as an asyncio service; you operate it from a browser **web console** (served same-origin at `/ui`) and a VS Code extension, both talking to it over a localhost HTTP/WebSocket API.
+The engine handles HL7 v2.x and other payloads, including JSON, XML/SOAP, X12 EDI, and database records. Routing and transforms use Python. Connection settings can also use TOML, edited by hand or through VS Code. The asyncio service runs in the background. The browser **web console** at `/ui` and VS Code extension connect through its localhost HTTP/WebSocket API.
 
 ### The mental model in one read
 
-The configuration is a **graph wired by name** — there is **no "channel" object** that bundles a source, filters, transforms, and destinations the way a legacy engine does. Instead you wire four building blocks, using the project's exact vocabulary:
+Configuration links components by name. There is no bundled channel object. Use these four building blocks:
 
 - **Connection** — an endpoint that **receives** (`inbound()`) or **sends** (`outbound()`) messages: MLLP, TCP, File, REST, SOAP, Database, SFTP/FTP. Every message in or out is counted and logged.
 - **Router** (`@router`) — a pure Python function bound to **one** inbound Connection. It sees every received message and returns the **name(s)** of the Handler(s) to forward to (or none, to filter).
-- **Handler** (`@handler`) — a pure Python function that takes a message, **filters → transforms**, then returns `Send(...)`s naming one or more outbound Connections.
-- **Message store** — durable persistence + the staged queue. SQLite (WAL) by default; PostgreSQL or SQL Server for production.
+- Handler (`@handler`): a pure Python function that filters and transforms a message. It returns `Send(...)` objects for outbound Connections.
+- **Message store** — durable persistence + the staged queue. SQLite (WAL) by default. PostgreSQL or SQL Server for production.
 
-The edges between these are just names resolved at config load: an inbound names its Router, a Router returns Handler names, a Handler `Send`s to a named outbound. To understand a feed, follow the names; to change it, change a name. (See [samples/config/IB_ACME_ADT.py](../samples/config/IB_ACME_ADT.py) and [samples/config/adt.py](../samples/config/adt.py) for a complete, runnable example of this wiring.)
+The loader resolves component names when configuration loads. An inbound names a Router. That Router selects Handlers. Each Handler uses `Send` to name an outbound. See [samples/config/IB_ACME_ADT.py](../samples/config/IB_ACME_ADT.py) and [samples/config/adt.py](../samples/config/adt.py) for runnable examples.
 
-Under the hood, a received message flows through a **staged pipeline** of three persisted stages — **ingress** (the raw message, committed *before* the ACK) → **routed** (one row per Handler the Router selected) → **outbound** (one row per destination) — each drained by its own asyncio worker. Because nothing is ever silently dropped, every message carries a **disposition** that the store records as it flows: `RECEIVED` → `ROUTED`/`UNROUTED` → `PROCESSED`/`FILTERED`/`NOT_DEPLOYED`/`ERROR`. This is the count-and-log promise; operators read the disposition (and alerts), not the ACK, to confirm a message reached its destination. The full reliability model (at-least-once delivery, why routers/handlers must be pure) is in [ADR 0001](adr/0001-staged-pipeline-architecture.md).
+Messages move through three stored stages: **ingress**, **routed**, and **outbound**. Ingress commits the raw message before acknowledgment. Routed creates one row per selected Handler. Outbound creates one per destination. Separate asyncio workers drain each stage. The store records outcomes as `RECEIVED` → `ROUTED`/`UNROUTED` → `PROCESSED`/`FILTERED`/`NOT_DEPLOYED`/`ERROR`. Check outcomes and alerts to confirm delivery. See [ADR 0001](adr/0001-staged-pipeline-architecture.md) for at-least-once delivery and Handler purity rules.
 
 ### Who this guide is for
 
-This guide serves two audiences: **operators** who install, run, and monitor the engine, and **config authors** (integration developers and analysts) who wire Connections, Routers, and Handlers. It links out to the reference docs rather than restating them. If you want a lighter, narrative onboarding first, read [EARLY-ADOPTER-GUIDE.md](EARLY-ADOPTER-GUIDE.md) (install-to-production rollout) or [MENTAL-MODEL.md](MENTAL-MODEL.md) (the concepts above, in depth).
+**Operators** install, run, and monitor the engine. **Configuration authors** build Connections, Routers, and Handlers. For rollout guidance, read [EARLY-ADOPTER-GUIDE.md](EARLY-ADOPTER-GUIDE.md). For component concepts, read [MENTAL-MODEL.md](MENTAL-MODEL.md).
 
 **Where the depth lives — the reference map:**
 
@@ -47,14 +47,14 @@ This guide serves two audiences: **operators** who install, run, and monitor the
 | Running as a Windows service (NSSM) | [SERVICE.md](SERVICE.md) |
 | Auth, RBAC, audit, and TLS | [SECURITY.md](SECURITY.md), [DEPLOYMENT.md](DEPLOYMENT.md) |
 | PHI handling and encryption-at-rest | [PHI.md](PHI.md) |
-| The staged pipeline / reliability; payload-agnostic ingress; the read-only `db_lookup`; X12 | [ADR 0001](adr/0001-staged-pipeline-architecture.md), [ADR 0004](adr/0004-payload-agnostic-ingress.md), [ADR 0010](adr/0010-handler-callable-db-lookup.md), [ADR 0012](adr/0012-x12-edi-codec.md) |
-| What's built vs. planned | [FEATURE-MAP.md](FEATURE-MAP.md), [README.md](../README.md) |
+| The staged pipeline / reliability. Payload-agnostic ingress. The read-only `db_lookup`. X12 | [ADR 0001](adr/0001-staged-pipeline-architecture.md), [ADR 0004](adr/0004-payload-agnostic-ingress.md), [ADR 0010](adr/0010-handler-callable-db-lookup.md), [ADR 0012](adr/0012-x12-edi-codec.md) |
+| What is built vs. Planned | [FEATURE-MAP.md](FEATURE-MAP.md), [README.md](../README.md) |
 
-A note on PHI before you run anything: this engine carries PHI, and a few commands (notably `dryrun` and `generate`) print **full message bodies** to stdout. Use **synthetic HL7 only** in examples, and never redirect that output to a committed file, ticket, or CI log. To build *realistic* test data from real traffic without ever handling PHI, use the built de-identification framework via the standalone tee relay's `python -m tee anonymize-captures` (fail-closed; [ADR 0030](adr/0030-anonymization-test-harness-tee.md)) rather than hand-writing synthetic messages. See [PHI.md](PHI.md) for the hard rules.
+A note on PHI before you run anything: this engine carries PHI, and a few commands (notably `dryrun` and `generate`) print **full message bodies** to stdout. Use **synthetic HL7 only** in examples, and never redirect that output to a committed file, ticket, or CI log. For realistic test data, use `python -m tee anonymize-captures` in the standalone tee relay. Its de-identification framework rejects unsafe output ([ADR 0030](adr/0030-anonymization-test-harness-tee.md)). This provides test data from real traffic without manual PHI handling. See [PHI.md](PHI.md) for the hard rules.
 
 ### How the rest of this guide is laid out
 
-The remaining sections are a **path**, in the order you'll actually work through them:
+Follow these sections in order on your first run:
 
 1. **Install** the engine and scaffold your config repo.
 2. Send your **first message** end to end (e.g. [samples/messages/adt_a01.hl7](../samples/messages/adt_a01.hl7) via [samples/send_mllp.py](../samples/send_mllp.py)) against the bundled sample config.
@@ -63,15 +63,15 @@ The remaining sections are a **path**, in the order you'll actually work through
 5. **Operate** via the browser web console (`/ui`, [messagefoundry-webconsole](../packaging/messagefoundry-webconsole/)) and the VS Code extension ([ide/](../ide/)).
 6. **Monitor and troubleshoot** with dispositions, alerts, dead-letter triage, and replay.
 
-Work through them in order the first time; afterward, jump to the task you need.
+Work through them in order the first time. Afterward, jump to the task you need.
 
 ---
 
 ## Installing and running the engine
 
-This section takes you from a clean machine to a running engine and an attached console. It covers the **developer / checkout** path (running the bundled `samples/config`) and points at the **pinned-wheel** consumer path where they differ.
+This section uses a source checkout and the bundled `samples/config`. It also links to the pinned-wheel installation steps for deployments.
 
-> Two install styles exist. To **try MessageFoundry against the sample config** (this guide's running example), install from a checkout (`pip install -e .`). To **deploy your own interfaces**, install the pinned wheel and scaffold a config repo with `messagefoundry init` — the full consumer model is [INSTALL-GUIDE.md](INSTALL-GUIDE.md).
+> Two install styles exist. To **try MessageFoundry against the sample config** (this guide's running example), install from a checkout (`pip install -e .`). For deployment, install the pinned wheel. Create a configuration repository with `messagefoundry init`. Refer to [INSTALL-GUIDE.md](INSTALL-GUIDE.md).
 
 ### 1. Check prerequisites
 
@@ -123,15 +123,15 @@ python -m messagefoundry serve --config samples/config --db ./messagefoundry.db 
 
 - `--config` points at the directory of Connection/Router/Handler modules (here `samples/config/`, which includes [IB_ACME_ADT.py](../samples/config/IB_ACME_ADT.py) and its transform [adt.py](../samples/config/adt.py)).
 - `--db` is the SQLite message store path (created on first run).
-- **`--env` is required** — `serve` refuses to start without it. The active environment is a free-form **name** (`dev`/`staging`/`prod`, or a custom name) that does two things: it selects the value file `environments/<env>.toml` that `env("…")` lookups resolve against, and it sets the instance's **PHI posture** (`data_class` / `production`). Built-in names carry a default posture; a custom name must declare it. See [CONFIGURATION.md](CONFIGURATION.md).
+- **`--env` is required** — `serve` refuses to start without it. The active environment is a free-form **name** (`dev`/`staging`/`prod`, or a custom name) that does two things: it selects the value file `environments/<env>.toml` that `env("…")` lookups resolve against, and it sets the instance's **PHI posture** (`data_class` / `production`). Built-in names carry a default posture. A custom name must declare it. See [CONFIGURATION.md](CONFIGURATION.md).
 
-When the engine runs from somewhere other than the repo root (e.g. under the service), anchor the value files with `--project-root <repo-root>` so `env()` values don't silently resolve empty — see [INSTALL-GUIDE.md](INSTALL-GUIDE.md).
+If the working directory differs from the repository root, set `--project-root <repo-root>`. This anchors value files for `env()` resolution. Refer to [INSTALL-GUIDE.md](INSTALL-GUIDE.md).
 
-**Network / auth posture.** The API binds **`127.0.0.1:8765`** and **requires authentication** by default. A non-loopback bind without TLS is refused at startup; configure native TLS (or an upstream terminator) to expose it. Details: [SECURITY.md](SECURITY.md) and [DEPLOYMENT.md](DEPLOYMENT.md).
+**Network / auth posture.** The API binds **`127.0.0.1:8765`** and **requires authentication** by default. A non-loopback bind without TLS is refused at startup. Configure native TLS (or an upstream terminator) to expose it. Details: [SECURITY.md](SECURITY.md) and [DEPLOYMENT.md](DEPLOYMENT.md).
 
-**Store encryption (PHI instances).** On a PHI instance (`[security].handles_real_patient_data = true`), `serve` **refuses to start** — in *every* environment, `dev` and `staging` included, not just production — if no store encryption key is configured. Mint one with `messagefoundry gen-key` (set it as `MEFOR_STORE_ENCRYPTION_KEY`), or on Windows DPAPI-protect it to a file with `messagefoundry protect-key --generate --out <file>` and point `[store].encryption_key_file` at it. The full key story is in [PHI.md](PHI.md).
+**Store encryption (PHI instances).** If `[security].handles_real_patient_data = true`, `serve` requires a store encryption key. Without one, startup fails in every environment, including `dev` and `staging`. Mint one with `messagefoundry gen-key` (set it as `MEFOR_STORE_ENCRYPTION_KEY`), or on Windows DPAPI-protect it to a file with `messagefoundry protect-key --generate --out <file>` and point `[store].encryption_key_file` at it. The full key story is in [PHI.md](PHI.md).
 
-Confirm it's up:
+Confirm it is up:
 
 ```powershell
 curl http://127.0.0.1:8765/health
@@ -139,14 +139,14 @@ curl http://127.0.0.1:8765/health
 
 ### 4. Scaffold your own config repo
 
-When you're ready to author real interfaces, scaffold a standalone, `check`-green config repo instead of editing the samples:
+Create a separate configuration repository for your own interfaces:
 
 ```powershell
 messagefoundry init ./my-config-repo
 cd my-config-repo
 ```
 
-It writes a runnable starter feed under `config/`, `environments/dev.toml` + `prod.toml`, a synthetic fixture under `messages/sets/`, a `messagefoundry.toml`, a `requirements.txt` pinning the engine, and a CI `check.yml`. Validate and run it:
+The command creates a starter feed in `config/` and a synthetic fixture in `messages/sets/`. It adds `environments/dev.toml`, `prod.toml`, and `messagefoundry.toml`. It also adds a pinned `requirements.txt` and continuous integration `check.yml`. Validate and run it:
 
 ```powershell
 pip install -r requirements.txt
@@ -154,27 +154,29 @@ messagefoundry check --config config --messages messages/sets
 messagefoundry serve --config config --env dev
 ```
 
-Put it under version control with **Set Up Version Control & Checks** in the IDE (or a plain `git init`). During setup you choose **where the repo is stored** — *on this machine only* (fine for a single-box, non-HA engine or local dev) or on a *shared remote* (recommended for HA, a team, or off-machine backup); change it any time with **Config Repo Storage Location**. Choosing local vs. remote storage, and why secrets/PHI never land in the repo, are covered in [VERSION-CONTROL.md](VERSION-CONTROL.md) (with the full deployment model in [INSTALL-GUIDE.md](INSTALL-GUIDE.md)).
+Put it under version control with **Set Up Version Control & Checks** in the IDE (or a plain `git init`). Select local or shared-remote repository storage during setup. Local storage suits development or a single machine without HA. Shared storage suits HA, team access, or off-machine backup. Change it any time with **Config Repo Storage Location**. Choosing local vs. Remote storage, and why secrets/PHI never land in the repo, are covered in [VERSION-CONTROL.md](VERSION-CONTROL.md) (with the full deployment model in [INSTALL-GUIDE.md](INSTALL-GUIDE.md)).
 
 ### 5. Open the admin console (in a browser)
 
-The console is the **browser web console** served same-origin by the engine at `/ui` — install the `messagefoundry-webconsole` wheel alongside the engine and it is served automatically, **on by default** at a loopback bind (turn it off with `[security].serve_web_console = false`). With the engine running, browse to:
+Install the `messagefoundry-webconsole` wheel alongside the engine to serve the browser console at `/ui`. It is **on by default** for loopback binds. Disable it with `[security].serve_web_console = false`. With the engine running, open:
 
 ```
 http://127.0.0.1:8765/ui
 ```
 
-The web console prompts for sign-in (authentication is on by default). Source: [packaging/messagefoundry-webconsole/](../packaging/messagefoundry-webconsole/). (The former PySide6 desktop console was retired — BACKLOG #103; PySide6 now backs only the standalone test harness.)
+The web console prompts for sign-in (authentication is on by default). Source: [packaging/messagefoundry-webconsole/](../packaging/messagefoundry-webconsole/). (The former PySide6 desktop console was retired — BACKLOG #103. PySide6 now backs only the standalone test harness.)
 
 ### 6. Run as a Windows service (NSSM)
 
-For production on Windows, run the engine as a background service via **NSSM** — it starts on boot, restarts on crash, captures stdout/stderr to rotating logs, and stops with Ctrl+C so connections drain cleanly. From an **elevated** PowerShell:
+For Windows production deployment, use **NSSM** to run the engine as a service. NSSM starts it at boot and restarts it after a crash. It captures stdout/stderr in rotating logs. On stop, it sends Ctrl+C so connections drain.
+
+Run the following command from an **elevated** PowerShell:
 
 ```powershell
 .\scripts\service\install-service.ps1 -Environment prod
 ```
 
-`-Environment` is **required** (it becomes `serve --env`, just like step 3). The script is idempotent (re-run to reconfigure), auto-downloads a SHA-256-pinned NSSM if one isn't on `PATH`, and defaults to service name `MessageFoundry`, config `<repo>\samples\config`, store + logs under `C:\ProgramData\MessageFoundry`, bind `127.0.0.1:8765`. Override paths/port/account with flags, e.g.:
+`-Environment` is **required** (it becomes `serve --env`, just like step 3). Rerun the script to reconfigure the service. If NSSM is absent from `PATH`, it downloads a SHA-256-pinned copy. Defaults are service `MessageFoundry`, configuration `<repo>\samples\config`, store and logs `C:\ProgramData\MessageFoundry`, and bind `127.0.0.1:8765`. Override paths/port/account with flags, e.g.:
 
 ```powershell
 .\scripts\service\install-service.ps1 -Environment prod -Port 9000 `
@@ -191,19 +193,19 @@ nssm stop   MessageFoundry
 .\scripts\service\uninstall-service.ps1            # elevated; leaves logs + store in place
 ```
 
-The complete procedure — least-privilege accounts, locking down the config/log directories, DPAPI key protection, update-vs-reinstall, and troubleshooting — is in [SERVICE.md](SERVICE.md).
+[SERVICE.md](SERVICE.md) covers accounts, configuration/log permissions, DPAPI key protection, updates, reinstallation, and troubleshooting.
 
 ### A note on PHI-emitting commands
 
-`messagefoundry dryrun` and `messagefoundry generate` print **full message bodies** to stdout/stderr (`dryrun` only with `--show-phi`; redacted otherwise). Run them against **synthetic HL7 only** — never real PHI — and never redirect their output into a committed file, ticket, or CI log. See [PHI.md](PHI.md).
+`messagefoundry dryrun` and `messagefoundry generate` print **full message bodies** to stdout/stderr (`dryrun` only with `--show-phi`. Redacted otherwise). Use synthetic HL7 only. Never use real PHI. Never redirect output to a committed file, ticket, or continuous integration log. See [PHI.md](PHI.md).
 
 ---
 
 ## Quickstart: send your first message
 
-This walkthrough uses only the shipped samples in [samples/config/](../samples/config/) — no editing required. You'll start the engine, push a synthetic HL7 ADT message over MLLP, and watch it get received, routed, and archived to a file.
+Use the shipped [sample configuration](../samples/config/) to send a synthetic HL7 ADT message over MLLP and archive it to a file. No edits are required.
 
-The sample inbound that does the work is `IB_Test_ADT` in [samples/config/adt.py](../samples/config/adt.py): an MLLP listener on **port 2575** whose Router forwards `ADT` messages to the `archive` Handler, which writes them to `./out/adt/{MSH-10}.hl7` via the `FILE-OUT_Test_ADT` outbound connection. (The config dir also wires other sample feeds — ACME ADT on 2600, X12, immunizations — but this Quickstart only exercises `IB_Test_ADT`.)
+The `IB_Test_ADT` inbound in [samples/config/adt.py](../samples/config/adt.py) listens on MLLP **port 2575**. Its Router sends `ADT` messages to the `archive` Handler. That Handler writes `./out/adt/{MSH-10}.hl7` through `FILE-OUT_Test_ADT`. Other sample feeds include ACME ADT on 2600, X12, and immunizations. This quickstart uses only `IB_Test_ADT`.
 
 ### 1. Start the engine
 
@@ -213,7 +215,7 @@ In one terminal, from the repo root, run the engine against the sample config. T
 python -m messagefoundry serve --config samples/config --db ./messagefoundry.db --env dev
 ```
 
-This loads the config modules, opens (or creates) the SQLite store at `./messagefoundry.db`, serves the localhost API, and starts every sample listener. The startup log announces the active environment and posture. Leave it running. The API binds `127.0.0.1` by default; first-run auth/console details are covered in the install guide — see [INSTALL-GUIDE.md](INSTALL-GUIDE.md).
+The command loads configuration, opens or creates `./messagefoundry.db`, serves the localhost API, and starts the sample listeners. Startup logs the environment and security settings. Leave it running. The API defaults to `127.0.0.1`. See [INSTALL-GUIDE.md](INSTALL-GUIDE.md) for first-run sign-in and console setup.
 
 ### 2. Send the sample message
 
@@ -242,7 +244,7 @@ MSA|AA|MSG00001
 ...
 ```
 
-An `MSA|AA` is a positive acknowledgement (`AA` = Application Accept). Under the staged pipeline the ACK means **received and durably persisted** (status `RECEIVED` at the ingress stage), *not* final delivery — see the ACK-on-receipt model in [ARCHITECTURE.md](ARCHITECTURE.md). A moment later the message is routed and delivered: because `adt_a01.hl7` is an `ADT^A01`, the Router forwards it to the `archive` Handler, the Handler stamps a downstream facility mnemonic *if one is mapped for the sending facility* (none is for this sample, so its MSH-4 is left unchanged) and sends it on, and the file outbound writes it under `./out/adt/`. Its disposition advances `RECEIVED` → `ROUTED` → `PROCESSED`. (A non-`ADT` message would be logged `UNROUTED`; an `ADT` event the Handler drops would be `FILTERED` — nothing is silently discarded.)
+`MSA|AA` means Application Accept: the engine received and stored the message. It does not confirm downstream delivery. See [ARCHITECTURE.md](ARCHITECTURE.md). The `ADT^A01` sample goes to the `archive` Handler. The Handler maps the sending facility only when a mapping exists. None exists for this sample, so MSH-4 stays unchanged. The file outbound writes to `./out/adt/`, and status moves `RECEIVED` → `ROUTED` → `PROCESSED`. Non-`ADT` messages become `UNROUTED`. An `ADT` event rejected by the Handler becomes `FILTERED`.
 
 Confirm the delivered file landed (its name is the message's MSH-10 control ID, `MSG00001`):
 
@@ -254,7 +256,7 @@ ls ./out/adt/
 
 Two complementary ways to inspect what happened:
 
-- **The web console Messages page.** Open the web console at `/ui` in a browser, then use **Traffic → Messages** to find the message, its disposition, the original raw body, and the per-destination delivery. The web console talks only to the engine's API — see [packaging/messagefoundry-webconsole/](../packaging/messagefoundry-webconsole/).
+- **The web console Messages page.** Open `/ui` in a browser. Select Traffic → Messages. Find the message and inspect its result, original raw body, and per-destination delivery. The web console talks only to the engine's API — see [packaging/messagefoundry-webconsole/](../packaging/messagefoundry-webconsole/).
 - **A dryrun preview (no engine needed).** To see exactly how the config *would* route and transform a message without sending it anywhere, run:
 
   ```
@@ -265,15 +267,15 @@ Two complementary ways to inspect what happened:
 
 ### Now change what it does
 
-Once the round trip works, make it yours: edit the Router and Handler in [samples/config/adt.py](../samples/config/adt.py) to change routing and transforms (see [Authoring Routers and Handlers](#authoring-routers-and-handlers)), add or retarget connections in [samples/config/connections.toml](../samples/config/connections.toml) — by hand or via the VS Code editor ([ADR 0007](adr/0007-gui-manageable-connections-toml.md)) — and follow the connection naming convention in [CONNECTIONS.md](CONNECTIONS.md). Run `python -m messagefoundry check --config samples/config --messages samples/messages` before committing config changes.
+Edit the Router and Handler in [samples/config/adt.py](../samples/config/adt.py) to change behavior. See [Authoring Routers and Handlers](#authoring-routers-and-handlers). Add or retarget connections in [samples/config/connections.toml](../samples/config/connections.toml), by hand or through the VS Code editor ([ADR 0007](adr/0007-gui-manageable-connections-toml.md)). Follow the naming convention in [CONNECTIONS.md](CONNECTIONS.md). Before committing, run `python -m messagefoundry check --config samples/config --messages samples/messages`.
 
 ---
 
 ## Authoring Connections
 
-A **Connection** is an endpoint that either *receives* messages (an **inbound** source) or *sends* them (an **outbound** destination). MLLP and File are the two most common transports, both shipped today (plus raw TCP, X12, REST, SOAP, Database, and SFTP/FTP — see the full catalog and per-setting reference in [CONNECTIONS.md](CONNECTIONS.md)). Connections carry only *transport* config; routing/transform *logic* lives in code-first Routers and Handlers (see [Authoring Routers and Handlers](#authoring-routers-and-handlers)).
+A **Connection** is an endpoint that either *receives* messages (an **inbound** source) or *sends* them (an **outbound** destination). MLLP and File are the two most common transports, both shipped today (plus raw TCP, X12, REST, SOAP, Database, and SFTP/FTP — see the full catalog and per-setting reference in [CONNECTIONS.md](CONNECTIONS.md)). Connections carry only *transport* config. Routing/transform *logic* lives in code-first Routers and Handlers (see [Authoring Routers and Handlers](#authoring-routers-and-handlers)).
 
-You author a connection one of two ways — **as code** (a `.py` module) or **as data** (`connections.toml`). Both desugar into the same registry, so they coexist freely.
+Define connections in `.py` modules or `connections.toml`. Both load into the same registry and can coexist.
 
 ### Name your connection
 
@@ -283,7 +285,7 @@ Use the convention `[TYPE]_[PARTNER]_[MESSAGE]`:
 - **PARTNER** — the system on the other end (`ACME`, `Epic`, `Test`).
 - **MESSAGE** — the HL7 message code (`ADT`, `ORU`, `VXU`, …) or `MIXED`/`ALL`.
 
-Example: `IB_ACME_ADT` = inbound MLLP from ACME carrying ADT. Names are plain strings, so hyphens and mixed case (`FILE-OUT_Test_ADT`) are fine. Router/Handler names are *not* connections and don't follow this formula.
+Example: `IB_ACME_ADT` = inbound MLLP from ACME carrying ADT. Names are plain strings, so hyphens and mixed case (`FILE-OUT_Test_ADT`) are fine. Router/Handler names are *not* connections and do not follow this formula.
 
 ### Author a code-first inbound and outbound
 
@@ -299,15 +301,15 @@ outbound("OB_ACME_ADT", MLLP(host=env("acme_adt_host"), port=env("acme_adt_port"
 Key points the sample demonstrates:
 
 - **Inbound MLLP takes only a `port`** — passing `host` is a wiring error. The listen interface is the service-level `[inbound].bind_host` (loopback in DEV, a specific NIC in PROD), an operator setting, not authored here.
-- **Outbound MLLP needs a `host` and `port`.** Anything that differs by environment (a downstream peer, a credential) uses `env("key")`, resolved per instance from `environments/<env>.toml` (and `MEFOR_VALUE_<KEY>` for secrets) — so one module runs unchanged in every environment. A referenced-but-undefined value fails loud at load, never a silent blank host.
-- For a **File** endpoint, use `File(directory="./out/adt")` (in) / `File(directory=..., filename="{MSH-10}.hl7")` (out). For non-HL7 bodies, set the inbound's `content_type` so the body routes as a `RawMessage` instead of being HL7-parsed — the shipped set is `hl7v2` (default), `json`, `xml`, `text`, `x12`, `fhir`, `binary`, and `dicom`. `x12` rides any transport (see [samples/config/IB_PARTNER_X12.py](../samples/config/IB_PARTNER_X12.py)); `fhir` ([ADR 0022](adr/0022-fhir-resource-codec-rest-client.md)) and `dicom` ([ADR 0025](adr/0025-dicom-codec-store-connectors.md)) add their own on-demand codecs, and arbitrary bytes carry NUL-safely over the base64 `binary` path ([ADR 0028](adr/0028-base64-binary-carriage-codec.md)). `FHIR()` is **outbound-only** (a FHIR REST *server* facade is not shipped). `DICOM()` runs in **both** directions from the one factory — an inbound C-STORE SCP listener and an outbound C-STORE SCU / C-ECHO sender to a downstream PACS (`host` / `called_ae_title` configure the outbound peer).
-- An **outbound `FHIR()`/`Rest()` destination to a SMART-secured server** (e.g. Epic, Oracle Health) can be wrapped with `with_smart_backend(...)` for OAuth2 client-credentials + signed-JWT authentication ([ADR 0024](adr/0024-smart-backend-services-token-provider.md)). Import it as `from messagefoundry.transports.smart import with_smart_backend` — it is not re-exported from the top-level package.
+- **Outbound MLLP needs a `host` and `port`.** Use `env("key")` for environment-specific peers or credentials. Values resolve from `environments/<env>.toml` and secrets from `MEFOR_VALUE_<KEY>`. The same module runs in each environment. A referenced-but-undefined value fails loud at load, never a silent blank host.
+- For a **File** endpoint, use `File(directory="./out/adt")` (in) / `File(directory=..., filename="{MSH-10}.hl7")` (out). For non-HL7 bodies, set the inbound `content_type` to select `RawMessage` instead of HL7 parsing. Available types are `hl7v2` (default), `json`, `xml`, `text`, `x12`, `fhir`, `binary`, and `dicom`. `x12` rides any transport (see [samples/config/IB_PARTNER_X12.py](../samples/config/IB_PARTNER_X12.py)). `fhir` ([ADR 0022](adr/0022-fhir-resource-codec-rest-client.md)) and `dicom` ([ADR 0025](adr/0025-dicom-codec-store-connectors.md)) load their codecs on demand. The base64 `binary` path carries arbitrary bytes, including NUL ([ADR 0028](adr/0028-base64-binary-carriage-codec.md)). `FHIR()` is **outbound-only** (a FHIR REST *server* facade is not shipped). `DICOM()` supports inbound C-STORE SCP and outbound C-STORE SCU / C-ECHO. The outbound sends to a downstream PACS. Set `host` and `called_ae_title` for that peer.
+- Use `with_smart_backend(...)` for `FHIR()` or `Rest()` destinations on SMART-secured servers (for example, Epic or Oracle Health). It provides OAuth2 client-credentials and signed-JWT authentication ([ADR 0024](adr/0024-smart-backend-services-token-provider.md)). Import it as `from messagefoundry.transports.smart import with_smart_backend` — it is not re-exported from the top-level package.
 
-The complete per-connector settings (TLS, retry, DoS guards, ACK mode, `simulate`, etc.) are documented in [CONNECTIONS.md](CONNECTIONS.md#settings--whats-supported-today); each factory in [messagefoundry/config/wiring.py](../messagefoundry/config/wiring.py) **is the schema** for its transport.
+The complete per-connector settings (TLS, retry, DoS guards, ACK mode, `simulate`, etc.) are documented in [CONNECTIONS.md](CONNECTIONS.md#settings--whats-supported-today). Each factory in [messagefoundry/config/wiring.py](../messagefoundry/config/wiring.py) **is the schema** for its transport.
 
 ### Bind an inbound to its Router
 
-An inbound names its Router with the `router=` keyword (`router="acme_adt_router"` above). The string must match a `@router` declared in some `.py` module loaded from the config dir; names resolve **globally** across the directory, so the inbound and its router can live in separate files. An inbound with no matching router fails `messagefoundry check`. (The router and handler are authored in code — covered in [Authoring Routers and Handlers](#authoring-routers-and-handlers).)
+An inbound names its Router with the `router=` keyword (`router="acme_adt_router"` above). The string must match a `@router` declared in some `.py` module loaded from the config dir. Names resolve **globally** across the directory, so the inbound and its router can live in separate files. An inbound with no matching router fails `messagefoundry check`. (The router and handler are authored in code — covered in [Authoring Routers and Handlers](#authoring-routers-and-handlers).)
 
 Validate the wiring before running it:
 
@@ -328,11 +330,11 @@ router    = "acme_adt_router"      # binds a router registered in a .py module
   port = 2700                      # inbound MLLP takes only a port
 ```
 
-- The `transport` maps to the same factory (`mllp` → `MLLP()`), so a TOML connection produces a byte-identical spec and inherits every factory default and guard.
+- The `transport` selects the same factory (`mllp` → `MLLP()`). TOML produces an identical specification with the same defaults and guards.
 - **Secrets and per-environment peers use `{ env = "key" }`**, never an inline value (e.g. `host = { env = "acme_adt_host" }`, `port = { env = "acme_adt_port", cast = "int" }`). The file is repo-versionable and diffable.
 - A name declared in **both** a `.py` module and `connections.toml` is a hard error (no silent shadowing).
 
-Edit the file two ways, same file — by hand, or via the CLI (which is what the VS Code connection editor shells; it does a comment/format-preserving, validate-before-persist write):
+Edit by hand or through the command-line tool, which the VS Code editor also uses. It preserves comments and formatting, and validates before saving:
 
 ```bash
 messagefoundry connection list   --config samples/config
@@ -357,11 +359,11 @@ Use only synthetic HL7 (as in `samples/messages/`) — never real PHI on a test 
 
 ## Authoring Routers and Handlers
 
-A **Router** and a **Handler** are plain Python functions you write against the `messagefoundry` surface and register with the `@router` / `@handler` decorators. The Router sees *every* received message and decides which Handler(s) get it; each Handler filters, transforms the message, and returns `Send`s to outbound connections. Both are wired by name to a Connection — there is no enclosing "channel" object. The end-to-end template is [samples/results_relay/results_relay.py](../samples/results_relay/results_relay.py); the simplest pair is [samples/config/adt.py](../samples/config/adt.py).
+Register Python routing and transform functions with `@router` and `@handler`. Routers choose Handlers for each received message. Handlers filter, transform, and return `Send`s to outbound connections. Components link by name. See [samples/results_relay/results_relay.py](../samples/results_relay/results_relay.py) for an end-to-end template or [samples/config/adt.py](../samples/config/adt.py) for a simple pair.
 
 ### 1. Write a Router (`@router`)
 
-A Router takes the message and returns the **handler name(s)** to forward to — return `[]` to route nowhere (the message is still counted and logged `UNROUTED`, never dropped). It is the place to do fast, tolerant field peeks for routing decisions.
+A Router returns Handler names. Return `[]` to select none. The engine records `UNROUTED`. Use tolerant field reads to make routing decisions.
 
 From [samples/config/adt.py](../samples/config/adt.py):
 
@@ -377,7 +379,7 @@ The Router name (`"adt_router"`) is what an inbound Connection binds to: `inboun
 
 ### 2. Write a Handler (`@handler`)
 
-A Handler receives the message from a Router, then **filters → transforms → returns `Send`(s)**. Return `None` to filter the message out (logged `FILTERED`); return one `Send` or a list to fan out to multiple outbound connections.
+A Handler receives the message from a Router, then **filters → transforms → returns `Send`(s)**. Return `None` to filter the message out (logged `FILTERED`). Return one `Send` or a list to fan out to multiple outbound connections.
 
 From [samples/config/adt.py](../samples/config/adt.py):
 
@@ -396,19 +398,19 @@ The `Send` target (`"FILE-OUT_Test_ADT"`) names an `outbound(...)` Connection de
 
 ### 3. The `Message` operations you'll use
 
-Routers and Handlers work against the mutable HL7 `Message` in [messagefoundry/parsing/message.py](../messagefoundry/parsing/message.py) — never string-slice raw HL7; read/mutate through `Message` and re-encode. The methods you'll reach for (see the docstrings in that file for full signatures):
+Routers and Handlers work against the mutable HL7 `Message` in [messagefoundry/parsing/message.py](../messagefoundry/parsing/message.py) — never string-slice raw HL7. Read/mutate through `Message` and re-encode. The methods you will reach for (see the docstrings in that file for full signatures):
 
-- **Peek a field** — `msg["PID-3"]` / `msg.field("OBX-3.1", occurrence=i)`; convenience properties `msg.message_code` (MSH-9.1), `msg.trigger_event` (MSH-9.2), `msg.control_id` (MSH-10).
-- **Iterate repetitions / segments** — `msg.repetitions("PID-3")` walks a `~`-list; `msg.count_segments("OBX")` plus `field(occurrence=…)` walks repeating segments.
-- **Mutate** — `msg["MSH-4"] = value` / `msg.set(path, value, occurrence=…, repetition=…)`; rebuild a repeating block with `msg.delete_segments("OBX")` + `msg.add_segment(line, index=…)` + `msg.add_repetition(...)`.
+- **Peek a field** — `msg["PID-3"]` / `msg.field("OBX-3.1", occurrence=i)`. Convenience properties `msg.message_code` (MSH-9.1), `msg.trigger_event` (MSH-9.2), `msg.control_id` (MSH-10).
+- **Iterate repetitions / segments** — `msg.repetitions("PID-3")` walks a `~`-list. `msg.count_segments("OBX")` plus `field(occurrence=…)` walks repeating segments.
+- **Mutate** — `msg["MSH-4"] = value` / `msg.set(path, value, occurrence=…, repetition=…)`. Rebuild a repeating block with `msg.delete_segments("OBX")` + `msg.add_segment(line, index=…)` + `msg.add_repetition(...)`.
 - **Read MSH separators** — never hardcode `|^~\&`. The repeating-segment rebuild in [samples/results_relay/results_relay.py](../samples/results_relay/results_relay.py) reads them from MSH-1/MSH-2 (its `_separators` helper) before joining components.
 - **Re-encode** — `msg.encode()` (or just pass `msg` to a `Send`, which encodes for you).
 
-A non-HL7 inbound (`content_type` other than `hl7v2`) delivers a `RawMessage` instead — read `.raw` / `.text` / `.json()` / `.xml()` (the XML accessor is XXE-safe via defusedxml: DOCTYPE, external-entity, and billion-laughs payloads raise) and `Send` a built string. For cross-field business-rule checks beyond what schema validation catches, compose the primitives in `parsing/consistency.py`, as [samples/consistency/validated_adt.py](../samples/consistency/validated_adt.py) does (raise `ConsistencyError` → dead-letter, or `return None` → filter). The three validation tiers are laid out in [HL7-VALIDATION.md](HL7-VALIDATION.md).
+A non-HL7 inbound (`content_type` other than `hl7v2`) supplies a `RawMessage`. Read `.raw`, `.text`, `.json()`, or `.xml()`. The defusedxml-based XML accessor rejects DOCTYPE, external entities, and billion-laughs payloads. Use `Send` with the resulting string. For cross-field business-rule checks beyond what schema validation catches, compose the primitives in `parsing/consistency.py`, as [samples/consistency/validated_adt.py](../samples/consistency/validated_adt.py) does (raise `ConsistencyError` → dead-letter, or `return None` → filter). The three validation tiers are laid out in [HL7-VALIDATION.md](HL7-VALIDATION.md).
 
 ### 4. Translation tables (code sets)
 
-A Router or Handler often maps a coded value to a downstream one — a sending-facility code to a mnemonic (the `FACILITY_MNEMONICS` lookup in the Handler above), an order code to a partner's code, a bed location to a room. Rather than hand-maintain a Python dict, you can back that lookup with a **translation table** (internally a *code set*): a `codesets/<name>.csv` file in your config dir (the name is the file stem). It **loads with the graph and reloads on promote**, and the lookup is **pure**, so it's safe under the staged pipeline.
+Routers and Handlers can translate facility codes, order codes, or bed locations for a destination. The earlier `FACILITY_MNEMONICS` example maps facility codes. A translation table, also called a code set, stores these mappings in `codesets/<name>.csv`. The file stem supplies the table name. The graph loads the table and reloads it on promotion. Lookups are pure, so the staged pipeline can repeat them safely.
 
 `codesets/facility_mnemonics.csv`:
 
@@ -432,10 +434,10 @@ def archive(msg):
     return Send("FILE-OUT_Test_ADT", msg)
 ```
 
-- **Missing key — you choose the behavior.** `code_set(...).get(key, default)` returns `default` on a miss (pass-through as above, or `""` to blank it); the subscript `code_set(...)[key]` **raises** on a miss, sending that message to its `ERROR`/dead-letter disposition (the strict "never deliver an unmapped value" path).
-- **Single vs. multi-column.** One value column → the value is a scalar string; two or more → it's a `{header: cell}` dict (`code_set("x")["k"]["mnemonic"]`). Keys are exact-match, **case-sensitive** strings.
+- **Missing key — you choose the behavior.** `code_set(...).get(key, default)` returns `default` on a miss (pass-through as above, or `""` to blank it). The subscript `code_set(...)[key]` **raises** on a miss, sending that message to its `ERROR`/dead-letter disposition (the strict "never deliver an unmapped value" path).
+- **Single vs. Multi-column.** One value column → the value is a scalar string. Two or more → it is a `{header: cell}` dict (`code_set("x")["k"]["mnemonic"]`). Keys are exact-match, **case-sensitive** strings.
 
-**Create and edit tables** by hand, or in the **Translation Tables** view of the VS Code extension — a grid editor (*New / Edit Translation Table*) that shells the offline `messagefoundry codeset` CLI (the validation authority):
+Edit tables manually or through the VS Code Translation Tables grid (New / Edit Translation Table). The grid uses the offline `messagefoundry codeset` validation tool:
 
 ```bash
 messagefoundry codeset list   --config samples/config
@@ -444,13 +446,17 @@ messagefoundry codeset rename --config samples/config --name old --to new
 messagefoundry codeset remove --config samples/config --name old
 ```
 
-A save is validated against the **same loader the engine uses** (no duplicate keys, no malformed file) and written atomically; a bad edit rolls back, and the change goes live through the usual **promote** (`POST /config/reload`). **After a rename or remove, run `messagefoundry check`** — a handler's `code_set("old_name")` reference resolves at run time, so a plain `validate` won't catch a now-dangling name, but `check`'s dry-run will. Full reference: [CODESETS.md](CODESETS.md) and [CONFIGURATION.md](CONFIGURATION.md#code-sets--reference-lookup-tables-codesets); design record [ADR 0033](adr/0033-gui-manageable-code-sets.md). (For lookup data that lives in an **external** file or database rather than the bundle, see reference sets ([ADR 0006](adr/0006-external-data-lookups.md)) and the live `db_lookup` below.)
+The engine loader validates each table before an atomic save. It rejects duplicate keys and malformed files. A failed save restores the previous table. Promote the change with `POST /config/reload`.
+
+**After a rename or removal, run `messagefoundry check`.** A Handler resolves `code_set("old_name")` at runtime. Plain `validate` cannot detect a missing runtime reference, but the dry-run in `check` can.
+
+Refer to [CODESETS.md](CODESETS.md), [CONFIGURATION.md](CONFIGURATION.md#code-sets--reference-lookup-tables-codesets), and [ADR 0033](adr/0033-gui-manageable-code-sets.md). For external lookup files, see reference sets in [ADR 0006](adr/0006-external-data-lookups.md). For live database reads, see `db_lookup` below.
 
 ### 5. Purity rule (don't break this)
 
-Routers and Handlers **must be pure**: message in → message(s) out, no external side effects. At-least-once delivery re-runs a transform after a crash and relies on the re-run producing identical output. Side effects (network, file, DB writes) belong in outbound Connections, not in your functions.
+Routers and Handlers **must be pure**: they return messages without external side effects. The engine can rerun transforms after crashes, so repeated execution must produce identical output. Put network, file, and database writes in outbound Connections.
 
-There are **two sanctioned exceptions**, both **read-only** and both available only inside a live Handler: a database read, `db_lookup(connection, statement, params)`, and a FHIR read/search, `fhir_lookup(connection, query)` — a read-by-id (`"Patient/123"`) or a search (`"Patient?identifier=MRN|123"`), GET-only. Either may return different data on a re-run, and that is accepted by design. Both are gated fail-closed — `db_lookup` by `[egress].allowed_db`, `fhir_lookup` by `[egress].allowed_http` — run off the event loop, and are **unavailable on a Router or in dry-run** (they raise). See [ADR 0010](adr/0010-handler-callable-db-lookup.md) and [ADR 0043](adr/0043-fhir-read-lookup.md).
+Two read-only exceptions are available inside live Handlers: `db_lookup(connection, statement, params)` and `fhir_lookup(connection, query)`. FHIR supports GET-only reads by ID (`"Patient/123"`) and searches (`"Patient?identifier=MRN|123"`). Results may change on rerun. This is accepted by design. Both run outside the event loop. `db_lookup` uses `[egress].allowed_db`. `fhir_lookup` uses `[egress].allowed_http`. Both reject unlisted destinations. They raise errors in Routers or dry-runs. See [ADR 0010](adr/0010-handler-callable-db-lookup.md) and [ADR 0043](adr/0043-fhir-read-lookup.md).
 
 ### 6. The authoring dev loop
 
@@ -472,13 +478,15 @@ python -m messagefoundry dryrun --config samples/config --messages samples/messa
 python -m messagefoundry check --config samples/config --messages samples/messages
 ```
 
-`dryrun --show-phi` prints **full message bodies** (raw + would-send payloads) to stdout — that is PHI. Run it on synthetic HL7 only, and never redirect its output to a committed file, a ticket, or a CI log (PHI is redacted by default for exactly this reason). Wire `check` into your pre-commit hook / CI so a broken Router or Handler can't merge. For depth on connection settings see [CONNECTIONS.md](CONNECTIONS.md); for the validation tiers see [HL7-VALIDATION.md](HL7-VALIDATION.md).
+`dryrun --show-phi` prints full raw and intended-output message bodies to stdout. The default output redacts PHI. Use synthetic HL7 only. Do not save output in a committed file, ticket, or continuous integration log.
+
+Add `check` to the pre-commit hook and continuous integration workflow. Refer to [CONNECTIONS.md](CONNECTIONS.md) for connection settings and [HL7-VALIDATION.md](HL7-VALIDATION.md) for validation tiers.
 
 ---
 
 ## Operating with the console and the VS Code extension
 
-MessageFoundry has two operator-facing UIs, and they do different jobs. The **web console** — the sole operator console, a browser UI the engine serves same-origin at `/ui` — monitors and operates a *running* engine over the localhost API: start/stop connections, browse the message log, watch health, manage users. The **VS Code extension** is for the *config author* — building and testing Connections/Routers/Handlers and promoting them to an engine. Neither touches the database directly; both go through the engine API. (The former PySide6 desktop console was retired — BACKLOG #103; PySide6 now backs only the standalone test harness.)
+The **web console** at `/ui` operates a running engine: manage connections, inspect messages, monitor health, and manage users. The **VS Code extension** builds, tests, and promotes configuration. Both use the engine API and never access the database directly. The former PySide6 desktop console is retired (BACKLOG #103). PySide6 now serves only the standalone test harness.
 
 ### Opening and signing in to the console
 
@@ -496,89 +504,106 @@ http://127.0.0.1:8765/ui
 
 When the engine requires authentication (the default), a **Sign in** form appears first:
 
-1. Enter your **username** and **password**, and pick a **Provider** — *Local* always; *Active Directory* appears only if the engine advertises AD.
-2. If your account uses **two-factor (TOTP)**, you are prompted for the 6-digit code from your authenticator app (or a single-use recovery code) before you land on a page. An account with a **passkey** enrolled gets a *Use passkey* button here instead ([ADR 0068](adr/0068-browser-webauthn-passkeys-offloopback.md); it needs the `[webauthn]` extra and a configured `public_origin`, and says so plainly when either is missing).
+1. Enter your **username** and **password**, and pick a **Provider** — *Local* always. *Active Directory* appears only if the engine advertises AD.
+2. If your account uses TOTP, enter the 6-digit authenticator code or a single-use recovery code. The console checks it before it opens a page. An account with a **passkey** enrolled gets a *Use passkey* button here instead ([ADR 0068](adr/0068-browser-webauthn-passkeys-offloopback.md). It needs the `[webauthn]` extra and a configured `public_origin`, and says so plainly when either is missing).
 3. On a forced password change, the console chains a change-password step (local accounts only — AD passwords are changed in Active Directory).
 
-On success the session rides an `HttpOnly` `mf_session` cookie, so navigating between pages doesn't re-prompt until the session expires or is revoked. The nav's **Account** menu leads to **My account**, which holds your **Password** (change it), **Multi-factor authentication** (enroll a TOTP authenticator — it shows a setup key + `otpauth://` URL for manual entry, then your one-time recovery codes — or turn it off), **Passkeys**, and **Active sessions** (inventory/revoke your own sessions); **Sign out** sits in the nav itself. Which pages and actions you can use is governed by RBAC — see [SECURITY.md](SECURITY.md) for roles and per-route permissions.
+After sign-in, the engine uses an `HttpOnly` `mf_session` cookie. Further sign-in is necessary only after the session expires or the engine revokes it.
+
+Open **Account → My account** to change a password, manage MFA, manage passkeys, or view and revoke active sessions. TOTP enrollment shows a setup key and `otpauth://` URL for manual entry, then one-time recovery codes. The navigation menu contains **Sign out**.
+
+Role-based access control determines which pages and actions you can use. Refer to [SECURITY.md](SECURITY.md).
 
 ### A tour of the console pages
 
-The pages hang off a **top nav** of hover/focus dropdowns: **Traffic** (Connections, Messages, Dead letters, Events), **Monitoring** (Status, Alerts, Flow & trends, Audit, Uploaded logs), **Admin** (Users, Configuration), and **Account** (My account, My security events). Every item is listed for everyone, but the *pages* are permission-gated server-side, so one you can't use refuses rather than hides. Flush right sit two live glyphs — an alerts bell and a health heart (green healthy, orange degraded, blinking red engine/DB stopped), repolled every ~15 s from every page — then **Sign out**.
+The top navigation menu has these groups:
 
-- **Connections** — one row per endpoint (each inbound + each outbound). Tick rows and drive them from the dashboard toolbar's action dropdown: **Start / Stop / Restart** (either direction), **Reset stats**, and — for a *stopped and quiesced outbound* only — **Purge top** or **Purge all** (a step-up-unlocked, irreversible drain that cancels queued deliveries; it will not retry, and may be held for a second approver). Each row's name links to that connection's pre-filled **Messages** search, and an **ⓘ** link opens its read-only detail page. Columns are *Flag / Connection / Dir / Status / In / Out / Queued / Errors / Alerts / Idle*. A connection that failed to build or bind at startup shows a degraded **`failed`** status rather than taking the engine down ([ADR 0031](adr/0031-startup-connection-fault-isolation.md) — recovery is in [troubleshooting](#monitoring-dispositions-and-troubleshooting)).
+- **Traffic:** Connections, Messages, Dead letters, Events.
+- **Monitoring:** Status, Alerts, Flow & trends, Audit, Uploaded logs.
+- **Admin:** Users, Configuration.
+- **Account:** My account, My security events.
 
-- **Messages** — browse the message store (filter by connection, status, type, control ID, and a received-time window) and open one message at a time. Its detail page shows the metadata, the **Raw message** exactly as it arrived (preserved alongside the transformed form), **Deliveries** (per-destination status, attempts, last error), and **Events** (the audit trail), with a **Parse tree →** link to the structured HL7 view (server-parsed via the pure `parsing` library, so no body is ever re-rendered as markup). This is also where you **Replay** a message, or **Edit & resubmit** a copy of it. Viewing raw bodies is PHI access and is audited server-side with your username. A separate **Content search** page searches *inside* bodies by HL7 field path or substring — a bulk-PHI decrypt, so it is step-up gated and audited.
+Menus open on hover or keyboard focus. All users see every menu item, but the server rejects pages without permission.
 
-- **Status** — read-only health: engine (version, uptime, PID, inbounds running/total, endpoints in+out, engine-wide msg/s), store (path, size, free disk, journal mode, message/event/audit row counts), the effective security posture, and the active-passive **Cluster** roster + DR state. **Run integrity check** runs `PRAGMA quick_check` on demand, and **Reset statistics** zeroes the counters. When `[service].report_status` is on, a **Hosting service** badge reports the NSSM service's state — a read-out only, with no start/stop controls; manage the service itself per [SERVICE.md](SERVICE.md).
+The right side shows an alert bell, a health indicator, and **Sign out**. The indicators refresh about every 15 seconds on every page. Green means healthy, orange means degraded, and blinking red means the engine or database stopped.
 
-- **Users** (reading needs `users:read`; every change needs `users:manage`) — RBAC administration across three cross-linked pages: **Users** (`+ New user`, then a per-user page with Profile, Roles, Channel scope, and account actions — *Reset password*, *Reset MFA*, *Sign out all sessions*, *Delete user*), **Roles** (user-definable custom roles over the built-in permission catalog, [ADR 0045](adr/0045-custom-rbac-roles.md)), and **AD group mappings**. Each body-carrying form opens inside a fresh step-up window, and every operation is audited server-side. Role definitions live in [SECURITY.md](SECURITY.md).
+- **Connections** shows one row per inbound or outbound endpoint. Select rows, then choose **Start**, **Stop**, **Restart**, or **Reset stats**. For a stopped and quiesced outbound, **Purge top** and **Purge all** cancel queued deliveries permanently. Purge requires re-authentication and may require a second approver. The connection name opens its **Messages** search. The **ⓘ** link opens read-only details. Columns are Flag, Connection, Dir, Status, In, Out, Queued, Errors, Alerts, and Idle. A startup build or bind failure shows `failed` without stopping the engine ([ADR 0031](adr/0031-startup-connection-fault-isolation.md)). See [troubleshooting](#monitoring-dispositions-and-troubleshooting).
 
-- **Alerts** — the engine's **active alert instances** (open and acknowledged) plus the loaded `[alerts]` rules ([ADR 0044](adr/0044-operator-alert-state.md) refining [ADR 0014](adr/0014-alerting-rules-engine.md)). Each instance carries severity, status, event type, connection, occurrence count, first/last seen, reason, and who acknowledged it, with **Ack** / **Resolve** / windowed **Suspend** / **Resume** actions. Rule *editing* stays config-file driven; the rule list is shown read-only (event type, connection, min depth, min age, severity, transports, cooldown — transports reported present-or-not, secrets omitted). The notifications themselves still fan out through the engine's AlertSink (see [Monitoring dispositions and troubleshooting](#monitoring-dispositions-and-troubleshooting)).
+- **Messages** filters by connection, status, type, control ID, and receipt time. Open a message to see metadata, the original **Raw message**, **Deliveries**, and **Events**. Delivery details include status, attempts, and last error. **Parse tree →** uses the pure `parsing` library to open the HL7 view without rendering message bodies as markup. **Replay** sends the message again. **Edit & resubmit** creates a copy. The server audits raw-body access with your username. **Content search** searches bodies by field path or substring. This bulk PHI decryption requires re-authentication and an audit record.
 
-**Dead letters and replay.** The nav's **Dead letters** page lists dead-lettered deliveries newest-first — one row per message → destination that exhausted its retries (columns: *Failed / Channel / Destination / Type / Attempts / Last error / Message*) — with bulk **Replay all dead — `<connection>`** buttons, per-destination **Replay `<connection>` → `<destination>`** buttons, and one action to replay every dead delivery across all connections. Viewing the list needs `messages:read`; replay needs `messages:replay` and is step-up (re-auth) gated server-side (and may be held for a second approver). Each row's **Message** link opens the audited detail page, where the **Deliveries** section shows the per-destination error and a per-message **Replay** — a second route to the same action. For diagnosing and clearing stuck deliveries, see the troubleshooting guidance in [EARLY-ADOPTER-GUIDE.md](EARLY-ADOPTER-GUIDE.md).
+- **Status** — read-only health: engine (version, uptime, PID, inbounds running/total, endpoints in+out, engine-wide msg/s), store (path, size, free disk, journal mode, message/event/audit row counts), the effective security posture, and the active-passive **Cluster** roster + DR state. **Run integrity check** runs `PRAGMA quick_check` on demand, and **Reset statistics** zeroes the counters. When `[service].report_status` is on, Hosting service shows the NSSM service state. It has no start/stop controls. Manage the service itself per [SERVICE.md](SERVICE.md).
+
+- **Users** requires `users:read` for viewing and `users:manage` for changes. Use `+ New user` to create a user. The user page has Profile, Roles, Channel scope, and account actions. Actions include *Reset password*, *Reset MFA*, *Sign out all sessions*, and *Delete user*. **Roles** defines custom roles from the permission catalog ([ADR 0045](adr/0045-custom-rbac-roles.md)). **AD group mappings** links directory groups. Forms that contain bodies require a fresh re-authentication window. The server audits each operation. See [SECURITY.md](SECURITY.md).
+
+- **Alerts** — the engine's **active alert instances** (open and acknowledged) plus the loaded `[alerts]` rules ([ADR 0044](adr/0044-operator-alert-state.md) refining [ADR 0014](adr/0014-alerting-rules-engine.md)). Each instance records severity, status, event type, connection, occurrence count, first/last seen, reason, and the user who acknowledged it. Actions are Ack, Resolve, windowed Suspend, and Resume. Rule *editing* stays config-file driven. The rule list is shown read-only (event type, connection, min depth, min age, severity, transports, cooldown — transports reported present-or-not, secrets omitted). The notifications themselves still fan out through the engine's AlertSink (see [Monitoring dispositions and troubleshooting](#monitoring-dispositions-and-troubleshooting)).
+
+The **Dead letters** page lists failed deliveries, newest first. Each row represents a message and destination that exhausted retries. Columns are *Failed / Channel / Destination / Type / Attempts / Last error / Message*.
+
+The page offers **Replay all dead — `<connection>`**, **Replay `<connection>` → `<destination>`**, and replay across all connections. Viewing requires `messages:read`. Replay requires `messages:replay` and re-authentication. A second approver may also be necessary.
+
+The **Message** link opens the audited detail page. Its **Deliveries** section shows the error and offers per-message **Replay**. Refer to [EARLY-ADOPTER-GUIDE.md](EARLY-ADOPTER-GUIDE.md) for recovery instructions.
 
 ### The VS Code extension (for config authors)
 
-The extension is a thin TypeScript UI that shells out to the `messagefoundry` CLI; it authors and tests interfaces, and can start/stop/restart a local engine and show its status — but **operating** and **monitoring** traffic is the web console's job. What it gives a config author:
+The VS Code extension runs the `messagefoundry` command-line tool to author and test configuration. It can start, stop, and restart a local engine and show its status. Use the web console to monitor traffic. The extension includes:
 
-- **Setup / scaffolding** — a **Home** launchpad with a **New Route Wizard** (Inbound → Router → Handler → Outbound generated as one module), **New Connection** (form → generates a `[TYPE]_[PARTNER]_[MESSAGE]` module like `IB_ACME_ADT`), New Router/Handler, **Generate Samples** (writes a synthetic, conformant corpus via `messagefoundry generate` — no PHI), and **Set Up Version Control & Checks** (puts the project under git with a `messagefoundry check` pre-commit hook).
-- **Validate + graph** — *Validate on save* surfaces problems in the Problems panel; the **Components** view renders the wired graph (`messagefoundry graph`) by convention name, with **Filter** and **Group** controls and a row **⚙ gear** to open a connection's `MLLP()`/`File()` settings in code.
-- **Translation tables** — a **Translation Tables** view with a grid editor to create / edit / rename / delete a translation table (code set); it shells the `messagefoundry codeset` CLI (validate-on-save, atomic write) and offers **Promote** to apply. See [CODESETS.md](CODESETS.md).
-- **Test Bench** — load `.hl7` files (each may hold many messages, split on `MSH`), **dry-run** them through the config without sending, and see each message's disposition, with a **Before/After** diff and a **Debug** step-through under `debugpy`. The load dialog opens to `messagefoundry.messageSetsDir` (default `samples/messages`).
-- **Stage → Promote** — apply local config to a *running* engine: validate, pick a target environment, pre-flight a dry-run `POST /config/reload {dry_run:true}` against that target's `env()` values, confirm, then atomically swap the live graph. The engine requires auth, so the extension signs you in (token cached in VS Code SecretStorage).
-- **AI assist** — an `@messagefoundry` chat participant (`/explain`, `/transform`, `/router`, `/review`, `/migrate`, `/test`) that is provider-agnostic and **only ever sends code + the config graph, never message bodies / PHI**.
+- Setup tools appear on Home. New Route Wizard generates Inbound → Router → Handler → Outbound as one module. New Connection generates a `[TYPE]_[PARTNER]_[MESSAGE]` module, such as `IB_ACME_ADT`. Other tools create Routers and Handlers. Generate Samples uses `messagefoundry generate` for conformant synthetic data without PHI. Set Up Version Control & Checks adds Git and a `messagefoundry check` pre-commit hook.
+- **Validate + graph** — *Validate on save* surfaces problems in the Problems panel. The Components view shows `messagefoundry graph` with convention names. Use Filter and Group to select the view. The row’s ⚙ button opens `MLLP()` or `File()` settings in code.
+- The Translation Tables grid creates, edits, renames, and removes translation tables, also called code sets. It shells the `messagefoundry codeset` CLI (validate-on-save, atomic write) and offers **Promote** to apply. See [CODESETS.md](CODESETS.md).
+- **Test Bench** loads `.hl7` files and splits multiple messages on `MSH`. It runs the configuration without delivery and shows each message’s result. **Before/After** shows the changes. **Debug** steps through code with `debugpy`. The load dialog uses `messagefoundry.messageSetsDir`, which defaults to `samples/messages`.
+- **Stage → Promote** applies local configuration to a running engine. First, validate the configuration. Select the target environment. Run `POST /config/reload {dry_run:true}` against its `env()` values. Confirm the change. The engine then swaps the live graph atomically. The extension requires sign-in and stores the token in VS Code SecretStorage.
+- AI assist uses the provider-agnostic `@messagefoundry` chat participant (`/explain`, `/transform`, `/router`, `/review`, `/migrate`, `/test`). It sends code and the configuration graph, without message bodies or PHI.
 
 Full feature and settings reference: [ide/README.md](../ide/README.md).
 
-> PHI note: `messagefoundry generate` and `dryrun` (which the Test Bench uses) print full message bodies to stdout/stderr — run them only against synthetic HL7 (e.g. [samples/messages/adt_a01.hl7](../samples/messages/adt_a01.hl7)), and never redirect their output to a committed file, ticket, or CI log.
+> **PHI:** `messagefoundry generate` and `dryrun`, used by the Test Bench, can print full message bodies. Use only synthetic HL7, such as [samples/messages/adt_a01.hl7](../samples/messages/adt_a01.hl7). Never redirect output to a committed file, ticket, or continuous integration log.
 
 ---
 
 ## Monitoring dispositions and troubleshooting
 
-MessageFoundry never accepts-and-drops a message: **every message a connection receives is persisted and counted before it is ACKed**, and its *disposition* is recorded as it flows through the pipeline. This section is how you watch those dispositions, recover failed deliveries, and get paged when a lane stalls. For the underlying guarantees see [ARCHITECTURE.md](ARCHITECTURE.md) and the staged-pipeline rationale in [ADR 0001](adr/0001-staged-pipeline-architecture.md).
+The engine stores and counts each received message before acknowledging it. It records the message’s outcome as processing advances. Use those outcomes to monitor delivery and recover failures. See [ARCHITECTURE.md](ARCHITECTURE.md) and [ADR 0001](adr/0001-staged-pipeline-architecture.md) for the delivery model.
 
 ### What each disposition means
 
-A message's status moves through the [staged pipeline](adr/0001-staged-pipeline-architecture.md) (`ingress -> routed -> outbound`). The store's finalizer is the **single authority** that sets the final disposition — it only finalizes once every handler's work resolves, so one delivered handler can't mark a message done while a sibling is still in flight:
+Messages move through the [staged pipeline](adr/0001-staged-pipeline-architecture.md): `ingress -> routed -> outbound`. The store finalizer sets the final outcome only after every Handler’s work resolves. One completed Handler cannot finalize a message while another remains active.
 
 | Status | What it means to you |
 |--------|----------------------|
-| `RECEIVED` | Persisted at ingress and ACKed. The count is booked; routing hasn't run yet. |
-| `ROUTED` | The Router selected at least one Handler; the message is awaiting transform/delivery. |
-| `UNROUTED` | The Router ran but chose **no** Handler. Not an error — logged, kept, not delivered. Check the Router logic if you expected a destination. |
-| `FILTERED` | Every Handler ran but delivered nothing (filtered out). Expected for drop-by-design rules; surprising drops mean a Handler filter is too aggressive. |
-| `NOT_DEPLOYED` | Every destination the Handlers addressed is present in the config but marked `deployed = false`, so the engine declined the send and queued nothing ([ADR 0111](adr/0111-not-deployed-connections.md)). Not an error, and deliberately *not* `FILTERED` — the Handler did choose to send; the engine declined the destination. Each declined leg also lands as a `not_deployed` event on the message, and that event is in the compliance floor, so it survives even `[diagnostics].message_events = "off"`. A message that still reached a *deployed* sibling therefore finalizes `PROCESSED`, with the skipped leg on the record. To bring the destination up, set `deployed = true`, supply that connection's `env()` values, and reload — start/restart from the console is refused (`409`), because deploying is a config change, not a runtime action. See [CONNECTIONS.md](CONNECTIONS.md#connection-lifecycle--deployed--auto_start). |
-| `PROCESSED` | Every selected Handler transformed and **all** destinations delivered. The happy path. |
-| `ERROR` / dead-letter | A stage failed. A decode/parse/strict-validate failure is recorded *before* ingress (and NAK'd — see below); a routing/transform/delivery failure is recorded *after* the ACK as `ERROR` plus an [AlertSink](../messagefoundry/pipeline/alerts.py) event. A delivery that exhausts retries becomes a **dead-letter** you can inspect and replay. |
+| `RECEIVED` | The engine stored and counted the message at ingress, then sent an ACK. Routing has not started. |
+| `ROUTED` | The Router selected at least one Handler. Transform and delivery work remains. |
+| `UNROUTED` | The Router selected no Handler. The engine records and keeps the message without delivery. This is not an error. Check the Router if you expected delivery. |
+| `FILTERED` | Every Handler completed without delivery. Filter rules can intentionally cause this result. Check unexpected results against the Handler filters. |
+| `NOT_DEPLOYED` | Every selected destination has `deployed = false`, so the engine queues no delivery ([ADR 0111](adr/0111-not-deployed-connections.md)). The result is not an error or `FILTERED`. Each skipped destination produces a `not_deployed` event, even with `[diagnostics].message_events = "off"`. If another deployed destination receives the message, the final status is `PROCESSED`. Skipped destinations remain in the event record. To enable a destination, set `deployed = true`. Supply its `env()` values. Then reload configuration. Console start/restart returns `409` because deployment requires a configuration change. See [CONNECTIONS.md](CONNECTIONS.md#connection-lifecycle--deployed--auto_start). |
+| `PROCESSED` | Every selected Handler completed the transform and all destinations received delivery. |
+| `ERROR` / dead-letter | A stage failed. Decode, parse, or strict-validation failures occur before ingress and return a NAK. Later failures record `ERROR` and an [AlertSink](../messagefoundry/pipeline/alerts.py) event after acknowledgment. A delivery that exhausts retries becomes a dead letter for inspection and replay. |
 
 The key operator shift under the staged pipeline: **an `AA` ACK means "received and persisted," not "delivered."** A post-ingress failure is a disposition + alert, not a NAK.
 
 ### Where to watch dispositions
 
-- **Web console -> Messages.** The message browser has a **status** filter — type a disposition (e.g. `unrouted`, `error`) to narrow the list, then open a message to see its raw body, parse tree, deliveries, and audit trail. On the Connections page, a connection's name links straight to Messages pre-filtered to that connection.
-- **Web console -> Connections.** The dashboard shows each connection's live status plus per-connection counts, including an **errored** column, so a climbing error count on one feed is visible at a glance.
-- **API.** `GET /messages?status=error` (and `&channel_id=`, `&message_type=`) is the filter the console uses; `GET /stats` returns outbox-by-status + in-pipeline depth; `GET /status` returns engine uptime, running/stopped channel counts, and DB size/free-disk; `GET /metrics` exposes a Prometheus exposition (aggregate counts/latency keyed by connection + status, no PHI) for an external scraper — it works on a base install, and the `[otel]` extra adds only the optional OpenTelemetry/OTLP export seam. All require the `monitoring:read` (stats/status/metrics) or `messages:read` (the Messages browser) permission — see [SECURITY.md](SECURITY.md).
+- **Web console → Messages.** Use the **status** filter to select a result, such as `unrouted` or `error`. Open a message to inspect its raw body, parse tree, deliveries, and audit trail. A connection name on the Connections page opens Messages with that connection selected.
+- **Web console -> Connections.** The dashboard shows connection status and per-connection counts. The errored column shows error counts for each feed.
+- **API.** `GET /messages?status=error` (and `&channel_id=`, `&message_type=`) is the filter the console uses. `GET /stats` returns outbox-by-status + in-pipeline depth. `GET /status` returns engine uptime, running/stopped channel counts, and DB size/free-disk. `GET /metrics` provides Prometheus data without PHI on a base installation. It includes aggregate counts and latency by connection and status. The `[otel]` extra adds optional OpenTelemetry/OTLP export. All require the `monitoring:read` (stats/status/metrics) or `messages:read` (the Messages browser) permission — see [SECURITY.md](SECURITY.md).
 
 ### The ERROR / dead-letter path: inspect and replay
 
 A delivery dead-letters when its retries are exhausted. Retry behavior is per-outbound (defaults in `[delivery]` — see [CONFIGURATION.md](CONFIGURATION.md)):
 
-- `retry_max_attempts` **unset = retry forever** (the conservative default; under FIFO the failing head blocks its lane until it succeeds or is purged). Set a finite value to opt into retry-then-dead-letter.
-- A partner **`AR` reject fails fast** (no retry); an **`AE` NAK / transient transport failure is retried** with backoff.
+- `retry_max_attempts` **unset = retry forever** (the conservative default. Under FIFO the failing head blocks its lane until it succeeds or is purged). Set a finite value to opt into retry-then-dead-letter.
+- A partner **`AR` reject fails fast** (no retry). An **`AE` NAK / transient transport failure is retried** with backoff.
 
 To recover:
 
-1. **Find the dead-letters.** Console: open the **Dead letters** page (or the message itself from **Messages**) and read its delivery row's **Last error**. API: `GET /dead-letters` (optionally `?channel_id=&destination_name=`) lists dead deliveries newest-first; each row carries `last_error`.
+1. **Find the dead-letters.** Console: open the **Dead letters** page (or the message itself from **Messages**) and read its delivery row's **Last error**. API: `GET /dead-letters` (optionally `?channel_id=&destination_name=`) lists dead deliveries newest-first. Each row carries `last_error`.
 2. **Fix the cause** (the downstream endpoint, the transform, the config).
-3. **Replay.** `POST /dead-letters/replay` re-queues the dead deliveries (optionally scoped by `channel_id` / `destination_name`); each affected message reverts from `error` to `received` and re-drains. Already-delivered rows are left alone. Replay requires the `messages:replay` permission and is **step-up (re-auth) gated**, and may be held for a second approver when `[approvals]` is configured. (In the console, the **Dead letters** page lists these and offers the per-connection, per-destination, and replay-everything buttons directly; this API path is the equivalent for scripting and automation.)
+3. **Replay.** `POST /dead-letters/replay` re-queues the dead deliveries (optionally scoped by `channel_id` / `destination_name`). Each affected message reverts from `error` to `received` and re-drains. Already-delivered rows are left alone. Replay requires `messages:replay` permission and re-authentication. If `[approvals]` is configured, a second approver may also be required. (In the console, the **Dead letters** page lists these and offers the per-connection, per-destination, and replay-everything buttons directly. This API path is the equivalent for scripting and automation.)
 
 > Replaying re-transmits real message bodies — it is audited per acting user. Treat it like any PHI action ([PHI.md](PHI.md)).
 
 ### Alerting: fire-and-forward notifications
 
-The engine raises operational alert events — **`connection_stopped`** (a lane halted by the `stop` internal-error policy), **`queue_buildup`** (a backlog past its depth/age threshold), **`storage_threshold`** (the store grew past `[retention].max_db_mb`), and **`cert_expiry`** (a monitored TLS certificate nearing expiry) — through an [AlertSink](../messagefoundry/pipeline/alerts.py). With no `[alerts]` transport configured these are just logged at `WARNING`; configure a transport and they fan out to it ([alert_sinks.py](../messagefoundry/pipeline/alert_sinks.py)).
+The engine raises operational alert events — **`connection_stopped`** (a lane halted by the `stop` internal-error policy), **`queue_buildup`** (a backlog past its depth/age threshold), **`storage_threshold`** (the store grew past `[retention].max_db_mb`), and **`cert_expiry`** (a monitored TLS certificate nearing expiry) — through an [AlertSink](../messagefoundry/pipeline/alerts.py). With no `[alerts]` transport configured these are just logged at `WARNING`. Configure a transport and they fan out to it ([alert_sinks.py](../messagefoundry/pipeline/alert_sinks.py)).
 
 Configure alerts in the `[alerts]` section ([CONFIGURATION.md](CONFIGURATION.md#alerts)):
 
@@ -595,19 +620,19 @@ severity = "critical"
 transports = ["webhook"]
 ```
 
-The SMTP password is a secret — supply it via `MEFOR_ALERTS_EMAIL_PASSWORD`, never the file. Per-event severity, transport routing, thresholds, suppression, and cooldown are tuned with ordered `[[alerts.rules]]` tables ([ADR 0014](adr/0014-alerting-rules-engine.md)); an event matching no rule notifies every configured transport at `warning`.
+The SMTP password is a secret — supply it via `MEFOR_ALERTS_EMAIL_PASSWORD`, never the file. Per-event severity, transport routing, thresholds, suppression, and cooldown are tuned with ordered `[[alerts.rules]]` tables ([ADR 0014](adr/0014-alerting-rules-engine.md)). An event matching no rule notifies every configured transport at `warning`.
 
-**Important:** the *notifications* are **fire-and-forward** — once webhook/email delivery is attempted there is no send log, so for the notification itself you rely on your webhook/email target. The engine does, however, keep **alert state**: an alert instance per `(event type, connection)` that you can query with `GET /alerts/active` and act on with `POST /alerts/{id}/ack` · `/resolve` · `/suspend` · `/resume`, which is what the console's **Alerts** page drives ([ADR 0044](adr/0044-operator-alert-state.md)). `GET /alerts/rules` remains a read-only view of the *loaded* transport config and rule set (secrets and recipients omitted). Instances and payloads carry only the connection name and queue shape, never message content (no PHI).
+The engine attempts webhook/email delivery but keeps no notification send log. Check delivery at the webhook or email target. It separately stores **alert state** per `(event type, connection)`. Query `GET /alerts/active` and act through `POST /alerts/{id}/ack`, `/resolve`, `/suspend`, or `/resume`. The console uses these endpoints ([ADR 0044](adr/0044-operator-alert-state.md)). `GET /alerts/rules` shows loaded rules and transport configuration, with secrets and recipients omitted. Alert instances and payloads contain connection names and queue details, without message content or PHI.
 
 ### Common problems
 
-- **Sender got a NAK (AE/AR).** A decode/parse/strict-validate failure rejects *synchronously* at the listener and records `ERROR` **before** any ingress row — the message never entered the pipeline. Fix the inbound HL7 (or relax `validation.strict` on that connection). Treat the message body as untrusted data, not a malformed instruction.
+- **Sender got a NAK (AE/AR).** The listener rejects decode, parse, and strict-validation failures synchronously. It records `ERROR` before ingress, so the message never enters the pipeline. Fix the inbound HL7 (or relax `validation.strict` on that connection). Treat the message body as untrusted data, not a malformed instruction.
 - **Sender got AA but nothing was delivered.** Expected under ACK-on-receipt: routing/transform/delivery failures happen *after* the ACK. Look at the message's disposition (`UNROUTED`/`FILTERED`/`NOT_DEPLOYED`/`ERROR`) and the AlertSink — **not** the ACK — for the outcome.
-- **A lane stopped processing.** A `connection_stopped` alert means an outbound's worker halted on an internal/code error (`internal_error = stop`). The messages are preserved for replay; fix the cause, then reload/restart the connection.
-- **A connection shows `failed`.** A connection that can't build or bind **at startup** (bad settings, a port already in use) is isolated as a degraded `failed` status instead of taking the engine down — every other lane keeps running ([ADR 0031](adr/0031-startup-connection-fault-isolation.md)). Fix the config/bind, then recover it: restart an inbound (`POST /connections/{name}/start`), or reload to rebuild a failed outbound. (Reload itself stays fail-fast — a broken config is rejected whole, never partially applied.)
+- **A lane stopped processing.** A `connection_stopped` alert means an outbound's worker halted on an internal/code error (`internal_error = stop`). The messages are preserved for replay. Fix the cause, then reload/restart the connection.
+- **A connection shows `failed`.** A startup build or bind failure affects that connection only. Other connections continue ([ADR 0031](adr/0031-startup-connection-fault-isolation.md)). Correct the settings or port conflict. For an inbound, use `POST /connections/{name}/start`. For a failed outbound, reload the configuration. Reload rejects an invalid configuration as a whole.
 - **Backlog growing.** A `queue_buildup` alert usually means a retry-forever head is blocking its FIFO lane, or the downstream is down. Check the destination, then inspect/purge or replay the blocking row.
-- **Console can't reach the engine.** The API binds `127.0.0.1:8765` by default and requires auth; confirm the engine is serving (`python -m messagefoundry serve --config samples/config --db ./messagefoundry.db --env dev`), that the `messagefoundry-webconsole` distribution is installed and the console has not been turned off (`[security].serve_web_console`), and that your browser is pointed at that host/port's `/ui`.
-- **Low disk / store growing.** `GET /status` reports DB size and free disk; a `storage_threshold` alert fires past `[retention].max_db_mb`. Tune retention in `[retention]` ([CONFIGURATION.md](CONFIGURATION.md)) — purges null PHI bodies while keeping the message/disposition rows, so counts and audit stay intact. The row is kept; its PHI columns — operator-attached `metadata` included — are blanked.
+- **Console cannot reach the engine.** The API binds `127.0.0.1:8765` by default and requires auth. Confirm that the engine is running (`python -m messagefoundry serve --config samples/config --db ./messagefoundry.db --env dev`). Check that `messagefoundry-webconsole` is installed. Check that `[security].serve_web_console` enables the console. Open that host and port’s `/ui` page.
+- **Low disk / store growing.** `GET /status` reports DB size and free disk. A `storage_threshold` alert fires past `[retention].max_db_mb`. Configure `[retention]` ([CONFIGURATION.md](CONFIGURATION.md)). Purges clear PHI bodies but retain message, result, and audit records. The row is kept. Its PHI columns — operator-attached `metadata` included — are blanked.
 
 ---
 
@@ -623,5 +648,5 @@ The SMTP password is a secret — supply it via `MEFOR_ALERTS_EMAIL_PASSWORD`, n
 - **Security, RBAC, TLS** — [SECURITY.md](SECURITY.md), [DEPLOYMENT.md](DEPLOYMENT.md)
 - **PHI handling & encryption-at-rest** — [PHI.md](PHI.md)
 - **VS Code extension** — [ide/README.md](../ide/README.md)
-- **What's built vs. planned** — [FEATURE-MAP.md](FEATURE-MAP.md), [README.md](../README.md)
+- **What is built vs. Planned** — [FEATURE-MAP.md](FEATURE-MAP.md), [README.md](../README.md)
 - **Design records** — [ADR 0001](adr/0001-staged-pipeline-architecture.md) (staged pipeline), [ADR 0004](adr/0004-payload-agnostic-ingress.md) (payload-agnostic ingress), [ADR 0010](adr/0010-handler-callable-db-lookup.md) (`db_lookup`), [ADR 0012](adr/0012-x12-edi-codec.md) (X12), [ADR 0014](adr/0014-alerting-rules-engine.md) (alerting rules)

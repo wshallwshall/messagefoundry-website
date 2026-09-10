@@ -4,14 +4,14 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Architecture — MessageFoundry</title>
-  <meta name="description" content="How MessageFoundry fits together — the system topology, the durable staged-queue message flow with ACK-on-receipt, and the Connection/Router/Handler wiring graph.">
+  <meta name="description" content="Explore MessageFoundry components, process boundaries, message flow, and interface wiring.">
   <link rel="canonical" href="https://messagefoundry.org/architecture.html">
   <link rel="icon" href="/assets/img/favicon.svg" type="image/svg+xml">
   <meta name="theme-color" content="#0b1220">
   <meta property="og:type" content="website">
   <meta property="og:site_name" content="MessageFoundry">
   <meta property="og:title" content="Architecture — MessageFoundry">
-  <meta property="og:description" content="System topology, runtime message flow through the durable staged queue, and the config wiring graph — how the open-source healthcare interface engine fits together.">
+  <meta property="og:description" content="Explore MessageFoundry components, process boundaries, message flow, and interface wiring.">
   <meta property="og:url" content="https://messagefoundry.org/architecture.html">
   <meta property="og:image" content="https://messagefoundry.org/assets/img/og.png">
   <meta property="og:image:width" content="1200">
@@ -58,7 +58,7 @@
 
   <div class="eabar" role="region" aria-label="Project status">
     <div class="container">
-      <p><strong>Early Access &middot; beta.</strong> We're building toward 1.0 &mdash; and we want people involved now, while it can still be shaped. <a href="/status.html">Where the project stands &rarr;</a></p>
+      <p><strong>Early Access &middot; beta.</strong> Help test and shape the 1.0 release. <a href="/status.html">Where the project stands &rarr;</a></p>
     </div>
   </div>
 
@@ -124,11 +124,11 @@
     <div class="container center">
       <span class="eyebrow">Architecture</span>
       <h1 style="max-width:22ch;margin-inline:auto">How Message<span class="wordmark-accent">Foundry</span> fits together</h1>
-      <p class="lead">Four views, each answering a different question: every shipped component and how it relates to the engine; the engine's internal packages and where the process boundaries sit; how a received message moves through the durable staged queue and earns a disposition; and how Connections, Routers, and Handlers wire together by name. The prose source of truth is the engine's <a href="https://github.com/MEFORORG/MessageFoundry/blob/main/docs/ARCHITECTURE.md" target="_blank" rel="noopener" style="color:var(--accent)">ARCHITECTURE.md</a>.</p>
+      <p class="lead">Explore the components, process boundaries, message flow, and interface wiring below. For the detailed reference, read <a href="https://github.com/MEFORORG/MessageFoundry/blob/main/docs/ARCHITECTURE.md" target="_blank" rel="noopener" style="color:var(--accent)">ARCHITECTURE.md</a>.</p>
       <div class="btn-row center" style="margin-top:24px">
         <a class="btn btn-primary" href="/assets/docs/MessageFoundry-Mental-Model.pdf" target="_blank" rel="noopener">Read the mental model (PDF) ↓</a>
       </div>
-      <p style="margin:26px auto 0;max-width:760px;color:var(--muted-dk);font-size:.95rem">This architecture is real and running — but the project is young. MessageFoundry started in <b>May 2026</b> and is in Early Access. <a href="/status.html" style="color:var(--accent)">See where it stands →</a></p>
+      <p style="margin:26px auto 0;max-width:760px;color:var(--muted-dk);font-size:.95rem">MessageFoundry started in <b>May 2026</b> and is in Early Access. <a href="/status.html" style="color:var(--accent)">Read the project status →</a></p>
     </div>
   </section>
 
@@ -138,7 +138,7 @@
       <div class="center" style="margin-bottom:30px;max-width:760px">
         <span class="eyebrow">1 · The whole system</span>
         <h2>Top-level components</h2>
-        <p class="lead center">Beyond the engine itself, MessageFoundry ships as a set of <b>independent, separately-built components</b> — operator tools, the version-controlled config, the CLI and Windows service that run it, dev/test tooling, a standalone migration tee relay, and the CI-to-PyPI release path. Operator tools reach the engine <b>only</b> through the localhost API; the engine is the core, and everything else sits around it.</p>
+        <p class="lead center">The system includes operator tools, configuration, service commands, test tools, and a migration tee relay. Operator tools connect to the engine through its local API.</p>
         <p style="margin-top:14px"><a href="/tools.html" style="color:var(--accent-ink);font-weight:650">See the whole toolkit, up close →</a></p>
       </div>
       <svg class="dg" viewBox="0 0 940 460" role="img" aria-labelledby="t0 d0">
@@ -210,7 +210,7 @@
       <div class="center" style="margin-bottom:30px;max-width:760px">
         <span class="eyebrow">2 · Components &amp; boundaries</span>
         <h2>System topology</h2>
-        <p class="lead center">The engine is a headless service; clients are separate processes that reach it <b>only</b> through the localhost API. Dependencies point one way — the API depends on the engine, the engine never imports the API or a client.</p>
+        <p class="lead center">The engine runs as a service. Separate client processes connect <b>only</b> through its localhost API. The API depends on the engine; the engine never imports the API or a client.</p>
       </div>
       <svg class="dg" viewBox="0 16 800 510" role="img" aria-labelledby="t1 d1">
         <title id="t1">System topology</title>
@@ -279,7 +279,7 @@
       <div class="center" style="margin-bottom:30px;max-width:760px">
         <span class="eyebrow">3 · Runtime message flow</span>
         <h2>The durable staged queue</h2>
-        <p class="lead center">A received message is <b>ACKed on receipt</b> — once it's durably committed to the ingress stage, before routing, transform, or delivery. Each handoff is a single committed transaction, giving reliable delivery, retries, and replay with no separate broker.</p>
+        <p class="lead center">The engine <b>acknowledges receipt</b> after it commits the message to the ingress stage, before routing, transforms, or delivery. Each handoff uses one committed transaction. The stored stages support retries and replay without a separate broker.</p>
       </div>
       <svg class="dg" viewBox="0 0 940 332" role="img" aria-labelledby="t2 d2">
         <title id="t2">Runtime message flow through the staged queue</title>
@@ -322,11 +322,11 @@
         <text class="dg-ttl" x="44" y="289" style="font-size:13px">RECEIVED &#8594; ROUTED / UNROUTED &#8594; PROCESSED / FILTERED / ERROR</text>
       </svg>
       <div class="callout" style="margin-top:30px;max-width:900px;margin-inline:auto">
-        <p><strong>Why nothing is lost.</strong> Every message is committed to the store before it's ACKed, and each stage handoff is a single transaction — so a crash can only ever repeat the last step, never skip it. In normal operation every message is delivered exactly once. The one edge case: if the engine crashes after a downstream send but before it records that success, on restart it re-sends that single in-flight message rather than risk dropping it. (Engineers call this "deliver again rather than lose" guarantee <b>at-least-once</b> — the deliberate opposite of <em>at-most-once</em>, which can silently lose clinical data.) That rare re-send is detectable, not noise: a re-delivered HL7 message carries the same <code>MSH-10</code> control ID, so a downstream sees a retry of a known message — exactly where deduplication belongs.</p>
+        <p>The engine commits each message before acknowledgment and each stage handoff in one transaction. After a crash, it can repeat the last step without skipping it. Normal operation delivers each message once. A crash after a downstream send, but before recording success, can cause that message to be sent again. This is <b>at-least-once delivery</b>. A repeated HL7 message keeps the same <code>MSH-10</code> control ID, so the downstream system can detect and remove duplicates.</p>
       </div>
       <div class="callout" style="margin-top:22px;max-width:900px;margin-inline:auto">
-        <p><strong>How much one interface carries.</strong> Capacity is a measured property of this staged queue, not a separate claim. On anonymized, representative message traffic, a single inbound interface sustains a measured <b>~50 messages/second</b> on commodity hardware — about <b>180,000 in a peak hour</b> and on the order of <b>1.6 million a day</b> — with every message committed to the durable store before it's ACKed and delivered strict per-interface FIFO. Whatever the rate, nothing is counted that isn't stored, and nothing is silently dropped.</p>
-        <p style="margin-bottom:0">Those day-level figures are sized to the <em>busy hour</em>, not a flat 24 hours: clinical ADT traffic is business-hours-bursty. In <b>de-identified ADT traffic profiled from a live hospital interface feed</b>, the busiest hour runs roughly <b>2.7&times;</b> the daily average, at around <b>11.5&nbsp;KB</b> per message — so one interface moves on the order of <b>18&nbsp;GB/day</b>. Treat the message size as <em>directionally</em> right rather than a constant: it varies a great deal by feed, and messages carrying <b>base64-encoded documents or images</b> are far larger, which changes the storage and bandwidth arithmetic well before it changes the message rate. A single hospital's full ADT feed is only a few percent of one interface, so capacity is rarely the question for one site — and when it is, you scale horizontally: feeds split at the source across more interfaces, plus an optional multi-node tier. At that grain, <b>16&nbsp;million messages a day is roughly 10 interfaces</b> — distributed, not forced through a single pipe. Your real numbers track your transforms, storage, and hardware. <a href="/throughput/">How to read these throughput numbers →</a> &nbsp;·&nbsp; <a href="/assets/docs/MessageFoundry-Throughput-and-Capacity.pdf" target="_blank" rel="noopener">Throughput &amp; capacity (PDF) ↓</a></p>
+        <p>On anonymized, representative traffic, one inbound interface measured <b>~50 messages/second</b> on commodity hardware. That is about <b>180,000 in a peak hour</b>, or roughly <b>1.6 million a day</b> under the traffic pattern below. The engine stores each message before acknowledgment and delivers in strict first-in, first-out order per interface.</p>
+        <p style="margin-bottom:0">Daily estimates account for uneven traffic. In <b>de-identified ADT traffic from a live hospital feed</b>, the busiest hour was roughly <b>2.7&times;</b> the daily average. Messages averaged <b>11.5&nbsp;KB</b>, giving about <b>18&nbsp;GB/day</b> at that estimated volume. Message sizes vary by feed. <b>Base64-encoded documents or images</b> can greatly increase storage and bandwidth needs. Scale by splitting feeds at the source across interfaces, with an optional multi-node tier. Total capacity does not grow as a simple sum of single-interface rates. Measure your transforms, storage, and hardware. <a href="/throughput/">Read the throughput measurements →</a> &nbsp;·&nbsp; <a href="/assets/docs/MessageFoundry-Throughput-and-Capacity.pdf" target="_blank" rel="noopener">Throughput &amp; capacity (PDF) ↓</a></p>
       </div>
     </div>
   </section>
@@ -337,7 +337,7 @@
       <div class="center" style="margin-bottom:30px;max-width:760px">
         <span class="eyebrow">4 · Config wiring</span>
         <h2>Connections, Routers, and Handlers — wired by name</h2>
-        <p class="lead center">Your configuration is a graph wired by name — a set of nodes connected by edges, like boxes joined by arrows in a flowchart. An inbound Connection names a Router; the Router forwards to Handler(s) by name; each Handler sends to outbound Connection(s). There's no enclosing "channel" object — set it up with guided wizards, or write it in Python.</p>
+        <p class="lead center">Configuration links components by name. An inbound Connection names a Router, which selects Handlers. Each Handler sends to outbound Connections. There is no enclosing channel object. Use guided wizards or write the configuration in Python.</p>
       </div>
       <svg class="dg" viewBox="0 0 900 272" role="img" aria-labelledby="t3 d3">
         <title id="t3">Config wiring graph</title>
@@ -378,14 +378,14 @@
       <div class="grid grid-2" style="margin-top:42px;align-items:start">
         <div>
           <span class="eyebrow">Why wire it this way</span>
-          <h3 style="margin-top:8px">A wiring diagram, not a stack of channels</h3>
-          <p class="lead">Because the links are just names, each box is defined once and the arrows are cheap — what a bundled "channel" can't give you.</p>
+          <h3 style="margin-top:8px">Reuse components by name</h3>
+          <p class="lead">Define each component once, then reference its name wherever you need it.</p>
         </div>
         <ul class="feature-list">
-          <li><b>Define once, reuse anywhere</b> — name a destination, a shared transform, or a router and reference it from anywhere, instead of copying it into every channel that needs it.</li>
-          <li><b>Rewiring is a one-line diff</b> — add a destination with one more Send, or reroute a feed by changing a name. No "channel" surgery, and every change is a small version-controlled diff.</li>
-          <li><b>Mistakes caught at load</b> — an unknown router, a dangling handler, a duplicate name or port are errors at check time, not silent surprises in production.</li>
-          <li><b>Each piece is small and testable</b> — a Router or Handler is a tiny function with a clear contract, so your team (or an AI agent) can build and test parts in parallel.</li>
+          <li>Reuse a named destination, transform, or router across interfaces without copying its definition.</li>
+          <li>Add a destination with another Send, or reroute a feed by changing a name. Review those changes in version control.</li>
+          <li>Configuration checks reject unknown routers, missing handlers, duplicate names, and duplicate ports.</li>
+          <li>Test each Router or Handler as a separate function. Teams or AI agents can work on independent parts in parallel.</li>
         </ul>
       </div>
     </div>
@@ -396,7 +396,7 @@
     <div class="container">
       <div class="cta-band">
         <h2>See it run for yourself</h2>
-        <p class="lead center" style="color:var(--muted-dk)">From install to your first routed message — with the full feature set and the engine docs a click away.</p>
+        <p class="lead center" style="color:var(--muted-dk)">Follow the quickstart to route a test message, or read the feature list and engine documentation.</p>
         <div class="btn-row center">
           <a class="btn btn-primary" href="/getting-started.html">Get started</a>
           <a class="btn btn-ghost" href="/features.html">Browse features →</a>
@@ -415,8 +415,8 @@
             <img class="brand-mark" src="/assets/img/logo.svg" alt="" width="28" height="28">
             <span class="brand-name">Message<span class="brand-accent">Foundry</span><span class="brand-tm">™</span></span>
           </a>
-          <p class="footer-tagline"><b>More</b> Than an HL7 Interface Engine</p>
-          <p>Open-source healthcare interface engine — secure by default, built to recognized standards, connecting a wide range of protocols and message types.</p>
+          <p class="footer-tagline">Open-source healthcare interface engine</p>
+          <p>Route and transform healthcare messages with an open-source interface engine you run on your own servers.</p>
           <div class="badge-row" style="margin-top:16px">
             <span class="badge">Open source</span>
             <span class="badge">No lock-in</span>
@@ -459,8 +459,8 @@
         </div>
       </div>
       <div class="footer-bottom">
-        <span>© 2026 MessageFoundry Foundation — this website and its content, all rights reserved. The MessageFoundry engine is separately open source, licensed under AGPL-3.0-or-later.</span>
-        <span>MessageFoundry and the MessageFoundry word mark are trademarks of MessageFoundry Foundation. Mirth Connect, Cloverleaf, Rhapsody, Corepoint, and Ensemble are trademarks of their respective owners; MessageFoundry is independent and unaffiliated.</span>
+        <span>© 2026 MessageFoundry, LLC — this website and its content, all rights reserved. The MessageFoundry engine is separately open source, licensed under AGPL-3.0-or-later.</span>
+        <span>MessageFoundry and the MessageFoundry word mark are trademarks of MessageFoundry, LLC. Mirth Connect, Cloverleaf, Rhapsody, Corepoint, and Ensemble are trademarks of their respective owners; MessageFoundry is independent and unaffiliated.</span>
       </div>
     </div>
   </footer>

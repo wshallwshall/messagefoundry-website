@@ -4,14 +4,14 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Get started — MessageFoundry</title>
-  <meta name="description" content="Install MessageFoundry from PyPI with a single pip install, run the engine and localhost API, send a test HL7 message over MLLP, open the admin console, and author your first Connection / Router / Handler in Python.">
+  <meta name="description" content="Install MessageFoundry on Python 3.14 or newer and receive a synthetic HL7 message in a sandbox with the sample configuration.">
   <link rel="canonical" href="https://messagefoundry.org/getting-started.html">
   <link rel="icon" href="/assets/img/favicon.svg" type="image/svg+xml">
   <meta name="theme-color" content="#0b1220">
   <meta property="og:type" content="website">
   <meta property="og:site_name" content="MessageFoundry">
   <meta property="og:title" content="Get started — MessageFoundry">
-  <meta property="og:description" content="Install, run the engine, send a test HL7 message, and author your first route in Python.">
+  <meta property="og:description" content="Install MessageFoundry on Python 3.14 or newer and receive a synthetic HL7 message in a sandbox with the sample configuration.">
   <meta property="og:url" content="https://messagefoundry.org/getting-started.html">
   <meta property="og:image" content="https://messagefoundry.org/assets/img/og.png">
   <meta property="og:image:width" content="1200">
@@ -59,16 +59,44 @@
 }
   </script>
   <script type="application/ld+json">
-  {
-    "@context": "https://schema.org",
-    "@type": "FAQPage",
-    "mainEntity": [
-      { "@type": "Question", "name": "What do I need to run MessageFoundry?", "acceptedAnswer": { "@type": "Answer", "text": "Python 3.14 or newer on Windows, Linux, or macOS. MessageFoundry installs from PyPI with pip and starts zero-config on a built-in SQLite store, so you can run it on a laptop; for production it also supports PostgreSQL and SQL Server." } },
-      { "@type": "Question", "name": "How do I install MessageFoundry?", "acceptedAnswer": { "@type": "Answer", "text": "Create a virtual environment and run pip install messagefoundry, then start the engine pointed at a config directory and a store database. The quickstart walks through receiving your first HL7 v2 message over MLLP." } },
-      { "@type": "Question", "name": "Do I have to write code to build an interface?", "acceptedAnswer": { "@type": "Answer", "text": "No. You can set interfaces up with guided wizards in the VS Code extension and drop into plain Python whenever you need full control — either way the result is readable configuration you version-control." } },
-      { "@type": "Question", "name": "Which databases does MessageFoundry support?", "acceptedAnswer": { "@type": "Answer", "text": "SQLite out of the box for zero-config local runs, and PostgreSQL or SQL Server for production scale-out and high availability." } }
-    ]
-  }
+{
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    {
+      "@type": "Question",
+      "name": "What do I need to run MessageFoundry?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Use Python 3.14 or newer on Windows, Linux, or macOS. Install with pip from PyPI. The built-in SQLite store needs no separate database setup. PostgreSQL and SQL Server are also supported for production deployments."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "How do I install MessageFoundry?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Create a virtual environment and run pip install messagefoundry. Start the engine with a config directory and store database, then follow the quickstart to receive a test message."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Do I have to write code to build an interface?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "No. Use the guided wizards in the VS Code extension, or write Python when you need custom logic. Both produce readable configuration you can keep in version control."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Which databases does MessageFoundry support?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "SQLite out of the box for zero-config local runs, and PostgreSQL or SQL Server for production scale-out and high availability."
+      }
+    }
+  ]
+}
   </script>
 </head>
 <body>
@@ -76,7 +104,7 @@
 
   <div class="eabar" role="region" aria-label="Project status">
     <div class="container">
-      <p><strong>Early Access &middot; beta.</strong> We're building toward 1.0 &mdash; and we want people involved now, while it can still be shaped. <a href="/status.html">Where the project stands &rarr;</a></p>
+      <p><strong>Early Access &middot; beta.</strong> Help test and shape the 1.0 release. <a href="/status.html">Where the project stands &rarr;</a></p>
     </div>
   </div>
 
@@ -133,7 +161,7 @@
     <div class="container center">
       <span class="eyebrow">Get started</span>
       <h1 style="max-width:20ch;margin-inline:auto">From install to your first routed message</h1>
-      <p class="lead">MessageFoundry installs from <b>PyPI</b> with a single <code>pip install messagefoundry</code> — a signed, versioned release you can verify, not a moving source checkout — and runs locally on <b>Python&nbsp;3.14+</b>. Once it's running, you can build interfaces two ways: with <b>guided wizards</b> in the VS&nbsp;Code extension and admin console, or in <b>plain Python</b> for full control. It starts zero-config on SQLite; point it at PostgreSQL or SQL&nbsp;Server for production.</p>
+      <p class="lead">Install MessageFoundry with <code>pip</code> on Python 3.14 or newer. This guide uses SQLite and a sample route to receive your first message.</p>
       <div class="btn-row center" style="margin-top:24px">
         <a class="btn btn-ghost" href="/documents.html">Browse the documents →</a>
         <a class="btn btn-ghost" href="/guides/">All guides →</a>
@@ -146,15 +174,15 @@
   <section class="section">
     <div class="container" style="max-width:860px">
       <div class="callout" style="margin-bottom:22px;background:rgba(245,158,11,.07);border-color:rgba(245,158,11,.28)">
-        <p><strong>Start in a sandbox — and tell us what happens.</strong> MessageFoundry started in May 2026 and is Early Access, beta-level software under fast development. The best way to use it right now is in a <b>sandboxed, non-production environment</b> with synthetic data: install it, wire up the interface shapes you actually run, and push them until something breaks. That's exactly the feedback that steers the project — and we're actively looking for users and organizations willing to do it. <a href="/status.html">Where the project stands →</a></p>
-        <p style="margin-top:12px">Taking it further than a sandbox? The <a href="https://github.com/MEFORORG/MessageFoundry/blob/main/docs/EARLY-ADOPTER-GUIDE.md" target="_blank" rel="noopener">Early-Adopter Installation &amp; Rollout Guide ↗</a> is the playbook for doing it safely — prerequisites, honest limitations, capacity testing on your own hardware, backup/restore, and a staged rollout with go/no-go gates.</p>
+        <p>Use a <b>sandboxed, non-production environment</b> with synthetic data. MessageFoundry started in May 2026 and is beta-level software under fast development. <a href="/status.html">Read the project status →</a></p>
+        <p style="margin-top:12px">Before moving beyond a sandbox, read the <a href="https://github.com/MEFORORG/MessageFoundry/blob/main/docs/EARLY-ADOPTER-GUIDE.md" target="_blank" rel="noopener">Early-Adopter Installation &amp; Rollout Guide ↗</a>. It covers prerequisites, limits, capacity tests on your hardware, backup and restore, and staged rollout checks.</p>
       </div>
       <h2 class="vh">Quickstart steps</h2>
       <div class="steps">
 
         <div class="step">
           <h3>Install</h3>
-          <p>Create a virtual environment and install MessageFoundry from <a href="/pypi.html">PyPI</a> — a signed, versioned release. <a href="/security.html">How releases are signed &amp; attested →</a></p>
+          <p>Create a virtual environment and install MessageFoundry from <a href="/pypi.html">PyPI</a>. <a href="/security.html">Read about release signing and verification →</a></p>
           <div class="code-card">
             <div class="code-card__bar"><i></i><i></i><i></i><span class="code-card__name">terminal</span></div>
 <pre class="code"><span class="c"># virtual environment</span>
@@ -165,7 +193,7 @@ python -m venv .venv
 <span class="c"># install from PyPI</span>
 pip install messagefoundry</pre>
           </div>
-          <p style="margin-top:14px">The sample-driven steps below use config and messages from the repository, so clone it alongside to follow along:</p>
+          <p style="margin-top:14px">Clone the repository to use the sample configuration and messages below:</p>
           <div class="code-card">
             <div class="code-card__bar"><i></i><i></i><i></i><span class="code-card__name">terminal</span></div>
 <pre class="code">git clone https://github.com/MEFORORG/MessageFoundry.git
@@ -199,7 +227,7 @@ pip install messagefoundry</pre>
 
         <div class="step">
           <h3>Open the web console</h3>
-          <p>The operator GUI runs in your browser, served by the engine itself — dashboards, message search and browse, parse-tree viewer, and one-click replay. Nothing to install on each workstation, and it's on by default.</p>
+          <p>The engine serves the web console by default. Open it to view dashboards, search messages, inspect the HL7 parse tree, and replay messages. You do not need to install software on each workstation.</p>
           <div class="code-card">
             <div class="code-card__bar"><i></i><i></i><i></i><span class="code-card__name">terminal</span></div>
 <pre class="code">pip install messagefoundry-webconsole
@@ -209,7 +237,7 @@ pip install messagefoundry</pre>
 
         <div class="step">
           <h3>Author your own route</h3>
-          <p>Prefer wizards? The VS&nbsp;Code extension's <b>New Connection</b> and <b>New Route</b> flows generate this for you. Or, if you prefer code, drop a Python module into your config directory — name an inbound and outbound Connection, then wire a Router and Handler by name:</p>
+          <p>The VS&nbsp;Code extension’s <b>New Connection</b> and <b>New Route</b> wizards can generate the configuration. To write it yourself, add a Python module to your config directory. Name inbound and outbound Connections, then link a Router and Handler by name:</p>
           <div class="code-card">
             <div class="code-card__bar"><i></i><i></i><i></i><span class="code-card__name">config/IB_Lab_ORU.py</span></div>
 <pre class="code"><span class="k">from</span> messagefoundry <span class="k">import</span> MLLP, Send, inbound, outbound, router, handler
@@ -245,9 +273,9 @@ pip install messagefoundry</pre>
     <div class="container">
       <div class="center" style="margin-bottom:28px"><span class="eyebrow">FAQ</span><h2>Frequently asked questions</h2></div>
       <div class="faq">
-        <div class="faq-item"><h3>What do I need to run MessageFoundry?</h3><p>Python 3.14 or newer on Windows, Linux, or macOS. MessageFoundry installs from PyPI with pip and starts zero-config on a built-in SQLite store, so you can run it on a laptop; for production it also supports PostgreSQL and SQL Server.</p></div>
-        <div class="faq-item"><h3>How do I install MessageFoundry?</h3><p>Create a virtual environment and run pip install messagefoundry, then start the engine pointed at a config directory and a store database. The quickstart walks through receiving your first HL7 v2 message over MLLP.</p></div>
-        <div class="faq-item"><h3>Do I have to write code to build an interface?</h3><p>No. You can set interfaces up with guided wizards in the VS Code extension and drop into plain Python whenever you need full control — either way the result is readable configuration you version-control.</p></div>
+        <div class="faq-item"><h3>What do I need to run MessageFoundry?</h3><p>Use Python 3.14 or newer on Windows, Linux, or macOS. Install with pip from PyPI. The built-in SQLite store needs no separate database setup. PostgreSQL and SQL Server are also supported for production deployments.</p></div>
+        <div class="faq-item"><h3>How do I install MessageFoundry?</h3><p>Create a virtual environment and run pip install messagefoundry. Start the engine with a config directory and store database, then follow the quickstart to receive a test message.</p></div>
+        <div class="faq-item"><h3>Do I have to write code to build an interface?</h3><p>No. Use the guided wizards in the VS Code extension, or write Python when you need custom logic. Both produce readable configuration you can keep in version control.</p></div>
         <div class="faq-item"><h3>Which databases does MessageFoundry support?</h3><p>SQLite out of the box for zero-config local runs, and PostgreSQL or SQL Server for production scale-out and high availability.</p></div>
       </div>
     </div>
@@ -263,8 +291,8 @@ pip install messagefoundry</pre>
             <img class="brand-mark" src="/assets/img/logo.svg" alt="" width="28" height="28">
             <span class="brand-name">Message<span class="brand-accent">Foundry</span><span class="brand-tm">™</span></span>
           </a>
-          <p class="footer-tagline"><b>More</b> Than an HL7 Interface Engine</p>
-          <p>Open-source healthcare interface engine — secure by default, built to recognized standards, connecting a wide range of protocols and message types.</p>
+          <p class="footer-tagline">Open-source healthcare interface engine</p>
+          <p>Route and transform healthcare messages with an open-source interface engine you run on your own servers.</p>
           <div class="badge-row" style="margin-top:16px">
             <span class="badge">Open source</span>
             <span class="badge">No lock-in</span>
@@ -307,8 +335,8 @@ pip install messagefoundry</pre>
         </div>
       </div>
       <div class="footer-bottom">
-        <span>© 2026 MessageFoundry Foundation — this website and its content, all rights reserved. The MessageFoundry engine is separately open source, licensed under AGPL-3.0-or-later.</span>
-        <span>MessageFoundry and the MessageFoundry word mark are trademarks of MessageFoundry Foundation. Mirth Connect, Cloverleaf, Rhapsody, Corepoint, and Ensemble are trademarks of their respective owners; MessageFoundry is independent and unaffiliated.</span>
+        <span>© 2026 MessageFoundry, LLC — this website and its content, all rights reserved. The MessageFoundry engine is separately open source, licensed under AGPL-3.0-or-later.</span>
+        <span>MessageFoundry and the MessageFoundry word mark are trademarks of MessageFoundry, LLC. Mirth Connect, Cloverleaf, Rhapsody, Corepoint, and Ensemble are trademarks of their respective owners; MessageFoundry is independent and unaffiliated.</span>
       </div>
     </div>
   </footer>

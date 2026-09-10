@@ -1,29 +1,18 @@
 # Enabling the MessageFoundry Console on a Remote PC
 
-> **Retired UI (BACKLOG #103, 2026-07-13).** The **PySide6 desktop console is retired**; the operator UI
-> is now the browser **web console** the engine serves same-origin at `/ui`
-> ([ADR 0065](adr/0065-web-ops-dashboard.md)). The certificate + open-the-engine-securely steps below are
-> still exactly what you do — but once the engine is exposed over TLS, staff simply **browse to
-> `https://<engine-host>:8765/ui`** on their own PCs; there is no desktop client to install. The
-> `messagefoundry-console --url …` steps are retained only as **historical reference** for the retired
-> desktop client.
+> **Retired UI (BACKLOG #103, 2026-07-13).** The PySide6 desktop console is retired. The engine now serves the browser web console at `/ui` ([ADR 0065](adr/0065-web-ops-dashboard.md)).
+> Use the certificate and network settings below for remote access. Then open `https://<engine-host>:8765/ui` on each PC. No desktop installation is necessary.
+> The `messagefoundry-console --url …` commands remain only as historical reference.
 
-**A customer setup guide.** This guide is for the IT administrator who wants staff to operate
-MessageFoundry from their own PCs (in a browser) instead of only on the server that hosts the
-engine. It walks through the things you need to do — prepare a certificate, open the engine to
-the network securely, and browse to the engine's `/ui`.
+This guide helps IT administrators give staff browser access to MessageFoundry from their own PCs. Prepare a certificate, configure network access, and open the engine’s `/ui` page.
 
-No code changes are required; everything here is configuration.
+No code changes are required. Everything here is configuration.
 
 ---
 
 ## What you're setting up
 
-The MessageFoundry **engine** runs on a server (usually as a Windows service). Its operator UI is the
-**web console** — a browser application the engine serves same-origin at `/ui`, on by default at a
-loopback bind, shipping as a separate distribution (`pip install messagefoundry-webconsole`). There is
-no desktop application to install. By default the engine only accepts connections from the **same
-machine** (`127.0.0.1`), so the console is reachable only from the server until you expose it.
+The MessageFoundry **engine** runs on a server, usually as a Windows service. It serves the **web console** at `/ui` from the separate `messagefoundry-webconsole` distribution. Install that package on the server with `pip install messagefoundry-webconsole`. No desktop application is needed on remote PCs. By default, the engine accepts connections only from **the same machine** (`127.0.0.1`). Configure network access before connecting from another PC.
 
 To use the console from another PC, you:
 
@@ -31,8 +20,7 @@ To use the console from another PC, you:
 2. Tell the engine to **listen on the network**, then
 3. Point each remote console at the engine's `https://` address.
 
-The connection is encrypted end-to-end and every user signs in — the same authentication the local
-console already uses. Nothing is exposed until you make these changes deliberately.
+TLS encrypts the connection, and each user signs in with the same account used locally. Remote access starts only after you make these changes.
 
 > **Before you begin — checklist**
 > - The engine server's hostname or IP address (e.g. `mefor-srv01.hospital.local`).
@@ -51,11 +39,10 @@ The engine needs a certificate so traffic (including login credentials) is encry
 | Option | When to use it | Notes |
 |---|---|---|
 | **Your organization's internal CA** (e.g. Active Directory Certificate Services) | **Recommended** for most sites | Issue a server certificate for the engine's hostname. Domain-joined PCs already trust your CA, so the console needs no extra setup. |
-| **A public CA** (e.g. a commercial cert) | The engine has a public DNS name | Trusted everywhere automatically. |
-| **A self-signed certificate** | Small/internal setups, pilots | Works fine — each console points at the certificate with `--cacert` (Step 3). |
+| **A public CA** (e.g. A commercial cert) | The engine has a public DNS name | Trusted everywhere automatically. |
+| **A self-signed certificate** | Small/internal setups, pilots | The retired desktop console uses `--cacert` to select the certificate (Step 3). |
 
-Whichever you choose, the certificate's **Subject Alternative Name (SAN)** must include the hostname
-or IP address the console will connect to. You'll end up with two files (or one combined file):
+The certificate’s **Subject Alternative Name (SAN)** must include the hostname or IP address used to connect. You need these files, either separate or combined:
 
 - a **certificate** PEM (e.g. `engine-cert.pem`), and
 - a **private key** PEM (e.g. `engine-key.pem`).
@@ -82,43 +69,34 @@ tls_cert_file = "C:/MessageFoundry/tls/engine-cert.pem"
 tls_key_file  = "C:/MessageFoundry/tls/engine-key.pem"
 ```
 
-**That block alone will not start the engine.** Because the engine performs no OCSP/CRL revocation
-checking, an off-loopback bind that terminates TLS in-process is refused (**exit 2**) until you attest
-your revocation posture. That attestation is an **environment variable, not a TOML key**:
+**The configuration above also requires a revocation attestation.** The engine does not check certificate revocation through OCSP or CRL. It refuses an off-loopback bind with in-process TLS (**exit 2**) until you attest to your revocation controls. Set the attestation as an **environment variable, not a TOML key**:
 
 ```
 setx MEFOR_TLS_REVOCATION_ATTESTED 1
 ```
 
-Under NSSM set it on the service rather than in an interactive shell —
-`nssm set MessageFoundry AppEnvironmentExtra MEFOR_TLS_REVOCATION_ATTESTED=1`. Setting it is you
-taking responsibility for revocation checking ([ADR 0078](adr/0078-certificate-revocation-posture.md)).
+For NSSM, set it on the service: `nssm set MessageFoundry AppEnvironmentExtra MEFOR_TLS_REVOCATION_ATTESTED=1`. This confirms that you accept responsibility for revocation checking ([ADR 0078](adr/0078-certificate-revocation-posture.md)).
 
 Notes:
 
-- `listen_address = "0.0.0.0"` listens on all network interfaces; you can instead use a specific
+- `listen_address = "0.0.0.0"` listens on all network interfaces. You can instead use a specific
   address (e.g. `"10.0.0.12"`) to limit it to one network.
-- `serve_web_console` must be set **explicitly** when the engine is exposed. The console is on by
-  default only for loopback binds — on an exposed instance a default-on console silently degrades to
-  JSON-only.
-- If your private key is **password-protected**, supply the passphrase via the environment variable
-  `MEFOR_API_TLS_KEY_PASSWORD` — never put it in the file.
+- `serve_web_console` must be set **explicitly** when the engine is exposed. The console defaults on only for loopback binds. An exposed instance serves JSON alone unless the console is explicitly enabled.
+- If the private key requires a password, set `MEFOR_API_TLS_KEY_PASSWORD` to its passphrase. Never put the passphrase in the file.
 - The engine **will refuse to start** if you open it to the network **without** a certificate (this
   protects you from accidentally sending credentials in clear text).
 
-Open the firewall on the chosen port (default **8765/TCP**) so remote PCs can reach the server, then
-**restart the MessageFoundry service** for the change to take effect.
+Open the firewall for the selected port, which defaults to **8765/TCP**. Then restart the MessageFoundry service.
 
-> **Using a reverse proxy or load balancer?** If TLS is terminated by a proxy in front of the engine
-> instead, set `tls_terminated_upstream = true` and list the proxy's address in
-> `trusted_proxies = ["..."]` under `[api]`, and have the proxy forward to the engine. See the
-> technical reference (`REMOTE-CONSOLE.md`) for details.
+> **Reverse proxy or load balancer:** A proxy can terminate TLS before traffic reaches the engine.
+> In `[api]`, set `tls_terminated_upstream = true`. Add the proxy address to `trusted_proxies = ["..."]`.
+> Configure the proxy to forward requests to the engine. Refer to `REMOTE-CONSOLE.md` for details.
 
 ---
 
 ## Step 3 — Connect the console from a remote PC
 
-On each PC, launch the console pointed at the engine's `https://` address:
+For the current web console, open `https://<engine-host>:8765/ui` in a browser. The commands below apply only to the retired desktop console and remain as historical reference:
 
 ```
 messagefoundry-console --url https://mefor-srv01.hospital.local:8765
@@ -126,11 +104,10 @@ messagefoundry-console --url https://mefor-srv01.hospital.local:8765
 
 (or, from a command prompt, `python -m messagefoundry.console --url https://mefor-srv01.hospital.local:8765`)
 
-**Certificate trust — usually nothing to configure:**
+**Certificate trust for the retired desktop client:**
 
-- If the engine's certificate was issued by **your organization's CA** and the PC is **domain-joined**,
-  it's already trusted — it just works.
-- If you used a **public CA**, it's also already trusted.
+- A domain-joined PC already trusts a certificate issued by its organization’s CA.
+- If you used a **public CA**, it is also already trusted.
 - If you used a **self-signed certificate** (or an internal CA not yet installed on the PC), add
   `--cacert` pointing at the engine's certificate file:
 
@@ -141,8 +118,7 @@ messagefoundry-console --url https://mefor-srv01.hospital.local:8765
   (Alternatively, install your internal CA into the PC's Windows certificate store once, and you can
   drop the flag.)
 
-Finally, **sign in** with your MessageFoundry account. If multi-factor authentication is enabled,
-you'll be prompted for your second factor — the same as on the local console.
+Finally, **sign in** with your MessageFoundry account. If multi-factor authentication is enabled, enter the second factor when prompted. This follows the local-console sign-in process.
 
 ---
 
@@ -151,14 +127,13 @@ you'll be prompted for your second factor — the same as on the local console.
 - The console connects and shows the engine **Status** page with live connection counts.
 - The status indicator shows the engine is reachable and refreshes on its own.
 
-If the console can't connect, see Troubleshooting below.
+If the console cannot connect, see Troubleshooting below.
 
 ---
 
 ## Optional — require a client certificate (mutual TLS)
 
-For higher assurance you can require each console to present its **own** certificate, so only
-PCs holding an approved certificate can connect — in addition to the user signing in.
+You can require a client certificate as well as user sign-in. Only PCs with an approved certificate can connect. The client flags below apply to the retired desktop console.
 
 - On the engine, set `tls_client_ca_file` under `[api]` to the CA that issued the console
   certificates.
@@ -177,31 +152,31 @@ This is optional and off by default.
 
 | What you see | What it means / what to do |
 |---|---|
-| `certificate verify failed` / "not trusted by the trust provider" | The PC doesn't trust the engine's certificate. Add `--cacert <file>`, or install the issuing CA into the PC's Windows certificate store. |
+| `certificate verify failed` / "not trusted by the trust provider" | The PC does not trust the engine's certificate. Add `--cacert <file>`, or install the issuing CA into the PC's Windows certificate store. |
 | `refusing to use plaintext http to non-loopback host …` | You used an `http://` address to a remote engine. Use the `https://` address (configure the certificate in Step 2). |
-| The **engine** won't start after editing the config | Either you exposed it without a certificate — add `tls_cert_file` (+ `tls_key_file`) under `[api]` — or you have not attested revocation: set `MEFOR_TLS_REVOCATION_ATTESTED=1` (Step 2). To back out entirely, set `[security].local_access_only = true`. |
-| `moved to [security]. … and is no longer accepted` | You used a pre-ADR-0118 key such as `[api].host`. Exposure now lives in `[security]` (`local_access_only` / `listen_address`); the old spellings are rejected when the config loads. |
-| "hostname mismatch" when connecting | The certificate's name (SAN) doesn't match the address in `--url`. Reissue the certificate for the correct hostname/IP. |
-| Console can't reach the server at all | Check the firewall on the engine server (default port **8765/TCP**) and that the service is running. |
+| The **engine** will not start after editing the config | Check the certificate and revocation attestation. Set `tls_cert_file` under `[api]`. If the key is separate, also set `tls_key_file`. Set `MEFOR_TLS_REVOCATION_ATTESTED=1` (Step 2). To restore local-only access, set `[security].local_access_only = true`. |
+| `moved to [security]. … and is no longer accepted` | You used a pre-ADR-0118 key such as `[api].host`. Exposure now lives in `[security]` (`local_access_only` / `listen_address`). The old spellings are rejected when the config loads. |
+| "hostname mismatch" when connecting | The certificate's name (SAN) does not match the address in `--url`. Reissue the certificate for the correct hostname/IP. |
+| Console cannot reach the server at all | Check the firewall on the engine server (default port **8765/TCP**) and that the service is running. |
 
 ---
 
 ## Security notes
 
-- **Stays on your network.** The engine runs on-premises; remote access is to *your* server over
+- **Stays on your network.** The engine runs on-premises. Remote access is to *your* server over
   *your* network — no data leaves your environment.
 - **Encrypted in transit.** All console–engine traffic, including login, is protected by TLS.
 - **Authenticated and audited.** Every user signs in, and access to patient data is recorded with the
   acting user. We recommend enabling **multi-factor authentication** for any network-exposed engine.
-- `--insecure` only permits unencrypted `http` on a trusted test network; it does **not** weaken
-  certificate checking for `https`. Don't use it for production.
+- `--insecure` only permits unencrypted `http` on a trusted test network. It does **not** weaken
+  certificate checking for `https`. Do not use it for production.
 
 ---
 
 ## More information
 
-- **Technical reference** (full `[api]` settings, in-process vs. upstream TLS): `docs/REMOTE-CONSOLE.md`
+- **Technical reference** (full `[api]` settings, in-process vs. Upstream TLS): `docs/REMOTE-CONSOLE.md`
 - **Security overview** (authentication, TLS, auditing): `docs/SECURITY.md`
 - **Running the engine as a service**: `docs/SERVICE.md`
 
-If you'd like help planning this rollout, contact your MessageFoundry support contact.
+For rollout questions, use the project’s contact page.
