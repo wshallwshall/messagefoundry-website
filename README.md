@@ -56,6 +56,7 @@ GitHub side. Full setup steps live in [`docs/DEPLOYMENT.md`](docs/DEPLOYMENT.md)
 
 ## Content accuracy
 
-Copy is kept aligned with the engine's own docs — features are described as **built vs
-planned** exactly as the [MessageFoundry README](https://github.com/MEFORORG/MessageFoundry)
-and `docs/` state them. Don't add capability claims the engine doesn't back.
+Follow the owner-approved scope and maturity guidance in [CLAUDE.md](CLAUDE.md).
+Describe the approved Early Access capabilities in present tense. State the
+project's beta status and link to `status.html` for its limits. Do not infer new
+capabilities from older engine documents or add claims without supporting evidence.

@@ -13,7 +13,8 @@ editable.
 Two files own this: **`_pdf-template.html`** (the branded print template) and
 **`render_pdf.py`** (the renderer). Both live here, beside the sources they render.
 
-**This is the canonical renderer for every PDF in the set** — all 19 are generated from it.
+**This is the canonical renderer for all 20 PDFs.** It renders the 19 sources here and
+`docs/secure-development-standards.md` to `assets/MessageFoundry-Secure-Development-Standards.pdf`.
 Don't render these by another route: a second toolchain drifts in styling, and the whole
 reason the template now lives in the repo is that it previously existed only as a
 description, leaving the PDFs unreproducible and stale behind their sources.
@@ -21,7 +22,7 @@ description, leaving the PDFs unreproducible and stale behind their sources.
 ```bash
 pip install markdown pypdf                     # one-time; needs Chrome or Edge too
 
-python render_pdf.py --list                    # source -> PDF mapping (19 docs)
+python render_pdf.py --list                    # source -> PDF mapping (20 docs)
 python render_pdf.py Install-Guide             # one doc
 python render_pdf.py --all                     # the whole set
 python render_pdf.py --all --out-dir ../../../_preview   # preview without replacing live PDFs
@@ -30,6 +31,10 @@ python render_pdf.py --all --out-dir ../../../_preview   # preview without repla
 The masthead version defaults to **whatever PyPI reports right now**, so it cannot quietly
 rot; pass `--version` only to pin it deliberately. Every render is verified before it is
 accepted — the text must extract, carry the version stamp, and contain zero mojibake.
+
+Use ASD-STE100 Issue 9 for technical prose. Follow the scope and protected-text rules in
+[`docs/TECHNICAL-WRITING.md`](../../../docs/TECHNICAL-WRITING.md). Edit source text before
+rendering, then inspect the PDF pages and extracted text.
 
 ### Editing the template
 
@@ -41,7 +46,7 @@ encodes, which should survive any edit:
 - The **amber "Foundry" wordmark accent is masthead-only**. Never accent the brand name in
   body copy.
 - The **trademark mark belongs to the logo lockup only**.
-- **MessageFoundry Foundation** is the legal entity in the colophon; **MessageFoundry** is the product.
+- **MessageFoundry, LLC** is the legal entity in the colophon; **MessageFoundry** is the product.
 - The masthead and colophon are a page-1 title block and an end-of-document block — neither
   is a running header/footer.
 

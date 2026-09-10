@@ -4,14 +4,14 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Feature list — MessageFoundry</title>
-  <meta name="description" content="Every MessageFoundry feature in one scannable table (Early Access): connections, message formats, reliability, routing & transformation, security & PHI, tooling, testing, CI/CD, the message store, and high availability — plus possible future additions.">
+  <meta name="description" content="Find MessageFoundry Early Access capabilities by area, with future additions listed separately.">
   <link rel="canonical" href="https://messagefoundry.org/features-table.html">
   <link rel="icon" href="/assets/img/favicon.svg" type="image/svg+xml">
   <meta name="theme-color" content="#0b1220">
   <meta property="og:type" content="website">
   <meta property="og:site_name" content="MessageFoundry">
   <meta property="og:title" content="Feature list — MessageFoundry">
-  <meta property="og:description" content="The complete Early Access feature set in one scannable table — grouped by area, with possible future additions at the end.">
+  <meta property="og:description" content="Find MessageFoundry Early Access capabilities by area, with future additions listed separately.">
   <meta property="og:url" content="https://messagefoundry.org/features-table.html">
   <meta property="og:image" content="https://messagefoundry.org/assets/img/og.png">
   <meta property="og:image:width" content="1200">
@@ -26,7 +26,7 @@
 
   <div class="eabar" role="region" aria-label="Project status">
     <div class="container">
-      <p><strong>Early Access &middot; beta.</strong> We're building toward 1.0 &mdash; and we want people involved now, while it can still be shaped. <a href="/status.html">Where the project stands &rarr;</a></p>
+      <p><strong>Early Access &middot; beta.</strong> Help test and shape the 1.0 release. <a href="/status.html">Where the project stands &rarr;</a></p>
     </div>
   </div>
 
@@ -84,7 +84,7 @@
     <div class="container center">
       <span class="eyebrow">Feature list</span>
       <h1 style="max-width:24ch;margin-inline:auto">Every feature, in one table</h1>
-      <p class="lead">A complete, scannable index of what MessageFoundry does in <b>Early Access</b>, grouped by area. Want the story behind each capability? The detailed <a href="/features.html" style="color:var(--accent)">features page</a> walks through them. Possible future additions are in their own table at the end.</p>
+      <p class="lead">Find Early Access capabilities by area. The <a href="/features.html" style="color:var(--accent)">features page</a> explains how they work. Future additions are listed separately below.</p>
       <div class="btn-row">
         <a class="btn btn-primary" href="/getting-started.html">Get started</a>
         <a class="btn btn-ghost" href="/features.html">Full feature detail →</a>
@@ -106,14 +106,14 @@
           <tbody>
 
             <tr class="grp"><th colspan="2" scope="colgroup">Open source &amp; no lock-in</th></tr>
-            <tr><th scope="row">AGPL-3.0-or-later</th><td>Open license — read it, run it, fork it. A low-cost commercial edition is available when the AGPL doesn't fit.</td></tr>
-            <tr><th scope="row">Configuration as code</th><td>Connections, Routers, and Handlers are diffable, reviewable modules — wizard-generated or hand-written. The database holds runtime state and messages only, never configuration.</td></tr>
-            <tr><th scope="row">Standard databases</th><td>Runs on <b>SQLite</b>, <b>PostgreSQL</b>, or <b>SQL&nbsp;Server</b> — no proprietary data platform required, and no proprietary scripting language to staff for.</td></tr>
-            <tr><th scope="row">No runtime or contract lock-in</th><td>Self-hosted, on your infrastructure, on your terms.</td></tr>
+            <tr><th scope="row">AGPL-3.0-or-later</th><td>Read, run, and modify under AGPL-3.0-or-later. A commercial license offers different terms.</td></tr>
+            <tr><th scope="row">Configuration as code</th><td>Keep wizard-generated or handwritten Connections, Routers, and Handlers in version control. The database holds runtime state and messages.</td></tr>
+            <tr><th scope="row">Standard databases</th><td>Choose <b>SQLite</b>, <b>PostgreSQL</b>, or <b>SQL Server</b>.</td></tr>
+            <tr><th scope="row">No runtime or contract lock-in</th><td>Run on your own servers or in your private cloud.</td></tr>
 
             <tr class="grp"><th colspan="2" scope="colgroup">Reliability</th></tr>
-            <tr><th scope="row">Durable before acknowledged</th><td>The inbound is ACKed only after the received message is committed to the store on ingest, so an accepted message survives a crash before any processing begins.</td></tr>
-            <tr><th scope="row">Reliable delivery</th><td>Every accepted message is persisted and delivered; nothing is silently dropped.</td></tr>
+            <tr><th scope="row">Durable before acknowledged</th><td>Acknowledge inbound messages after committing them to the store, so accepted messages survive a crash before processing.</td></tr>
+            <tr><th scope="row">Reliable delivery</th><td>Store accepted messages and track delivery or a recorded outcome.</td></tr>
             <tr><th scope="row">Ordered (FIFO) delivery</th><td>Messages to a given destination are delivered first-in, first-out, preserving per-connection sequence.</td></tr>
             <tr><th scope="row">Per-outbound workers</th><td>Each destination drains independently; one slow or failing peer never blocks the others.</td></tr>
             <tr><th scope="row">Automatic retries &amp; failure policy</th><td>Back off and retry on a configurable policy, then dead-letter, with a bulk-replay view for recovery.</td></tr>
@@ -122,13 +122,13 @@
             <tr><th scope="row">Nothing silently dropped</th><td>Every message is persisted on ingest, then processed to a recorded disposition — routed, filtered, or unrouted.</td></tr>
 
             <tr class="grp"><th colspan="2" scope="colgroup">Message formats</th></tr>
-            <tr><th scope="row">HL7 v2, deeply parsed</th><td>Full parsing and validation: fast and tolerant on the hot path, strict and version-aware where you opt in — built to expect real-world, non-conformant HL7.</td></tr>
+            <tr><th scope="row">HL7 v2, deeply parsed</th><td>Parse non-conformant HL7 messages. Enable strict, version-aware validation for selected feeds.</td></tr>
             <tr><th scope="row">FHIR</th><td>A FHIR codec with FHIRPath; create / update / transaction against a FHIR server (R4B default; R5 / STU3).</td></tr>
             <tr><th scope="row">X12 / EDI</th><td>An on-demand X12 codec — tolerant routing peek, interchange splitting, and structured access.</td></tr>
-            <tr><th scope="row">JSON</th><td>One-call parsing to a dict, then transform with the full power of Python.</td></tr>
+            <tr><th scope="row">JSON</th><td>Parse JSON into a dictionary, then transform it in Python.</td></tr>
             <tr><th scope="row">XML / SOAP</th><td>Read with an XXE-safe parser — external entities, embedded DOCTYPE, and billion-laughs expansion are rejected, not parsed.</td></tr>
             <tr><th scope="row">DICOM (headers / SR)</th><td>Parsed by a pure DICOM codec (routing peek + header / Structured-Report walk); map SR → HL7 v2 in a code-first Handler. Headers and SR only, no pixel data. <a href="/dicom.html">DICOM details →</a></td></tr>
-            <tr><th scope="row">Any other payload</th><td>Carried byte-faithfully and routed, transformed, and delivered with the full power of Python — bring your own library.</td></tr>
+            <tr><th scope="row">Any other payload</th><td>Preserve raw bytes and use Python libraries to route, transform, and deliver other formats.</td></tr>
             <tr><th scope="row">Encoding read from the message</th><td>For HL7 v2, the field, component, repetition, escape, and subcomponent separators come from MSH, never hardcoded.</td></tr>
             <tr><th scope="row">Raw message preserved</th><td>Kept alongside the transformed form, so an operator always sees exactly what arrived.</td></tr>
             <tr><th scope="row">Parse failures isolated</th><td>Routed to the error / dead-letter path and logged, so a bad message never takes down the connection.</td></tr>
@@ -176,8 +176,8 @@
 
             <tr class="grp"><th colspan="2" scope="colgroup">Authoring &amp; AI assist</th></tr>
             <tr><th scope="row">Setup wizards</th><td>Guided New Connection and New Route flows that generate the Python for you — guided authoring whose output is plain code you own and review.</td></tr>
-            <tr><th scope="row">PHI-safe AI assistance</th><td>An in-editor assistant governed by a central, environment-aware policy that sends only code, never message bodies, gated by RBAC.</td></tr>
-            <tr><th scope="row">AI-assisted migration</th><td>Paste existing Mirth / Cloverleaf / Rhapsody logic and the assistant helps you express it as Python — code-only and governed.</td></tr>
+            <tr><th scope="row">Optional AI assistance</th><td>Sends code and configuration names to your provider, under central policy and role-based access. Keep patient data and secrets out of that context.</td></tr>
+            <tr><th scope="row">AI-assisted migration</th><td>Draft Python from existing Mirth, Cloverleaf, or Rhapsody logic. Review and test the result before cutover.</td></tr>
 
             <tr class="grp"><th colspan="2" scope="colgroup">Test &amp; verify</th></tr>
             <tr><th scope="row">Interactive test bench</th><td>Send / receive / file / compose / monitor tools for driving inbound and outbound endpoints by hand.</td></tr>
@@ -221,7 +221,7 @@
           </tbody>
         </table>
       </div>
-      <p style="color:var(--muted);font-size:.86rem;margin-top:16px">Everything in this table ships in <b>Early Access</b> and is described in present tense as what the engine does. MessageFoundry started in May 2026 and is beta-level software under fast development; Early Access has not yet had an external code review or penetration test. For the full narrative behind each item, see the <a href="/features.html">features page</a>. <a href="/status.html">Where the project stands →</a></p>
+      <p style="color:var(--muted);font-size:.86rem;margin-top:16px">MessageFoundry started in May 2026 and is beta-level software under fast development. Independent code review and penetration testing are planned. <a href="/status.html">Read the project status →</a></p>
     </div>
   </section>
 
@@ -231,7 +231,7 @@
       <div class="center" style="margin-bottom:30px">
         <span class="eyebrow">Roadmap</span>
         <h2>Possible future additions</h2>
-        <p class="lead center">Not in Early Access. Listed here so the table above stays honest about today versus tomorrow.</p>
+        <p class="lead center">These additions are outside the Early Access feature set.</p>
       </div>
       <div class="table-wrap">
         <table class="cmp feat">
@@ -278,8 +278,8 @@
             <img class="brand-mark" src="/assets/img/logo.svg" alt="" width="28" height="28">
             <span class="brand-name">Message<span class="brand-accent">Foundry</span><span class="brand-tm">™</span></span>
           </a>
-          <p class="footer-tagline"><b>More</b> Than an HL7 Interface Engine</p>
-          <p>Open-source healthcare interface engine — secure by default, built to recognized standards, connecting a wide range of protocols and message types.</p>
+          <p class="footer-tagline">Open-source healthcare interface engine</p>
+          <p>Route and transform healthcare messages with an open-source interface engine you run on your own servers.</p>
           <div class="badge-row" style="margin-top:16px">
             <span class="badge">Open source</span>
             <span class="badge">No lock-in</span>
@@ -322,8 +322,8 @@
         </div>
       </div>
       <div class="footer-bottom">
-        <span>© 2026 MessageFoundry Foundation — this website and its content, all rights reserved. The MessageFoundry engine is separately open source, licensed under AGPL-3.0-or-later.</span>
-        <span>MessageFoundry and the MessageFoundry word mark are trademarks of MessageFoundry Foundation. Mirth Connect, Cloverleaf, Rhapsody, Corepoint, and Ensemble are trademarks of their respective owners; MessageFoundry is independent and unaffiliated.</span>
+        <span>© 2026 MessageFoundry, LLC — this website and its content, all rights reserved. The MessageFoundry engine is separately open source, licensed under AGPL-3.0-or-later.</span>
+        <span>MessageFoundry and the MessageFoundry word mark are trademarks of MessageFoundry, LLC. Mirth Connect, Cloverleaf, Rhapsody, Corepoint, and Ensemble are trademarks of their respective owners; MessageFoundry is independent and unaffiliated.</span>
       </div>
     </div>
   </footer>

@@ -4,14 +4,14 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Understanding MessageFoundry throughput — messages per second, honestly</title>
-  <meta name="description" content="A plain-language guide to what really determines MessageFoundry throughput: intake vs delivery, your partner systems' round-trip time, ordering, the message store, and why 'messages per day' is a misleading unit. Size for the peak hour, not a headline number.">
+  <meta name="description" content="Size MessageFoundry for your workload using partner response times, peak traffic, and measured capacity. Read the test conditions and limits.">
   <link rel="canonical" href="https://messagefoundry.org/throughput/">
   <link rel="icon" href="/assets/img/favicon.svg" type="image/svg+xml">
   <meta name="theme-color" content="#0b1220">
   <meta property="og:type" content="article">
   <meta property="og:site_name" content="MessageFoundry">
   <meta property="og:title" content="Understanding MessageFoundry throughput — honestly">
-  <meta property="og:description" content="What actually determines throughput: your partner systems' round-trip time, ordering, and the message store — and why 'messages per day' tells you almost nothing. Size to the peak hour.">
+  <meta property="og:description" content="Size MessageFoundry for your workload using partner response times, peak traffic, and measured capacity. Read the test conditions and limits.">
   <meta property="og:url" content="https://messagefoundry.org/throughput/">
   <meta property="og:image" content="https://messagefoundry.org/assets/img/og.png">
   <meta property="og:image:width" content="1200">
@@ -21,18 +21,60 @@
   <meta name="twitter:image" content="https://messagefoundry.org/assets/img/og.png">
   <link rel="stylesheet" href="/assets/css/styles.css">
   <script type="application/ld+json">
-  {
-    "@context": "https://schema.org",
-    "@type": "FAQPage",
-    "mainEntity": [
-      { "@type": "Question", "name": "How many messages per second can MessageFoundry handle?", "acceptedAnswer": { "@type": "Answer", "text": "It depends on your environment far more than on the engine. In our reference lab a single strictly-ordered HL7 v2 / MLLP interface delivers about 60 messages/second end-to-end with an instant-acknowledging partner — roughly 16 milliseconds per message for the whole serial lane, most of which is store round-trips rather than MessageFoundry itself. Real numbers are usually lower and are set by how fast your partner systems acknowledge each message. That serial cap is specific to MLLP; request/response transports like REST and FHIR run concurrently, and fanning out across interfaces scales further." } },
-      { "@type": "Question", "name": "Why is a messages-per-day number misleading?", "acceptedAnswer": { "@type": "Answer", "text": "Healthcare traffic is bursty, not a flat around-the-clock stream. In de-identified ADT traffic profiled from a live hospital interface feed, the busiest hour runs about 2.7 times the all-day average, so you have to size for the peak hour, not the daily average. Your own ratio is worth measuring from your existing interface logs rather than assuming. Two feeds with the same daily total but different burst profiles need very different capacity. Always ask for the peak-hour rate, the message size, and the ordering guarantee behind any 'X million per day' figure." } },
-      { "@type": "Question", "name": "What actually limits MessageFoundry's throughput?", "acceptedAnswer": { "@type": "Answer", "text": "For HL7 v2 over MLLP, where delivery is strictly ordered, the dominant factor is usually your partner system's round-trip time: the engine sends a message, waits for the partner to accept and acknowledge it, and only then sends the next one. A partner that takes 50 ms to acknowledge caps a single ordered stream near 15 messages/second, no matter how fast the engine or database is. The message store, message size, validation, and transformation complexity also contribute, but the partner round-trip is usually the biggest term. Request/response transports like REST, SOAP, and FHIR run several requests concurrently, so this serial cap doesn't apply to them." } },
-      { "@type": "Question", "name": "How do I size a MessageFoundry deployment?", "acceptedAnswer": { "@type": "Answer", "text": "Start from the per-interface ordered ceiling (about 60 messages/second with an instant partner), reduce it by your partner's real acknowledgement time, divide by your traffic's burst factor (about 2.7 for ADT-shaped traffic), then fan out to enough interfaces to cover your aggregate peak — splitting feeds at the source by hospital, facility, or service line. Then check that total against a measured concurrent figure rather than against the sum of per-interface ceilings — in practice they do not add." } },
-      { "@type": "Question", "name": "How does MessageFoundry scale to very high volumes?", "acceptedAnswer": { "@type": "Answer", "text": "By fanning out, not by forcing everything through one pipe. A strictly-ordered interface is a single serial lane with a bounded rate — that's the physics of guaranteed ordering, not a product limitation. You split feeds at the source across many interfaces. Aggregate throughput is not simply the sum of those interfaces, though: they share one message store and one engine host, and measured concurrent runs land well below the naive total — a 16-interface run delivered 87 messages per second in aggregate where summing would have predicted about 960. Treat the sum as an upper bound, and size against a measured concurrent figure where you have one." } },
-      { "@type": "Question", "name": "How many interfaces can one MessageFoundry engine run?", "acceptedAnswer": { "@type": "Answer", "text": "In a lab test, one MessageFoundry engine and one SQL Server 2022 database held 1,500 concurrent inbound MLLP interfaces open with zero message loss and durable, at-least-once persistence. That test used MessageFoundry's pooled claim scheduler. Capacity is a separate measurement: a four-shard configuration measured a sustainable ceiling of about 603 events per second — counting messages in and out — and from that we publish 40 million events a day, holding back more than 20 percent of the ceiling as reserve. The limit is write serialization rather than exhausted CPU, so the levers are fewer transactions per message, faster log storage, and more engine shards." } }
-    ]
-  }
+{
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    {
+      "@type": "Question",
+      "name": "How many messages per second can MessageFoundry handle?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "One strictly ordered MLLP interface delivered about 60 messages/second in the reference lab with an instant-acknowledging partner. This implies about 16 ms per message across the serial path. A separate reference using anonymized, representative traffic measured about 50 messages/second. Measure your own partner latency, transforms, and storage. REST and FHIR request/response transports can run concurrently."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Why is a messages-per-day number misleading?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Daily totals hide peak loads. The profiled de-identified hospital ADT feed peaked at about 2.7 times its daily average. Measure your own ratio and size for the busiest hour. Compare message size, ordering, and peak rate alongside daily totals."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "What actually limits MessageFoundry's throughput?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "An ordered MLLP stream waits for each partner acknowledgement before sending the next message. The reference model gives about 15 messages/second with a 50 ms partner wait. Store latency, message size, validation, and transforms also affect throughput. REST, SOAP, and FHIR request/response transports can run several requests concurrently."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "How do I size a MessageFoundry deployment?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Start with the ordered lab reference of about 60 messages/second and account for your partner's acknowledgement time. Apply your measured peak-to-average traffic ratio; the profiled ADT feed used about 2.7. Split feeds into independent ordered interfaces where possible, then measure their combined rate. Shared resources limit the total."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "How does MessageFoundry scale to very high volumes?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Split feeds at the source across independent ordered interfaces, then test them together. They share a host and store. One 16-interface run delivered about 87 messages/second; adding individual rates would have predicted about 960. Treat that sum as an upper bound, not a deployment estimate."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "How many interfaces can one MessageFoundry engine run?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "One lab run held 1,500 inbound MLLP interfaces open without message loss using one engine, its pooled claim scheduler, and SQL Server 2022. A separate four-shard test measured about 603 events/second, counting messages in and out. Its published reference is 40 million events/day with more than 20% reserve. This was a point estimate, not a long soak. The multi-shard arrangement is not yet a supported production topology; use active-passive for production multi-engine sizing."
+      }
+    }
+  ]
+}
   </script>
   <script type="application/ld+json">
   {
@@ -51,7 +93,7 @@
 
   <div class="eabar" role="region" aria-label="Project status">
     <div class="container">
-      <p><strong>Early Access &middot; beta.</strong> We're building toward 1.0 &mdash; and we want people involved now, while it can still be shaped. <a href="/status.html">Where the project stands &rarr;</a></p>
+      <p><strong>Early Access &middot; beta.</strong> Help test and shape the 1.0 release. <a href="/status.html">Where the project stands &rarr;</a></p>
     </div>
   </div>
 
@@ -109,8 +151,8 @@
     <div class="container center">
       <nav class="crumb" aria-label="Breadcrumb"><a href="/">Home</a> <span aria-hidden="true">›</span> <a href="/guides/">Guides</a> <span aria-hidden="true">›</span> <span>Throughput</span></nav>
       <span class="eyebrow">Understanding throughput</span>
-      <h1 style="max-width:30ch;margin-inline:auto">Fast enough for real clinical traffic — here's how to size it for yours</h1>
-      <p class="lead">In our testing the engine is rarely the bottleneck — your partner systems usually are. But the giant throughput numbers everyone likes to quote — <b>ours included</b> — can mislead. This is a plain-language guide to what actually sets the rate, and how to size for <em>your</em> environment in real terms.</p>
+      <h1 style="max-width:30ch;margin-inline:auto">Size throughput for your workload</h1>
+      <p class="lead">Start with your peak message rate and partner response time. Use the measurements below as references, then test with your transforms, storage, and hardware.</p>
       <div class="btn-row center" style="margin-top:24px">
         <a class="btn btn-primary" href="#sizing">How to size it</a>
         <a class="btn btn-secondary" href="#lab">See the lab numbers ↓</a>
@@ -123,7 +165,7 @@
   <section class="section">
     <div class="container" style="max-width:860px">
       <div class="callout">
-        <p style="margin:0"><strong>Read this first.</strong> Every throughput figure here is a <b>theoretical maximum</b>, measured in a controlled lab under ideal conditions with synthetic data. Your real-world throughput will almost always be <b>lower</b>, and it's usually set by <b>how fast your partner systems accept and acknowledge each message</b> — not by the engine. MessageFoundry adds only a few milliseconds of its own overhead per message; the rest of the time is spent waiting on round-trips to your database and your downstream systems. Size against <em>your</em> systems, not against a headline number.</p>
+        <p style="margin:0">These lab measurements are references for testing, not deployment guarantees. Synthetic-data tests used controlled conditions; the separate ~50 messages/second reference used anonymized, representative traffic. Partner acknowledgement time, transforms, and storage affect actual delivery rates. Keep each figure with its units and test conditions.</p>
       </div>
     </div>
   </section>
@@ -131,27 +173,27 @@
   <!-- executive summary -->
   <section class="section section--alt">
     <div class="container" style="max-width:960px">
-      <div class="center" style="margin-bottom:30px"><span class="eyebrow">The short version</span><h2>Four things that actually matter</h2></div>
+      <div class="center" style="margin-bottom:30px"><span class="eyebrow">The short version</span><h2>Four sizing inputs</h2></div>
       <div class="grid grid-2" style="align-items:start">
         <div class="card">
-          <h3>The engine is nearly transparent</h3>
-          <p>In our reference lab a strictly-ordered MLLP feed delivers roughly <b>60 messages/second</b> end-to-end against an instant-acknowledging partner — about <b>16 ms</b> per message for the whole serial lane, most of which is store round-trips rather than MessageFoundry itself. Ceilings under ideal conditions, not promises for your environment.</p>
+          <h3>One ordered stream in the lab</h3>
+          <p>One strictly ordered MLLP feed delivered roughly <b>60 messages/second</b> in the reference lab, with an instant-acknowledging partner. That rate implies about <b>16 ms</b> per message across the serial path. It is a reference ceiling under controlled conditions, not a deployment guarantee.</p>
         </div>
         <div class="card">
           <h3>Your partner systems dominate</h3>
-          <p>On an ordered <b>HL7 v2 / MLLP</b> feed the engine sends a message, <b>waits</b> for the partner to acknowledge it, then sends the next — so a partner that takes 50&nbsp;ms to ACK caps a single MLLP stream near <b>15 messages/second</b>, no matter how fast the engine is. Request/response transports (REST, SOAP, FHIR) run concurrently, so this cap is chiefly an MLLP concern.</p>
+          <p>An ordered <b>HL7 v2 / MLLP</b> feed waits for each acknowledgement before sending the next message. In the model below, a 50&nbsp;ms partner acknowledgement gives about <b>15 messages/second</b>. REST, SOAP, and FHIR request/response transports can run concurrently.</p>
         </div>
         <div class="card">
-          <h3>"Messages per day" is a weak unit</h3>
-          <p>Healthcare traffic is <b>bursty</b>. In de-identified ADT traffic profiled from a live hospital interface feed, the busiest hour runs about <b>2.7×</b> the all-day average. You size for the <em>peak hour</em>, not the daily average — so a raw "X million/day" figure, on its own, tells you very little.</p>
+          <h3>Size for the busiest hour</h3>
+          <p>Size for the peak hour. In the de-identified hospital ADT traffic profiled here, the busiest hour ran about <b>2.7×</b> the daily average. Measure your own traffic before applying that factor.</p>
         </div>
         <div class="card">
-          <h3>Scale by fanning out</h3>
-          <p>A strictly-ordered interface is a single serial lane with a bounded rate — that's the physics of guaranteed ordering, not a product limit. Real capacity comes from running <b>many interfaces</b>: a four-shard configuration measured a sustainable ceiling of <b>~603 events/second</b>, which is where our published <b>40 million events a day</b> comes from — and a separate run held <b>1,500 concurrent interfaces</b> open loss-free (<a href="#at-scale">§9</a>).</p>
+          <h3>Test interfaces together</h3>
+          <p>A four-shard configuration measured about <b>603 events/second</b>, supporting a published figure of <b>40 million events/day</b> after reserving capacity. Events count messages in and out. This configuration is <b>not yet supported in production</b>. A separate test held <b>1,500 concurrent interfaces</b> without message loss. See <a href="#at-scale">§9 for both tests and their limits</a>.</p>
         </div>
       </div>
       <div class="callout" style="margin-top:24px">
-        <p style="margin:0"><strong>Four questions to ask of <em>any</em> throughput claim</strong> — ours or a competitor's: <b>(1)</b> How big are the messages? <b>(2)</b> Is delivery strictly ordered or parallel? <b>(3)</b> How fast does the receiving system acknowledge? <b>(4)</b> What's the <em>peak-hour</em> rate behind that daily average? Without those four, a msg/s or msg/day number is marketing, not engineering.</p>
+        <p style="margin:0">Check message size, ordering, partner acknowledgement time, and peak-hour rate before comparing throughput figures.</p>
       </div>
     </div>
   </section>
@@ -161,9 +203,9 @@
     <div class="container" style="max-width:900px">
       <span class="eyebrow">1 · Two speeds</span>
       <h2>How a message flows — and why there are two different rates</h2>
-      <p class="lead">A message moves through MessageFoundry in stages, each written durably to the message store before the next begins — that's what guarantees nothing is lost.</p>
+      <p class="lead">Each message moves through stages. The engine writes each stage to the durable store before starting the next, so processing can resume after a restart.</p>
       <div class="callout">
-        <p style="margin:0"><strong>Two acknowledgements, two speeds.</strong> A message flows <b>sender → receive &amp; persist → route → transform → deliver → partner</b>. The engine acknowledges the <em>sender</em> the moment it has safely stored the message — that's the fast <b>intake</b> path. The <em>partner</em>'s acknowledgement comes later, once the message is delivered, and it's paced by the partner — that's the slower <b>delivery</b> path.</p>
+        <p style="margin:0">The path is <b>sender → receive &amp; persist → route → transform → deliver → partner</b>. The engine acknowledges the sender after storing the message. This is the intake path. The partner acknowledges delivery later, at its own processing rate.</p>
       </div>
       <p>That gives you <b>two distinct throughput numbers</b>, and they are often very far apart:</p>
       <div class="table-wrap">
@@ -175,7 +217,7 @@
           </tbody>
         </table>
       </div>
-      <p>The gap between them isn't waste — it's the buffer. MessageFoundry accepts and safely stores messages faster than it delivers them, so a momentary slowdown at a partner doesn't push back on the sender; the backlog drains as the partner catches up. <b>When someone quotes a throughput number, ask which rate they mean</b> — intake numbers look impressive but say nothing about how fast messages actually reach their destination.</p>
+      <p>Stored messages buffer short partner slowdowns. The backlog drains as delivery catches up. Intake measures how fast messages are accepted; delivery measures how fast they reach the destination.</p>
     </div>
   </section>
 
@@ -184,15 +226,15 @@
     <div class="container" style="max-width:900px">
       <span class="eyebrow">2 · The biggest factor</span>
       <h2>Your partner systems and their round-trip times</h2>
-      <p class="lead">This is the point most capacity conversations miss — for <b>HL7 v2 over MLLP</b>, an acknowledged serial stream. MessageFoundry delivers each MLLP message in the exact order received — a hard requirement for clinical feeds — so it holds <b>one message in flight per destination</b> at a time:</p>
+      <p class="lead">For <b>HL7 v2 over MLLP</b>, MessageFoundry delivers messages in receive order. It keeps <b>one message in flight per destination</b>:</p>
       <ol>
         <li>Send message <em>N</em> to the partner.</li>
         <li><b>Wait</b> for the partner to receive it, process it (often persist it to its own database), and acknowledge.</li>
         <li>Only then send message <em>N+1</em>.</li>
       </ol>
-      <p>That waiting time isn't the engine's — it belongs to the <b>network round-trip and the partner's own processing</b> — and because the MLLP stream is serial, it lands squarely in the critical path. For an ordered MLLP stream, throughput is approximately:</p>
+      <p>The wait includes the network round trip and the partner's processing. For an ordered MLLP stream, estimate throughput as follows:</p>
       <div class="callout"><p style="margin:0;text-align:center"><b>messages/second ≈ 1000 ÷ ( engine overhead + partner round-trip )</b>, in milliseconds</p></div>
-      <p>The engine overhead is small and roughly fixed (~16&nbsp;ms in our lab). The <b>partner round-trip is yours</b>, and it dominates as soon as it's more than a few milliseconds:</p>
+      <p>The reference model uses ~16&nbsp;ms for the serial path before adding partner acknowledgement time. This comes from the ~60 msg/s lab rate, not a separate engine-latency measurement:</p>
       <div class="table-wrap">
         <table class="cmp">
           <thead><tr><th scope="col">Partner acknowledges in…</th><th scope="col">Approx. ordered throughput</th><th scope="col">"Uniform" msgs/day*</th><th scope="col">Realistic msgs/day†</th></tr></thead>
@@ -206,13 +248,13 @@
           </tbody>
         </table>
       </div>
-      <p style="color:var(--muted);font-size:.86rem"><b>*</b> "Uniform" assumes traffic is perfectly flat around the clock — it never is. <b>†</b> "Realistic" divides by a 2.7× burst factor, the realistic planning number. Illustrative first-order model anchored to the measured ~16&nbsp;ms engine floor; your numbers depend on your systems.</p>
-      <p>The lesson is stark: a partner that takes a quarter-second to acknowledge each message holds a single ordered stream to a few messages per second, and <b>no amount of engine or database speed changes that</b> — the bottleneck has moved outside MessageFoundry entirely.</p>
+      <p style="color:var(--muted);font-size:.86rem"><b>*</b> “Uniform” assumes flat traffic around the clock. <b>†</b> “Realistic” divides by the measured 2.7× burst factor from the profiled ADT traffic. This is an illustrative model using the ~16&nbsp;ms lab reference. Measure your own partner latency and burst factor.</p>
+      <p>A partner that takes a quarter-second to acknowledge limits a single ordered stream to a few messages per second in this model.</p>
       <h3 style="margin-top:26px">What you can do about a slow partner</h3>
       <ul class="feature-list">
-        <li><b>Open multiple connections to the partner</b> — where a feed can be split into independent streams, each destination connection is its own ordered lane, so <em>N</em> connections give you <em>N</em> parallel lanes (if the partner accepts them).</li>
+        <li>Open multiple partner connections only where the feed can be split into independent ordered streams and the partner accepts them.</li>
         <li><b>Fan out at the source</b> — split one hot feed into several interfaces (see §7) so the aggregate isn't gated by a single serial lane.</li>
-        <li><b>Ask your partner about their acknowledgement latency</b> — it's often the cheapest thing to improve, and the term that matters most.</li>
+        <li>Ask the partner about acknowledgement latency and whether it can be reduced.</li>
       </ul>
     </div>
   </section>
@@ -222,10 +264,10 @@
     <div class="container" style="max-width:900px">
       <span class="eyebrow">3 · Ordering &amp; transports</span>
       <h2>Where the serial cap applies: HL7 v2 over MLLP</h2>
-      <p class="lead">The one-in-flight, wait-for-the-ACK model in §2 is about <b>HL7 v2 over MLLP</b> — an acknowledged serial stream, and the workhorse of clinical interfacing. MessageFoundry delivers every MLLP message in the exact order received, so only one is in flight to a destination at a time: the next can't go until the previous is confirmed. That in-order guarantee is what bounds a single MLLP interface's rate.</p>
-      <p>The bound isn't a MessageFoundry quirk — it's a property of <em>any</em> system that guarantees order over a single stream. And for HL7 ADT, where a later message can correct an earlier one, never delivering out of order is exactly what you want.</p>
-      <p><b>Request/response transports behave differently.</b> Outbound REST, SOAP, and FHIR aren't a single serial stream — the engine can keep several requests in flight to a partner at once, so the partner round-trip is hidden by concurrency and throughput is higher. The serial cap above is chiefly an MLLP concern.</p>
-      <p>And for higher MLLP volumes you don't give up ordering — you add lanes: split the feed at the source (by hospital, facility, or service line) across more interfaces, each its own ordered lane. Aggregate throughput is <em>not</em> simply the sum of those lanes — treat the sum as an upper bound (see <a href="#sizing">§7</a>).</p>
+      <p class="lead">The one-message-in-flight model applies to <b>HL7 v2 over MLLP</b>. MessageFoundry waits for acknowledgement before sending the next message to that destination. This preserves receive order and limits a single stream's rate.</p>
+      <p>Ordering matters when a later message corrects an earlier one, as with HL7 admission, discharge, and transfer (ADT) messages.</p>
+      <p>Outbound REST, SOAP, and FHIR can keep several requests in flight to a partner. Concurrency overlaps partner waits, so the single-stream MLLP calculation does not apply.</p>
+      <p>For higher volumes, split feeds at the source across ordered interfaces. Their rates share a host and store, so treat their sum as an upper bound. See §7.</p>
     </div>
   </section>
 
@@ -234,7 +276,7 @@
     <div class="container" style="max-width:900px">
       <span class="eyebrow">4 · The message store</span>
       <h2>Durability has a cost, and location matters</h2>
-      <p class="lead">Every stage handoff is committed durably to the store before the next stage runs — that's what makes delivery at-least-once and crash-safe. So the store's commit latency is part of every message's journey.</p>
+      <p class="lead">The store durably commits each stage before the next runs. This supports at-least-once delivery and recovery after crashes. Commit latency therefore affects each message.</p>
       <div class="table-wrap">
         <table class="cmp">
           <thead><tr><th scope="col">Choice</th><th scope="col">Effect on throughput</th></tr></thead>
@@ -247,7 +289,7 @@
         </table>
       </div>
       <div class="callout" style="margin-top:20px">
-        <p style="margin:0"><strong>One store serves many interfaces.</strong> A single node's store has enormous headroom — in our lab a local store sustained on the order of <b>tens of thousands of commits per second</b>, far more than any one ordered interface can generate. That's <em>why</em> the scaling story is "add interfaces," not "make one interface faster": the shared store is nowhere near the wall.</p>
+        <p style="margin:0">The local-store lab test sustained tens of thousands of commits per second. That measures store commits, not end-to-end delivery across concurrent interfaces. See the measurements in §8 and §9.</p>
       </div>
     </div>
   </section>
@@ -258,10 +300,10 @@
       <span class="eyebrow">5 · Message &amp; transform factors</span>
       <h2>What else moves the number</h2>
       <ul class="feature-list">
-        <li><b>Message size</b> — a small ADT message and one carrying an embedded document aren't the same unit of work. Bigger messages cost more to parse, store, encrypt, and transmit. De-identified ADT traffic from a live hospital feed averages around <b>11.5&nbsp;KB</b> a message, which is a useful <em>directional</em> figure rather than a constant: feeds carrying <b>base64-encoded documents or images</b> run far larger, and they move your storage and bandwidth numbers long before they move your message rate.</li>
-        <li><b>Parsing &amp; validation</b> — fast, tolerant field inspection on the routing path is cheap; full strict validation is deliberately opt-in per feed because it's the slow path. Turn it on where you need conformance, not everywhere.</li>
+        <li>Larger messages take more work to parse, store, encrypt, and transmit. The de-identified hospital ADT feed profiled here averaged <b>11.5&nbsp;KB</b> per message. Treat this as a reference, not a constant. Base64-encoded documents or images can greatly increase storage and bandwidth needs.</li>
+        <li>Routing can use tolerant field inspection. Full strict validation adds work and is optional per feed; enable it where you need conformance checks.</li>
         <li><b>Transformation complexity</b> — how much work your handler does per message directly affects the rate. Heavy transformation is one of the largest hardware-independent reducers of throughput.</li>
-        <li><b>Live enrichment lookups</b> — a handler may do a sanctioned read-only lookup (e.g. a provider or eligibility check). Each lookup is another round-trip that adds to a message's time in the pipeline — powerful, but use it deliberately.</li>
+        <li>A handler may make an approved read-only lookup, such as a provider or eligibility check. Each lookup adds another round trip.</li>
         <li><b>Fan-out</b> — if one inbound message is delivered to <em>N</em> destinations, that's <em>N</em> deliveries to commit and <em>N</em> partners to wait on. Each destination is its own independent lane.</li>
       </ul>
     </div>
@@ -271,14 +313,14 @@
   <section class="section section--alt">
     <div class="container" style="max-width:900px">
       <span class="eyebrow">6 · The misleading unit</span>
-      <h2>Why "messages per day" tells you almost nothing</h2>
-      <p class="lead">Healthcare message traffic is <b>bursty</b> — nothing like a flat, around-the-clock stream. It follows the operational rhythm of the facilities behind it, and that shape matters far more than the daily total.</p>
+      <h2>Daily totals need a peak-hour rate</h2>
+      <p class="lead">Healthcare traffic changes throughout the day, week, and year. Peak rates matter when sizing capacity.</p>
       <ul class="feature-list">
-        <li><b>Within a day</b> — light overnight, ramping sharply in the morning with registration, admissions, rounds, lab draws, and shift changes, peaking during the busy clinical hours, tapering in the evening. ED and registration surges add short, sharp spikes.</li>
+        <li>Traffic often rises with morning registration, admissions, rounds, lab draws, and shift changes, then falls in the evening. Emergency department surges add short spikes.</li>
         <li><b>Across a week</b> — weekdays run several times heavier than weekends (elective admissions, scheduled procedures, clinics).</li>
         <li><b>Across a year</b> — seasonal load (e.g. respiratory-illness season) shifts the baseline further.</li>
       </ul>
-      <p>A system doesn't experience the daily <em>average</em> — it experiences the <b>busiest hour</b>. Size for the average and you'll be underwater exactly when volume is highest: queues back up and latency climbs right when timeliness matters most. <b>In the anonymized, representative ADT traffic we've profiled, the busiest hour runs about 2.7× the all-day average rate</b> — so a feed with a tidy daily figure is really asking for nearly three times that average rate at its peak, and <em>that</em> is the rate your interface has to sustain.</p>
+      <p>Size for the busiest hour. In the anonymized, representative ADT traffic profiled here, the busiest hour ran about <b>2.7× the all-day average</b>. Measure your own peak-to-average ratio before using that factor.</p>
       <div class="table-wrap">
         <table class="cmp">
           <thead><tr><th scope="col">One ordered interface at 60 msg/s</th><th scope="col">Naive (assumes flat traffic)</th><th scope="col">Realistic (peak = 2.7× average)</th></tr></thead>
@@ -287,7 +329,7 @@
           </tbody>
         </table>
       </div>
-      <p>Nothing about the engine changed between those columns — only the assumption about traffic shape, and the naive number is off by nearly 3×. <b>That's why a bare "handles X million messages/day" claim is close to meaningless.</b> Always ask for the <b>peak-hour rate</b>, the <b>message size</b>, and the <b>ordering guarantee</b> behind any daily figure — those, not the daily total, tell you whether it fits your environment. When we <em>do</em> quote a daily figure — the <b>40 million events a day</b> our four-shard measurements support (<a href="#at-scale">§9</a>) — it comes bolted to its units, its store, its conditions, and its disclosed limits, for exactly this reason.</p>
+      <p>These columns use the same engine rate but different traffic assumptions. A daily capacity figure needs a peak-hour rate, message size, and ordering conditions. The separate 40-million-events/day measurement has its own configuration and limits in <a href="#at-scale">§9</a>.</p>
     </div>
   </section>
 
@@ -296,7 +338,7 @@
     <div class="container" style="max-width:900px">
       <span class="eyebrow">7 · Putting it together</span>
       <h2>How to size a deployment</h2>
-      <p class="lead">There's no single throughput number — there's a short calculation using <em>your</em> inputs:</p>
+      <p class="lead">Estimate capacity using your ordering mode, partner latency, and peak traffic:</p>
       <ol>
         <li><b>Start from the per-interface ceiling</b> for your ordering mode (our lab reference: ~60 msg/s ordered, with an instant partner).</li>
         <li><b>Apply your partner's real acknowledgement time</b> (§2). Usually the biggest reduction.</li>
@@ -307,9 +349,9 @@
         <p><strong>A worked (illustrative) example.</strong> A partner acknowledges in ~25&nbsp;ms and you have ADT-shaped traffic:</p>
         <p style="margin:8px 0 0">• Ordered throughput per interface ≈ 1000 ÷ (16 + 25) ≈ <b>~24 msg/s</b>.<br>
         • Peak-aware daily capacity ≈ 24 × 86,400 ÷ 2.7 ≈ <b>~0.8 M messages/day</b> per interface.<br>
-        • To carry a 5-million-message/day aggregate, fan out to roughly <b>6–7 interfaces</b> — each comfortably within one node's shared-store headroom.</p>
+        • To carry a 5-million-message/day aggregate, fan out to roughly <b>6–7 interfaces</b> — then test their combined rate against the shared host and store.</p>
       </div>
-      <p>Your inputs will differ; the point is the <em>method</em>. Plug in your partner latency and your peak factor, then count interfaces. A mega health system can't push all of its ADT through one interface, and it doesn't need to — it splits the feed at the source by hospital, facility, region, or service line across <b>multiple interfaces</b>. Aggregate capacity is <em>not</em> simply the sum of those interfaces — they share a store and an engine host, and measured concurrent throughput lands well below the naive total. A <b>16-interface run delivered ~87 msg/s in aggregate where summing would have predicted ~960</b>. Treat the sum as an upper bound and size against a measured concurrent figure. The shared store on a single node has ample headroom for the combined load.</p>
+      <p>Use your partner latency and peak factor to estimate the required interfaces, then measure their combined throughput. In one 16-interface run, aggregate delivery reached ~87 msg/s; adding individual rates would have predicted ~960 msg/s. Shared host and store resources limit the total.</p>
     </div>
   </section>
 
@@ -318,24 +360,24 @@
     <div class="container" style="max-width:900px">
       <span class="eyebrow">8 · Reference lab measurements</span>
       <h2>The numbers — with their conditions</h2>
-      <p class="lead">These are the figures referenced above, stated with full conditions so you can judge how they map to your environment. They are <b>theoretical maxima under controlled conditions using synthetic data — not guarantees, and not measured against any live clinical system.</b></p>
-      <p>A note on the numbers: elsewhere on the site you'll see a measured <b>~50 messages/second</b> per interface — that figure comes from anonymized, representative message traffic. The <b>~60 messages/second</b> used in this guide is a <em>lab</em> reference ceiling with an instant-acknowledging partner. Both describe the same well-behaved ordered interface; the ~50 is the number to plan around, and everything in §2 about partner round-trips applies on top of it.</p>
+      <p class="lead">These lab figures use <b>synthetic data under controlled conditions</b>. They are reference limits, not deployment guarantees. They were not measured against a live clinical system.</p>
+      <p>The site's <b>~50 messages/second</b> figure uses anonymized, representative traffic. This guide's <b>~60 messages/second</b> reference uses an instant-acknowledging lab partner. Both describe one ordered interface. Start with the representative figure, then measure the effect of your partner, transforms, and store.</p>
       <div class="table-wrap">
         <table class="cmp">
           <thead><tr><th scope="col">Measurement</th><th scope="col">Value</th><th scope="col">Conditions</th></tr></thead>
           <tbody>
             <tr><th scope="row">End-to-end delivery, one ordered interface</th><td><b>~60 msg/s</b></td><td>Single strictly-ordered MLLP interface, synthetic ADT, pass-through (no heavy transform), server database over a LAN, default settings, <b>instant-acknowledging partner</b>.</td></tr>
             <tr><th scope="row">Intake (ACK-on-receipt)</th><td><b>~193 msg/s</b> per engine</td><td>Accept-and-persist, not end-to-end delivery; engine-CPU-bound, SQLite, one destination. Two engines measured ~383/s.</td></tr>
-            <tr><th scope="row">Single-node store commit ceiling</th><td><b>~23,600–27,200 /s</b></td><td>The store is far from the bottleneck at realistic interface counts — many times the demand at our measured ceiling.</td></tr>
-            <tr><th scope="row">Per-message budget, one ordered lane</th><td><b>~16 ms</b></td><td>The whole serial per-message budget for that lane — including four to five store round-trips at roughly 11 ms each. <b>MessageFoundry's own share is a few milliseconds</b>; most of the 16 ms is the store, and it is the reciprocal of the ~60 msg/s row above rather than a separate measurement.</td></tr>
+            <tr><th scope="row">Single-node store commit ceiling</th><td><b>~23,600–27,200 /s</b></td><td>Local-store commit test; measures commits, not end-to-end delivery across concurrent interfaces.</td></tr>
+            <tr><th scope="row">Per-message budget, one ordered lane</th><td><b>~16 ms</b></td><td>About 16 ms per message, calculated as the reciprocal of the ~60 msg/s reference rate above. This is not a separate measurement of engine or database latency.</td></tr>
           </tbody>
         </table>
       </div>
-      <h3 style="margin-top:24px">Why these are conservative, and why your mileage will vary</h3>
+      <h3 style="margin-top:24px">How your deployment may differ</h3>
       <ul class="feature-list">
-        <li><b>Ordered MLLP, single interface.</b> The lab figure is a strictly-ordered MLLP stream — serial by design. Request/response transports (REST/SOAP/FHIR) run concurrently, and splitting a feed across more interfaces adds lanes; both go faster.</li>
-        <li><b>Instant partner.</b> The lab partner acknowledges immediately. <b>Real partners don't</b> — and their round-trip time is usually the dominant factor. This is the single largest reason your end-to-end number will differ from the lab number.</li>
-        <li><b>No independent industry benchmark exists.</b> There's no trustworthy public per-node throughput number for the major interface engines either — every published msg/s figure is hardware- and workload-dependent. Treat <em>all</em> such numbers (including these) as starting points for your own measurement, not guarantees.</li>
+        <li>The lab figure covers one strictly ordered MLLP stream. Concurrent request/response transports and multiple interfaces have different limits.</li>
+        <li>The lab partner acknowledges immediately. Real partner response times reduce ordered delivery rates.</li>
+        <li>Throughput depends on hardware and workload. Use published figures as references for your own tests, not guarantees.</li>
       </ul>
     </div>
   </section>
@@ -345,8 +387,8 @@
     <div class="container" style="max-width:900px">
       <span class="eyebrow">9 · At enterprise scale</span>
       <h2>1,500 interfaces held loss-free — and 40 million events a day</h2>
-      <p class="lead">A single MLLP interface is a serial lane (§3). At a health system's scale the more useful question is the inverse: <b>how many interfaces can one engine hold at once without dropping a message?</b> In a deliberately extreme test — <b>1,500 concurrent inbound MLLP interfaces</b> on one MessageFoundry engine and one SQL Server 2022 database — we held all 1,500 open with <b>zero message loss</b> and durable, at-least-once persistence on every message.</p>
-      <p>That fan-out is where naive designs fall over. A one-worker-per-interface engine degrades sharply at this scale; <b>MessageFoundry's pooled claim scheduler — the configuration used in this test — holds steady</b> with low idle overhead. It's an architectural property, not a tuning trick.</p>
+      <p class="lead">One engine and one SQL Server 2022 database held <b>1,500 concurrent inbound MLLP interfaces</b> open in a lab test. The run recorded <b>zero message loss</b>, with durable, at-least-once persistence for every message.</p>
+      <p>This test used MessageFoundry’s pooled claim scheduler, with low idle overhead across the open interfaces.</p>
       <p>The two boxes, on the same local network:</p>
       <div class="table-wrap">
         <table class="cmp">
@@ -359,9 +401,9 @@
           </tbody>
         </table>
       </div>
-      <p>On that config, aggregate end-to-end throughput at 1,500 interfaces was <b>~97 messages/second sustained</b> — the rate a single, unsharded database durably committed across all 1,500 interfaces. That figure belongs to <em>this</em> two-box shape and is <b>not</b> a product ceiling: a later, sharded configuration measures several times higher (below).</p>
+      <p>That two-machine configuration sustained <b>~97 messages/second</b> across all 1,500 interfaces using one unsharded database. The separate four-shard test below measured a different configuration.</p>
       <h3 style="margin-top:34px">Measured capacity — 40 million events a day</h3>
-      <p>A separate measurement campaign, closed <b>17 July 2026</b>, measured the sustainable ceiling on a <b>four-shard</b> engine configuration against a SQL&nbsp;Server store. That campaign is the basis for the capacity figure we publish:</p>
+      <p>A separate campaign ended on <b>17 July 2026</b>. It measured a <b>four-shard</b> engine configuration with a SQL&nbsp;Server store and produced the capacity figures below.</p>
       <div class="table-wrap">
         <table class="cmp">
           <thead><tr><th scope="col">Measurement</th><th scope="col">Events/second</th><th scope="col">Per hour</th><th scope="col">Per day</th></tr></thead>
@@ -371,13 +413,13 @@
           </tbody>
         </table>
       </div>
-      <p><b>Read the units carefully — this is the part most capacity claims get wrong.</b> These are <b>total events: messages in <em>and</em> out.</b> A one-in-one-out interface at 40&nbsp;million events/day is carrying roughly <b>20&nbsp;million inbound messages</b> a day. We publish the event figure because it is what the harness measures; whenever you compare any two engines, confirm both numbers are counted the same way before you treat them as comparable.</p>
-      <p>We publish <b>40 million</b> rather than the measured ~52 million deliberately: a capacity number you intend to <em>operate</em> at needs headroom for bursts, retries, and the bad afternoon. Forty million holds back <b>more than 20%</b> of the measured ceiling as reserve. The figures are <b>completions</b> — work the engine actually finished — not work offered to it; an earlier, higher number in this campaign was withdrawn precisely because it counted events created rather than drained.</p>
-      <p><b>Nothing was exhausted at that ceiling.</b> At the measured peak, with 25% deliberate overload applied, database CPU averaged <b>~69%</b> — the record's own conclusion is <em>"not CPU-bound."</em> The limit is <b>write serialization</b>, not a resource running out, which is why adding database cores does not move it; the levers that would are fewer transactions per message, faster log storage, and more engine shards. <span style="color:var(--muted)">(An earlier reading that called the store "near-saturated" was retracted in-record as a misread of a maximum for a mean. The precise serialization mechanism is corroborated but not isolated — we hold it as inference, not established fact.)</span></p>
+      <p>These figures count <b>total events: messages in and out</b>. For one inbound and one outbound message, 40 million events/day represents about 20 million inbound messages/day. Check units before comparing engines.</p>
+      <p>The published 40 million events/day reserves more than 20% below the measured ~52 million ceiling for bursts and retries. These figures count completed work. An earlier, higher figure was withdrawn because it counted created events rather than drained events.</p>
+      <p>With 25% deliberate overload, database CPU averaged <b>~69%</b> at the measured peak. The record concluded <em>"not CPU-bound."</em> Evidence points to <b>write serialization</b>, but the precise mechanism has not been isolated. Treat that explanation as an inference. A separate test reduced committed transactions by 28% but changed sustained throughput by less than 1%. Adding database cores did not increase the measured ceiling. The throughput report identifies no proven change that raises this limit. An earlier “near-saturated” description was retracted after a maximum was mistaken for a mean.</p>
       <div class="callout">
-        <p><strong>Scope, and what this number does not cover.</strong> Two different configurations appear above: the 1,500-interface conformance run (single store, two boxes, ~97 msg/s) and the four-shard capacity measurement (~603 events/s). Don't blend them.</p>
-        <p style="margin-top:12px">The measurement carries disclosed limits, and we would rather state them than have you find them: every measurement ran against an <b>already-loaded store</b> (2.6–4.0 million rows), so a clean store could be faster; the ceiling is a <b>flow-balanced point estimate (~600 ± 4), not a long soak</b>, and a soak revealing slow drift would push it down rather than up; the fan-out comparison that showed the ceiling to be independent of fan-out was not a clean single-variable test; and six- and eight-shard configurations were <b>not</b> part of what was measured.</p>
-        <p style="margin-top:12px"><b>One more thing you should know before you size against this.</b> The multi-shard arrangement these numbers come from — several engine processes sharing one server database — is built and invariant-tested, but we have <b>not yet blessed it as a supported production topology</b>; that waits on a clean multi-engine no-loss bench. Until it is, size production multi-engine deployments as <b>active-passive</b>, and treat the figure above as what the engine has been shown to do rather than a configuration we are yet recommending you run. Your own numbers will track your transforms, storage, and hardware. <a href="/getting-started.html">Talk to us for sizing →</a></p>
+        <p>Keep these configurations separate: the 1,500-interface test used one store and two machines (~97 msg/s). The four-shard capacity test measured ~603 events/s.</p>
+        <p style="margin-top:12px">The measurements used an <b>already-loaded store</b> with 2.6–4.0 million rows. The ceiling is a <b>flow-balanced point estimate (~600 ± 4), not a long soak</b>. A long soak could reveal drift and lower sustainable throughput. The fan-out comparison changed more than one variable. Six- and eight-shard configurations were not measured.</p>
+        <p style="margin-top:12px">The measured multi-shard arrangement uses several engine processes sharing one server database. It is built and invariant-tested, but is <b>not yet a supported production topology</b>. Support awaits a clean multi-engine no-loss benchmark. Size production multi-engine deployments as <b>active-passive</b> until then. <a href="/contact.html">Ask about sizing →</a></p>
       </div>
     </div>
   </section>
@@ -385,15 +427,15 @@
   <!-- takeaways -->
   <section class="section section--dark">
     <div class="container" style="max-width:900px">
-      <div class="center" style="margin-bottom:28px"><span class="eyebrow">In a nutshell</span><h2>Seven takeaways</h2></div>
+      <div class="center" style="margin-bottom:28px"><span class="eyebrow">Sizing checklist</span><h2>Seven takeaways</h2></div>
       <ol style="max-width:760px;margin-inline:auto;line-height:1.7">
-        <li>MessageFoundry adds only a few milliseconds per message; <b>your partner systems and round-trip times set the real throughput.</b></li>
+        <li>Measure partner acknowledgement time, store latency, message size, and transform work together.</li>
         <li>There are <b>two</b> rates — fast intake and slower end-to-end delivery. Know which one a number refers to.</li>
         <li><b>Strict ordering is serial</b> and therefore bounded; add parallel connections or fan out across interfaces when you need more.</li>
-        <li>Traffic is <b>bursty</b> — size to the <b>peak hour (≈ 2.7× the average)</b>, not the daily total.</li>
-        <li><b>Scale by fanning out</b> to multiple interfaces; one node's store has ample headroom.</li>
+        <li>Size for peak traffic. The profiled ADT feed peaked at about 2.7× its daily average; measure your own ratio.</li>
+        <li>Measure interfaces together. Their combined rate can be far below the sum of individual rates.</li>
         <li>Interrogate every throughput claim with four questions: <b>message size, ordering, partner acknowledgement time, and peak-hour rate.</b></li>
-        <li>Published capacity is <b>40 million events a day</b> — messages <b>in and out</b>, holding back a &gt;20% reserve against a measured ~603 events/s ceiling. A separate run held <b>1,500 concurrent MLLP interfaces loss-free</b>. The limit is write <em>serialization</em>, not exhausted CPU (<a href="#at-scale">§9</a>).</li>
+        <li>The four-shard reference is <b>40 million events/day</b>, counting messages in and out with more than 20% reserve below ~603 events/s. It is not a supported production topology. A separate run held <b>1,500 MLLP interfaces</b> without message loss. See <a href="#at-scale">§9</a>.</li>
       </ol>
       <div class="btn-row center" style="margin-top:30px">
         <a class="btn btn-primary" href="/getting-started.html">Get started</a>
@@ -408,7 +450,7 @@
       <div class="center" style="margin-bottom:24px"><span class="eyebrow">Keep reading</span><h2>Related guides</h2></div>
       <div class="grid grid-3">
         <a class="card" href="/architecture.html" style="color:inherit"><h3>Architecture &amp; the durable staged queue</h3></a>
-        <a class="card" href="/reliability.html" style="color:inherit"><h3>Reliability you can prove</h3></a>
+        <a class="card" href="/reliability.html" style="color:inherit"><h3>Reliability and test scope</h3></a>
         <a class="card" href="/guides/" style="color:inherit"><h3>All guides &amp; tutorials</h3></a>
       </div>
     </div>
@@ -419,12 +461,12 @@
     <div class="container">
       <div class="center" style="margin-bottom:28px"><span class="eyebrow">FAQ</span><h2>Frequently asked questions</h2></div>
       <div class="faq">
-        <div class="faq-item"><h3>How many messages per second can MessageFoundry handle?</h3><p>It depends on your environment far more than on the engine. In our reference lab a single strictly-ordered HL7 v2 / MLLP interface delivers about 60 messages/second end-to-end with an instant-acknowledging partner — roughly 16 milliseconds per message for the whole serial lane, most of which is store round-trips rather than MessageFoundry itself. Real numbers are usually lower and are set by how fast your partner systems acknowledge each message. That serial cap is specific to MLLP; request/response transports like REST and FHIR run concurrently, and fanning out across interfaces scales further.</p></div>
-        <div class="faq-item"><h3>Why is a messages-per-day number misleading?</h3><p>Healthcare traffic is bursty, not a flat around-the-clock stream. In de-identified ADT traffic profiled from a live hospital interface feed, the busiest hour runs about 2.7 times the all-day average, so you have to size for the peak hour, not the daily average. Your own ratio is worth measuring from your existing interface logs rather than assuming. Two feeds with the same daily total but different burst profiles need very different capacity. Always ask for the peak-hour rate, the message size, and the ordering guarantee behind any 'X million per day' figure.</p></div>
-        <div class="faq-item"><h3>What actually limits MessageFoundry's throughput?</h3><p>For HL7 v2 over MLLP, where delivery is strictly ordered, the dominant factor is usually your partner system's round-trip time: the engine sends a message, waits for the partner to accept and acknowledge it, and only then sends the next one. A partner that takes 50 ms to acknowledge caps a single ordered stream near 15 messages/second, no matter how fast the engine or database is. The message store, message size, validation, and transformation complexity also contribute, but the partner round-trip is usually the biggest term. Request/response transports like REST, SOAP, and FHIR run several requests concurrently, so this serial cap doesn't apply to them.</p></div>
-        <div class="faq-item"><h3>How do I size a MessageFoundry deployment?</h3><p>Start from the per-interface ordered ceiling (about 60 messages/second with an instant partner), reduce it by your partner's real acknowledgement time, divide by your traffic's burst factor (about 2.7 for ADT-shaped traffic), then fan out to enough interfaces to cover your aggregate peak — splitting feeds at the source by hospital, facility, or service line. Then check that total against a measured concurrent figure rather than against the sum of per-interface ceilings — in practice they do not add.</p></div>
-        <div class="faq-item"><h3>How does MessageFoundry scale to very high volumes?</h3><p>By fanning out, not by forcing everything through one pipe. A strictly-ordered interface is a single serial lane with a bounded rate — that's the physics of guaranteed ordering, not a product limitation. You split feeds at the source across many interfaces. Aggregate throughput is not simply the sum of those interfaces, though: they share one message store and one engine host, and measured concurrent runs land well below the naive total — a 16-interface run delivered 87 messages per second in aggregate where summing would have predicted about 960. Treat the sum as an upper bound, and size against a measured concurrent figure where you have one.</p></div>
-        <div class="faq-item"><h3>How many interfaces can one MessageFoundry engine run?</h3><p>In a lab test, one MessageFoundry engine and one SQL Server 2022 database held 1,500 concurrent inbound MLLP interfaces open with zero message loss and durable, at-least-once persistence. That test used MessageFoundry's pooled claim scheduler. Capacity is a separate measurement: a four-shard configuration measured a sustainable ceiling of about 603 events per second — counting messages in and out — and from that we publish 40 million events a day, holding back more than 20 percent of the ceiling as reserve. The limit is write serialization rather than exhausted CPU, so the levers are fewer transactions per message, faster log storage, and more engine shards.</p></div>
+        <div class="faq-item"><h3>How many messages per second can MessageFoundry handle?</h3><p>One strictly ordered MLLP interface delivered about 60 messages/second in the reference lab with an instant-acknowledging partner. This implies about 16 ms per message across the serial path. A separate reference using anonymized, representative traffic measured about 50 messages/second. Measure your own partner latency, transforms, and storage. REST and FHIR request/response transports can run concurrently.</p></div>
+        <div class="faq-item"><h3>Why is a messages-per-day number misleading?</h3><p>Daily totals hide peak loads. The profiled de-identified hospital ADT feed peaked at about 2.7 times its daily average. Measure your own ratio and size for the busiest hour. Compare message size, ordering, and peak rate alongside daily totals.</p></div>
+        <div class="faq-item"><h3>What actually limits MessageFoundry's throughput?</h3><p>An ordered MLLP stream waits for each partner acknowledgement before sending the next message. The reference model gives about 15 messages/second with a 50 ms partner wait. Store latency, message size, validation, and transforms also affect throughput. REST, SOAP, and FHIR request/response transports can run several requests concurrently.</p></div>
+        <div class="faq-item"><h3>How do I size a MessageFoundry deployment?</h3><p>Start with the ordered lab reference of about 60 messages/second and account for your partner's acknowledgement time. Apply your measured peak-to-average traffic ratio; the profiled ADT feed used about 2.7. Split feeds into independent ordered interfaces where possible, then measure their combined rate. Shared resources limit the total.</p></div>
+        <div class="faq-item"><h3>How does MessageFoundry scale to very high volumes?</h3><p>Split feeds at the source across independent ordered interfaces, then test them together. They share a host and store. One 16-interface run delivered about 87 messages/second; adding individual rates would have predicted about 960. Treat that sum as an upper bound, not a deployment estimate.</p></div>
+        <div class="faq-item"><h3>How many interfaces can one MessageFoundry engine run?</h3><p>One lab run held 1,500 inbound MLLP interfaces open without message loss using one engine, its pooled claim scheduler, and SQL Server 2022. A separate four-shard test measured about 603 events/second, counting messages in and out. Its published reference is 40 million events/day with more than 20% reserve. This was a point estimate, not a long soak. The multi-shard arrangement is not yet a supported production topology; use active-passive for production multi-engine sizing.</p></div>
       </div>
     </div>
   </section>
@@ -439,8 +481,8 @@
             <img class="brand-mark" src="/assets/img/logo.svg" alt="" width="28" height="28">
             <span class="brand-name">Message<span class="brand-accent">Foundry</span><span class="brand-tm">™</span></span>
           </a>
-          <p class="footer-tagline"><b>More</b> Than an HL7 Interface Engine</p>
-          <p>Open-source healthcare interface engine — secure by default, built to recognized standards, connecting a wide range of protocols and message types.</p>
+          <p class="footer-tagline">Open-source healthcare interface engine</p>
+          <p>Route and transform healthcare messages with an open-source interface engine you run on your own servers.</p>
           <div class="badge-row" style="margin-top:16px">
             <span class="badge">Open source</span>
             <span class="badge">No lock-in</span>
@@ -483,8 +525,8 @@
         </div>
       </div>
       <div class="footer-bottom">
-        <span>© 2026 MessageFoundry Foundation — this website and its content, all rights reserved. The MessageFoundry engine is separately open source, licensed under AGPL-3.0-or-later.</span>
-        <span>MessageFoundry and the MessageFoundry word mark are trademarks of MessageFoundry Foundation. Mirth Connect, Cloverleaf, Rhapsody, Corepoint, and Ensemble are trademarks of their respective owners; MessageFoundry is independent and unaffiliated.</span>
+        <span>© 2026 MessageFoundry, LLC — this website and its content, all rights reserved. The MessageFoundry engine is separately open source, licensed under AGPL-3.0-or-later.</span>
+        <span>MessageFoundry and the MessageFoundry word mark are trademarks of MessageFoundry, LLC. Mirth Connect, Cloverleaf, Rhapsody, Corepoint, and Ensemble are trademarks of their respective owners; MessageFoundry is independent and unaffiliated.</span>
       </div>
     </div>
   </footer>

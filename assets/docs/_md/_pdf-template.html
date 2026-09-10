@@ -15,7 +15,7 @@
      - The "Foundry" wordmark accent (amber) is for the MASTHEAD ONLY.
        Never accent the brand name in body copy.
      - The trademark mark belongs to the logo lockup only.
-     - MessageFoundry Foundation is the legal entity; MessageFoundry is the product.
+     - MessageFoundry, LLC is the legal entity; MessageFoundry is the product.
    =================================================================== */
 
 :root {
@@ -81,7 +81,10 @@ body {
 
 /* ------------------------------------------------------------ headings */
 h1, h2, h3, h4 { color: var(--ink); letter-spacing: -.015em; line-height: 1.2;
+                 break-inside: avoid; page-break-inside: avoid;
                  break-after: avoid; page-break-after: avoid; }
+/* Keep the heading and the first following block on the same printed page. */
+h1 + *, h2 + *, h3 + *, h4 + * { break-before: avoid; page-break-before: avoid; }
 h1 { font-size: 17pt; font-weight: 800; margin: 20pt 0 8pt; }
 h2 {
   font-size: 13.5pt; font-weight: 800; margin: 18pt 0 7pt;
@@ -207,8 +210,8 @@ img, svg { max-width: 100%; }
   </main>
 
   <footer class="colophon">
-    <p class="colophon__line">&copy; {{YEAR}} <b>MessageFoundry Foundation</b> &middot; MessageFoundry is licensed under <b>AGPL-3.0-or-later</b> &middot; Document generated {{DATE}} for MessageFoundry {{VERSION}}.</p>
-    <p class="colophon__note">MessageFoundry and the MessageFoundry word mark are trademarks of MessageFoundry Foundation. This document describes an <b>Early Access</b> release; check <a href="https://pypi.org/project/messagefoundry/">pypi.org/project/messagefoundry</a> for the current version. Verify specifics against your own deployment and the engine's reference documentation.</p>
+    <p class="colophon__line">&copy; {{YEAR}} <b>MessageFoundry, LLC</b> &middot; MessageFoundry is licensed under <b>AGPL-3.0-or-later</b> &middot; Document generated {{DATE}} for MessageFoundry {{VERSION}}.</p>
+    <p class="colophon__note">MessageFoundry and the MessageFoundry word mark are trademarks of MessageFoundry, LLC. This document describes an <b>Early Access</b> release; check <a href="https://pypi.org/project/messagefoundry/">pypi.org/project/messagefoundry</a> for the current version. Verify specifics against your own deployment and the engine's reference documentation.</p>
   </footer>
 
 </body>

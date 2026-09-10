@@ -16,25 +16,25 @@
 
 ## 1. Purpose and scope
 
-This is the secure development standard for an **open-source software project intended for use in regulated environments, including healthcare** (handling of protected health information, PHI).
+This standard applies to open-source software for regulated environments. These environments include healthcare systems that process protected health information (PHI).
 
-It is written to serve three audiences:
+The standard has three uses:
 
-1. **The development team** — a consistent engineering bar to build to, across this and future projects.
-2. **Deploying organizations** — both the maintainer's own organization and any other organization that adopts the open-source software, who need evidence that it was built and tested securely.
-3. **Future projects** — this standard is **project-agnostic**; any new application can be developed under it without rewriting it.
+1. It gives development teams the same security requirements across projects.
+2. It gives deploying organizations evidence of secure development and tests. This includes the maintainer's organization and other organizations.
+3. It lets teams use these requirements for new applications.
 
-**How the standard is structured.** The body (§2–§10) states requirements that apply to *any* application built under this standard. Each application records its own specifics — technology stack, applicable verification scope, the interface mechanisms it implements — in a **per-project Applicability Profile**. MEFOR's profile is Appendix A; future projects add their own (Appendix B, C, …).
+Sections 2–10 give the requirements for each application. Each project has an **Applicability Profile** with its technology, verification scope, and interface mechanisms. Appendix A contains the MessageFoundry profile. Future projects add profiles in Appendix B, C, and subsequent appendices.
 
-**Companion standards.** Two companions extend this baseline. The [Secure AI-Assisted Development Standards](Secure_AI_Development_Standards.md) governs *building with an AI coding assistant* (risk tiers, provenance, guardrails). The [Code Quality & Anti-Slop Standards](Code_Quality_Standards.md) governs *judging whether the resulting code is good, not "AI slop"* — an evidence-based rubric aligned to ISO/IEC 25010. This document states the security baseline both build on; the three are complementary (process → build → outcome).
+Two companion standards use this security baseline. The [Secure AI-Assisted Development Standards](Secure_AI_Development_Standards.md) covers AI coding assistants, risk tiers, provenance, and safeguards. The [Code Quality & Anti-Slop Standards](Code_Quality_Standards.md) gives criteria for code quality, aligned to ISO/IEC 25010.
 
-**Open-source note.** The software is developed in the open. This standard, and the project's security attestations, are publishable so that adopters can rely on them or extend them for their own environment.
+The project develops the software in public. Adopters can use or extend this standard and the published security attestations for their environments.
 
 ---
 
 ## 2. Shared responsibility
 
-Because the software is built by one party and deployed by others, responsibilities split cleanly. Stating the split prevents either side from assuming the other has it covered.
+The project develops the software. Each deploying organization operates its installation. The table assigns their responsibilities.
 
 | The **project** is responsible for | The **deploying organization** is responsible for |
 |---|---|
@@ -50,7 +50,7 @@ Because the software is built by one party and deployed by others, responsibilit
 
 ## 3. How this maps to NIST (overview)
 
-Three NIST publications cover three different questions. Together they form the standard:
+The standard uses these three NIST publications:
 
 | Question | NIST publication | Section |
 |---|---|---|
@@ -121,7 +121,7 @@ The practices in this section are a **distilled synthesis** drawn from GitHub Sp
 
 ### 5.1 The spec stack (constitution → decisions → requirements → tasks → verification)
 
-Spec-driven development treats the artifacts that describe *what* a change must do and *why* as first-class, versioned, and connected — so design, build, and verification trace back to an agreed specification rather than to memory. The recommended structure is five layers, each mapping to an SSDF practice. The framing here is generic; the concrete MEFOR artifacts that fill each layer are recorded in Appendix A.7.
+Spec-driven development connects the requirements, reasons, design, and tests for a change. The project keeps these documents under version control. The five recommended layers below each map to an SSDF practice. Appendix A.7 lists the MessageFoundry documents for each layer.
 
 | Layer | What it holds | Maps to |
 |---|---|---|
@@ -155,16 +155,18 @@ Each acceptance criterion SHOULD carry an **ID** linked to the test or fixture t
 
 ### 5.4 Clarify and analyze (lightweight, advisory)
 
-Two lightweight checks are recommended, both explicitly **advisory, not hard gates**:
+The following two checks are advisory. They do not block a release:
 
-- **Clarify** — force ambiguity resolution before build, surfacing and answering open questions while they are still cheap to change. The project already has an informal version: the ADR **"To resolve on acceptance"** block.
-- **Analyze** — automated cross-artifact consistency/coverage: does every acceptance criterion have a task and a test? does any artifact contradict the constitution's invariants?
+- **Clarify**: resolve open questions before development starts. The ADR **"To resolve on acceptance"** block records these questions.
+- **Analyze**: identify acceptance criteria without a task or test. Identify documents that conflict with the constitution's invariants.
 
 These SHOULD be run as lightweight advisory checks. They introduce no new blocking release gate (cf. §6.4). *(Lineage: GitHub Spec Kit `specify → clarify → plan → tasks → analyze → implement`; distilled.)*
 
 ### 5.5 Executable acceptance criteria (living documentation)
 
-BDD / Specification-by-Example expresses acceptance criteria as Given/When/Then scenarios with concrete `(input → expected outcome)` example tables that **execute** as tests — so specification and verification cannot silently drift, and the spec doubles as living documentation. This fits naturally with EARS's WHEN/THEN phrasing, and the HL7 domain (well-defined inputs, well-defined dispositions) is well suited to example-driven verification. The concrete reference-project opportunity (detailed as R2 in Appendix A.7):
+Behavior-driven development (BDD) and Specification-by-Example use Given/When/Then scenarios to express acceptance criteria. Example tables contain `(input → expected outcome)` pairs for tests. These tests help keep the specification and software behavior consistent.
+
+This approach supports EARS requirements and HL7 message tests. Recommendation R2 in Appendix A.7 applies it to the reference project:
 
 > A project's dry-run gate that already replays fixtures through the real graph but asserts only "didn't error" **SHOULD** be upgraded to assert an **expected disposition per fixture** (e.g. `PROCESSED` / `UNROUTED` / `FILTERED` / `ERROR`), turning it into an executable acceptance-criteria check.
 
@@ -172,7 +174,7 @@ BDD / Specification-by-Example expresses acceptance criteria as Given/When/Then 
 
 ### 5.6 Constitution as a first-class versioned artifact
 
-A standing, versioned ruleset that all downstream artifacts respect is sound practice — it gives design, decisions, and verification a single source of invariants and vocabulary to honor. The reference project already has it: the project's standing contract / constitution ([`../CLAUDE.md`](../CLAUDE.md)). The only addition is that the **analyze** check (§5.4) can verify no artifact violates the constitution's invariants. *(Validates existing practice; nothing external adopted.)*
+The constitution gives the project one source for its invariants and terms. The reference project keeps this constitution in [`../CLAUDE.md`](../CLAUDE.md). The proposed **analyze** check (§5.4) identifies documents that conflict with these invariants. This extends existing practice.
 
 > **Recommendation pointer.** For the reference project's existing spec stack and three concrete, recommended improvements (R1–R3), see Appendix A.7.
 
@@ -317,7 +319,7 @@ The project maintains a current evidence set so any claim is backed:
 
 ### A.1 Project summary
 
-MessageFoundry (MEFOR) is an open-source **HL7 v2.x interface engine** — a candidate alternative to commercial engines (Corepoint, Mirth Connect, Rhapsody, Cloverleaf). It routes and transforms clinical messages between systems.
+MessageFoundry (MEFOR) is an open-source **HL7 v2.x interface engine**. It routes and transforms clinical messages between systems. Teams can evaluate it as an alternative to Corepoint, Mirth Connect, Rhapsody, or Cloverleaf.
 
 **Technology stack:** Python 3.14+, FastAPI/uvicorn, aiosqlite/SQLite (WAL), `python-hl7`/`hl7apy`, a same-origin browser ops console served at `/ui`, PySide6 (the standalone test harness only — the desktop admin console was retired, BACKLOG #103), Windows/PowerShell deployment; MLLP transport with native MLLP-over-TLS (opt-in via cert config — ADR 0002); application-layer AES-256-GCM encryption at rest (database-native where the backend provides it). Durable message store with FIFO/per-key ordering and dead-letter handling.
 
@@ -359,9 +361,7 @@ MessageFoundry (MEFOR) is an open-source **HL7 v2.x interface engine** — a can
 
 ### A.4 Interface authentication mechanisms
 
-Recorded honestly against what is **built today** vs **designed-but-deferred** vs **aspirational/
-planned** (§9: every claim is backed by evidence). The §7.4 hierarchy is the target; this is MEFOR's
-current position on it.
+The following list separates built mechanisms from deferred designs and plans. Section 7.4 gives the target hierarchy. Section 9 requires evidence for each claim.
 
 **Built (in code today):**
 
@@ -418,8 +418,7 @@ current position on it.
 
 ### A.6 Documented deviations
 
-Honest record of where MEFOR's *current* practice differs from the body of the standard, with the
-compensating control (the standard requires exclusions/deviations be documented, §6.3).
+The following list records differences between current MessageFoundry practice and this standard. It includes compensating controls, as required by §6.3.
 
 - **Single-maintainer development (PO.2 / PW.7).** The project is solo-maintained today, so the
   standard's "every change is peer-reviewed" cannot mean a *human second reviewer*. Compensating
@@ -487,10 +486,9 @@ each release and on any trigger below. Those are maintainer-internal documents;
 
 ### A.7 Spec-driven development — existing stack and recommendations
 
-MEFOR already operates the five-layer spec stack of §5; the layers exist but are not yet mechanically
-connected. Recorded honestly below, with three recommended (SHOULD) improvements.
+MessageFoundry uses the five specification layers in §5. Automated links between the layers are incomplete. The following record includes three recommended (SHOULD) improvements.
 
-#### A.7.1 Existing spec stack (state accurately)
+#### A.7.1 Existing specification layers
 
 | Layer | MEFOR artifact | Notes | SSDF |
 |---|---|---|---|

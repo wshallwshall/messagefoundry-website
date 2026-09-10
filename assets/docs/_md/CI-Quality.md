@@ -2,7 +2,7 @@
 
 **Is this code good, or is it slop? · MEFOR verdict: A− · July 14, 2026**
 
-How to judge whether code — human- or AI-authored — is actually good, using signals the evidence supports.
+Use this rubric to assess human-written and AI-generated code against documented quality evidence.
 
 | At a glance |  |
 |----|----|
@@ -18,11 +18,11 @@ How to judge whether code — human- or AI-authored — is actually good, using 
 - ~14% of distinct Python modules in real ChatGPT output didn't exist ("slopsquatting").
 - 2024: copied lines exceeded refactored lines for the first time in industry telemetry.
 
-Each failure mode maps to a specific machine-enforced control — not a vibe check.
+Each failure mode maps to a specific control that a tool can check.
 
 ### What actually predicts quality
 
-Machine-enforced structure (layer boundaries, strict typing), tests whose assertions are validated by mutation testing, and dependency + published-artifact integrity. The popular scoreboards — coverage %, complexity scores, SonarQube severities — correlate weakly, sometimes *invertedly*, with real defects.
+Assess architecture boundaries, strict typing, test assertions checked by mutation testing, and dependency and release-package integrity. Coverage, complexity, and SonarQube severity scores have weak or sometimes inverse relationships with defects.
 
 ### The MEFOR result
 
@@ -30,7 +30,7 @@ All 11 signals Built and running in CI: enforced boundaries, strict typing, 8,20
 
 # The 11 Signals at a Glance
 
-Simplified from the full rubric (§4) and MEFOR scorecard (Appendix A), which follow. A codebase is judged by the **composite** — never by any single row.
+The table summarizes the rubric in §4 and the MEFOR scorecard in Appendix A. Assess the signals together. No single row determines quality.
 
 **Tier 1 — durable, high-signal controls (these carry the verdict)**
 
@@ -79,21 +79,23 @@ The full standard follows: the evidence review, the AI failure-mode map, the com
 
 ## Executive summary
 
-**The core thesis, and it is counterintuitive:** *there is no single number that certifies code quality, and every metric people reach for first is a weak or gameable predictor.* Peer-reviewed evidence shows line-coverage %, raw cyclomatic complexity, SonarSource "Cognitive Complexity", and SonarQube issue severities all correlate **weakly — sometimes invertedly** — with real defects and change-proneness (§2). What survives is **structure and behavior, verified by enforced controls**: ISO/IEC 25010 maintainability (low coupling / information hiding), strict typing, tests whose *assertions* are validated (mutation testing as *guidance*, not a gate), dependency integrity, and static analysis in the loop.
+No single metric establishes code quality. Coverage, complexity, and SonarQube severity scores have weak or sometimes inverse relationships with defects and change-proneness (§2). Assess enforced structure and verified behavior together. These include architecture boundaries, strict typing, test assertions, dependency integrity, and static analysis. Use mutation testing as guidance, not as a sole gate.
 
-**"AI slop" is real but specific.** The evidence names measurable failure modes — a controlled Stanford study found AI-assisted developers wrote *less* secure code yet were *more* confident it was secure; GitClear telemetry shows 2024 was the first year copy/pasted lines exceeded refactored ("moved") lines (the signature of *copy-instead-of-abstract*); ~14.4% of *distinct* Python modules in real ChatGPT output were hallucinated (slopsquatting); DORA 2024 associated AI adoption with a delivery-**stability** drop. The answer to each is a **specific control**, not a vibe (§3).
+The cited studies identify specific failure modes. A controlled Stanford study found less secure code and greater confidence among AI-assisted developers. GitClear reported more copied than refactored lines in 2024. About 14.4% of distinct Python modules in the cited ChatGPT output did not exist. DORA 2024 associated AI adoption with reduced delivery stability. The controls in §3 address these findings, subject to the evidence limits in §7.
 
-**This document is a measurement rubric, not another process gate.** It gives (1) the signals that genuinely separate good code from slop, with the honest note that **no validated single-metric cutoff exists** — thresholds are set empirically per project; (2) an anti-metric list of what **not** to gate on; and (3) a scored MEFOR scorecard (Appendix A). **MEFOR's verdict: strong exactly where the evidence says it counts (machine-enforced structure, strict typing, behavior-verifying tests, dependency integrity, security scanning), and — as of this cycle — the *measurement* layer has closed too: mutation, coverage visibility, clone detection, complexity triage, and the broadened lint ruleset all ship as CI gates (#1028/#1040/#1047), so every one of the 11 signals is now Built. The one *durable*-control gap this cycle surfaced — a private-doc leak in the published PyPI sdist — was caught via signal 6 and fixed (#1020), verified clean at v0.3.0.**
+The rubric combines quality signals, prohibited single-metric decisions, and a scored MEFOR assessment in Appendix A. No validated universal cutoff exists. Each project must record its own thresholds.
+
+All 11 MEFOR signals are recorded as Built in this cycle. The measurement checks shipped through #1028, #1040, and #1047. Signal 6 identified a private-document leak in the PyPI sdist. Fix #1020 was verified at v0.3.0.
 
 ------------------------------------------------------------------------
 
 ## 1. Purpose, scope, and the lens
 
-This rubric answers one question: **"Is this code good, or is it slop?"** — for code that may be human- or AI-authored, in a repository built largely with an AI assistant across many parallel sessions.
+This rubric assesses code quality in repositories with human and AI contributors, including work from multiple parallel sessions.
 
-It serves three audiences: **maintainers** (a standing scorecard to re-run each release), **adopters and auditors** (evidence the code is judged against the evidence, not a badge), and **future projects** (their own Appendix).
+Maintainers can repeat the assessment for each release. Adopters and auditors can inspect its evidence. Other projects can add their own assessment appendix.
 
-**The lens — structure over scoreboards.** The evidence is unambiguous that *single-number gates fail*. Therefore this rubric is **composite and structural**: it weights machine-enforced architectural boundaries and validated test signal far above any coverage or complexity number, and it explicitly **forbids** certifying quality on a single metric (§4). This is the quality-measurement analogue of the SDS's "deterministic checks, never ask the model to be secure" principle — *measure structure and behavior, never trust a scoreboard.*
+Assess the controls together. Give more weight to enforced architecture boundaries and validated test assertions than to coverage or complexity scores. Section 4 prohibits a quality verdict based on one metric.
 
 ------------------------------------------------------------------------
 
@@ -107,7 +109,7 @@ Peer-reviewed, [adversarially-verified](#b.2-how-the-matrix-was-derived) finding
 | **SonarSource "Cognitive Complexity"** | **No incremental predictive value** over traditional measures. | Peer-reviewed JSS evaluation: "does not appear to fulfill the promise." [\[R3\]](#r3) |
 | **SonarQube quality-gate severities** | **Weak, inconsistent, sometimes *inverted*.** Flagged "dirty" classes are no more fault-prone than clean ones. Useful as a cheap filter, **not** a quality score. | 33 Apache projects, ~27K faults. [\[R4\]](#r4) |
 | **Mutation score** (as a single number) | **Poor *linear* proxy** (mostly a test-suite-size artifact) — **but** mutation testing is high-value as *guidance*: top-decile suites catch 8–46% more real faults. | ICSE 2018 (Papadakis et al.). [\[R5\]](#r5) |
-| **Line-coverage % / LOC** | **Gameable.** High coverage with weak assertions is the canonical AI-slop hiding place; LOC measures size, not quality. | Corollary of the mutation and complexity findings above. |
+| **Line-coverage % / LOC** | High coverage can conceal weak assertions. Lines of code measure size, not quality. | Corollary of the mutation and complexity findings above. |
 
 **What survives as durable signal:** **ISO/IEC 25010:2023** [\[R1\]](#r1) maintainability — decomposed into *modularity, reusability, analyzability, modifiability, testability*, i.e. **low coupling + information hiding** — enforced as **architectural fitness functions** (import/layer boundaries), plus **strict typing**, **behavior-verifying tests validated by mutation testing**, **dependency integrity**, and **static analysis in the loop**.
 
@@ -123,10 +125,10 @@ The [Secure AI-Assisted Development Standards §3](Secure_AI_Development_Standar
 |----|----|----|
 | **Insecure code + overconfidence** | Stanford CCS'23: AI-assisted users wrote less-secure code, *more* confident it was secure. [\[R6\]](#r6) | Mandatory human review + blocking SAST that cannot be waived — **owned by SDS PW.7 + [AI companion §6.5/§6.6](Secure_AI_Development_Standards.md)**. This rubric only *checks it is present*. |
 | **Hallucinated / typosquatted dependencies** ("slopsquatting") | ~14.4% of *distinct* Python modules in real ChatGPT output did not exist. [\[R7\]](#r7) | Verify-before-add + hash-locked lockfile + new-import audit — **owned by [AI companion §6.4/§9](Secure_AI_Development_Standards.md)**. This rubric *checks it is present*. |
-| **Silent duplication over reuse** (copy-instead-of-abstract) | GitClear: 2024 was the first year copy/pasted lines (12.3%) exceeded "moved"/refactored lines (9.5%). [\[R9\]](#r9) *(Correlational — §7.)* | **Clone-detection on the diff** + a "moved vs copied" review lens. **New gate — this document (§5).** |
+| **Silent duplication over reuse** (copy-instead-of-abstract) | GitClear: 2024 was the first year copy/pasted lines (12.3%) exceeded "moved"/refactored lines (9.5%). [\[R9\]](#r9) *(Correlational — §7.)* | Check the diff for duplicated code. Review whether code was moved or copied. This document adds the check (§5). |
 | **Shallow tests that assert little** | Coverage % hides assertion-free tests; mutation testing exposes them. [\[R5\]](#r5) | **Mutation testing on changed code, as guidance.** **New gate — this document (§5).** |
-| **Unbounded complexity / over-abstraction** | Large, tangled units are a maintainability smell (though a weak *defect* predictor — §2). | **Advisory complexity triage** (surface, don't gate). **New gate — this document (§5).** |
-| **Inconsistent conventions across a codebase** | Multi-session AI authorship drifts style/structure. | Broad lint ruleset + `CLAUDE.md` as the standing convention anchor. **Partly new (lint breadth) — §5.** |
+| **Unbounded complexity / over-abstraction** | Large, complex units can make maintenance difficult. They are weak predictors of defects (§2). | Report complexity for review. Do not block a change on this metric alone. This document adds the check (§5). |
+| **Inconsistent conventions across a codebase** | Multiple AI sessions can introduce inconsistent style and structure. | Use the broad lint rules and the conventions in `CLAUDE.md`. Section 5 expands the lint checks. |
 | **Velocity ≠ delivered quality** | DORA 2024: AI adoption associated with ~7.2% lower delivery *stability* per 25% adoption. [\[R8\]](#r8) · [\[R10\]](#r10) *(Correlational, partly revised in 2025 — §7.)* | Small batch sizes + DORA change-fail/MTTR awareness. **Owned by [AI companion §3](Secure_AI_Development_Standards.md).** |
 | **Control-parity gap** (a guard on one path, missed on its sibling) | AI companion §6.6: an AI implements a control *where prompted* and misses its siblings — every confirmed medium-or-higher finding in the 2026-06 MEFOR audit had this shape. Real instance: the fail-closed leak gate guarded the *git-mirror* publish path but not its sibling, the *PyPI* publish path, so the sdist shipped private docs on every release. | **Enumerate sibling paths for every control; encode as one deterministic check where feasible.** Here → the published-artifact-integrity gate (**signal 6**). |
 
@@ -145,7 +147,7 @@ Each signal is a **risk → control → measure**, tagged by **gate type** (dete
 | 3 | **Tests verify behavior, not mocks** | Value/negative-path assertions; real integrations over mock choreography | Deterministic | SDS PW.8; **checked here** |
 | 4 | **Dependency integrity** (anti-slopsquatting) | Existence-verify + hash-locked lockfile + new-import audit | Deterministic | **AI companion §6.4/§9** (pointer only) |
 | 5 | **Security scanning + threat model** | Blocking SAST/SCA/secret-scan + written threat model + human review | Deterministic + advisory | **SDS PW.7 / AI companion §6.5–6.6** (pointer only) |
-| 6 | **Published-artifact integrity** (supply-chain-*out*) | Published sdist/wheel ship **only intended content** — the package manifest is an *allowlist* (not a whole-repo sweep) + a fail-closed publish gate blocks any private/unintended file before the irreversible upload. Distinct from row 4's *incoming* dependency integrity | Deterministic | **This document — new** (+ SDS supply-chain) |
+| 6 | **Published-artifact integrity** (supply-chain-*out*) | Released sdists and wheels contain only intended files. A manifest allow-list defines those files. A fail-closed check blocks private or unintended files before upload. Row 4 covers incoming dependencies. | Deterministic | **This document — new** (+ SDS supply-chain) |
 
 **Tier 2 — Measurement / lower-signal layer (guidance & triage — never a gate on their own).** Useful for *surfacing* problems, but each is a weak or gameable predictor in isolation (§2, §4.1), so they inform review — they do not certify quality.
 
@@ -189,8 +191,7 @@ ran*. That is a distinct failure mode and it needs its own control:
    derived term can be algebraically blind to that term — ours was, and the blindness is now asserted
    by a test rather than assumed away.
 
-Applies to any gate, in any project adopting this rubric — a deferred or advisory gate that silently
-stops measuring is worse than an absent one, because the scorecard still counts it.
+This rule applies to every gate in a project that adopts the rubric. A deferred or advisory check must not receive credit without a measurement.
 
 ### 4.1 The anti-metric rule (hard)
 
@@ -198,7 +199,7 @@ stops measuring is worse than an absent one, because the scorecard still counts 
 
 ### 4.2 No validated single threshold (honest)
 
-The literature validates that single metrics fail, but supplies **no validated numeric cutoff** for a combined scorecard. Thresholds (e.g. a mutation-score floor on changed code, a max new-clone count) are therefore **set empirically per project and recorded in the Appendix**, reviewed as data accumulates — not imported as universal constants. Where this document names a directional target, it is flagged as project-set, not evidence-certified.
+The cited research provides **no validated numeric cutoff** for a combined scorecard. Set project thresholds from measurements. Record them in the project appendix. Review them as evidence increases. Identify directional targets as project-specific, not evidence-certified.
 
 ------------------------------------------------------------------------
 
@@ -270,9 +271,9 @@ The five gates this document adds (rubric rows 7–11) are *quality-measurement*
 
 ### A.1 Verdict
 
-**A− / low slop-risk.** MEFOR implements **all six durable, high-signal controls** (rubric rows 1–6) as **Built**, and its *measurement* layer has now closed as well: **complexity (11) and clone (9)** shipped as advisory gates (#1028), then **mutation (7) and diff-coverage (8)** (#1040), and finally the **ruff-breadth expansion (#10)** (#1047, enforced by the required `ruff check` leg). So **all 11 signals are now Built**. It is strong where faking is hardest (machine-enforced structure) and thin only where the metrics are gameable anyway.
+**A− / low slop-risk.** All six structural controls and five measurement signals are recorded as Built. Complexity and clone checks shipped in #1028. Mutation and diff-coverage shipped in #1040. The ruff expansion shipped in #1047 and runs in the required `ruff check` job. The other measurement jobs provide advisory results.
 
-**The rubric earned its keep this cycle.** Applying **signal 6** (published-artifact integrity) surfaced a real **control-parity** gap (§3): the PyPI **sdist** was shipping the private security-posture docs on *every* release, because the fail-closed leak gate covered the git-mirror publish path but not its sibling, the PyPI path. It was fixed (#1020: a `[tool.hatch.build.targets.sdist]` allowlist + a fail-closed "sdist is package-only" gate in `release.yml`) and **verified clean at v0.3.0**. That found-and-fixed leak is the one *durable*-control gap that has now closed; the rest of the gaps are all in the measurement layer.
+Signal 6 identified a control missing from the PyPI publication path. The git-mirror path had a leak check, but the PyPI sdist included private security documents. Fix #1020 added a `[tool.hatch.build.targets.sdist]` allow-list and a package-only check in `release.yml`. The package was verified clean at v0.3.0.
 
 ### A.2 Scored signals (from the audit)
 
@@ -323,18 +324,18 @@ Row 5's "human review" is **self-review** (the SDS §A.6 / [AI companion Appendi
 
 ### B.1 What "the matrix" is and how to read it
 
-The rubric's core is the **§4 matrix**: 11 signals, each a **risk → control → measure**, tagged by **gate type** (deterministic = machine-checked; advisory = human arbitrates) and by which document **owns** it. Read it as a **composite**, not a checklist of independent boxes:
+Section 4 maps 11 risks to controls and measurements. Each row identifies its owner and check type. Deterministic checks run by machine. Advisory checks require human judgment. Read the rows as a combined assessment.
 
 - **Rows 1–6 are durable, high-signal controls** — enforced structure (ISO/IEC 25010 modularity), strict typing, behavior-verifying tests, dependency integrity, security scanning, and published-artifact integrity. These are where quality is *hard to fake*.
 - **Rows 7–11 are the measurement / lower-signal layer** — mutation, coverage, clone-detection, lint breadth, complexity — useful as *guidance / triage*, never as a single gate.
 - **The anti-metric rule (§4.1)** forbids certifying quality on any one number (coverage %, LOC, raw or cognitive complexity, SonarQube severity), because the evidence shows each is a weak or gameable predictor (B.3).
 - **Delivery stability (DORA) is deliberately *not* a signal** — it measures delivery outcomes, not the code artifact, on weaker evidence; it is kept as a context caveat under the §4 table.
 
-A codebase is judged "not slop" by the **composite** of the durable controls plus the guidance signals — with thresholds set **empirically per project** (§4.2), because no source validates a universal single-metric cutoff.
+Combine the structural controls and guidance signals before assigning a verdict. Set thresholds from project measurements (§4.2). No cited source validates a universal single-metric cutoff.
 
 ### B.2 How the matrix was derived
 
-The matrix is **evidence-informed and adversarially verified**, not authored from opinion:
+The matrix uses the research and verification process below:
 
 1.  **Adversarially-verified deep-research pass.** The question was decomposed into **five search angles** — (a) academic metric-validity, (b) quality frameworks & delivery metrics, (c) AI-slop empirical trends, (d) security & correctness studies, (e) practitioner controls. Parallel searches fanned out → ~24 sources fetched → ~109 candidate claims → the load-bearing ones put through **3-vote adversarial verification** (each verifier tried to *refute* the claim; ≥2 refutations killed it). Result: **20 confirmed, 5 refuted** (B.5). Only survivors entered the rubric.
 2.  **Structural scaffold — ISO/IEC 25010:2023** [\[R1\]](#r1): the international product-quality model, whose *maintainability* characteristic (modularity, reusability, analyzability, modifiability, testability) supplies the "structure over scoreboards" backbone (signals 1–6).
@@ -379,7 +380,7 @@ The matrix is **evidence-informed and adversarially verified**, not authored fro
 
 ### B.5 What was refuted (the verification worked)
 
-Five widely-circulated claims **failed** 3-vote adversarial verification and are **deliberately not** in the rubric — the filtering is part of the basis:
+Five published claims failed the three-vote verification process. They are excluded from the rubric:
 
 - **"~40% of GitHub Copilot programs contain security vulnerabilities."** An over-simplified reading of the NYU "Asleep at the Keyboard" study (Pearce et al., IEEE S&P 2022, arXiv:2108.09293); the headline percentage did not survive scrutiny. *(The study is real; the "40%" framing is not a supported rubric claim.)*
 - **A "10× surge in duplicate blocks" (2022→2024)** — GitClear figure, refuted 0–3.

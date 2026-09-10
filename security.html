@@ -4,14 +4,14 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Security, standards &amp; HIPAA — MessageFoundry</title>
-  <meta name="description" content="Secure by default — TLS in transit, AES-256-GCM at rest, MFA, RBAC and audit, mapped to the HIPAA Security Rule, with an OWASP ASVS 5.0 L3 self-assessment.">
+  <meta name="description" content="Review MessageFoundry security controls, testing scope, self-assessment, and deployment responsibilities. Independent review is planned.">
   <link rel="canonical" href="https://messagefoundry.org/security.html">
   <link rel="icon" href="/assets/img/favicon.svg" type="image/svg+xml">
   <meta name="theme-color" content="#0b1220">
   <meta property="og:type" content="website">
   <meta property="og:site_name" content="MessageFoundry">
   <meta property="og:title" content="Security, standards &amp; HIPAA — MessageFoundry">
-  <meta property="og:description" content="Built to NIST SSDF, security testing per 800-115, controls mapped to the HIPAA Security Rule (800-66), and self-assessed against OWASP ASVS 5.0 Level 3 — secure by default. Early Access; external audit planned.">
+  <meta property="og:description" content="Review MessageFoundry security controls, testing scope, self-assessment, and deployment responsibilities. Independent review is planned.">
   <meta property="og:url" content="https://messagefoundry.org/security.html">
   <meta property="og:image" content="https://messagefoundry.org/assets/img/og.png">
   <meta property="og:image:width" content="1200">
@@ -26,7 +26,7 @@
 
   <div class="eabar" role="region" aria-label="Project status">
     <div class="container">
-      <p><strong>Early Access &middot; beta.</strong> We're building toward 1.0 &mdash; and we want people involved now, while it can still be shaped. <a href="/status.html">Where the project stands &rarr;</a></p>
+      <p><strong>Early Access &middot; beta.</strong> Help test and shape the 1.0 release. <a href="/status.html">Where the project stands &rarr;</a></p>
     </div>
   </div>
 
@@ -83,8 +83,8 @@
   <section class="section section--dark section--tight">
     <div class="container center">
       <span class="eyebrow">Security &amp; PHI</span>
-      <h1 style="max-width:24ch;margin-inline:auto">Engineered for PHI — and built to recognized standards</h1>
-      <p class="lead">For a healthcare interface engine, security isn't a feature — it's the foundation. MessageFoundry is built to a published <b>Secure Development Standard</b> and aligned with the frameworks a CISO already trusts: <b>NIST SSDF</b>, <b>NIST 800-66 Rev. 2</b> (the HIPAA Security Rule), and <b>OWASP ASVS 5.0 Level 3</b>. It's secure by default, encrypted in transit and at rest, and clear about who's responsible for what. MessageFoundry is <a href="/self-hosted/">self-hosted and PHI-safe</a>.</p>
+      <h1 style="max-width:24ch;margin-inline:auto">Security controls, testing, and responsibilities</h1>
+      <p class="lead">MessageFoundry uses encryption, access controls, and audit records to help protect patient data. This page documents its security standards, testing scope, and deployment responsibilities. The engine is <a href="/self-hosted/">self-hosted</a>.</p>
       <div class="btn-row">
         <a class="btn btn-primary" href="/assets/MessageFoundry-Secure-Development-Standards.pdf" target="_blank" rel="noopener">Read the Secure Development Standards (PDF)</a>
         <a class="btn btn-secondary" href="#controls">See the controls →</a>
@@ -97,17 +97,17 @@
     <div class="container">
       <div class="center" style="margin-bottom:40px">
         <span class="eyebrow">Built to recognized standards</span>
-        <h2>Mapped to the frameworks your auditors use</h2>
-        <p class="lead center">Four bodies of work answer four questions — how it's built, how it's tested, what controls it implements, and the application-security bar it's built to.</p>
+        <h2>Development and assessment frameworks</h2>
+        <p class="lead center">The references below cover development practices, security testing, control mappings, and application security assessment.</p>
       </div>
       <div class="grid grid-2 grid--top">
         <div class="card">
           <h3>NIST SSDF — built securely</h3>
-          <p>The secure software development lifecycle follows <b>NIST SP 800-218 (SSDF)</b> across all four practice groups — prepare, protect, produce, and respond — with threat modeling per interface, automated review, and secure-by-default design.</p>
+          <p>Development follows <b>NIST SP 800-218, the Secure Software Development Framework (SSDF)</b>. It covers four practice groups: prepare, protect, produce, and respond. Practices include threat modeling per interface, automated review, and secure defaults.</p>
         </div>
         <div class="card">
           <h3>NIST 800-115 — tested in CI</h3>
-          <p>Security testing follows <b>NIST SP 800-115</b>: automated SAST, software-composition analysis, and secret-scanning on every build, plus a full functional and integration suite exercised against the running engine. Dynamic testing is <b>limited to an automated authorization sweep</b> — on every build, a live instance is probed over a real network socket to confirm that gated endpoints refuse unauthenticated and under-privileged callers. It does not cover the non-HTTP ingress listeners, the browser console, or TLS, and <b>no independent DAST, external code review, or penetration test has been performed</b> — all planned after Early Access.</p>
+          <p>Security testing follows <b>NIST SP 800-115</b>. Each build checks code, dependencies, and secrets, then runs functional and integration tests against the engine. Dynamic testing is <b>limited to an automated authorization sweep</b>. Each build probes a live instance over a network socket to check that protected endpoints reject callers without the required access. This excludes non-HTTP ingress listeners, the browser console, and TLS. <b>No independent dynamic application security testing, external code review, or penetration test has been performed.</b> All are planned after Early Access.</p>
         </div>
         <div class="card">
           <h3>NIST 800-66 Rev. 2 — HIPAA-mapped</h3>
@@ -115,11 +115,11 @@
         </div>
         <div class="card">
           <h3>OWASP ASVS 5.0 Level 3 — self-assessed</h3>
-          <p>Scoped chapter-by-chapter against <b>OWASP ASVS 5.0 Level 3</b> — the highest assurance level, for applications that handle the most sensitive data — with every exclusion documented and justified. All <b>345</b> Level 3 requirements are assessed. Where a requirement is still only partially met we record it as a partial and ship a control to close it, rather than writing a justification that reclassifies it as passed or not-applicable.</p>
+          <p>The project self-assesses all <b>345 requirements</b> in <b>OWASP ASVS 5.0 Level 3</b>, with scope set chapter by chapter. Every exclusion includes a reason. Partially met requirements remain recorded as partials while work continues to close them.</p>
         </div>
       </div>
       <div class="callout" style="margin-top:26px">
-        <p><strong>Honest by design.</strong> NIST doesn't issue certificates for these frameworks, so we don't claim one — and the ASVS Level 3 result is our own <b>self-assessment</b>, not a third-party audit. In Early Access the software hasn't yet had an external code review or penetration test — which ASVS strongly recommends at Level 3 but does not require. These are <b>alignment claims backed by evidence</b> — the Standards document, that ASVS self-assessment, CI test reports, and an SBOM, published with our releases. "Built to," "self-assessed," "mapped to" — never "certified."</p>
+        <p>NIST does not issue certificates for these frameworks. The ASVS result is our <b>self-assessment</b>. External code review and penetration testing are planned after Early Access; ASVS strongly recommends them at Level 3 but does not require them. Releases include the Standards document, ASVS assessment, automated test reports, and a software bill of materials. These support the alignment claims; they do not establish independent certification.</p>
       </div>
     </div>
   </section>
@@ -129,14 +129,14 @@
     <div class="container grid grid-2" style="align-items:center">
       <div>
         <span class="eyebrow">Secure by default</span>
-        <h2>The safe configuration is the default one</h2>
-        <p class="lead">You don't have to harden it — it ships hardened. TLS is on, encryption is on, accounts are least-privilege, and audit logging is verbose out of the box. Insecure options require an explicit, documented opt-in.</p>
+        <h2>Security controls enabled by default</h2>
+        <p class="lead">TLS, encryption, least-privilege accounts, and detailed audit logging are enabled by default. Insecure options require an explicit, documented opt-in. Your organization remains responsible for securing its deployment.</p>
       </div>
       <ul class="feature-list">
         <li><b>TLS by default</b> — network connections use TLS 1.2+ (prefer 1.3), including <b>MLLP-over-TLS</b>. When a connected system can't speak TLS, plaintext is supported within your secure network perimeter.</li>
         <li><b>Encryption at rest, on by default</b> — message bodies encrypted with <b>AES-256-GCM</b> in the store (SQLCipher / database-native).</li>
-        <li><b>Logic can't be injected through the data layer</b> — Routers and Handlers are version-controlled code, never stored in the database. A data-layer breach (SQL injection, stolen DB credentials) reaches data that's already encrypted, RBAC-gated, and audited — but it can't change what the engine does.</li>
-        <li><b>One audited door</b> — the console and every other client reach the engine and its PHI only through the authenticated, RBAC-gated API; nothing holds a privileged in-process backdoor to the store.</li>
+        <li>Routers and Handlers are version-controlled code stored outside the database. A database breach cannot rewrite those files. The message store uses encryption, role-based access control (RBAC), and audit records.</li>
+        <li>The console and other clients access protected health information (PHI) through the authenticated, role-gated application programming interface (API). They have no privileged in-process store access.</li>
         <li><b>Deny-by-default RBAC</b> — role-based, least-privilege access enforced on every action, with per-channel data-scope confinement.</li>
         <li><b>Tamper-evident audit</b> — a timestamped, user-attributed audit log; <b>no PHI or secrets in logs</b>, ever.</li>
         <li><b>Fail-closed</b> — errors fail safe; faults never leak stack traces or sensitive data.</li>
@@ -150,7 +150,7 @@
     <div class="container">
       <div class="center" style="margin-bottom:38px">
         <span class="eyebrow">Authentication</span>
-        <h2>Real auth for operators and connections — not a shared password</h2>
+        <h2>Authenticate operators and system connections</h2>
         <p class="lead center">People sign in to the console and API; system connections carry their own credentials. Each uses the strongest mechanism available, recorded in the connection definition.</p>
       </div>
       <div class="grid grid-3 grid--top">
@@ -166,7 +166,7 @@
           <ul class="feature-list" style="margin-top:12px">
             <li>Per-connection credentials — HTTP Basic over TLS or per-connection API keys — vaulted, scoped, rotated, and recorded.</li>
             <li><b>Mutual TLS (mTLS)</b> client-certificate auth for connections that require it.</li>
-            <li><b>group-Managed Service Account (gMSA) — optional.</b> For Active Directory deployments, run the engine's Windows service under a gMSA so its password is AD-rotated and never stored in config, and use that identity for integrated database authentication. Not required — SQL authentication with a vaulted secret also works.</li>
+            <li>An optional <b>group-Managed Service Account (gMSA)</b> can run the Windows service in Active Directory deployments. Active Directory rotates its password without storing it in config. That identity can also authenticate to the database. SQL authentication with a vaulted secret remains an alternative.</li>
             <li><b>TLS by default</b>, including MLLP-over-TLS — with plaintext supported for endpoints that can't do TLS, inside your secure network perimeter.</li>
             <li>Per-connection IP allow-listing and network segmentation as defense-in-depth.</li>
           </ul>
@@ -181,7 +181,7 @@
         </div>
       </div>
       <div class="callout" style="margin-top:26px">
-        <p><strong>Across every mechanism:</strong> TLS by default, credentials and keys in a secret store (never in code or config), per-connection least privilege, and per-connection IP allow-listing / network segmentation as defense-in-depth.</p>
+        <p>Credentials and keys belong in a secret store, never in code or config. Apply per-connection least privilege, IP allow-listing, and network segmentation. TLS is the default; plaintext exceptions require a secure network perimeter.</p>
       </div>
     </div>
   </section>
@@ -192,7 +192,7 @@
       <div class="center" style="margin-bottom:34px">
         <span class="eyebrow">Shared responsibility</span>
         <h2>Clear about who owns what</h2>
-        <p class="lead center">The software is built by one party and deployed by another. Stating the split plainly is itself a security control — neither side assumes the other has it covered.</p>
+        <p class="lead center">The project maintains the software and its security practices. Your organization manages the deployment, access, keys, and compliance program.</p>
       </div>
       <div class="grid grid-2 grid--top">
         <div class="card">
@@ -215,7 +215,7 @@
         </div>
       </div>
       <div class="callout callout--on-dark" style="margin-top:28px;background:rgba(245,158,11,.07);border-color:rgba(245,158,11,.28);color:var(--muted-dk)">
-        <p><strong style="color:var(--accent)">Said plainly.</strong> The software <b>supports a HIPAA-compliant deployment</b> — it doesn't make you compliant on its own. Our self-attestation that the software was built securely is evidence for <em>your</em> assessment, not a substitute for it.</p>
+        <p>The software <b>supports a HIPAA-compliant deployment</b>; it does not make your organization compliant on its own. Use our security self-attestation as evidence in your own assessment. It does not replace that assessment.</p>
       </div>
     </div>
   </section>
@@ -252,11 +252,11 @@
       <div>
         <span class="eyebrow">Secure SDLC &amp; supply chain</span>
         <h2>Provenance you can verify</h2>
-        <p class="lead">Open-source software is only as trustworthy as the pipeline that builds it. MessageFoundry ships as <b>versioned, Sigstore-signed wheels</b> with attested build provenance and an SBOM — integrity-verifiable releases that implement <b>NIST&nbsp;SSDF</b> and <b>SLSA</b> build-integrity controls, going beyond what <b>OWASP ASVS L3</b> requires.</p>
+        <p class="lead">Releases include versioned, Sigstore-signed wheels, build provenance, and a software bill of materials (SBOM). Use these records to verify the package source and build.</p>
       </div>
       <ul class="feature-list">
-        <li><b>Versioned &amp; immutable</b> — each release is a frozen <code>messagefoundry==X.Y.Z</code> wheel; the build fails unless the built version matches the release tag — not a branch that can be force-pushed under you.</li>
-        <li><b>Signed &amp; attested</b> — every wheel ships with <b>SLSA build provenance</b>, <b>Sigstore</b> keyless signatures, and a <b>CycloneDX SBOM</b> (plus <b>PEP&nbsp;740</b> attestations on PyPI), binding the artifact to the exact source commit and CI builder — so adopters can verify it (e.g.&nbsp;<code>gh attestation verify</code>) before installing.</li>
+        <li>Each release is an immutable <code>messagefoundry==X.Y.Z</code> wheel. The build fails unless its version matches the release tag.</li>
+        <li>Every wheel includes <b>SLSA build provenance</b>, <b>Sigstore</b> keyless signatures, and a <b>CycloneDX SBOM</b>, plus <b>PEP&nbsp;740</b> attestations on PyPI. These bind the package to its source commit and build system. Verify them before installing, for example with <code>gh attestation verify</code>.</li>
         <li><b>Token-less publishing</b> — releases are published to PyPI through OIDC-based <b>Trusted Publishing</b>, with no long-lived token to steal.</li>
         <li><b>Reproducible installs</b> — pin a fully hash-locked dependency set and install with <code>--require-hashes</code>.</li>
         <li><b>CI security gates</b> — SAST, software-composition analysis, and secret scanning run on every change; builds fail on new high / critical findings.</li>
@@ -272,7 +272,7 @@
       <div class="center" style="margin-bottom:34px">
         <span class="eyebrow">Coordinated disclosure</span>
         <h2>Found a vulnerability? Report it privately.</h2>
-        <p class="lead center">A security flaw shouldn't have to be posted in public to reach us. MessageFoundry runs a private reporting channel with published response targets — report it confidentially, and we aim to have a fix out before any detail is public.</p>
+        <p class="lead center">Use the private reporting channel for security flaws. The response targets below cover acknowledgement, triage, and remediation.</p>
       </div>
       <div class="grid grid-2 grid--top">
         <div class="card">
@@ -287,15 +287,15 @@
         </div>
         <div class="card">
           <h3>What happens next</h3>
-          <p>We aim to acknowledge within a few business days, then triage by severity. These are our targets to remediate, measured from triage — and fixes are verified before a report is closed.</p>
+          <p>We aim to acknowledge reports within a few business days, then triage by severity. Remediation targets below start at triage. We verify fixes before closing reports.</p>
           <ul class="feature-list" style="margin-top:18px">
             <li><b>Critical</b> — remediated within 7 days.</li>
             <li><b>High</b> — within 30 days.</li>
             <li><b>Medium</b> — within 90 days.</li>
             <li><b>Low</b> — best-effort.</li>
           </ul>
-          <p style="margin-top:18px">Vulnerabilities in <b>third-party dependencies</b> run on their own clock — measured from when an upstream fix exists — and are prioritized by real exploitation pressure (CISA KEV first, then EPSS) rather than CVSS alone.</p>
-          <p style="margin-top:18px"><b>Then we disclose together.</b> We ask for a reasonable window to ship a fix before any public detail, and we agree the timing with you. Details are published once a fix is available — with credit to you by name, if you want it.</p>
+          <p style="margin-top:18px">For <b>third-party dependencies</b>, remediation targets start when an upstream fix exists. Priority follows active exploitation and likelihood: CISA KEV first, then EPSS, rather than CVSS severity scores alone.</p>
+          <p style="margin-top:18px">We ask for time to ship a fix before public disclosure and agree the timing with you. Once a fix is available, we publish details and credit you by name if you wish.</p>
         </div>
       </div>
       <div class="btn-row" style="margin-top:30px;justify-content:center">
@@ -303,7 +303,7 @@
         <a class="btn btn-ghost" href="https://github.com/MEFORORG/MessageFoundry/security/policy" target="_blank" rel="noopener">Read the policy ↗</a>
       </div>
       <div class="callout" style="margin-top:28px;background:rgba(245,158,11,.07);border-color:rgba(245,158,11,.28)">
-        <p><strong>Not a vulnerability?</strong> Ordinary bugs, questions, and feature requests are the opposite — they belong in the open, in <a href="https://github.com/MEFORORG/MessageFoundry/issues" target="_blank" rel="noopener">GitHub Issues</a> or via the <a href="/contact.html">contact form</a>. Keeping the private channel for genuine security flaws is what lets us hit the windows above.</p>
+        <p>Send ordinary bugs, questions, and feature requests to <a href="https://github.com/MEFORORG/MessageFoundry/issues" target="_blank" rel="noopener">GitHub Issues</a> or the <a href="/contact.html">contact form</a>.</p>
       </div>
     </div>
   </section>
@@ -313,8 +313,8 @@
     <div class="container grid grid-2" style="align-items:center">
       <div>
         <span class="eyebrow">Evidence &amp; attestation</span>
-        <h2>Don't take our word — review the evidence</h2>
-        <p class="lead">We publish our Secure Development Standards and the evidence behind every claim, so your security team can review it directly. MessageFoundry is open source, so you can also read the code.</p>
+        <h2>Review the published evidence</h2>
+        <p class="lead">Review the Secure Development Standards, assessment records, and release evidence. The source code is also public.</p>
         <div class="btn-row">
           <a class="btn btn-primary" href="/assets/MessageFoundry-Secure-Development-Standards.pdf" target="_blank" rel="noopener">Download the Standards (PDF) ↓</a>
           <a class="btn btn-ghost" href="/documents.html#security">Security guides (PDFs) →</a>
@@ -323,7 +323,7 @@
       </div>
       <div>
         <ul class="feature-list">
-          <li><b>Self-attested</b> SSDF-aligned, security-tested per 800-115, self-assessed against ASVS 5.0 Level 3 across all 345 requirements, and controls mapped to the HIPAA Security Rule (800-66) — published with each release.</li>
+          <li>Each release includes SSDF self-attestation, testing evidence for NIST 800-115, the ASVS 5.0 Level 3 assessment of all 345 requirements, and HIPAA control mappings.</li>
           <li><b>Independent external code review and penetration test</b> — planned after Early Access; Early Access has not yet been externally audited.</li>
           <li><b>A claims register</b> records each published claim, its wording, and the evidence behind it.</li>
           <li><b>Not a NIST certificate</b> — displayable certifications (SOC 2, ISO 27001, HITRUST) are a separate, organization-level track.</li>
@@ -338,22 +338,22 @@
       <div class="center" style="margin-bottom:34px">
         <span class="eyebrow">What's next</span>
         <h2>The assurance roadmap</h2>
-        <p class="lead center">An OWASP&nbsp;ASVS&nbsp;Level&nbsp;3 self-assessment is a high bar to hold ourselves to — but it's still <em>our</em> assessment. The next steps are independent validation and the formal, organization-level certifications a mature vendor carries. Here's where each stands, plainly.</p>
+        <p class="lead center">The current assessment is internal. Independent review and organization-level assurance work are planned as the project develops.</p>
       </div>
       <div class="grid grid-2 grid--top">
         <div class="card">
           <h3>Independent validation</h3>
-          <p>ASVS strongly recommends an external review at Level&nbsp;3 — and we agree it's the right next step.</p>
+          <p>ASVS strongly recommends external review at Level&nbsp;3.</p>
           <ul class="feature-list" style="margin-top:12px">
             <li><b>External code review</b> — a third-party security firm reviews the source against the same standard we self-assessed.</li>
             <li><b>Penetration test</b> — an independent test of a real deployment, with the results summarized for adopters.</li>
           </ul>
-          <p style="margin-top:12px">Both are <b>planned after Early Access</b> — today's release has not yet been externally audited. Sponsorship, not license fees, is what brings them forward.</p>
+          <p style="margin-top:12px">Both are <b>planned after Early Access</b>. The current release has not been externally audited. Sponsorship funds this work.</p>
         </div>
         <div class="card">
           <h3>Why not SOC&nbsp;2 or HITRUST yet?</h3>
           <p>Because those certify an <b>organization</b>, not a piece of software. SOC&nbsp;2 Type&nbsp;II and HITRUST attest that an operating company ran a defined set of controls over a period of time — they presume a staffed company, an audit window, and a recurring budget.</p>
-          <p style="margin-top:10px">MessageFoundry is an open-source project in Early Access. We've put the <em>software's</em> security on the record now — secure-by-default controls, the ASVS&nbsp;L3 self-assessment, and signed, attested builds — and the company-level marks come as the project matures. <b>SOC&nbsp;2</b>, <b>HITRUST</b>, and <b>ISO&nbsp;27001</b> sit on that organization-level track — funded, like the reviews, through sponsorship rather than license fees.</p>
+          <p style="margin-top:10px">MessageFoundry is an open-source project in Early Access. Current evidence covers software controls, the ASVS Level 3 self-assessment, and signed builds. SOC&nbsp;2, HITRUST, and ISO&nbsp;27001 are on a separate organization-level track, funded through sponsorship.</p>
         </div>
       </div>
       <div class="center" style="margin-top:30px">
@@ -367,12 +367,12 @@
     <div class="container">
       <div class="center" style="margin-bottom:28px"><span class="eyebrow">FAQ</span><h2>Frequently asked questions</h2></div>
       <div class="faq">
-        <div class="faq-item"><h3>Is MessageFoundry HIPAA compliant?</h3><p>HIPAA compliance is a property of your whole deployment, not any single product. MessageFoundry is built to support it: PHI stays on your own infrastructure, every operator is authenticated, access to patient data is audited, traffic is encrypted with TLS and message bodies with AES-256-GCM, and controls map to the HIPAA Security Rule (NIST 800-66).</p></div>
-        <div class="faq-item"><h3>Is MessageFoundry PHI-safe — where does patient data live?</h3><p>Yes. MessageFoundry is self-hosted, so PHI never leaves your infrastructure. There is no vendor cloud, no third-party processor, and no telemetry of message contents — you run the engine on your own servers, on-premises or in your own private cloud.</p></div>
-        <div class="faq-item"><h3>Is MessageFoundry self-hosted and on-premises?</h3><p>Yes. MessageFoundry runs entirely on your own servers, on-premises or in your private cloud. It installs from PyPI, starts zero-config on SQLite, and scales to PostgreSQL or SQL Server. Nothing is sent to a vendor service.</p></div>
-        <div class="faq-item"><h3>How does MessageFoundry encrypt data?</h3><p>TLS is enabled by default — network connections use TLS 1.2+ (TLS 1.3 preferred), including MLLP-over-TLS. Some older ancillary systems can't speak TLS; MessageFoundry also supports plaintext transport for those, which can still support a HIPAA-compliant deployment inside your organization's secure network perimeter. At rest, message bodies are encrypted with AES-256-GCM.</p></div>
-        <div class="faq-item"><h3>Has MessageFoundry been independently security audited?</h3><p>MessageFoundry publishes a self-assessment against OWASP ASVS 5.0 Level 3, covering all 345 requirements, plus its Secure Development Standards. Requirements that are still only partially met are recorded as partials and closed by shipping controls, not reclassified away. It has not yet had an independent external code review or penetration test — both are planned after Early Access.</p></div>
-        <div class="faq-item"><h3>How do I report a security vulnerability?</h3><p>Report it privately — please don't open a public issue. The preferred channel is a <a href="https://github.com/MEFORORG/MessageFoundry/security/advisories/new" target="_blank" rel="noopener">GitHub private security advisory</a> on the MessageFoundry repository, which stays visible only to maintainers until a fix is released. Include the affected component, the impact, and reproduction steps, using synthetic HL7 rather than real PHI. We aim to acknowledge within a few business days, and we target 7 days to remediate a critical issue.</p></div>
+        <div class="faq-item"><h3>Is MessageFoundry HIPAA compliant?</h3><p>HIPAA compliance depends on your whole deployment. MessageFoundry provides authenticated access, audit records, TLS transport, and AES-256-GCM encryption for stored message bodies. Controls map to the HIPAA Security Rule through NIST 800-66. Your organization manages the environment, destinations, and compliance program. Plaintext transport exceptions require a secure network perimeter.</p></div>
+        <div class="faq-item"><h3>Is MessageFoundry PHI-safe — where does patient data live?</h3><p>The engine and message store run on your servers or in your private cloud. You control the destinations your interfaces send data to. The engine does not send message contents as telemetry.</p></div>
+        <div class="faq-item"><h3>Is MessageFoundry self-hosted and on-premises?</h3><p>Yes. Install the engine on your servers or in your private cloud. It starts with SQLite and also supports PostgreSQL and SQL Server. You control its network connections and message destinations.</p></div>
+        <div class="faq-item"><h3>How does MessageFoundry encrypt data?</h3><p>Network connections default to TLS 1.2+, with TLS 1.3 preferred, including MLLP-over-TLS. Older endpoints can use plaintext within your secure network perimeter. Stored message bodies use AES-256-GCM encryption. These controls support your deployment's security assessment.</p></div>
+        <div class="faq-item"><h3>Has MessageFoundry been independently security audited?</h3><p>MessageFoundry publishes an OWASP ASVS 5.0 Level 3 self-assessment covering all 345 requirements. Partially met requirements are recorded as partials. Independent code review and penetration testing are planned after Early Access.</p></div>
+        <div class="faq-item"><h3>How do I report a security vulnerability?</h3><p>Use a <a href="https://github.com/MEFORORG/MessageFoundry/security/advisories/new" target="_blank" rel="noopener">GitHub private security advisory</a>, not a public issue. Reports stay visible only to maintainers until a fix ships. Include the affected component, impact, and reproduction steps using synthetic HL7. Never include real PHI. We aim to acknowledge within a few business days and remediate critical issues within 7 days of triage.</p></div>
       </div>
     </div>
   </section>
@@ -387,7 +387,7 @@
       "name": "Is MessageFoundry HIPAA compliant?",
       "acceptedAnswer": {
         "@type": "Answer",
-        "text": "HIPAA compliance is a property of your whole deployment, not any single product. MessageFoundry is built to support it: PHI stays on your own infrastructure, every operator is authenticated, access to patient data is audited, traffic is encrypted with TLS and message bodies with AES-256-GCM, and controls map to the HIPAA Security Rule (NIST 800-66)."
+        "text": "HIPAA compliance depends on your whole deployment. MessageFoundry provides authenticated access, audit records, TLS transport, and AES-256-GCM encryption for stored message bodies. Controls map to the HIPAA Security Rule through NIST 800-66. Your organization manages the environment, destinations, and compliance program. Plaintext transport exceptions require a secure network perimeter."
       }
     },
     {
@@ -395,7 +395,7 @@
       "name": "Is MessageFoundry PHI-safe — where does patient data live?",
       "acceptedAnswer": {
         "@type": "Answer",
-        "text": "Yes. MessageFoundry is self-hosted, so PHI never leaves your infrastructure. There is no vendor cloud, no third-party processor, and no telemetry of message contents — you run the engine on your own servers, on-premises or in your own private cloud."
+        "text": "The engine and message store run on your servers or in your private cloud. You control the destinations your interfaces send data to. The engine does not send message contents as telemetry."
       }
     },
     {
@@ -403,7 +403,7 @@
       "name": "Is MessageFoundry self-hosted and on-premises?",
       "acceptedAnswer": {
         "@type": "Answer",
-        "text": "Yes. MessageFoundry runs entirely on your own servers, on-premises or in your private cloud. It installs from PyPI, starts zero-config on SQLite, and scales to PostgreSQL or SQL Server. Nothing is sent to a vendor service."
+        "text": "Yes. Install the engine on your servers or in your private cloud. It starts with SQLite and also supports PostgreSQL and SQL Server. You control its network connections and message destinations."
       }
     },
     {
@@ -411,7 +411,7 @@
       "name": "How does MessageFoundry encrypt data?",
       "acceptedAnswer": {
         "@type": "Answer",
-        "text": "TLS is enabled by default — network connections use TLS 1.2+ (TLS 1.3 preferred), including MLLP-over-TLS. Some older ancillary systems can't speak TLS; MessageFoundry also supports plaintext transport for those, which can still support a HIPAA-compliant deployment inside your organization's secure network perimeter. At rest, message bodies are encrypted with AES-256-GCM."
+        "text": "Network connections default to TLS 1.2+, with TLS 1.3 preferred, including MLLP-over-TLS. Older endpoints can use plaintext within your secure network perimeter. Stored message bodies use AES-256-GCM encryption. These controls support your deployment's security assessment."
       }
     },
     {
@@ -419,7 +419,7 @@
       "name": "Has MessageFoundry been independently security audited?",
       "acceptedAnswer": {
         "@type": "Answer",
-        "text": "MessageFoundry publishes a self-assessment against OWASP ASVS 5.0 Level 3, covering all 345 requirements, plus its Secure Development Standards. Requirements that are still only partially met are recorded as partials and closed by shipping controls, not reclassified away. It has not yet had an independent external code review or penetration test — both are planned after Early Access."
+        "text": "MessageFoundry publishes an OWASP ASVS 5.0 Level 3 self-assessment covering all 345 requirements. Partially met requirements are recorded as partials. Independent code review and penetration testing are planned after Early Access."
       }
     },
     {
@@ -427,7 +427,7 @@
       "name": "How do I report a security vulnerability?",
       "acceptedAnswer": {
         "@type": "Answer",
-        "text": "Report it privately — please don't open a public issue. The preferred channel is a GitHub private security advisory on the MessageFoundry repository, which stays visible only to maintainers until a fix is released. Include the affected component, the impact, and reproduction steps, using synthetic HL7 rather than real PHI. We aim to acknowledge within a few business days, and we target 7 days to remediate a critical issue."
+        "text": "Use a GitHub private security advisory , not a public issue. Reports stay visible only to maintainers until a fix ships. Include the affected component, impact, and reproduction steps using synthetic HL7. Never include real PHI. We aim to acknowledge within a few business days and remediate critical issues within 7 days of triage."
       }
     }
   ]
@@ -458,8 +458,8 @@
             <img class="brand-mark" src="/assets/img/logo.svg" alt="" width="28" height="28">
             <span class="brand-name">Message<span class="brand-accent">Foundry</span><span class="brand-tm">™</span></span>
           </a>
-          <p class="footer-tagline"><b>More</b> Than an HL7 Interface Engine</p>
-          <p>Open-source healthcare interface engine — secure by default, built to recognized standards, connecting a wide range of protocols and message types.</p>
+          <p class="footer-tagline">Open-source healthcare interface engine</p>
+          <p>Route and transform healthcare messages with an open-source interface engine you run on your own servers.</p>
           <div class="badge-row" style="margin-top:16px">
             <span class="badge">Open source</span>
             <span class="badge">No lock-in</span>
@@ -502,8 +502,8 @@
         </div>
       </div>
       <div class="footer-bottom">
-        <span>© 2026 MessageFoundry Foundation — this website and its content, all rights reserved. The MessageFoundry engine is separately open source, licensed under AGPL-3.0-or-later.</span>
-        <span>MessageFoundry and the MessageFoundry word mark are trademarks of MessageFoundry Foundation. Mirth Connect, Cloverleaf, Rhapsody, Corepoint, and Ensemble are trademarks of their respective owners; MessageFoundry is independent and unaffiliated.</span>
+        <span>© 2026 MessageFoundry, LLC — this website and its content, all rights reserved. The MessageFoundry engine is separately open source, licensed under AGPL-3.0-or-later.</span>
+        <span>MessageFoundry and the MessageFoundry word mark are trademarks of MessageFoundry, LLC. Mirth Connect, Cloverleaf, Rhapsody, Corepoint, and Ensemble are trademarks of their respective owners; MessageFoundry is independent and unaffiliated.</span>
       </div>
     </div>
   </footer>
