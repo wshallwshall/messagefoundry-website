@@ -594,7 +594,7 @@ lifespan to call `engine.stop()` for a clean drain. Always **drain → stop → 
   use **dead-letter replay** to recover messages that a bad transform stranded before the rollback.
 
 **Pre-1.0 cadence:** pin a released version (`messagefoundry==X.Y.Z`). The **latest release** is the
-supported target. Before filing an issue, reproduce the problem with the latest release. Make small, frequent upgrades.
+supported target. Before you report a problem, reproduce it with the latest release. Make small, frequent upgrades.
 
 ---
 
@@ -699,14 +699,23 @@ throughput — only the leader processes.
 
 ## 15. Getting help & reporting bugs
 
-- **Bugs & feature requests:** open a GitHub issue using the repository's issue templates
-  (`bug_report.md` / `feature_request.md`).
+Do not use GitHub Issues for bugs, feature requests or questions. `CONTRIBUTING.md`, section
+"Finding something to work on", names the routes:
+
+- **A bug you cannot fix yourself:** post it in the Bugs category of GitHub Discussions
+  (<https://github.com/MEFORORG/MessageFoundry/discussions/categories/bugs>). The maintainers watch
+  that category. Say which version or commit you ran.
+- **A fix or a feature:** open a pull request. A bug fix carries a test that reproduces the bug.
+- **A question or design discussion:** use GitHub Discussions
+  (<https://github.com/MEFORORG/MessageFoundry/discussions>).
 - **Security vulnerabilities:** use the repository's **private security advisory** process per
   `.github/SECURITY.md` — do **not** open a public issue for a vulnerability.
-- **Before filing:** verify against current `main` (pre-1.0, latest-main-only support), and include the
-  engine version, config shape, and relevant **non-PHI** log excerpts.
-- 🔒 **Never attach real PHI** to an issue, log excerpt, or reproduction. Reproduce with a synthetic
-  corpus from `messagefoundry generate`.
+- **Before you share a problem:** verify it against the latest engine release (the
+  `messagefoundry` package), the only supported version before 1.0 (`docs/SUPPORT-POLICY.md`).
+  Include the engine version, config shape, and relevant **non-PHI** log excerpts.
+- **Never attach real PHI** to anything you share, including a log excerpt or a reproduction.
+  Redact hostnames, IP addresses and partner names. Reproduce with a synthetic corpus from
+  `messagefoundry generate`.
 
 ---
 
