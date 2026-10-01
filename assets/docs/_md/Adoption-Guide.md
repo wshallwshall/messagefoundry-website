@@ -699,17 +699,14 @@ throughput — only the leader processes.
 
 ## 15. Getting help & reporting bugs
 
-Do not use GitHub Issues for bugs, feature requests or questions. `CONTRIBUTING.md`, section
-"Finding something to work on", names the routes:
-
+- **Bugs, feature requests and questions:** not through GitHub Issues. `CONTRIBUTING.md`, section
+  "Finding something to work on", names the routes
+  (<https://github.com/MEFORORG/MessageFoundry/blob/main/CONTRIBUTING.md#finding-something-to-work-on>).
 - **A bug you cannot fix yourself:** post it in the Bugs category of GitHub Discussions
-  (<https://github.com/MEFORORG/MessageFoundry/discussions/categories/bugs>). The maintainers watch
-  that category. Say which version or commit you ran.
-- **A fix or a feature:** open a pull request. A bug fix carries a test that reproduces the bug.
-- **A question or design discussion:** use GitHub Discussions
-  (<https://github.com/MEFORORG/MessageFoundry/discussions>).
+  (<https://github.com/MEFORORG/MessageFoundry/discussions/categories/bugs>), unless it is a
+  security vulnerability. The maintainers watch that category. Say which version or commit you ran.
 - **Security vulnerabilities:** use the repository's **private security advisory** process per
-  `.github/SECURITY.md` — do **not** open a public issue for a vulnerability.
+  `.github/SECURITY.md`. Never put the details of a vulnerability in a public post.
 - **Before you share a problem:** verify it against the latest engine release (the
   `messagefoundry` package), the only supported version before 1.0 (`docs/SUPPORT-POLICY.md`).
   Include the engine version, config shape, and relevant **non-PHI** log excerpts.
