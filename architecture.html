@@ -126,9 +126,10 @@
         <p class="lead center">The system includes operator tools, configuration, service commands, test tools, and a migration tee relay. Operator tools connect to the engine through its local API.</p>
         <p style="margin-top:14px"><a href="/tools.html" style="color:var(--accent-ink);font-weight:650">See the whole toolkit, up close →</a></p>
       </div>
+      <!-- diagram source: MessageFoundry engine docs/architecture-diagram.md at 612689f797, drawn 2026-10-02 -->
       <svg class="dg" viewBox="0 0 940 460" role="img" aria-labelledby="t0 d0">
         <title id="t0">Top-level components — the whole system</title>
-        <desc id="d0">A central headless engine, reached only through a localhost API, surrounded by independent components: operator tools (admin console, VS Code extension), version-controlled author-time config, the CLI and Windows service that run it, dev and test tooling, live HL7 traffic, a standalone migration tee relay, and the CI-to-PyPI release path.</desc>
+        <desc id="d0">A central headless engine, reached through an API that binds 127.0.0.1 by default and is served over TLS, surrounded by independent components: operator tools (admin console, VS Code extension), version-controlled author-time config, the CLI and Windows service that run it, dev and test tooling, live message traffic over any Connection type, a standalone migration tee relay, and the CI-to-PyPI release path.</desc>
 
         <path class="dg-solid" d="M490,76 L490,106" marker-end="url(#dg-ah)"/>
         <path class="dg-solid" d="M490,158 L490,186" marker-end="url(#dg-ah)"/>
@@ -138,10 +139,10 @@
         <path class="dg-dash" d="M584,212 L688,180" marker-end="url(#dg-ahd)"/>
         <path class="dg-dash" d="M338,378 L412,262" marker-end="url(#dg-ahd)"/>
 
-        <text class="dg-sub" x="502" y="96">HTTP / WS</text>
+        <text class="dg-sub" x="502" y="96">HTTPS / WS</text>
         <text class="dg-sub" x="298" y="180">loads config</text>
         <text class="dg-sub" x="298" y="250">runs · MLLP</text>
-        <text class="dg-sub" x="598" y="190">MLLP / file</text>
+        <text class="dg-sub" x="592" y="227">any Connection type</text>
         <text class="dg-sub" x="356" y="330" text-anchor="end">shadow</text>
 
         <rect class="dg-box" x="396" y="30" width="188" height="46" rx="10"/>
@@ -150,7 +151,7 @@
 
         <rect class="dg-api" x="396" y="108" width="188" height="50" rx="10"/>
         <text class="dg-ttl" x="490" y="128" text-anchor="middle">API — 127.0.0.1</text>
-        <text class="dg-sub" x="490" y="145" text-anchor="middle">auth · RBAC · only external surface</text>
+        <text class="dg-sub" x="490" y="145" text-anchor="middle">by default &#183; TLS &#183; auth &#183; RBAC</text>
 
         <rect class="dg-box" x="396" y="186" width="188" height="74" rx="10"/>
         <text class="dg-ttl" x="490" y="208" text-anchor="middle">Engine — headless asyncio</text>
@@ -172,7 +173,7 @@
         <text class="dg-sub" x="146" y="287" text-anchor="middle">generators · test harness</text>
 
         <rect class="dg-box" x="688" y="148" width="212" height="60" rx="10"/>
-        <text class="dg-ttl" x="794" y="168" text-anchor="middle">Live HL7 traffic</text>
+        <text class="dg-ttl" x="794" y="168" text-anchor="middle">Live message traffic</text>
         <text class="dg-sub" x="794" y="184" text-anchor="middle">Upstream senders</text>
         <text class="dg-sub" x="794" y="199" text-anchor="middle">&#8597; downstream receivers</text>
 
@@ -197,9 +198,10 @@
         <h2>System topology</h2>
         <p class="lead center">The engine runs as a service. Separate client processes connect <b>only</b> through its localhost API. The API depends on the engine; the engine never imports the API or a client.</p>
       </div>
+      <!-- diagram source: MessageFoundry engine docs/architecture-diagram.md at 612689f797, drawn 2026-10-02 -->
       <svg class="dg" viewBox="0 16 800 510" role="img" aria-labelledby="t1 d1">
         <title id="t1">System topology</title>
-        <desc id="d1">The admin console, VS Code extension, and test harness reach the engine only through a localhost API with auth and RBAC. The headless engine's pipeline depends on transports, parsing, the store (SQLite, PostgreSQL, SQL Server), and config.</desc>
+        <desc id="d1">The admin console in the browser, the VS Code extension, and the test harness reach the engine only through its API. The API binds 127.0.0.1 by default and is served over HTTPS and WebSocket, with auth and RBAC. The headless engine's pipeline depends on transports, parsing, the store (SQLite, PostgreSQL, SQL Server), and config.</desc>
         <line class="dg-solid" x1="566" y1="34" x2="592" y2="34" marker-end="url(#dg-ah)"/>
         <text class="dg-lg" x="600" y="38">depends on</text>
         <line class="dg-dash" x1="566" y1="52" x2="592" y2="52" marker-end="url(#dg-ahd)"/>
@@ -216,7 +218,7 @@
 
         <rect class="dg-box" x="78" y="84" width="200" height="46" rx="10"/>
         <text class="dg-ttl" x="178" y="105" text-anchor="middle">Admin console</text>
-        <text class="dg-sub" x="178" y="121" text-anchor="middle">separate process</text>
+        <text class="dg-sub" x="178" y="121" text-anchor="middle">in the browser &#183; /ui</text>
         <rect class="dg-box" x="300" y="84" width="200" height="46" rx="10"/>
         <text class="dg-ttl" x="400" y="105" text-anchor="middle">VS Code extension</text>
         <text class="dg-sub" x="400" y="121" text-anchor="middle">authoring + ops</text>
@@ -224,9 +226,9 @@
         <text class="dg-ttl" x="622" y="105" text-anchor="middle">Test harness</text>
         <text class="dg-sub" x="622" y="121" text-anchor="middle">synthetic traffic</text>
 
-        <text class="dg-bnd" x="400" y="150" text-anchor="middle">LOCALHOST · THE ONLY EXTERNAL SURFACE</text>
+        <text class="dg-bnd" x="400" y="150" text-anchor="middle">LOCALHOST BY DEFAULT &#183; ONLY CLIENT API</text>
         <rect class="dg-api" x="220" y="178" width="360" height="52" rx="10"/>
-        <text class="dg-ttl" x="400" y="200" text-anchor="middle">API — HTTP + WebSocket</text>
+        <text class="dg-ttl" x="400" y="200" text-anchor="middle">API — HTTPS + WebSocket</text>
         <text class="dg-sub" x="400" y="217" text-anchor="middle">auth · RBAC · hash-chained audit</text>
 
         <rect class="dg-bound" x="40" y="252" width="720" height="266" rx="14"/>
@@ -242,9 +244,9 @@
         <text class="dg-sub" x="139" y="463" text-anchor="middle">(SFTP/FTP/FTPS)</text>
         <rect class="dg-box" x="234" y="390" width="158" height="92" rx="10"/>
         <text class="dg-ttl" x="313" y="414" text-anchor="middle">Parsing</text>
-        <text class="dg-sub" x="313" y="433" text-anchor="middle">HL7 v2 deep parse;</text>
-        <text class="dg-sub" x="313" y="448" text-anchor="middle">JSON / XML / X12</text>
-        <text class="dg-sub" x="313" y="463" text-anchor="middle">routed</text>
+        <text class="dg-sub" x="313" y="433" text-anchor="middle">HL7 v2 parser, strict</text>
+        <text class="dg-sub" x="313" y="448" text-anchor="middle">validation; X12, DICOM,</text>
+        <text class="dg-sub" x="313" y="463" text-anchor="middle">FHIR and XML codecs</text>
         <rect class="dg-store" x="408" y="390" width="158" height="92" rx="10"/>
         <text class="dg-ttl" x="487" y="414" text-anchor="middle">Store</text>
         <text class="dg-sub" x="487" y="433" text-anchor="middle">SQLite · PostgreSQL</text>
@@ -266,6 +268,7 @@
         <h2>The durable staged queue</h2>
         <p class="lead center">The engine <b>acknowledges receipt</b> after it commits the message to the ingress stage, before routing, transforms, or delivery. Each handoff uses one committed transaction. The stored stages support retries and replay without a separate broker.</p>
       </div>
+      <!-- diagram source: MessageFoundry engine docs/architecture-diagram.md at 612689f797, drawn 2026-10-02 -->
       <svg class="dg" viewBox="0 0 940 332" role="img" aria-labelledby="t2 d2">
         <title id="t2">Runtime message flow through the staged queue</title>
         <desc id="d2">An inbound message is decoded and parsed by the listener, committed to the ingress stage, and ACKed on receipt. It then moves through routed and outbound stages via committed transactions — router, transform, and delivery workers — before reaching the outbound connection. Each message earns a disposition finalized by the store.</desc>
@@ -304,7 +307,7 @@
         <rect class="dg-box" x="22" y="244" width="898" height="58" rx="10"/>
         <text class="dg-bnd" x="44" y="266">DISPOSITION · count-and-log, finalized by the store</text>
         <text class="dg-sub" x="898" y="266" text-anchor="end">decode/validate failures NAK synchronously, pre-ingress</text>
-        <text class="dg-ttl" x="44" y="289" style="font-size:13px">RECEIVED &#8594; ROUTED / UNROUTED &#8594; PROCESSED / FILTERED / ERROR</text>
+        <text class="dg-ttl" x="44" y="289" style="font-size:13px">RECEIVED &#8594; ROUTED / UNROUTED &#8594; PROCESSED / FILTERED / NOT_DEPLOYED / ERROR</text>
       </svg>
       <div class="callout" style="margin-top:30px;max-width:900px;margin-inline:auto">
         <p>The engine commits each message before acknowledgment and each stage handoff in one transaction. After a crash, it can repeat the last step without skipping it. Normal operation delivers each message once. A crash after a downstream send, but before recording success, can cause that message to be sent again. This is <b>at-least-once delivery</b>. A repeated HL7 message keeps the same <code>MSH-10</code> control ID, so the downstream system can detect and remove duplicates.</p>
