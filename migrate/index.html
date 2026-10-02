@@ -200,40 +200,38 @@
       <h2>3. Validate and shadow</h2>
       <p>Run the commit gate: <code>python -m messagefoundry check</code>. Run the new interface in <b>parallel</b> with the legacy engine against live traffic and compare outputs. Keep it out of production routing until the results match.</p>
 
-      <h3 id="tee-relay" style="margin-top:1.8em">A tee relay copies test traffic to a shadow instance</h3>
-      <p>The tee relay sits in front of the legacy engine. It forwards each message unchanged to the legacy engine, then sends a copy to a shadow MessageFoundry instance that delivers nothing. Use the relay with test or synthetic feeds only. It is a validation tool and is not hardened to carry production PHI.</p>
+      <h3 id="tee-relay" style="margin-top:1.8em">Rehearse the parallel run with the tee relay</h3>
+      <p>The tee relay is a validation tool for test or synthetic feeds only. It is not hardened to carry production PHI. It sits in front of the legacy engine and forwards each message to it unchanged. It then sends a copy to a shadow MessageFoundry instance that delivers nothing.</p>
       <!-- diagram source: MessageFoundry engine docs/TEE-RELAY.md at 612689f797, drawn 2026-10-02 -->
       <svg class="dg dg--narrow" viewBox="0 0 400 422" role="img" aria-labelledby="tee-t tee-d" style="margin-top:18px">
         <title id="tee-t">Tee relay parallel run</title>
-        <desc id="tee-d">An upstream source sends MLLP to listener A of the tee relay, which always ACKs on receipt. The relay forwards the unchanged bytes to the legacy engine, which stays in production. Once the legacy engine answers, the relay puts a copy on a bounded in-memory shadow queue. A worker sends that copy, unchanged, to a shadow MessageFoundry instance whose outbound Connections run in simulate mode, so nothing is sent to live partners. An optional listener B takes copies the legacy engine sends of its own output, for comparison. The relay logs each leg to its own SQLite file.</desc>
+        <desc id="tee-d">An upstream source sends MLLP to listener A of the tee relay, which always ACKs on receipt. The relay forwards the unchanged bytes to the legacy engine, whose own path does not change. Once the legacy engine answers, the relay puts a copy on a bounded in-memory shadow queue. A worker sends that copy, unchanged, to a shadow MessageFoundry instance whose outbound Connections run in simulate mode, so nothing is sent to live partners. An optional listener B takes copies the legacy engine sends of its own output, for comparison. The relay logs each leg to its own SQLite file.</desc>
 
         <rect class="dg-bound" x="10" y="98" width="380" height="232" rx="12"/>
         <text class="dg-bnd" x="22" y="316">TEE RELAY</text>
 
-        <path class="dg-dash" d="M60,50 L60,113" marker-end="url(#dg-ahd)"/>
-        <path class="dg-dash" d="M150,116 L150,74 L250,74 L250,53" marker-end="url(#dg-ahd)"/>
-        <path class="dg-dash" d="M340,50 L340,113" marker-end="url(#dg-ahd)"/>
+        <path class="dg-dash" d="M60,50 L60,113" marker-end="url(#dg-ah)"/>
+        <path class="dg-dash" d="M150,116 L150,74 L250,74 L250,53" marker-end="url(#dg-ah)"/>
+        <path class="dg-dash" d="M340,50 L340,113" marker-end="url(#dg-ah)"/>
         <path class="dg-solid" d="M60,160 L60,199" marker-end="url(#dg-ah)"/>
         <path class="dg-solid" d="M340,160 L340,199" marker-end="url(#dg-ah)"/>
-        <path class="dg-solid" d="M295,246 L295,273" marker-end="url(#dg-ah)"/>
-        <path class="dg-dash" d="M105,246 L105,353" marker-end="url(#dg-ahd)"/>
+        <path class="dg-dash" d="M105,246 L105,353" marker-end="url(#dg-ah)"/>
 
         <text class="dg-sub" x="68" y="78">MLLP</text>
-        <text class="dg-sub" x="192" y="67" text-anchor="middle">production leg</text>
+        <text class="dg-sub" x="192" y="67" text-anchor="middle">main leg</text>
         <text class="dg-sub" x="200" y="88" text-anchor="middle">unchanged bytes</text>
         <text class="dg-sub" x="348" y="80">copy feed</text>
-        <text class="dg-sub" x="68" y="184">copy, once the production leg answers</text>
+        <text class="dg-sub" x="68" y="184">copy, once the main leg answers</text>
         <text class="dg-sub" x="332" y="184" text-anchor="end">copy</text>
-        <text class="dg-sub" x="309" y="264">logs each leg</text>
         <text class="dg-sub" x="113" y="270">shadow leg,</text>
         <text class="dg-sub" x="113" y="284">unchanged bytes</text>
 
         <rect class="dg-box" x="20" y="8" width="170" height="42" rx="10"/>
         <text class="dg-ttl" x="105" y="26" text-anchor="middle">Upstream source</text>
-        <text class="dg-sub" x="105" y="41" text-anchor="middle">for example, an EHR</text>
+        <text class="dg-sub" x="105" y="41" text-anchor="middle">for example, an EHR test feed</text>
         <rect class="dg-box" x="210" y="8" width="170" height="42" rx="10"/>
         <text class="dg-ttl" x="295" y="26" text-anchor="middle">Legacy engine</text>
-        <text class="dg-sub" x="295" y="41" text-anchor="middle">production, unchanged</text>
+        <text class="dg-sub" x="295" y="41" text-anchor="middle">its own path is unchanged</text>
 
         <rect class="dg-box" x="20" y="116" width="170" height="44" rx="10"/>
         <text class="dg-ttl" x="105" y="134" text-anchor="middle">Listener A</text>
@@ -244,11 +242,11 @@
 
         <rect class="dg-box" x="20" y="202" width="360" height="44" rx="10"/>
         <text class="dg-ttl" x="200" y="220" text-anchor="middle">Shadow queue and worker</text>
-        <text class="dg-sub" x="200" y="235" text-anchor="middle">bounded, in memory; a slow shadow never delays production</text>
+        <text class="dg-sub" x="200" y="235" text-anchor="middle">bounded, in memory; a slow shadow never delays the main leg</text>
 
         <rect class="dg-store" x="210" y="276" width="170" height="44" rx="10"/>
         <text class="dg-ttl" x="295" y="294" text-anchor="middle">SQLite log</text>
-        <text class="dg-sub" x="295" y="309" text-anchor="middle">the relay's only store</text>
+        <text class="dg-sub" x="295" y="309" text-anchor="middle">the relay logs each leg here</text>
 
         <rect class="dg-api" x="20" y="356" width="360" height="58" rx="10"/>
         <text class="dg-ttl" x="200" y="376" text-anchor="middle">MessageFoundry, the shadow instance</text>

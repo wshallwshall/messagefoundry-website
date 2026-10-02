@@ -129,7 +129,7 @@
       <!-- diagram source: MessageFoundry engine docs/architecture-diagram.md at 612689f797, drawn 2026-10-02 -->
       <svg class="dg" viewBox="0 0 940 460" role="img" aria-labelledby="t0 d0">
         <title id="t0">Top-level components — the whole system</title>
-        <desc id="d0">A central headless engine, reached through an API that binds 127.0.0.1 by default and is served over TLS, surrounded by independent components: operator tools (admin console, VS Code extension), version-controlled author-time config, the CLI and Windows service that run it, dev and test tooling, live message traffic over any Connection type, a standalone migration tee relay, and the CI-to-PyPI release path.</desc>
+        <desc id="d0">A central headless engine sits behind an API that binds 127.0.0.1 by default and is served over TLS. Independent components surround it: operator tools (admin console, VS Code extension), version-controlled author-time config, the CLI and Windows service that run it, dev and test tooling, live message traffic over any Connection type, a standalone migration tee relay, and the CI-to-PyPI release path.</desc>
 
         <path class="dg-solid" d="M490,76 L490,106" marker-end="url(#dg-ah)"/>
         <path class="dg-solid" d="M490,158 L490,186" marker-end="url(#dg-ah)"/>
@@ -139,7 +139,7 @@
         <path class="dg-dash" d="M584,212 L688,180" marker-end="url(#dg-ahd)"/>
         <path class="dg-dash" d="M338,378 L412,262" marker-end="url(#dg-ahd)"/>
 
-        <text class="dg-sub" x="502" y="96">HTTPS / WS</text>
+        <text class="dg-sub" x="502" y="96">HTTPS / WSS</text>
         <text class="dg-sub" x="298" y="180">loads config</text>
         <text class="dg-sub" x="298" y="250">runs · MLLP</text>
         <text class="dg-sub" x="592" y="227">any Connection type</text>
@@ -201,7 +201,7 @@
       <!-- diagram source: MessageFoundry engine docs/architecture-diagram.md at 612689f797, drawn 2026-10-02 -->
       <svg class="dg" viewBox="0 16 800 510" role="img" aria-labelledby="t1 d1">
         <title id="t1">System topology</title>
-        <desc id="d1">The admin console in the browser, the VS Code extension, and the test harness reach the engine only through its API. The API binds 127.0.0.1 by default and is served over HTTPS and WebSocket, with auth and RBAC. The headless engine's pipeline depends on transports, parsing, the store (SQLite, PostgreSQL, SQL Server), and config.</desc>
+        <desc id="d1">The admin console in the browser, the VS Code extension, and the test harness are clients of the API. The API binds 127.0.0.1 by default and is served over HTTPS and WebSocket, with auth and RBAC. The test harness also sends and receives MLLP as a test partner. The headless engine's pipeline depends on transports, parsing, the store (SQLite, PostgreSQL, SQL Server), and config.</desc>
         <line class="dg-solid" x1="566" y1="34" x2="592" y2="34" marker-end="url(#dg-ah)"/>
         <text class="dg-lg" x="600" y="38">depends on</text>
         <line class="dg-dash" x1="566" y1="52" x2="592" y2="52" marker-end="url(#dg-ahd)"/>
@@ -224,7 +224,7 @@
         <text class="dg-sub" x="400" y="121" text-anchor="middle">authoring + ops</text>
         <rect class="dg-box" x="522" y="84" width="200" height="46" rx="10"/>
         <text class="dg-ttl" x="622" y="105" text-anchor="middle">Test harness</text>
-        <text class="dg-sub" x="622" y="121" text-anchor="middle">synthetic traffic</text>
+        <text class="dg-sub" x="622" y="121" text-anchor="middle">API client &#183; MLLP test partner</text>
 
         <text class="dg-bnd" x="400" y="150" text-anchor="middle">LOCALHOST BY DEFAULT &#183; ONLY CLIENT API</text>
         <rect class="dg-api" x="220" y="178" width="360" height="52" rx="10"/>

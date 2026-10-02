@@ -272,7 +272,7 @@
         <span class="eyebrow">Durable delivery</span>
         <h2>Stored first, then acknowledged</h2>
         <p class="lead">The sender gets its ACK only after the engine commits the raw message to the message store. Routing, transform, and delivery run after the ACK, each as its own committed step.</p>
-        <p>A failure after the ACK does not reach the sender. The engine dead-letters the row and records the message as <code>ERROR</code>. <a href="/architecture.html">See the staged queue &rarr;</a></p>
+        <p>A failure after the ACK does not reach the sender. The engine retries a failed send, and reruns a step that a restart interrupted. It dead-letters a row when a Router or a Handler raises, or when the delivery attempts run out. The message then shows as <code>ERROR</code>. <a href="/architecture.html">See the staged queue &rarr;</a></p>
       </div>
       <div>
         <!-- diagram source: MessageFoundry engine docs/architecture-diagram.md at 612689f797, drawn 2026-10-02 -->
@@ -300,9 +300,9 @@
 
           <path class="dg-solid" d="M190,150 L335,150" marker-end="url(#dg-ah)"/>
           <text class="dg-sub" x="256" y="141" text-anchor="middle">commit to ingress stage</text>
-          <path class="dg-dash" d="M338,174 L193,174" marker-end="url(#dg-ahd)"/>
+          <path class="dg-dash" d="M338,174 L193,174" marker-end="url(#dg-ah)"/>
           <text class="dg-sub" x="264" y="168" text-anchor="middle">stored: RECEIVED</text>
-          <path class="dg-dash" d="M190,198 L49,198" marker-end="url(#dg-ahd)"/>
+          <path class="dg-dash" d="M190,198 L49,198" marker-end="url(#dg-ah)"/>
           <text class="dg-key" x="118" y="192" text-anchor="middle">ACK (AA)</text>
 
           <rect class="dg-api" x="10" y="212" width="380" height="30" rx="8"/>
@@ -358,10 +358,10 @@
           <path class="dg-solid" d="M294,50 L294,75" marker-end="url(#dg-ah)"/>
           <path class="dg-solid" d="M40,188 L40,53" marker-end="url(#dg-ah)"/>
           <path class="dg-solid" d="M150,122 L150,185" marker-end="url(#dg-ah)"/>
-          <path class="dg-dash" d="M294,122 L294,185" marker-end="url(#dg-ahd)"/>
+          <path class="dg-dash" d="M294,122 L294,185" marker-end="url(#dg-ah)"/>
           <path class="dg-solid" d="M85,266 L85,339" marker-end="url(#dg-ah)"/>
-          <path class="dg-dash" d="M176,266 L176,339" marker-end="url(#dg-ahd)"/>
-          <path class="dg-dash" d="M294,266 L294,339" marker-end="url(#dg-ahd)"/>
+          <path class="dg-dash" d="M176,266 L176,339" marker-end="url(#dg-ah)"/>
+          <path class="dg-dash" d="M294,266 L294,339" marker-end="url(#dg-ah)"/>
 
           <text class="dg-sub" x="48" y="104">delivers</text>
           <text class="dg-sub" x="158" y="137">port bound,</text>

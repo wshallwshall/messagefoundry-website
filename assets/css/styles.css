@@ -389,7 +389,7 @@ pre.code .n { color: #c9a3ff; }                           /* number/const */
 /* Static inline SVG styled with the design tokens (no JS). Shared by every page that draws one. */
 svg.dg { width: 100%; height: auto; display: block; margin: 0 auto; max-width: 940px; }
 svg.dg text { font-family: var(--font); }
-.dg-box   { fill: #fff; stroke: #cdd6e3; stroke-width: 1.2; }
+.dg-box   { fill: var(--surface); stroke: #cdd6e3; stroke-width: 1.2; }
 .dg-api   { fill: #fff8ee; stroke: var(--accent); stroke-width: 1.7; }
 .dg-store { fill: #fff4e3; stroke: #fde6c2; stroke-width: 1.3; }
 .dg-bound { fill: none; stroke: var(--border-dk); stroke-width: 1.2; }
@@ -398,10 +398,13 @@ svg.dg text { font-family: var(--font); }
 .dg-bnd   { fill: var(--muted); font-weight: 600; font-size: 10.5px; letter-spacing: .05em; }
 .dg-lg    { fill: var(--muted); font-size: 11px; }
 .dg-solid { fill: none; stroke: var(--muted); stroke-width: 1.7; }
-.dg-dash  { fill: none; stroke: #93a1b8; stroke-width: 1.7; stroke-dasharray: 4 4; }
+.dg-dash  { fill: none; stroke: var(--muted-dk); stroke-width: 1.7; stroke-dasharray: 4 4; }
 /* Portrait diagrams use a narrow viewBox so their labels stay readable on a phone;
    this cap keeps them from growing oversized on a wide screen. */
 svg.dg--narrow { max-width: 460px; }
+/* In those diagrams a dashed line carries meaning, so it takes the full-contrast stroke and
+   the dark arrowhead (#dg-ah). It differs from a solid line by its pattern alone. */
+svg.dg--narrow .dg-dash { stroke: var(--muted); }
 .dg-life  { fill: none; stroke: var(--muted-dk); stroke-width: 1.2; stroke-dasharray: 2 4; }
 .dg-key   { fill: var(--accent-ink); font-weight: 700; font-size: 11px; }
 .dg-fail  { fill: var(--status-bad); font-weight: 600; font-size: 11px; }
