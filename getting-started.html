@@ -208,7 +208,7 @@ pip install messagefoundry</pre>
             <div class="code-card__bar"><i></i><i></i><i></i><span class="code-card__name">terminal</span></div>
 <pre class="code">python -m messagefoundry serve --config samples/config --db messagefoundry.db
 
-<span class="c"># API on http://127.0.0.1:8765</span>
+<span class="c"># API on https://127.0.0.1:8765</span>
 <span class="c">#   GET /connections   GET /messages   GET /stats   WS /ws/stats</span></pre>
           </div>
         </div>
@@ -231,7 +231,10 @@ pip install messagefoundry</pre>
           <div class="code-card">
             <div class="code-card__bar"><i></i><i></i><i></i><span class="code-card__name">terminal</span></div>
 <pre class="code">pip install messagefoundry-webconsole
-<span class="c"># restart the engine, then open http://127.0.0.1:8765/ui</span></pre>
+<span class="c"># restart the engine, then open https://127.0.0.1:8765/ui</span>
+<span class="c"># The engine serves HTTPS. With no certificate configured, it creates</span>
+<span class="c"># a self-signed one on first run: api-generated-cert.pem, beside the store</span>
+<span class="c"># database. The browser warns until you trust that file or set your own.</span></pre>
           </div>
         </div>
 

@@ -164,6 +164,13 @@
   </header>
   <main id="main">
 
+  <!-- shared arrow markers for the diagrams -->
+  <svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false">
+    <defs>
+      <marker id="dg-ah" markerWidth="10" markerHeight="10" refX="7.5" refY="4.5" orient="auto"><path d="M0,0 L9,4.5 L0,9 Z" style="fill:var(--muted)"/></marker>
+    </defs>
+  </svg>
+
   <section class="section section--dark section--tight">
     <div class="container center">
       <nav class="crumb" aria-label="Breadcrumb"><a href="/">Home</a> <span aria-hidden="true">›</span> <span>Migrate</span></nav>
@@ -191,6 +198,61 @@
 
       <h2>3. Validate and shadow</h2>
       <p>Run the commit gate: <code>python -m messagefoundry check</code>. Run the new interface in <b>parallel</b> with the legacy engine against live traffic and compare outputs. Keep it out of production routing until the results match.</p>
+
+      <h3 id="tee-relay" style="margin-top:1.8em">Rehearse the parallel run with the tee relay</h3>
+      <p>The tee relay is a validation tool for test or synthetic feeds only. It is not hardened to carry production PHI. It sits in front of the legacy engine and forwards each message to it unchanged. It then sends a copy to a shadow MessageFoundry instance that delivers nothing.</p>
+      <!-- diagram source: MessageFoundry engine docs/TEE-RELAY.md at 612689f797, drawn 2026-10-02 -->
+      <svg class="dg dg--narrow" viewBox="0 0 400 422" role="img" aria-labelledby="tee-t tee-d" style="margin-top:18px">
+        <title id="tee-t">Tee relay parallel run</title>
+        <desc id="tee-d">An upstream source sends MLLP to listener A of the tee relay, which always ACKs on receipt. The relay forwards the unchanged bytes to the legacy engine, whose own path does not change. Once the legacy engine answers, the relay puts a copy on a bounded in-memory shadow queue. A worker sends that copy, unchanged, to a shadow MessageFoundry instance whose outbound Connections run in simulate mode, so nothing is sent to live partners. An optional listener B takes copies the legacy engine sends of its own output, for comparison. The relay logs each leg to its own SQLite file.</desc>
+
+        <rect class="dg-bound" x="10" y="98" width="380" height="232" rx="12"/>
+        <text class="dg-bnd" x="22" y="316">TEE RELAY</text>
+
+        <path class="dg-dash" d="M60,50 L60,113" marker-end="url(#dg-ah)"/>
+        <path class="dg-dash" d="M150,116 L150,74 L250,74 L250,53" marker-end="url(#dg-ah)"/>
+        <path class="dg-dash" d="M340,50 L340,113" marker-end="url(#dg-ah)"/>
+        <path class="dg-solid" d="M60,160 L60,199" marker-end="url(#dg-ah)"/>
+        <path class="dg-solid" d="M340,160 L340,199" marker-end="url(#dg-ah)"/>
+        <path class="dg-dash" d="M105,246 L105,353" marker-end="url(#dg-ah)"/>
+
+        <text class="dg-sub" x="68" y="78">MLLP</text>
+        <text class="dg-sub" x="192" y="67" text-anchor="middle">main leg</text>
+        <text class="dg-sub" x="200" y="88" text-anchor="middle">unchanged bytes</text>
+        <text class="dg-sub" x="348" y="80">copy feed</text>
+        <text class="dg-sub" x="68" y="184">copy, once the main leg answers</text>
+        <text class="dg-sub" x="332" y="184" text-anchor="end">copy</text>
+        <text class="dg-sub" x="113" y="270">shadow leg,</text>
+        <text class="dg-sub" x="113" y="284">unchanged bytes</text>
+
+        <rect class="dg-box" x="20" y="8" width="170" height="42" rx="10"/>
+        <text class="dg-ttl" x="105" y="26" text-anchor="middle">Upstream source</text>
+        <text class="dg-sub" x="105" y="41" text-anchor="middle">for example, an EHR test feed</text>
+        <rect class="dg-box" x="210" y="8" width="170" height="42" rx="10"/>
+        <text class="dg-ttl" x="295" y="26" text-anchor="middle">Legacy engine</text>
+        <text class="dg-sub" x="295" y="41" text-anchor="middle">its own path is unchanged</text>
+
+        <rect class="dg-box" x="20" y="116" width="170" height="44" rx="10"/>
+        <text class="dg-ttl" x="105" y="134" text-anchor="middle">Listener A</text>
+        <text class="dg-sub" x="105" y="149" text-anchor="middle">always ACKs on receipt</text>
+        <rect class="dg-box" x="210" y="116" width="170" height="44" rx="10"/>
+        <text class="dg-ttl" x="295" y="134" text-anchor="middle">Listener B, optional</text>
+        <text class="dg-sub" x="295" y="149" text-anchor="middle">ACKs on receipt</text>
+
+        <rect class="dg-box" x="20" y="202" width="360" height="44" rx="10"/>
+        <text class="dg-ttl" x="200" y="220" text-anchor="middle">Shadow queue and worker</text>
+        <text class="dg-sub" x="200" y="235" text-anchor="middle">bounded, in memory; a slow shadow never delays the main leg</text>
+
+        <rect class="dg-store" x="210" y="276" width="170" height="44" rx="10"/>
+        <text class="dg-ttl" x="295" y="294" text-anchor="middle">SQLite log</text>
+        <text class="dg-sub" x="295" y="309" text-anchor="middle">the relay logs each leg here</text>
+
+        <rect class="dg-api" x="20" y="356" width="360" height="58" rx="10"/>
+        <text class="dg-ttl" x="200" y="376" text-anchor="middle">MessageFoundry, the shadow instance</text>
+        <text class="dg-sub" x="200" y="392" text-anchor="middle">outbound Connections in simulate mode</text>
+        <text class="dg-sub" x="200" y="406" text-anchor="middle">nothing is sent to live partners</text>
+      </svg>
+      <p style="margin-top:14px;color:var(--muted);font-size:.95rem">Dashed arrows are MLLP hops between systems. Solid arrows stay inside the relay.</p>
 
       <h2>4. Cut over with rollback</h2>
       <p>Move one interface at a time, using <b>go/no-go checks</b> at each stage. Keep the legacy engine as a fallback until each interface is trusted. The <a href="/assets/docs/MessageFoundry-Adoption-Guide.pdf" target="_blank" rel="noopener">Adoption &amp; rollout guide</a> covers rollout stages. The <a href="/assets/docs/MessageFoundry-Migration-Guide.pdf" target="_blank" rel="noopener">Migration guide</a> covers each interface’s migration.</p>
