@@ -399,13 +399,13 @@ svg.dg text { font-family: var(--font); }
 .dg-lg    { fill: var(--muted); font-size: 11px; }
 .dg-solid { fill: none; stroke: var(--muted); stroke-width: 1.7; }
 .dg-dash  { fill: none; stroke: var(--muted-dk); stroke-width: 1.7; stroke-dasharray: 4 4; }
-/* Portrait diagrams use a narrow viewBox so their labels stay readable on a phone;
+/* Portrait diagrams use a narrow viewBox so their labels shrink less on a phone;
    this cap keeps them from growing oversized on a wide screen. */
 svg.dg--narrow { max-width: 460px; }
 /* In those diagrams a dashed line carries meaning, so it takes the full-contrast stroke and
    the dark arrowhead (#dg-ah). It differs from a solid line by its pattern alone. */
 svg.dg--narrow .dg-dash { stroke: var(--muted); }
-.dg-life  { fill: none; stroke: var(--muted-dk); stroke-width: 1.2; stroke-dasharray: 2 4; }
+.dg-life  { fill: none; stroke: var(--muted); stroke-width: 1; stroke-dasharray: 2 4; }
 .dg-key   { fill: var(--accent-ink); font-weight: 700; font-size: 11px; }
 .dg-fail  { fill: var(--status-bad); font-weight: 600; font-size: 11px; }
 

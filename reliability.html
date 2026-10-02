@@ -140,7 +140,6 @@
   <svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false">
     <defs>
       <marker id="dg-ah" markerWidth="10" markerHeight="10" refX="7.5" refY="4.5" orient="auto"><path d="M0,0 L9,4.5 L0,9 Z" style="fill:var(--muted)"/></marker>
-      <marker id="dg-ahd" markerWidth="10" markerHeight="10" refX="7.5" refY="4.5" orient="auto"><path d="M0,0 L9,4.5 L0,9 Z" style="fill:var(--muted-dk)"/></marker>
     </defs>
   </svg>
 
@@ -272,7 +271,7 @@
         <span class="eyebrow">Durable delivery</span>
         <h2>Stored first, then acknowledged</h2>
         <p class="lead">The sender gets its ACK only after the engine commits the raw message to the message store. Routing, transform, and delivery run after the ACK, each as its own committed step.</p>
-        <p>A failure after the ACK does not reach the sender. The engine retries a failed send, and reruns a step that a restart interrupted. It dead-letters a row when a Router or a Handler raises, or when the delivery attempts run out. The message then shows as <code>ERROR</code>. <a href="/architecture.html">See the staged queue &rarr;</a></p>
+        <p>A failure after the ACK does not reach the sender. The engine retries a failed send, and reruns a step that a restart interrupted. It dead-letters a row when a Router or a Handler raises, or when the delivery attempts run out. The message then shows as <code>ERROR</code>. In the diagram, a solid arrow is a call and a dashed arrow is a reply. <a href="/architecture.html">See the staged queue &rarr;</a></p>
       </div>
       <div>
         <!-- diagram source: MessageFoundry engine docs/architecture-diagram.md at 612689f797, drawn 2026-10-02 -->
@@ -347,7 +346,7 @@
         <span class="eyebrow">High availability</span>
         <h2>One primary, one warm standby</h2>
         <p class="lead">Senders connect to a floating virtual IP address or a load balancer, never to a fixed node. Only the primary binds the listener ports, so the health check passes only there.</p>
-        <p>Both nodes use one shared server database, which holds the leadership lease and the message store. Solid arrows carry messages. Dashed arrows are the health check and the lease traffic. <a href="/assets/docs/MessageFoundry-Clustering.pdf" target="_blank" rel="noopener">Clustering guide (PDF)</a></p>
+        <p>Both nodes use one shared server database, which holds the leadership lease and the message store. Solid arrows carry messages. Dashed arrows are the health check that fails on the standby, and the lease traffic. <a href="/assets/docs/MessageFoundry-Clustering.pdf" target="_blank" rel="noopener">Clustering guide (PDF)</a></p>
       </div>
       <div>
         <!-- diagram source: MessageFoundry engine docs/CLUSTERING.md at 612689f797, drawn 2026-10-02 -->

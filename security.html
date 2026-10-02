@@ -83,7 +83,6 @@
   <svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false">
     <defs>
       <marker id="dg-ah" markerWidth="10" markerHeight="10" refX="7.5" refY="4.5" orient="auto"><path d="M0,0 L9,4.5 L0,9 Z" style="fill:var(--muted)"/></marker>
-      <marker id="dg-ahd" markerWidth="10" markerHeight="10" refX="7.5" refY="4.5" orient="auto"><path d="M0,0 L9,4.5 L0,9 Z" style="fill:var(--muted-dk)"/></marker>
     </defs>
   </svg>
 
@@ -227,13 +226,15 @@
             <path class="dg-solid" d="M178,250 L240,250 L240,409" marker-end="url(#dg-ah)"/>
             <path class="dg-solid" d="M40,348 L40,409" marker-end="url(#dg-ah)"/>
 
-            <text class="dg-sub" x="56" y="100">MLLP, TLS set per Connection</text>
+            <text class="dg-sub" x="56" y="94">MLLP, TLS when the</text>
+            <text class="dg-sub" x="56" y="107">Connection sets it</text>
             <text class="dg-sub" x="226" y="137" text-anchor="middle">commit,</text>
             <text class="dg-sub" x="226" y="149" text-anchor="middle">then ACK</text>
             <text class="dg-sub" x="226" y="220" text-anchor="middle">staged rows</text>
             <text class="dg-sub" x="52" y="281">outbound rows,</text>
             <text class="dg-sub" x="52" y="294">staged in the store</text>
-            <text class="dg-sub" x="56" y="385">MLLP, TLS set per Connection</text>
+            <text class="dg-sub" x="56" y="379">MLLP, TLS when the</text>
+            <text class="dg-sub" x="56" y="392">Connection sets it</text>
             <text class="dg-sub" x="256" y="385">database or FHIR lookup</text>
 
             <rect class="dg-box" x="20" y="36" width="158" height="30" rx="10"/>
@@ -276,7 +277,7 @@
           <!-- diagram source: MessageFoundry engine docs/SECURITY.md at 612689f797, drawn 2026-10-02 -->
           <svg class="dg dg--narrow" viewBox="0 0 400 520" role="img" aria-labelledby="tb-op-t tb-op-d">
             <title id="tb-op-t">Trust boundaries for an operator, the audit trail, and the log</title>
-            <desc id="tb-op-d">An operator browser and API clients reach the API and web console over HTTPS. The API checks the sign-in, the session, and the permission, and denies by default. It reads messages by permission and writes hash-chained rows to the audit trail in the message store. Log records from the API and from the message path pass through log handlers with redaction filters. The handlers forward them to a log collector on another host by syslog over TLS. The API sends account-security notices to a mail relay by SMTP with STARTTLS. Numbers 6 to 9 match the table of controls.</desc>
+            <desc id="tb-op-d">An operator browser and API clients reach the API and web console over HTTPS. The API checks the sign-in, the session, and the permission, and denies by default. It reads messages by permission and writes hash-chained rows to the audit trail in the message store. The PHI columns of the stored messages are sealed with AES-256-GCM. Log records from the API and from the message path pass through log handlers with redaction filters. The handlers forward them to a log collector on another host by syslog over TLS. The API sends account-security notices to a mail relay by SMTP with STARTTLS. Numbers 6 to 9 match the table of controls.</desc>
 
             <rect class="dg-bound" x="10" y="8" width="380" height="78" rx="12"/>
             <text class="dg-bnd" x="24" y="27">OPERATOR CLIENTS &#183; ENGINE HOST BY DEFAULT</text>
@@ -316,7 +317,7 @@
 
             <rect class="dg-store" x="232" y="144" width="148" height="62" rx="10"/>
             <text class="dg-ttl" x="306" y="164" text-anchor="middle">Messages</text>
-            <text class="dg-sub" x="306" y="180" text-anchor="middle">sealed with AES-256-GCM</text>
+            <text class="dg-sub" x="306" y="180" text-anchor="middle">PHI columns: AES-256-GCM</text>
             <text class="dg-sub" x="306" y="194" text-anchor="middle">PHI reads by permission</text>
             <rect class="dg-store" x="232" y="216" width="148" height="42" rx="10"/>
             <text class="dg-ttl" x="306" y="234" text-anchor="middle">Audit trail</text>
@@ -354,15 +355,15 @@
             <tr><th scope="col">Hop or resting place</th><th scope="col">Control on it</th></tr>
           </thead>
           <tbody>
-            <tr><th scope="row">1 &middot; Sending system to inbound Connection</th><td>MLLP with TLS set on the Connection. By default, the engine refuses a listener that would take messages off the loopback address without TLS.</td></tr>
+            <tr><th scope="row">1 &middot; Sending system to inbound Connection</th><td>MLLP, with TLS when the Connection sets <code>tls=true</code>. By default, the engine refuses a listener that would take messages off the loopback address without TLS.</td></tr>
             <tr><th scope="row">2 &middot; Engine to message store</th><td>The listener commits the raw message before it sends the ACK. A server database connection uses TLS and verifies the server certificate by default.</td></tr>
             <tr><th scope="row">3 &middot; At rest in the message store</th><td>A store key seals the PHI columns with AES-256-GCM. By default, the engine refuses to start without a store key.</td></tr>
-            <tr><th scope="row">4 &middot; Outbound Connection to receiving system</th><td>MLLP with TLS set on the Connection. The destination must be on an egress allow-list. By default, the engine refuses an outbound MLLP hop that would leave the host in cleartext.</td></tr>
+            <tr><th scope="row">4 &middot; Outbound Connection to receiving system</th><td>MLLP, with TLS when the Connection sets <code>tls=true</code>. The destination must be on an egress allow-list. By default, the engine refuses an outbound MLLP hop that would leave the host in cleartext.</td></tr>
             <tr><th scope="row">5 &middot; Handler to lookup source</th><td>The database or FHIR server must be on an egress allow-list. By default, the engine refuses a FHIR lookup over cleartext HTTP to another host.</td></tr>
             <tr><th scope="row">6 &middot; Browser or API client to the API</th><td>HTTPS with TLS 1.2 or later. The API binds 127.0.0.1 by default. The console session cookie is HttpOnly, SameSite=Strict, and Secure. An API client sends a bearer session token.</td></tr>
             <tr><th scope="row">7 &middot; API to audit trail</th><td>Each row's hash covers the row before it, so an edited or reordered row fails verification. Sign-ins and permission refusals write rows. Opening a message writes a row that names the acting user.</td></tr>
             <tr><th scope="row">8 &middot; Engine log to log collector</th><td>Syslog over TLS, with the collector's certificate verified. A filter on each log handler redacts HL7-shaped text and scrubs credentials before a record is written or forwarded.</td></tr>
-            <tr><th scope="row">9 &middot; Engine to mail relay</th><td>SMTP with STARTTLS, with the server certificate verified by default. The relay carries account-security notices and operator alert email, not message bodies.</td></tr>
+            <tr><th scope="row">9 &middot; Engine to mail relay</th><td>SMTP with STARTTLS, with the server certificate verified by default. The relay carries account-security notices and at least operator alert email. Neither holds message bodies.</td></tr>
           </tbody>
         </table>
       </div>

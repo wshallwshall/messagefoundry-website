@@ -129,7 +129,7 @@
       <!-- diagram source: MessageFoundry engine docs/architecture-diagram.md at 612689f797, drawn 2026-10-02 -->
       <svg class="dg" viewBox="0 0 940 460" role="img" aria-labelledby="t0 d0">
         <title id="t0">Top-level components — the whole system</title>
-        <desc id="d0">A central headless engine sits behind an API that binds 127.0.0.1 by default and is served over TLS. Independent components surround it: operator tools (admin console, VS Code extension), version-controlled author-time config, the CLI and Windows service that run it, dev and test tooling, live message traffic over any Connection type, a standalone migration tee relay, and the CI-to-PyPI release path.</desc>
+        <desc id="d0">A central headless engine sits behind an API that binds 127.0.0.1 by default and is served over TLS. Independent components surround it. They are the operator tools (admin console, VS Code extension), the version-controlled author-time config, and the CLI and Windows service that run it. They also include dev and test tooling, live message traffic over any Connection type, a standalone migration tee relay, and the CI-to-PyPI release path.</desc>
 
         <path class="dg-solid" d="M490,76 L490,106" marker-end="url(#dg-ah)"/>
         <path class="dg-solid" d="M490,158 L490,186" marker-end="url(#dg-ah)"/>
@@ -284,7 +284,7 @@
         <path class="dg-solid" d="M265,112 L265,86" marker-end="url(#dg-ah)"/>
 
         <rect class="dg-api" x="200" y="56" width="130" height="30" rx="8"/>
-        <text class="dg-sub" x="265" y="75" text-anchor="middle" style="font-weight:700;fill:var(--accent-ink)">ACK (AA) — on receipt</text>
+        <text class="dg-key" x="265" y="75" text-anchor="middle">ACK (AA) — on receipt</text>
 
         <rect class="dg-box" x="22" y="120" width="120" height="56" rx="10"/>
         <text class="dg-ttl" x="82" y="145" text-anchor="middle">Inbound</text>
