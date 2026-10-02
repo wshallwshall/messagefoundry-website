@@ -23,15 +23,7 @@
   <meta name="twitter:image" content="https://messagefoundry.org/assets/img/og.png">
   <link rel="stylesheet" href="/assets/css/styles.css">
   <style>
-    /* Toolkit diagram — static SVG styled with the design tokens (no JS). */
-    svg.dg { width: 100%; height: auto; display: block; margin: 0 auto; max-width: 940px; }
-    svg.dg text { font-family: var(--font); }
-    .dg-box   { fill: #fff; stroke: #cdd6e3; stroke-width: 1.2; }
-    .dg-api   { fill: #fff8ee; stroke: var(--accent); stroke-width: 1.7; }
-    .dg-ttl   { fill: var(--text); font-weight: 700; font-size: 14px; }
-    .dg-sub   { fill: var(--muted); font-size: 11px; }
-    .dg-solid { fill: none; stroke: var(--muted); stroke-width: 1.7; }
-    .dg-dash  { fill: none; stroke: #93a1b8; stroke-width: 1.7; stroke-dasharray: 4 4; }
+    /* The toolkit diagram takes its .dg-* rules from /assets/css/styles.css. */
     .tool-cmd { display:inline-block; font-family: var(--mono); font-size: .82rem; color: var(--accent-ink);
                 background: #fff4e3; border: 1px solid #fde6c2; border-radius: 7px; padding: 3px 9px; margin: 2px 0 12px; }
   </style>
@@ -136,9 +128,10 @@
         <h2>Tools connect through the engine API</h2>
         <p class="lead center">The engine owns the message store. Operator tools connect through its local API; the migration tee relay sits in front of the engine.</p>
       </div>
+      <!-- diagram source: MessageFoundry engine docs/architecture-diagram.md at d68abee5b9, drawn 2026-10-02 -->
       <svg class="dg" viewBox="0 0 940 470" role="img" aria-labelledby="tk-t tk-d">
         <title id="tk-t">The toolkit — one engine, many clients</title>
-        <desc id="tk-d">A central Engine service exposes one localhost API. Four tools — the command-line tool, the admin console, the VS Code extension, and the test harness — are separate processes that talk to it over that API. A tee relay sits in front of the engine, forwarding bytes during migration.</desc>
+        <desc id="tk-d">A central Engine service exposes one API. It binds 127.0.0.1 by default and is served over HTTPS and WebSocket. Four tools — the command-line tool, the admin console, the VS Code extension, and the test harness — are separate processes that talk to it over that API. A tee relay sits in front of the engine, forwarding bytes during migration.</desc>
 
         <path class="dg-solid" d="M470,192 L470,212" marker-end="url(#dg-ah)"/>
         <path class="dg-solid" d="M254,148 L368,157" marker-end="url(#dg-ah)"/>
@@ -150,7 +143,7 @@
 
         <rect class="dg-api" x="372" y="140" width="196" height="52" rx="10"/>
         <text class="dg-ttl" x="470" y="165" text-anchor="middle">localhost API</text>
-        <text class="dg-sub" x="470" y="181" text-anchor="middle">the one contract · HTTP / WS</text>
+        <text class="dg-sub" x="470" y="181" text-anchor="middle">the one contract · HTTPS / WSS</text>
 
         <rect class="dg-box" x="360" y="214" width="220" height="76" rx="10"/>
         <text class="dg-ttl" x="470" y="240" text-anchor="middle">Engine service</text>
@@ -196,7 +189,7 @@
         <div class="card">
           <h3>Engine service</h3>
           <span class="tool-cmd">messagefoundry serve</span>
-          <p>Runs Connections, Routers, and Handlers through the staged queue and owns the store. Exposes a local HTTP/WebSocket API. Supports Windows service installation through NSSM.</p>
+          <p>Runs Connections, Routers, and Handlers through the staged queue and owns the store. Exposes a local HTTPS/WebSocket API. Supports Windows service installation through NSSM.</p>
         </div>
         <div class="card">
           <h3>Command-line tool</h3>
@@ -205,7 +198,7 @@
         </div>
         <div class="card">
           <h3>Admin &amp; monitoring console</h3>
-          <span class="tool-cmd">open http://127.0.0.1:8765/ui</span>
+          <span class="tool-cmd">open https://127.0.0.1:8765/ui</span>
           <p>Use the browser console to view connections, search messages, and inspect delivery and audit records. It includes replay, an HL7 parse tree, dead letters, alert rules, and user and session controls. It connects through the API and never accesses the database directly. <a href="/console.html">Tour the console →</a></p>
         </div>
         <div class="card">
